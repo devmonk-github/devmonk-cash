@@ -586,6 +586,7 @@ export class TillService {
     
     dataObject.aPayments.forEach((obj: any) => {
       obj.bIgnore = false;
+      obj.nNewAmount = obj?.nAmount || 0;
       dataObject.nPaymentMethodTotal += obj.nAmount;
       if(!obj?.sRemarks) obj.sRemarks = "";
       else if (obj?.sRemarks === 'CHANGE_MONEY') obj.bIgnore = true;

@@ -441,7 +441,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   filterDuplicatePaymentMethods() {
-    const aPresent: any = [...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
+    const aPresent: any = [
+      ...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId && item?.sRemarks != 'CHANGE_MONEY'), 
+      ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)
+    ];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
   }
 

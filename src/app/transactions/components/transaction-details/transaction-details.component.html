@@ -496,7 +496,7 @@
                                     <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                         <td>
                                             <div>
-                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
+                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" (ngModelChange)="aNewSelectedPaymentMethods[i].nAmount = 0"
                                                     [clearable]="false">
                                                     <ng-option [value]="option" *ngFor="let option of payMethods">
                                                         {{ option.sName | translate }}

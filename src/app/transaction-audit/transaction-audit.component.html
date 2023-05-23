@@ -970,9 +970,13 @@
                                                         <tbody class="bg-gray-100">
                                                             <tr class="fw-bold fs-6 text-gray-800">
                                                                 <td>
-                                                                    <div
-                                                                        class="d-flex justify-content-between align-items-center">
-                                                                        {{oArticleGroup.sName}}
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <span *ngIf="oArticleGroup?.oName && object.keys(oArticleGroup?.oName)?.length">
+                                                                            {{ oArticleGroup?.oName[translateService.currentLang] || oArticleGroup.sName }}
+                                                                        </span>
+                                                                        <span *ngIf="!oArticleGroup?.oName || !object.keys(oArticleGroup?.oName)?.length">
+                                                                            {{ oArticleGroup.sName }}
+                                                                        </span>
                                                                         <div class="mx-5">
                                                                             <i *ngIf="!oArticleGroup.bIsCollapseItem"
                                                                                 class="px-sm-2 cursor-pointer bi bi-chevron-down"

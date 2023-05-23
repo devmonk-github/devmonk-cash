@@ -723,11 +723,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
 
               if (this.bOpeningHistoricalDayState) {
-                let aUniqueArticleGroupId: any = [];
-                this.aStatistic[0].individual.forEach((el: any) => {
-                  aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
-                })
-                aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
+                const aUniqueArticleGroupId: any = this.getUniqueArticleGroupIds();
                 this.getArticleGroups(aUniqueArticleGroupId);
               }
               this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
@@ -750,6 +746,43 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.bStatisticLoading = false;
         console.log('error: ', error);
       });
+  }
+
+  getUniqueArticleGroupIds() {
+    const aUniqueArticleGroupId:any = [];
+    switch(this.sDisplayMethod) {
+      case eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup:
+        this.aStatistic[0].individual.forEach((el: any) => {
+          aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
+        });
+        break; 
+      case eDisplayMethodKeysEnum.revenuePerArticleGroup:
+        aUniqueArticleGroupId.push(...this.aStatistic[0].individual.map((el: any) => el._id));
+        break; 
+    }
+
+    return [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
+  }
+
+  setArticleGroupNames() {
+    switch(this.sDisplayMethod) {
+      case eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup:
+        this.aStatistic[0].individual.forEach((el: any) => {
+          el.aArticleGroups.forEach((oGroup: any) => {
+            const oData = this.aArticleGroupDetails.find((oItem: any) => oItem._id === oGroup._id)
+            if (oData) {
+              oGroup.oName = oData.oName;
+            }
+          });
+        })
+        break; 
+      case eDisplayMethodKeysEnum.revenuePerArticleGroup:
+        this.aStatistic[0].individual.forEach((el: any) => {
+          const oData = this.aArticleGroupDetails.find((oItem: any) => oItem._id === el._id)
+          if (oData) el.oName = oData.oName;
+        })
+        break; 
+    }
   }
 
   mappingThePaymentMethod(aData: any) {
@@ -872,14 +905,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.aArticleGroupDetails = result?.data[0]?.result;
-        this.aStatistic[0].individual.forEach((el: any) => {
-          el.aArticleGroups.forEach((oGroup: any) => {
-            const oData = this.aArticleGroupDetails.find((oItem: any) => oItem._id === oGroup._id)
-            if (oData) {
-              oGroup.oName = oData.oName;
-            }
-          });
-        })
+        this.setArticleGroupNames();
       }
     });
   }
