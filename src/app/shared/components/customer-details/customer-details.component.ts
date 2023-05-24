@@ -89,7 +89,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   iEmployeeId:any;
   employeesList:any;
   mergeCustomerIdList:any;
-  customerLoyalityPoints :Number;
+  customerLoyalityPoints: number = 0;
   pointsAdded:Boolean = false;
   oPointsSettingsResult:any;
   employees: Array<any> = [];
@@ -295,7 +295,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     //console.log("this.customer------");
     //console.log(this.customer);
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -487,26 +487,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
   addLoyalityPoints(){
     this.pointsAdded = true;
-    const oBody ={
-      iBusinessId:this.requestParams.iBusinessId ,
-      iLocationId:localStorage.getItem('currentLocation'),
-      iCustomerId:this.customer._id,
-      nSavingsPoints:this.customerLoyalityPoints   
-    }
-    this.apiService.postNew('cashregistry' , '/api/v1/points-settings/createPoints' , oBody).subscribe((res:any)=>{
-      if(res.message == 'success' && res?.data?._id){
-        this.pointsAdded = false;
-        this.customerLoyalityPoints = 0;
-        this.customer.nLoyaltyPoints = this.customer.nLoyaltyPoints + res.data.nSavingsPoints;
-        this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints / this.oPointsSettingsResult.nPerEuro2;
-        this.toastService.show({type:'success' , text:this.translations['LOYALITY_POINTS_ADDED']});
-      }else{
-        this.pointsAdded = false;
-        this.customerLoyalityPoints = 0;
+    if(this.customerLoyalityPoints < 0 && this.customerLoyalityPoints < -this.customer.nLoyaltyPoints){
+      this.toastService.show({type:'warning' , title:this.translations['LOYALITY_POINTS_NOT_ADDED'], text:this.translations['REDUCING_MORE_THAN_AVAILABLE']});
+      this.pointsAdded = false;
+    }else{
+      const oBody ={
+        iBusinessId:this.requestParams.iBusinessId ,
+        iLocationId:localStorage.getItem('currentLocation'),
+        iCustomerId:this.customer._id,
+        nSavingsPoints:this.customerLoyalityPoints   
       }
-
-    })
-
+      this.apiService.postNew('cashregistry' , '/api/v1/points-settings/createPoints' , oBody).subscribe((res:any)=>{
+        if(res.message == 'success' && res?.data?._id){
+          this.pointsAdded = false;
+          this.customerLoyalityPoints = 0;
+          this.customer.nLoyaltyPoints = this.customer.nLoyaltyPoints + res.data.nSavingsPoints;
+          this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints / this.oPointsSettingsResult.nPerEuro2;
+          this.toastService.show({type:'success' , text:this.translations['LOYALITY_POINTS_ADDED']});
+        }else{
+          this.pointsAdded = false;
+          this.customerLoyalityPoints = 0;
+          this.toastService.show({type:'danger' , text:this.translations['LOYALITY_POINTS_NOT_ADDED']});
+        }
+  
+      })
+    }
   }
 
 
