@@ -133,7 +133,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.loading = false;
     }
     // console.log(this.transaction)
-    this.fetchActivityItem();
+    if(this.from != 'audit') this.fetchActivityItem();
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);

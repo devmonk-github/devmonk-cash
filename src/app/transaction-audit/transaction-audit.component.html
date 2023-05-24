@@ -574,26 +574,24 @@
                                             *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'CATEGORY' | translate}}</span>
+                                                    <th>
+                                                        <span class="">{{ 'CATEGORY' | translate}}</span>
                                                         <h3 class="text-black">{{oSupplier.sCategory | translate}}</h3>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number
-                                                            :'1.2-2'}}</h4>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
-                                                            :'1.2-2'}}</h4>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}
-                                                        </h4>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"GROSS_PROFIT" |translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}</h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -607,21 +605,23 @@
                                                             <thead class="bg-gray-100">
                                                                 <tr class="fw-bold fs-6 text-gray-800">
                                                                     <th scope="col">
-                                                                        <span *ngIf="oArticleGroup?.oName && object.keys(oArticleGroup?.oName)?.length">
-                                                                            {{ oArticleGroup?.oName[translateService.currentLang] || oArticleGroup.sName }}
-                                                                        </span>
-                                                                        <span *ngIf="!oArticleGroup?.oName || !object.keys(oArticleGroup?.oName)?.length">
-                                                                            {{ oArticleGroup.sName }}
-                                                                        </span>
-                                                                        <div class="mx-5">
-                                                                            <i *ngIf="!oArticleGroup.bIsCollapseItem"
-                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-down"
-                                                                                (click)="expandItem(oArticleGroup)">
-                                                                            </i>
-                                                                            <i *ngIf="oArticleGroup.bIsCollapseItem"
-                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-up"
-                                                                                (click)="expandItem(oArticleGroup)">
-                                                                            </i>
+                                                                        <div class="d-flex justify-content-between">
+                                                                            <span *ngIf="oArticleGroup?.oName && object.keys(oArticleGroup?.oName)?.length">
+                                                                                {{ oArticleGroup?.oName[translateService.currentLang] || oArticleGroup.sName }}
+                                                                            </span>
+                                                                            <span *ngIf="!oArticleGroup?.oName || !object.keys(oArticleGroup?.oName)?.length">
+                                                                                {{ oArticleGroup.sName }}
+                                                                            </span>
+                                                                            <div class="mx-5">
+                                                                                <i *ngIf="!oArticleGroup.bIsCollapseItem"
+                                                                                    class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                                    (click)="expandItem(oArticleGroup)">
+                                                                                </i>
+                                                                                <i *ngIf="oArticleGroup.bIsCollapseItem"
+                                                                                    class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                                    (click)="expandItem(oArticleGroup)">
+                                                                                </i>
+                                                                            </div>
                                                                         </div>
                                                                     </th>
                                                                     <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
@@ -635,8 +635,11 @@
                                                                     *ngIf="oArticleGroup.bIsCollapseItem && sOptionMenu?.child1?.sKey === 'Bookkeeping'">
                                                                     <tr class="bg-white"
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                        <td> 
-                                                                            {{ item?.sTransactionNumber || ''}}<br/>
+                                                                        <td>
+                                                                            <a (click)="openTransactionDetailsModal(item)" class="bg-success badge cursor-pointer p-3 mb-2">
+                                                                                {{ item?.sTransactionNumber || ''}}
+                                                                            </a>
+                                                                            <br/>
                                                                             {{ item.sProductName || item?.sProductNumber }}<br /> 
                                                                             {{ item?.sComment || '' }} 
                                                                         </td>
@@ -1181,8 +1184,14 @@
                                             </tr>
                                             <ng-container *ngIf="oPayment.bIsCollapseItem">
                                                 <tr class="bg-gray-100" *ngFor="let item of oPayment.aItems">
-                                                    <td class="ps-9"> {{ item.sComment}} {{ (!item?.sComment ||
-                                                        item.sComment === '') ? item.sMethod : '' }}</td>
+                                                    <td class="ps-9"> 
+                                                        <a (click)="openTransactionDetailsModal(item)" class="bg-success badge cursor-pointer p-3 mb-2" ngif>
+                                                            {{ item.sComment}}
+                                                        </a>
+
+                                                         
+                                                        {{ (!item?.sComment || item.sComment === '') ? item.sMethod : '' }}
+                                                    </td>
                                                     <td> {{ item.nAmount.toFixed(2) }}</td>
                                                     <td> {{ item.nQuantity }}</td>
                                                 </tr>
