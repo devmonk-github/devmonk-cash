@@ -159,7 +159,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDisableCheckout: boolean;
   bShowOverassignedWarning: boolean;
   nClientId:any="-";
-  nLoyaltyPoints: 0;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
