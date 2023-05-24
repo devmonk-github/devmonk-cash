@@ -279,7 +279,6 @@ export class TransactionAuditUiPdfService {
             if (this.tillService.settings.oStatisticsSettings.bIncludeGoldpurchase) this.addGoldPurchasesToPdf();
         }
         
-        // console.log(this.content);
         this.pdf.getPdfData({
             styles: this.styles,
             content: this.content,

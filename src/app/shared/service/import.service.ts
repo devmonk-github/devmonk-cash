@@ -36,7 +36,8 @@ export class ImportService {
                 sHouseNumberSuffix: customer?.['sHouseNumberSuffix'] ? customer['sHouseNumberSuffix'] : "do-nothing",
                 sPostalCode: customer?.['sPostalCode'] ? customer['sPostalCode'] : "do-nothing",
                 sCity: customer?.['sCity'] ? customer['sCity'] : "do-nothing",
-                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "do-nothing",
+                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "overwrite",
+                sCountryCode: customer?.['sCountryCode'] ? customer['sCountryCode'] : "overwrite"
             },
 
             oInvoiceAddress: {
@@ -50,7 +51,8 @@ export class ImportService {
                 sHouseNumberSuffix: customer?.['sHouseNumberSuffix'] ? customer['sHouseNumberSuffix'] : "do-nothing",
                 sPostalCode: customer?.['sPostalCode'] ? customer['sPostalCode'] : "do-nothing",
                 sCity: customer?.['sCity'] ? customer['sCity'] : "do-nothing",
-                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "do-nothing",
+                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "overwrite",
+                sCountryCode: customer?.['sCountryCode'] ? customer['sCountryCode'] : "overwrite"
             },
 
             sComment: customer?.['sComment'] ? customer['sComment'] : "do-nothing",

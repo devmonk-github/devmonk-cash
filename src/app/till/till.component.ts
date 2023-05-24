@@ -158,6 +158,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nGiftcardAmount = 0;
   bDisableCheckout: boolean;
   bShowOverassignedWarning: boolean;
+  nClientId:any="-";
+  nLoyaltyPoints: 0;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -221,6 +223,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
   }
+
+ 
 
   async mapFiscallyData() {
     let _fiscallyData: any;
@@ -627,10 +631,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
-      }).instance.close.subscribe((data) => {
+      }).instance.close.subscribe(async (data) => {
         if (data.customer) {
           this.customer = data.customer;
-          //console.log(this.customer);
+          const str = this.customer.nClientId;
+          if (str) {
+            this.nClientId = str.substring(0, str.indexOf('/'));
+          }
+          if (this.customer?._id && this.customer._id != '') {
+            const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
+            const oPointsSettingsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise();
+            this.customer.nLoyaltyPoints = nPointsResult;
+            this.customer.nLoyaltyPointsValue = nPointsResult / oPointsSettingsResult.nPerEuro2;
+          }
           if (this.customer?.activityData?.length) {
             this.findOpenActivitiesForCustomer();
           }

@@ -91,6 +91,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   changeAmount: number = 0;
   refundedAmount: number = 0;
   bGenerateInvoice: boolean = false;
+  employee: any;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -110,6 +111,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
+    this.getEmployee(this.transaction.iEmployeeId)
     let sIndex = this.transaction.aPayments.findIndex((value: any) => value.sRemarks == "CHANGE_MONEY");
     if (sIndex > -1) {
       this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
@@ -142,6 +144,68 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
+  }
+
+  getEmployee(id: any) {
+    if (id != '') {
+      this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
+        this.employee = result?.data;
+      });
+    }
+  }
+  
+
+  async sendEmail() {
+    let template = undefined;
+    let pdfTitle = '';
+    const aUniqueItemTypes = [];
+    aUniqueItemTypes.push(...['regular', 'order', 'repair', 'repair_alternative', 'giftcard']);
+    const aPromises: any = [];
+    aPromises.push(this.getTemplate("repair").toPromise())
+    aPromises.push(this.getBase64FromUrl(this.transaction?.businessDetails?.sLogoLight).toPromise())
+    if (this.employee._id != this.transaction.iEmployeeId) {
+      aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${this.transaction.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
+    }
+    const aResult: any = await Promise.all(aPromises);
+    const aTemplates = [aResult[0].data];
+    // if (type === 'repair' || type === 'repair_alternative') {
+    //   template = aTemplates.filter((template: any) => template.eType === type)[0];
+    //   pdfTitle = this.transaction.sNumber;
+    // } else if (type === 'regular') {
+    pdfTitle = this.transaction.sNumber;
+    template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
+    // } else if (type === 'giftcard') {
+    //   pdfTitle = this.transaction.sGiftCardNumber;
+    //   template = aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+    // } else if (type === 'order') {
+    //   template = aTemplates.filter((template: any) => template.eType === 'order')[0];
+    //   pdfTitle = this.transaction.sActivityNumber;
+    // }
+    const response = await this.receiptService.exportToPdf({
+      oDataSource: this.transaction,
+      pdfTitle: pdfTitle,
+      templateData: template,
+      printSettings: this.printSettings.filter((s: any) => s.sType === 'repair'),
+      sAction: 'sentToCustomer',
+    });
+    if (this.transaction?.oCustomer?.sEmail) {
+      const body = {
+        pdfContent: response,
+        iTransactionId: this.transaction._id,
+        receiptType: 'purchase-receipt',
+        sCustomerEmail: this.transaction?.oCustomer?.sEmail
+      }
+      this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+        (result: any) => {
+          if (result) {
+            this.toastService.show({ type: 'success', text: 'Mail send to customer successfully.' });
+          }
+        }, (error: any) => {
+          console.log("Error : ", error);
+          this.toastService.show({ type: "warning", text: `Something went wrong` });
+        }
+      )
+    }
   }
 
   syncCustomerData(currenCustomer: any, systemCustomer: any) {

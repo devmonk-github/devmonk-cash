@@ -72,9 +72,13 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
-    { key: 'ADDRESS', value: 'sAddress' },
+    // { key: 'ADDRESS', value: 'sAddress' },
+    { key: 'POSTAL_CODE', value: 'sPostalCode' },
+    { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
+    { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
     { key: 'NCLIENTID', value: 'nClientId'}
+    //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   
   bUpdateNclientID: boolean = false;
