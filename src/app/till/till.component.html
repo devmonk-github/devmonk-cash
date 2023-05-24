@@ -513,9 +513,9 @@
                 <div>
                  
                   <p class="mt-5 mb-0 text-gray-800">
-                    <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} ({{customer.nClientId || '-'}})<br></span>
+                    <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} <br></span>{{nClientId}} <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{customer.nClientId}}"> </i><br>
                     <span *ngIf="customer.sCompanyName"> {{customer.sCompanyName}} <br> </span>
-                    <span *ngIf="customer.bIsCompany"> spa{{customer.oContactPerson.sFirstName}} {{customer.oContactPerson.sLastName}} </span>
+                    <span *ngIf="customer.bIsCompany"> {{customer.oContactPerson.sFirstName}} {{customer.oContactPerson.sLastName}} </span>
                     <span *ngIf="customer.sEmail">{{customer.sEmail}} <br> </span>
                     <span *ngIf="customer.oInvoiceAddress?.sStreet || customer.oInvoiceAddress?.sHouseNumber">
                       {{customer.oInvoiceAddress?.sStreet}} {{customer.oInvoiceAddress?.sHouseNumber}}
@@ -526,7 +526,7 @@
                     </span>
                   </p>
                   <p class="mt-3 mb-0 text-gray-800" *ngIf="tillService.oSavingPointSettings.bEnabled">
-                    <span class="fw-bolder">{{"SAVING_POINTS" | translate}}:</span> <span>{{ customer.oPoints.spendable }}</span>
+                    <span class="fw-bolder">{{"SAVING_POINTS" | translate}}:</span> <span>{{ customer.nLoyaltyPoints }} ({{ customer.nLoyaltyPointsValue | currency: tillService.currency}}) </span>
                   </p>
                 </div>
               </div>
