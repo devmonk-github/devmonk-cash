@@ -1355,8 +1355,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
-    const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
-    const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
+    const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
+    const oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     const oBody:any = {
@@ -1396,7 +1396,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.payMethods = [];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
+      if (result?.data?.length) {
         this.allPaymentMethod = result.data;
         this.payMethods = [...result.data];
         // result.data.forEach((element: any) => {
