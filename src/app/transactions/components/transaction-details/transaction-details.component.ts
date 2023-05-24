@@ -134,7 +134,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
       this.loading = false;
     }
-    this.fetchActivityItem();
+    // console.log(this.transaction)
+    if(this.from != 'audit') this.fetchActivityItem();
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);

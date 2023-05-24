@@ -14,6 +14,7 @@ import { DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
 import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
 import * as moment from 'moment';
+import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
 @Component({
   selector: 'app-transaction-audit',
   templateUrl: './transaction-audit.component.html',
@@ -1591,6 +1592,34 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }, (error) => {
       console.log('error: ', error);
     });
+  }
+
+  async openTransactionDetailsModal(oItem:any){
+    // console.log(oItem);
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      type: 'transaction',
+      eType: 'cash-register-revenue',
+      bIsDetailRequire:true,
+      oFilterBy: {
+        _id: oItem.iTransactionId
+      }
+    }
+    const oTransaction:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/list', oBody).toPromise();
+    // console.log(oTransaction);
+      this.dialogService.openModal(TransactionDetailsComponent,
+        {
+          cssClass: "w-fullscreen mt--5",
+          context: {
+            transaction: oTransaction?.data?.result[0],
+            businessDetails: this.businessDetails,
+            from: 'audit',
+            employeesList: this.aEmployee
+          },
+          hasBackdrop: true,
+          closeOnBackdropClick: false,
+          closeOnEsc: false
+        }).instance;
   }
 
   ngOnDestroy(): void {
