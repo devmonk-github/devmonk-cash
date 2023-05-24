@@ -836,10 +836,25 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 
-  createTransaction() {
+  async createTransaction() {
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) return;
-    const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
+    let giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
+    if (!giftCardPayment) {
+      const oBody = {
+        sName: 'Giftcards',
+        bIsDefaultPaymentMethod: false,
+        iBusinessId: this.iBusinessId,
+        bStockReduction: false,
+        bInvoice: false,
+        bAssignSavingPoints: false,
+        bAssignSavingPointsLastPayment: true,
+        sLedgerNumber: '',
+        bShowInCashRegister: false
+      }
+      const _result:any = await this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', oBody).toPromise();
+      if(_result?.data?._id) giftCardPayment = _result.data;
+    }
     this.saveInProgress = true;
 
     if (this.nItemsTotalToBePaid < 0) {
@@ -894,7 +909,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-
+          console.log(body);
+          return;
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
             {
               cssClass: 'modal-lg',
@@ -1937,5 +1953,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.redeemedLoyaltyPoints = 0;
     this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
     this.changeInPayment();
+  }
+
+  getPaymentMethodBody(sName: string) {
+    return {
+      
+    }
   }
 }
