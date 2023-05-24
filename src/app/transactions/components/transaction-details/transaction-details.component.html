@@ -253,8 +253,8 @@
                             <fa-icon [icon]="faReceipt"></fa-icon>
                             <label class="mx-auto cursor-pointer"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
-                            *ngIf="!transaction?.oCustomer?.bCounter" (click)="sendEmail()" >
+                        <button *ngIf="transaction?.oCustomer?.sEmail != '' && !transaction?.oCustomer?.bCounter" class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
+                            (click)="sendEmail()" >
                             <fa-icon [icon]="faAt"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "MAIL" | translate}}</label>
                         </button>
