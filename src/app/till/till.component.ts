@@ -1861,66 +1861,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
-        const transactionItems: any = [];
         if (result?.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = 0;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                sUniqueIdentifier: transactionItem.sUniqueIdentifier,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                iBusinessProductId: transactionItem.iBusinessProductId,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
-                iArticleGroupId: transactionItem.iArticleGroupId,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iAssigneeId: transactionItem.iAssigneeId,
-                iBusinessBrandId: transactionItem.iBusinessBrandId,
-                nDiscount: transactionItem.nDiscount || 0,
-                bDiscountOnPercentage: transactionItem.nDiscount || 0,
-                tax: transactionItem.nVatRate,
-                oGoldFor: transactionItem.oGoldFor,
-                iSupplierId: transactionItem.iSupplierId,
-                paymentAmount,
-                description: transactionItem.sDescription,
-                open: true,
-                nMargin: transactionItem.nMargin,
-                nPurchasePrice: transactionItem.nPurchasePrice,
-                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-
-                sCommentVisibleServicePartner: transactionItem.sCommentVisibleServicePartner,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          this.handleTransactionResponse(result);
+          const oData = this.tillService.processTransactionSearchResult(result);
+          this.handleTransactionResponse(oData);
         }
       });
   }
