@@ -156,37 +156,29 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   
 
   async sendEmail() {
-    let template = undefined;
-    let pdfTitle = '';
-    const aUniqueItemTypes = [];
-    aUniqueItemTypes.push(...['regular', 'order', 'repair', 'repair_alternative', 'giftcard']);
-    const aPromises: any = [];
-    aPromises.push(this.getTemplate("repair").toPromise())
-    aPromises.push(this.getBase64FromUrl(this.transaction?.businessDetails?.sLogoLight).toPromise())
-    if (this.employee._id != this.transaction.iEmployeeId) {
-      aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${this.transaction.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
+    const template = await this.getTemplate('regular').toPromise();
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+
+    oDataSource.sBusinessLogoUrl = '';
+    try {
+      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+      if (_result?.data) {
+        oDataSource.sBusinessLogoUrl = _result?.data;
+      }
+    } catch (e) { }
+    if (oDataSource?.oCustomer?.bCounter === true) {
+      oDataSource.oCustomer = {};
     }
-    const aResult: any = await Promise.all(aPromises);
-    const aTemplates = [aResult[0].data];
-    // if (type === 'repair' || type === 'repair_alternative') {
-    //   template = aTemplates.filter((template: any) => template.eType === type)[0];
-    //   pdfTitle = this.transaction.sNumber;
-    // } else if (type === 'regular') {
-    pdfTitle = this.transaction.sNumber;
-    template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-    // } else if (type === 'giftcard') {
-    //   pdfTitle = this.transaction.sGiftCardNumber;
-    //   template = aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
-    // } else if (type === 'order') {
-    //   template = aTemplates.filter((template: any) => template.eType === 'order')[0];
-    //   pdfTitle = this.transaction.sActivityNumber;
-    // }
+    oDataSource?.aPayments?.forEach((payment: any) => {
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    })
+    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
     const response = await this.receiptService.exportToPdf({
-      oDataSource: this.transaction,
-      pdfTitle: pdfTitle,
-      templateData: template,
-      printSettings: this.printSettings.filter((s: any) => s.sType === 'repair'),
-      sAction: 'sentToCustomer',
+      oDataSource: oDataSource,
+      pdfTitle: oDataSource.sNumber,
+      templateData: template.data,
+      printSettings: oSettings,
+      sAction: 'sentToCustomer'
     });
     if (this.transaction?.oCustomer?.sEmail) {
       const body = {
