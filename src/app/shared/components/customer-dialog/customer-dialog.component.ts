@@ -171,8 +171,7 @@ export class CustomerDialogComponent implements OnInit {
   PCodeString :any = "POSTAL_CODE";
   HNumberString :any = "HOUSE_NUMBER";
   aInputHint:Array<any> = [""];
-  _customerSearchValue: string;
-
+  bIsComaRemoved: boolean = false;
   bIsProperSearching: boolean = true;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -279,31 +278,21 @@ export class CustomerDialogComponent implements OnInit {
 
         }
       } 
-      // else if (this.requestParams.searchValue.length < 4 && this.requestParams.searchValue.length >= 1) {
-      //   /* If string contains number & < 4 & >= 1, we will be able to detect if user is searching for someting in the sHouseNumber */
-      //   if (/\d/.test(this.requestParams.searchValue)) {
-      //     /*TODO: fill the selection with sHouseNumber, the following code is is not showing the selected element on frontend*/
-      //     this.requestParams.oFilterBy.aSearchField.unshift('sHouseNumber');
-      //     this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-      //     let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
-      //     this.aInputHint[hIndex] = "123A";
-      //     this.aInputHint = this.removeDuplicates(this.aInputHint);
-      //   }
-      // }
     }
   }
-  /* converting space into comman and if user remove the comma then it will add space */
+  
+  /* converting space into comma */
   customerEventHandler(event: any) {
     if (event.keyCode === 32) {
-      this._customerSearchValue = this.requestParams.searchValue;
-      this.requestParams.searchValue = this.requestParams.searchValue.replace(/.$/, ",");
-    } else if (event.keyCode === 8 && this._customerSearchValue.slice(-1) == ' ') {
-      this.requestParams.searchValue = `${this.requestParams.searchValue} `;
-      this._customerSearchValue = this._customerSearchValue.replace(/.$/, "");
-    } else {
-      this._customerSearchValue = this.requestParams.searchValue;
+      if (!this.bIsComaRemoved && this.requestParams.oFilterBy.aSearchField?.length > 1) this.requestParams.searchValue = this.requestParams.searchValue.replace(/.$/, ",");
+      this.bIsComaRemoved = false;
+    } else if (event.keyCode === 8) {
+      if (!this.requestParams.searchValue) this.bIsComaRemoved = false;
+      else this.bIsComaRemoved = true;
     }
+    this.showSearchWarningText();
   }
+
   makeCustomerName = async (customer: any) => {
     if (!customer) {
       return '';
@@ -364,13 +353,9 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   getCustomers() {
-    //const condition1 = Object.keys(this.requestParams.oFilterBy).some((key: any) => this.requestParams.oFilterBy[key]?.length);
     if (this.requestParams?.searchValue?.length < 3) return; // && !condition1
-    
-    
     this.showLoader = true;
     this.customers = [];
-    this.requestParams.searchValue = this.requestParams.searchValue?.trim();
     this.isCustomerSearched = false;
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -470,8 +455,8 @@ export class CustomerDialogComponent implements OnInit {
   /* show warnign if user is not searching as shown */
   showSearchWarningText() {
     this.bIsProperSearching = true;
-    const aSearchValueArray = this.requestParams.searchValue.split(',').filter((elem: any) => elem != '');
-    if (aSearchValueArray?.length != 0 && aSearchValueArray?.length !== this.requestParams.oFilterBy?.aSearchField?.length) {
+    const aSearchValueArray = this.requestParams.searchValue.split(',').map((el: any) => el.trim()).filter((elem: any) => elem != '');
+    if (aSearchValueArray?.length && aSearchValueArray?.length !== this.requestParams.oFilterBy?.aSearchField?.length) {
       this.bIsProperSearching = false;
     }
   }
