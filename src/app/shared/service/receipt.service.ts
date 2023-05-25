@@ -778,7 +778,7 @@ export class ReceiptService {
         if(oDataSource?.aPayments?.length) {
             // console.log(oDataSource?.aPayments);
             oDataSource?.aPayments?.forEach((payment:any) => {
-                payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm');
+                payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
             })
         }
         let thermalPrintSettings: any;
@@ -790,6 +790,8 @@ export class ReceiptService {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
             return;
         }
+        oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+
         this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
             // console.log({result})
             if (result?.data?.aTemplate?.length > 0) {
@@ -814,8 +816,8 @@ export class ReceiptService {
                     }
 
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
-                    // console.log(command);
-                    // return;
+                     //console.log(command);
+                     //return;
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
                     console.log(e);
