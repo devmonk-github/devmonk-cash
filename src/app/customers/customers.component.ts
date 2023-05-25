@@ -82,7 +82,7 @@ export class CustomersComponent implements OnInit {
   };
   iChosenCustomerId : any;
   aInputHint:Array<any> = [""];
-  _customerSearchValue: string;
+  bIsComaRemoved: boolean = false;
   bIsProperSearching: boolean = true;
   
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -195,22 +195,20 @@ export class CustomersComponent implements OnInit {
   /* show warnign if user is not searching as shown */
   showSearchWarningText() {
     this.bIsProperSearching = true;
-    const aSearchValueArray = this.requestParams.searchValue.split(',').filter((elem: any) => elem != '');
+    const aSearchValueArray = this.requestParams.searchValue.split(',').map((el: any) => el.trim()).filter((elem: any) => elem != '');
     if (aSearchValueArray?.length !== this.requestParams.oFilterBy?.aSearchField?.length) {
       this.bIsProperSearching = false;
     }
   }
 
-  /* converting space into comman and if user remove the comma then it will add space */
+  /* converting space into comma */
   customerEventHandler(event: any) {
     if (event.keyCode === 32) {
-      this._customerSearchValue = this.requestParams.searchValue;
-      this.requestParams.searchValue = this.requestParams.searchValue.replace(/.$/, ",");
-    } else if (event.keyCode === 8 && this._customerSearchValue.slice(-1) == ' ') {
-      this.requestParams.searchValue = `${this.requestParams.searchValue} `;
-      this._customerSearchValue = this._customerSearchValue.replace(/.$/, "");
-    } else {
-      this._customerSearchValue = this.requestParams.searchValue;
+      if (!this.bIsComaRemoved && this.requestParams.oFilterBy.aSearchField?.length > 1) this.requestParams.searchValue = this.requestParams.searchValue.replace(/.$/, ",");
+      this.bIsComaRemoved = false;
+    } else if (event.keyCode === 8) {
+      if (!this.requestParams.searchValue) this.bIsComaRemoved = false;
+      else this.bIsComaRemoved = true;
     }
     this.showSearchWarningText();
   }
@@ -301,7 +299,6 @@ export class CustomersComponent implements OnInit {
       this.requestParams.bShowRemovedCustomers = false;
     }
     this.customers = [];
-    this.requestParams.searchValue = this.requestParams.searchValue?.trim();
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;

@@ -52,7 +52,7 @@
                         </div>
                         <div class="row px-2">
                             <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
-                            <label *ngIf="!bIsProperSearching" class="text-warning"> {{ "PLEASE_SEARCH_AS_SHOWN" | translate }} </label>
+                            <label *ngIf="!bIsProperSearching && requestParams.oFilterBy.aSearchField?.length" class="text-warning"> {{ "PLEASE_SEARCH_AS_SHOWN" | translate }} </label>
                         </div>
                     </div>
                 
