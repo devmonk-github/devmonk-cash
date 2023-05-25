@@ -293,16 +293,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = [];
-    // const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa', 'pin', 'creditcard'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-        this.payMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister);
-        // this.allPaymentMethod.forEach((element: any) => {
-        //   if (methodsToDisplay.includes(element.sName.toLowerCase())) {
-        //     this.payMethods.push(_.clone(element));
-        //   }
-        // });
+
+        const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister)
+        if (this.tillService?.settings?.aPaymentMethodSequence?.length) {
+          this.tillService.settings.aPaymentMethodSequence.forEach((iPaymentMethodId: any) =>
+            this.payMethods.push(aVisibleMethods.find((el: any) => el._id == iPaymentMethodId))
+          );
+        } else {
+          this.payMethods = aVisibleMethods;
+        }
       }
       this.payMethodsLoading = false;
     }, (error) => {
@@ -1953,11 +1955,5 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.redeemedLoyaltyPoints = 0;
     this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
     this.changeInPayment();
-  }
-
-  getPaymentMethodBody(sName: string) {
-    return {
-      
-    }
   }
 }
