@@ -173,6 +173,8 @@ export class CustomerDialogComponent implements OnInit {
   aInputHint:Array<any> = [""];
   _customerSearchValue: string;
 
+  bIsProperSearching: boolean = true;
+
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
   constructor(
@@ -253,6 +255,7 @@ export class CustomerDialogComponent implements OnInit {
     }
     this.aPlaceHolder = this.removeDuplicates(this.aPlaceHolder);
     this.aInputHint = this.removeDuplicates(this.aInputHint);
+    this.showSearchWarningText();
   }
 
   removeDuplicates(arr:any) {
@@ -263,7 +266,7 @@ export class CustomerDialogComponent implements OnInit {
    stringDetection() {
     this.aPlaceHolder = ["search"];
     this.requestParams.searchValue = this.requestParams.searchValue;
-    if (this.requestParams.oFilterBy.aSearchField.length == 0) {
+    if (this.requestParams.oFilterBy.aSearchField.length == 0 && this.requestParams.searchValue.length >= 3) {
       if (this.requestParams.searchValue.length >= 4) {
         /*If string contains number & >= 4 -> then add sPostalCode in selected field */
         if (/\d/.test(this.requestParams.searchValue)) {
@@ -275,17 +278,18 @@ export class CustomerDialogComponent implements OnInit {
           this.aInputHint = this.removeDuplicates(this.aInputHint);
 
         }
-      } else if (this.requestParams.searchValue.length < 4 && this.requestParams.searchValue.length >= 1) {
-        /* If string contains number & < 4 & >= 1, we will be able to detect if user is searching for someting in the sHouseNumber */
-        if (/\d/.test(this.requestParams.searchValue)) {
-          /*TODO: fill the selection with sHouseNumber, the following code is is not showing the selected element on frontend*/
-          this.requestParams.oFilterBy.aSearchField.unshift('sHouseNumber');
-          this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-          let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
-          this.aInputHint[hIndex] = "123A";
-          this.aInputHint = this.removeDuplicates(this.aInputHint);
-        }
-      }
+      } 
+      // else if (this.requestParams.searchValue.length < 4 && this.requestParams.searchValue.length >= 1) {
+      //   /* If string contains number & < 4 & >= 1, we will be able to detect if user is searching for someting in the sHouseNumber */
+      //   if (/\d/.test(this.requestParams.searchValue)) {
+      //     /*TODO: fill the selection with sHouseNumber, the following code is is not showing the selected element on frontend*/
+      //     this.requestParams.oFilterBy.aSearchField.unshift('sHouseNumber');
+      //     this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+      //     let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
+      //     this.aInputHint[hIndex] = "123A";
+      //     this.aInputHint = this.removeDuplicates(this.aInputHint);
+      //   }
+      // }
     }
   }
   /* converting space into comman and if user remove the comma then it will add space */
@@ -366,6 +370,7 @@ export class CustomerDialogComponent implements OnInit {
     
     this.showLoader = true;
     this.customers = [];
+    this.requestParams.searchValue = this.requestParams.searchValue?.trim();
     this.isCustomerSearched = false;
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -462,7 +467,14 @@ export class CustomerDialogComponent implements OnInit {
     this.paginationConfig.currentPage = page;
   }
 
-
+  /* show warnign if user is not searching as shown */
+  showSearchWarningText() {
+    this.bIsProperSearching = true;
+    const aSearchValueArray = this.requestParams.searchValue.split(',').filter((elem: any) => elem != '');
+    if (aSearchValueArray?.length != 0 && aSearchValueArray?.length !== this.requestParams.oFilterBy?.aSearchField?.length) {
+      this.bIsProperSearching = false;
+    }
+  }
   
 
   close(data: any): void {

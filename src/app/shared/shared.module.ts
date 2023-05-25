@@ -64,6 +64,7 @@ import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-s
 import { CustomerActivitiesDialogComponent } from "./components/customer-activities-dialog/customer-activities.component";
 import { BankConfirmationDialogComponent } from './components/bank-confirmation-dialog/bank-confirmation-dialog.component';
 import { ClosingDaystateDialogComponent } from "./components/closing-daystate-dialog/closing-daystate-dialog.component";
+import { SetPaymentMethodSequenceComponent } from "./components/set-payment-method-sequence-dialog/set-payment-method-sequence.component";
 
 @NgModule({
   declarations: [
@@ -107,7 +108,8 @@ import { ClosingDaystateDialogComponent } from "./components/closing-daystate-di
     SelectPrintPaperDialogComponent,
     CustomerActivitiesDialogComponent,
     BankConfirmationDialogComponent,
-    ClosingDaystateDialogComponent
+    ClosingDaystateDialogComponent,
+    SetPaymentMethodSequenceComponent
   ],
   imports: [
     CommonModule,

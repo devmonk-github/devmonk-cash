@@ -655,8 +655,8 @@ export class TillService {
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
       item.nTotalDiscountPerItem = (item.bDiscountOnPercentage) ? this.getPercentOf(item.nTotalPriceIncVat, item.nDiscount) : item.nDiscount * item.nQuantity; 
 
-      item.nPriceIncVatAfterDiscount = +(((item.nTotalPriceIncVat - item.nTotalDiscountPerItem) / item.nQuantity));// - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
-      // item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
+      item.nPriceIncVatAfterDiscount = +(((item.nTotalPriceIncVat - item.nTotalDiscountPerItem) / item.nQuantity)) - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
       if (bTesting) console.log({ 
         nPriceIncVatAfterDiscount: item.nPriceIncVatAfterDiscount, 
         nTotalPriceIncVat: item.nTotalPriceIncVat,
@@ -667,8 +667,7 @@ export class TillService {
       // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
       if (bTesting) console.log(648, { nRevenueAmount: item.nRevenueAmount, nTotalDiscountPerItem: item.nTotalDiscountPerItem });
       
-      item.totalPaymentAmount = (item.nRevenueAmount * item.nQuantity) - item.nTotalDiscountPerItem - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
-      item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
+      item.totalPaymentAmount = +(((item.nRevenueAmount * item.nQuantity) - item.nTotalDiscountPerItem - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0)).toFixed(2));
       
       if (bTesting) console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
@@ -676,7 +675,7 @@ export class TillService {
       const vat = (item.nVatRate * item.totalPaymentAmount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat * item.nQuantity;
-      total += item.totalPaymentAmount + (item?.nRedeemedLoyaltyPoints || 0) +(item?.nGiftcardDiscount || 0);
+      total += item.totalPaymentAmount;// + (item?.nRedeemedLoyaltyPoints || 0) +(item?.nGiftcardDiscount || 0);
       
       if (item.oType.bRefund) {
         totalAfterDisc += item.totalPaymentAmount;

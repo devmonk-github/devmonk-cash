@@ -163,11 +163,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         const nDiscountAmount = +((element.bDiscountOnPercentage ? this.tillService.getPercentOf(element.nPriceIncVat, element?.nDiscount || 0) : element.nDiscount).toFixed(2));
         // console.log({ nDiscountAmount })
-        element.nDiscountToShow = nDiscountAmount;
-        element.nPaymentAmount -= nDiscountAmount;
-        element.nPaidAmount -= nDiscountAmount;
-        element.nPriceIncVat -= nDiscountAmount;
-        element.nRevenueAmount -= nDiscountAmount;
+        element.nDiscountToShow = nDiscountAmount + (element.nRedeemedLoyaltyPoints || 0) + (element?.nRedeemedGiftcardAmount || 0);
+        element.nPaymentAmount -= element.nDiscountToShow;
+        element.nPaidAmount -= element.nDiscountToShow;
+        element.nPriceIncVat -= element.nDiscountToShow;
+        element.nRevenueAmount -= element.nDiscountToShow;
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));

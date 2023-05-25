@@ -160,7 +160,7 @@
                             </div>
                             <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                             <div class="col-md-8">
-                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}
+                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY HH:mm:ss' }}
                                 </div>
                             </div>
                             
@@ -184,7 +184,7 @@
                             </div>
                             <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                             <div class="col-md-8">
-                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}
+                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY HH:mm:ss' }}
                                 </div>
                             </div>
                             
@@ -413,7 +413,7 @@
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>{{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
-                                            <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
+                                            <ng-container *ngIf="from != 'activity-details' && from != 'audit' && !item?.bMigrate">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-primary btn-sm"
@@ -444,7 +444,7 @@
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{
                                         transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency: tillService.currency }}</td>
-                                    <td>{{ transaction.nTotal | currency: tillService.currency}}</td>
+                                    <td>{{ transaction.total | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -460,7 +460,7 @@
             <div [ngClass]="paymentEditMode ? 'col-8' : 'col-6'">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
-                    <ng-container *ngIf="transaction.aPayments?.length">
+                    <ng-container *ngIf="transaction.aPayments?.length && from == 'transactions'">
                         <button class="btn" (click)="toggleEditPaymentMode()">
                             <i class="fa fa-edit"></i>
                         </button>

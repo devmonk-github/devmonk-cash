@@ -8,6 +8,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
+import { SetPaymentMethodSequenceComponent } from '../shared/components/set-payment-method-sequence-dialog/set-payment-method-sequence.component';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -461,7 +462,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   editQuickButton(button:any) {
-    console.log(button)
+    // console.log(button)
     this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'edit', button:button}, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
       if (result.action)
         this.fetchQuickButtons();
@@ -482,6 +483,19 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       }
     }, (error) => {
       this.toastService.show({ type: 'warning', text: 'something went wrong' });
+    });
+  }
+
+  setSequenceForCashRegister(){
+    this.dialogService.openModal(SetPaymentMethodSequenceComponent, { 
+      context: { 
+        payMethods: this.payMethods.filter((el: any) => el.bShowInCashRegister),
+        aPaymentMethodSequence: this.settings?.aPaymentMethodSequence || []
+      }, 
+      cssClass: "modal-m", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+      if (result?.action) {
+        this.settings = result?.data;
+      }
     });
   }
  

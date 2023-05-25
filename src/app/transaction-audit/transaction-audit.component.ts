@@ -14,6 +14,7 @@ import { DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
 import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
 import * as moment from 'moment';
+import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
 @Component({
   selector: 'app-transaction-audit',
   templateUrl: './transaction-audit.component.html',
@@ -1354,8 +1355,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
-    const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
-    const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
+    const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
+    const oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     const oBody:any = {
@@ -1395,7 +1396,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.payMethods = [];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
+      if (result?.data?.length) {
         this.allPaymentMethod = result.data;
         this.payMethods = [...result.data];
         // result.data.forEach((element: any) => {
@@ -1591,6 +1592,34 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }, (error) => {
       console.log('error: ', error);
     });
+  }
+
+  async openTransactionDetailsModal(oItem:any){
+    // console.log(oItem);
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      type: 'transaction',
+      eType: 'cash-register-revenue',
+      bIsDetailRequire:true,
+      oFilterBy: {
+        _id: oItem.iTransactionId
+      }
+    }
+    const oTransaction:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/list', oBody).toPromise();
+    // console.log(oTransaction);
+      this.dialogService.openModal(TransactionDetailsComponent,
+        {
+          cssClass: "w-fullscreen mt--5",
+          context: {
+            transaction: oTransaction?.data?.result[0],
+            businessDetails: this.businessDetails,
+            from: 'audit',
+            employeesList: this.aEmployee
+          },
+          hasBackdrop: true,
+          closeOnBackdropClick: false,
+          closeOnEsc: false
+        }).instance;
   }
 
   ngOnDestroy(): void {

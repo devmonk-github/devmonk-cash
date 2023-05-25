@@ -378,19 +378,20 @@
 
     <div class="card-body p-9 border-bottom" data-kt-scroll-section="payment-methods">
       <div class="card-title fw-bold row">
-        <div class="col-md-10">
+        <div class="col-4">
           <span class="fw-bold">
             <h3>{{ 'PAYMENT_METHODS' | translate}}</h3>
           </span>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary float-end" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
+        <div class="col-8 text-end">
+          <button class="btn btn-primary me-2" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
+          <button class="btn btn-primary" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' | translate}}</button>
         </div>
       </div>
       <div *ngIf="payMethods.length" class="dataTables_wrapper dt-bootstrap4 no-footer">
         <div class="table-responsive">
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-            <thead class="fw-bolder">
+            <thead>
               <tr>
                 <th>{{ 'NAME' | translate}}</th>
                 <th *ngIf="bookKeepingMode">{{ 'LEDGER_NUMBER' | translate}}</th>

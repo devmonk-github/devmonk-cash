@@ -159,7 +159,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDisableCheckout: boolean;
   bShowOverassignedWarning: boolean;
   nClientId:any="-";
-  nLoyaltyPoints: 0;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -294,16 +293,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = [];
-    // const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa', 'pin', 'creditcard'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-        this.payMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister);
-        // this.allPaymentMethod.forEach((element: any) => {
-        //   if (methodsToDisplay.includes(element.sName.toLowerCase())) {
-        //     this.payMethods.push(_.clone(element));
-        //   }
-        // });
+
+        const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister)
+        if (this.tillService?.settings?.aPaymentMethodSequence?.length) {
+          this.tillService.settings.aPaymentMethodSequence.forEach((iPaymentMethodId: any) =>
+            this.payMethods.push(aVisibleMethods.find((el: any) => el._id == iPaymentMethodId))
+          );
+        } else {
+          this.payMethods = aVisibleMethods;
+        }
       }
       this.payMethodsLoading = false;
     }, (error) => {
@@ -635,8 +636,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data.customer) {
           this.customer = data.customer;
           const str = this.customer.nClientId;
-          if (str) {
+          if (str.indexOf('/') > 0) {
             this.nClientId = str.substring(0, str.indexOf('/'));
+          }else{
+            this.nClientId = this.customer.nClientId;
           }
           if (this.customer?._id && this.customer._id != '') {
             const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
@@ -837,10 +840,25 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 
-  createTransaction() {
+  async createTransaction() {
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) return;
-    const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
+    let giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
+    if (!giftCardPayment) {
+      const oBody = {
+        sName: 'Giftcards',
+        bIsDefaultPaymentMethod: false,
+        iBusinessId: this.iBusinessId,
+        bStockReduction: false,
+        bInvoice: false,
+        bAssignSavingPoints: false,
+        bAssignSavingPointsLastPayment: true,
+        sLedgerNumber: '',
+        bShowInCashRegister: false
+      }
+      const _result:any = await this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', oBody).toPromise();
+      if(_result?.data?._id) giftCardPayment = _result.data;
+    }
     this.saveInProgress = true;
 
     if (this.nItemsTotalToBePaid < 0) {
@@ -895,7 +913,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-
+          // console.log(body);
+          // return;
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
             {
               cssClass: 'modal-lg',
@@ -1862,66 +1881,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
-        const transactionItems: any = [];
         if (result?.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = 0;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                sUniqueIdentifier: transactionItem.sUniqueIdentifier,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                iBusinessProductId: transactionItem.iBusinessProductId,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
-                iArticleGroupId: transactionItem.iArticleGroupId,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iAssigneeId: transactionItem.iAssigneeId,
-                iBusinessBrandId: transactionItem.iBusinessBrandId,
-                nDiscount: transactionItem.nDiscount || 0,
-                bDiscountOnPercentage: transactionItem.nDiscount || 0,
-                tax: transactionItem.nVatRate,
-                oGoldFor: transactionItem.oGoldFor,
-                iSupplierId: transactionItem.iSupplierId,
-                paymentAmount,
-                description: transactionItem.sDescription,
-                open: true,
-                nMargin: transactionItem.nMargin,
-                nPurchasePrice: transactionItem.nPurchasePrice,
-                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-
-                sCommentVisibleServicePartner: transactionItem.sCommentVisibleServicePartner,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          this.handleTransactionResponse(result);
+          const oData = this.tillService.processTransactionSearchResult(result);
+          this.handleTransactionResponse(oData);
         }
       });
   }
