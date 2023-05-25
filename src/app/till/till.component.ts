@@ -279,7 +279,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getValueFromLocalStorage(key: string): any {
     if (key === 'currentEmployee') {
-      const value = localStorage.getItem('currentEmployee');
+      const value = localStorage.getItem('currentUser');
       if (value) {
         return JSON.parse(value)
       } else {

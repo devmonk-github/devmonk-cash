@@ -192,7 +192,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastService);
     await this.tillService.fetchSettings();
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
-    const value = localStorage.getItem('currentEmployee');
+    const value = localStorage.getItem('currentUser');
     if (value) this.iEmployeeId = JSON.parse(value)._id;
     if(this.bOpeningDayClosure) {
       if(this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup

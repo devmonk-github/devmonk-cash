@@ -390,7 +390,7 @@ export class RepairComponent implements OnInit {
       sName: oRepairer?.sName,
       iAssigneeId: oRepairer?._id
     }
-    let oUser: any = localStorage.getItem('currentEmployee') || localStorage.getItem('currentUser') || null;
+    let oUser: any = localStorage.getItem('currentUser') || null;
     if (oUser) oUser = JSON.parse(oUser);
     this.item.iEmployeeId = oUser?.userId || null;
     this.item.iAssigneeId = oRepairer?._id;
