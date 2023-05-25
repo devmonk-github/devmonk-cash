@@ -170,9 +170,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       oDataSource.oCustomer = {};
     }
     oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     const response = await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
@@ -293,7 +294,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
-    //if(type == 1) this.bGenerateInvoice = true;
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     if (type == 1 && !this.transaction.sInvoiceNumber) {
@@ -323,30 +323,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         oDataSource.sBusinessLogoUrl = _result?.data;
       }
     } catch (e) { }
-
-    // console.log(oDataSource)
-
     if (oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
-
     oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
 
-
-    // if(type == 1){
-    //   this.transactionsPdfService.exportToPdf({
-    //     oDataSource: oDataSource,
-    //     pdfTitle: oDataSource.sNumber,
-    //     templateData: template.data,
-    //     printSettings: oSettings,
-    //     eSituation: 'is_created',
-    //     sAction: (print) ? 'print' : 'download',
-    //     sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    //   });
-    // } else{
+    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
@@ -356,8 +341,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       sAction: (print) ? 'print' : 'download',
       sApiKey: this.businessDetails.oPrintNode.sApiKey,
     });
-    //}   
-
     if (print) {
       this.printWithVATLoading = false
       this.printInvoiceLoading = false
@@ -365,7 +348,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.downloadWithVATLoading = false;
       this.downloadInvoiceLoading = false;
     }
-
   }
 
 
