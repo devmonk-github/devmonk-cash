@@ -1356,7 +1356,22 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
     const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
-    const oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
+    let oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
+    if (!oCashInSafePaymentMethod) {
+      const oBody = {
+        sName: 'CASH_IN_SAFE',
+        bIsDefaultPaymentMethod: true,
+        iBusinessId: this.iBusinessId,
+        bStockReduction: false,
+        bInvoice: false,
+        bAssignSavingPoints: false,
+        bAssignSavingPointsLastPayment: false,
+        sLedgerNumber: '',
+        bShowInCashRegister: false
+      }
+      const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', oBody).toPromise();
+      oCashInSafePaymentMethod = _result.data;
+    }
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     const oBody:any = {
