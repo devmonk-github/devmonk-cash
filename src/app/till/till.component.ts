@@ -1323,7 +1323,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
         product.aLocation = product.aLocation.filter((oProdLoc: any) => {
-          // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
           const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
           if (oFound) {
             oProdLoc.sName = oFound?.sName;
@@ -1331,7 +1330,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
         })
-        // console.log('Product location: ', product?.aLocation);
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
           if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
@@ -1339,29 +1337,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    let name = '';
-    if (this.tillService.settings.currentLocation.bArticleGroup)
-      name += (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
-
-    name += ' ' + (product?.sLabelDescription || '');
-
-    let sDescription = '';
-    if(this.tillService.settings.currentLocation.bDiamondDetails) {
-      const aGemDetails = product.aProperty.filter((details: any) => details?.sPropertyName?.startsWith('GEM_1'));
-      const aFields = ['KIND', 'PURITY', 'COLOR', 'CUT', 'WEIGHT', 'QUANTITY'];
-      aFields.forEach((sField:string) => {
-        const oDetail = aGemDetails.find((el: any) => el.sPropertyName === 'GEM_1_'+sField);
-        if(oDetail) {
-          sDescription += (sField == 'QUANTITY') ? '(' + oDetail.sPropertyOptionName + ') ' : oDetail.sPropertyOptionName + ' ';
-        }
-      })
-    }
-
-    let bPrefillConditionViaBusinessBrand = true;
-    if (product?.iBusinessBrandId && product?.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
-    if (this.tillService.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (product?.sProductNumber || '');
-    if (this.tillService.settings.currentLocation?.bProductName) name += ' ' + (product?.oName[this.selectedLanguage] || '');
-
+    const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
+    const sDescription = this.tillService.getDescriptionWithGemDetails(product);
+    
+    console.log({product});
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',

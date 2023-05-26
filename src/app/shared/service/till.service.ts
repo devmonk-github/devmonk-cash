@@ -958,4 +958,34 @@ export class TillService {
       (oLocation.oAddress?.postalCode || '') + ' ' + (oLocation.oAddress?.city || '');
     return businessDetails;
   }
+
+  getNameWithPrefillingSettings(oProduct:any, lang:string) {
+    let name = ''
+    if (this.settings.currentLocation.bArticleGroup)
+      name += (oProduct?.oArticleGroup?.oName) ? ((oProduct.oArticleGroup?.oName[lang]) ? oProduct.oArticleGroup?.oName[lang] : oProduct.oArticleGroup.oName['en']) : '';
+
+    name += ' ' + (oProduct?.sLabelDescription || '');
+
+    let bPrefillConditionViaBusinessBrand = true;
+    if (oProduct.iBusinessBrandId && oProduct.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
+    if (this.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (oProduct.sProductNumber || '');
+    if (this.settings.currentLocation?.bProductName) name += ' ' + (oProduct.oName[lang] || '');
+
+    return name;
+  }
+
+  getDescriptionWithGemDetails(oProduct:any) {
+    let sDescription = '';
+    if (this.settings.currentLocation.bDiamondDetails) {
+      const aGemDetails = oProduct.aProperty.filter((details: any) => details?.sPropertyName?.startsWith('GEM_1'));
+      const aFields = ['KIND', 'PURITY', 'COLOR', 'CUT', 'WEIGHT', 'QUANTITY'];
+      aFields.forEach((sField: string) => {
+        const oDetail = aGemDetails.find((el: any) => el.sPropertyName === 'GEM_1_' + sField);
+        if (oDetail) {
+          sDescription += (sField == 'QUANTITY') ? '(' + oDetail.sPropertyOptionName + ') ' : oDetail.sPropertyOptionName + ' ';
+        }
+      })
+    }
+    return sDescription;
+  }
 }
