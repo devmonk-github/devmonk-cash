@@ -27,7 +27,8 @@ import { ReceiptService } from '../shared/service/receipt.service';
 import { TerminalService } from '../shared/service/terminal.service';
 import { TillService } from '../shared/service/till.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
-
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -1088,6 +1089,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+    oDataSource?.aPayments?.forEach((payment: any) => {
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    })
+    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     const printActionSettings = this.printActionSettings?.filter((pas: any) => pas.eType === type);
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
