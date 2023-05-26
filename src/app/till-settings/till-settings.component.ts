@@ -308,6 +308,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => { //'?type=custom'
       if (result?.data?.length) {
         this.payMethods = result.data;
+        const oGiftcardMethod = this.payMethods.find((oMethod: any) => oMethod.sName == 'Giftcards');
+        if (oGiftcardMethod) oGiftcardMethod.bIsDefaultPaymentMethod = true;
         for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
       this.payMethodsLoading = false;

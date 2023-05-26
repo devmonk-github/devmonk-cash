@@ -413,7 +413,7 @@
                   <button class="btn btn-sm btn-info me-2" (click)="viewDetails(method)">
                     <fa-icon icon="pencil"></fa-icon>
                   </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteMethod(method)">
+                  <button class="btn btn-sm btn-danger" (click)="deleteMethod(method)" *ngIf="!method.bIsDefaultPaymentMethod">
                     <fa-icon icon="trash"></fa-icon>
                   </button>
                 </td>
