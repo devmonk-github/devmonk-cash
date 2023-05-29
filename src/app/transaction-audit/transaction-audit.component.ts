@@ -114,8 +114,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   nTotalQuantity = 0;
   aStatisticsIds:any = [];
   sFrom: any;
-  iBusinessPartnerId: any;
-  aBusinessPartner: any;
+  aBusinessPartners: any;
+  aSelectedBusinessPartnerId: any;
   aArticleGroupDetails: any;
 
   constructor(
@@ -138,22 +138,23 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   selectViewModeAndData(){
     const oState = this.router.getCurrentNavigation()?.extras?.state;
-    if(oState?.from) this.sFrom = oState.from
+    this.sFrom = oState?.from;
+    const sDateFormat = "YYYY-MM-DDThh:mm";
     
     if(this.sFrom == 'sales-list') {
-      this.iBusinessPartnerId = oState?.iBusinessPartnerId;
+      this.aSelectedBusinessPartnerId = oState?.aBusinessPartnerId;
       this.IsDynamicState = true;
       this.sDisplayMethod = eDisplayMethodKeysEnum.revenuePerBusinessPartner;
 
-      if (oState?.filterDates?.startDate) {
+      if (oState?.filterDates?.startDate && oState?.filterDates?.endDate) {
         this.filterDates = {
-          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm"),
-          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format(sDateFormat),
+          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format(sDateFormat)
         }
       } else {
         this.filterDates = {
-          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format("YYYY-MM-DDThh:mm"),
-          endDate: moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format(sDateFormat),
+          endDate: moment(new Date().setHours(23, 59, 59)).format(sDateFormat)
         };
       }
     } else {
@@ -183,9 +184,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       }
     }
-    
-
-
   }
 
   async ngOnInit() {
@@ -218,10 +216,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oBody =  {
       iBusinessId: this.iBusinessId,
     };
-    this.aBusinessPartner = [],
-      this.apiService.postNew('core', '/api/v1/business/partners/supplierList', oBody).subscribe((result: any) => {
+    this.aBusinessPartners = []
+      this.apiService.postNew('core', '/api/v1/business/partners/list', oBody).subscribe((result: any) => {
         if (result?.data?.length && result?.data[0]?.result?.length) {
-          this.aBusinessPartner = result.data[0].result;
+          this.aBusinessPartners = result.data[0].result;
         }
       }
     )
@@ -831,7 +829,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: true,
-        iBusinessPartnerId: this.iBusinessPartnerId
+        iBusinessPartnerId: this.aSelectedBusinessPartnerId
       },
     };
 
@@ -844,7 +842,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
       }
     }
-
     return oBody;
   }
 
@@ -1089,7 +1086,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         mode,
         sType: this.sOptionMenu.parent.sValue,
         sTransactionType: this.sOptionMenu.parent.sKey,
-        iBusinessPartnerId: this.iBusinessPartnerId,
+        iBusinessPartnerId: this.aSelectedBusinessPartnerId,
         sFrom: this.sFrom
       }
     });
