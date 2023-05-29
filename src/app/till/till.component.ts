@@ -1097,7 +1097,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        // console.log({ oDataSource , b: oDataSource.businessDetails})
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
@@ -1340,7 +1339,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
     const sDescription = this.tillService.getDescriptionWithGemDetails(product);
     
-    console.log({product});
+    // console.log({product});
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',

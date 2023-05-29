@@ -169,25 +169,18 @@ export class PdfService {
       // console.log('if sAction= print')
       this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
     } else {
-      if (printActionSettings?.length) {
-        const aActionToPerform = printActionSettings[0].aActionToPerform;
-        aActionToPerform.forEach((action: any) => {
-          switch (action) {
-            case 'PRINT_PDF':
-              if (!printSettings?.nPrinterId) {
-                this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
-                return;
-              }
-              this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
-              break;
-            case 'DOWNLOAD':
-              this.download(pdfObject, pdfTitle, printSettings?.nRotation);
-              break;
+      if (printActionSettings && printActionSettings.aActionToPerform.includes('PRINT_PDF')) {
+          if (!printSettings?.nPrinterId) {
+            this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
+            return;
           }
-        });
-      } else {
+          // console.log('action to perform handlePrint printpdf')
+          this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
+      }
+
+      if (printActionSettings && printActionSettings.aActionToPerform.includes('DOWNLOAD')) {
+        // console.log('action to perform autodownload')
         this.download(pdfObject, pdfTitle, printSettings?.nRotation);
-        return;
       }
     }
   }

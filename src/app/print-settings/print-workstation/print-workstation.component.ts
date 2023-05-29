@@ -168,7 +168,7 @@ export class PrintWorkstationComponent implements OnInit {
   }
   // Function for edit template
   openEditSetting(format: any) {
-    this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format } })
+    this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format }, hasBackdrop: true })
       .instance.close.subscribe(result => {
 
       });
@@ -191,7 +191,8 @@ export class PrintWorkstationComponent implements OnInit {
         workstation: JSON.parse(JSON.stringify(workstation)),
         printNodeAccountId: this.businessDetails?.oPrintNode?.nAccountId,
         apikey: this.businessDetails?.oPrintNode?.sApiKey
-      }
+      },
+      hasBackdrop: true
     }).instance.close.subscribe(async (result: any) => {
       // console.log({ result });
       if (result == "fetchWorkstations") this.processWorkstations(await this.getWorkstations());
@@ -364,7 +365,8 @@ export class PrintWorkstationComponent implements OnInit {
           nRotation: workstation[template][type]['nRotation'],
           type,
           template
-        }
+        },
+        hasBackdrop: true
       }).instance.close.subscribe(result => {
         if (result.action) {
           this.savePrintSetting(

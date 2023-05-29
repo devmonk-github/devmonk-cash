@@ -169,7 +169,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   }
 
   createPrintSettings() {
-    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => { });
+    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => { });
   }
 
   // Function for fetch business details
@@ -197,7 +197,8 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   openToolsModal() {
     const dialogRef = this.dialogService.openModal(PrinterToolComponent, {
       cssClass: "modal-lg w-100",
-      context: { businessDetails: this.businessDetails }
+      context: { businessDetails: this.businessDetails },
+      hasBackdrop: true
     })
 
     dialogRef.instance.close.subscribe(async (result) => {
@@ -391,7 +392,8 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         header: 'REMOVE_LABEL_TEMPLATE',
         bodyText: 'ARE_YOU_SURE_TO_REMOVE_THIS_LABEL_TEMPLATE',
         buttonDetails: buttons
-      }
+      },
+      hasBackdrop: true
     }).instance.close.subscribe((result) => {
       if (result) {
         this.isLoadingTemplatesLabel = true
@@ -413,7 +415,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   }
 
   openSettingsEditor(format: any) {
-    this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format: format } })
+    this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format: format }, hasBackdrop: true })
       .instance.close.subscribe(result => {
 
       });
@@ -423,14 +425,16 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     this.bShowActionSettingsLoader = true;
     const data = {
       iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
       oFilterBy: {
-        sMethod: 'actions'
+        sMethod: 'actions',
       }
     }
     const result: any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
     this.bShowActionSettingsLoader = false;
     if (result?.data[0]?.result?.length) {
       this.aActionSettings = result?.data[0]?.result;
+      // console.log('aActionSettings',this.aActionSettings)
       this.aActionSettings.forEach((action: any) => {
         const workStationName = this.aWorkstations.find((workStation: any) => workStation._id == action.iWorkstationId)
         if (workStationName) {
@@ -453,7 +457,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       obj.iActionId = item._id
     }
 
-    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: { ...obj } })
+    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: { ...obj }, hasBackdrop: true })
       .instance.close.subscribe(result => {
         if (result) {
           this.aActionSettings = [];
@@ -473,17 +477,19 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   getLabelPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
       oFilterBy: {
-        iWorkstationId: this.iWorkstationId
+        sMethod: ['labelDefinition', 'settings']
       }
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe(
       (result: any) => {
         if (result?.data?.length && result?.data[0]?.result?.length) {
           this.labelPrintSettings = result.data[0].result.filter((el: any) => el.sMethod === 'labelDefinition');
-          const aSettings = result.data[0].result.filter((el: any) => el.sMethod === 'settings');
-          if (aSettings?.length) {
-            this.oSettings = aSettings[0].oSettings;
+          const oLabelMethodSettings = result.data[0].result.find((el: any) => el.sMethod === 'settings');
+          
+          if (oLabelMethodSettings.oSettings) {
+            this.oSettings = oLabelMethodSettings.oSettings;
           } else {
             this.oSettings = {
               bUseZpl: true,
@@ -663,7 +669,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       "bDefault": false,
       "nSeqOrder": 1,
     }
-    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode: 'create', jsonData: oDefaultJson, eType: 'zpl' } }).instance.close
+    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode: 'create', jsonData: oDefaultJson, eType: 'zpl' }, hasBackdrop: true }).instance.close
       .subscribe(async (result) => {
         if (result) {
           this.createLabelTemplate(result)
