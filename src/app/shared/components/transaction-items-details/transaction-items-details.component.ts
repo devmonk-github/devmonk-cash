@@ -32,6 +32,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   bIsAnyGiftCardDiscount: boolean = false;
   aSelectedIds:any = [];
   isFor: any;
+  bIsDisable:Boolean=false;
   oShowWarning = {
     bIsMoreTransaction: false,
     sMessage: ''
@@ -131,6 +132,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
         if(!element.bIsRefunded && !element.oType.bRefund){
+          this.bIsDisable = true;
           element.isSelected = true;
         }
         // element.nDiscount = 0;
@@ -208,11 +210,26 @@ export class TransactionItemsDetailsComponent implements OnInit {
   selectAll(event: any) {
     // this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
     this.transactionItems.forEach(element => {
-      if (element.bIsRefunded) element.isSelected = false;
-      else element.isSelected = event.checked;
+      if (element.bIsRefunded || element?.oType?.bRefund){
+        element.isSelected = false;
+        this.bIsDisable = false
+      }else{
+        element.isSelected = event.checked;
+        if(event.checked) this.bIsDisable = true;
+        else this.bIsDisable = false;
+      }
     });
-    
+  }
 
+  checkSelectedItem(index:any){
+      for(const item of this.transactionItems){
+        if(item?.isSelected){
+          this.bIsDisable= true;
+          break;
+        }else{
+          this.bIsDisable= false;
+        }
+      }
   }
 
   close(data: any, sFrom:string = '') {
