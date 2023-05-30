@@ -237,7 +237,7 @@ export class ActivityDetailsComponent implements OnInit {
       
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
-      this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
+      this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative', 'giftcard'] } }),
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
@@ -847,7 +847,7 @@ export class ActivityDetailsComponent implements OnInit {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
     } else {
       const oSettings = this.printSettings.find((s: any) => s.sType === sType && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-      if (!oSettings && sAction === 'PRINT_PDF') {
+      if (!oSettings && (sAction === 'PRINT_PDF' || sAction === 'print')) {
         this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
         return;
       }
