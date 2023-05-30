@@ -189,11 +189,15 @@ export class PdfService {
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
-        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
         return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
       case 'dateonly':
-        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
         return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateOnlyFormat);
+      case 'uppercase':
+        return val.toUpperCase();
+      case 'lowercase':
+        return val.toLowerCase();
+      case 'translate':
+        return this.translateService.instant(val.replaceAll('-','_').toUpperCase());
       default:
         return val;
     }

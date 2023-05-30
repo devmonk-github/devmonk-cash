@@ -114,8 +114,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   nTotalQuantity = 0;
   aStatisticsIds:any = [];
   sFrom: any;
-  iBusinessPartnerId: any;
-  aBusinessPartner: any;
+  aBusinessPartners: any;
+  aSelectedBusinessPartnerId: any;
   aArticleGroupDetails: any;
 
   constructor(
@@ -138,22 +138,23 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   selectViewModeAndData(){
     const oState = this.router.getCurrentNavigation()?.extras?.state;
-    if(oState?.from) this.sFrom = oState.from
+    this.sFrom = oState?.from;
+    const sDateFormat = "YYYY-MM-DDThh:mm";
     
     if(this.sFrom == 'sales-list') {
-      this.iBusinessPartnerId = oState?.iBusinessPartnerId;
+      this.aSelectedBusinessPartnerId = oState?.aBusinessPartnerId;
       this.IsDynamicState = true;
       this.sDisplayMethod = eDisplayMethodKeysEnum.revenuePerBusinessPartner;
 
-      if (oState?.filterDates?.startDate) {
+      if (oState?.filterDates?.startDate && oState?.filterDates?.endDate) {
         this.filterDates = {
-          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm"),
-          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format(sDateFormat),
+          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format(sDateFormat)
         }
       } else {
         this.filterDates = {
-          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format("YYYY-MM-DDThh:mm"),
-          endDate: moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format(sDateFormat),
+          endDate: moment(new Date().setHours(23, 59, 59)).format(sDateFormat)
         };
       }
     } else {
@@ -183,16 +184,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       }
     }
-    
-
-
   }
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     await this.tillService.fetchSettings();
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
-    const value = localStorage.getItem('currentEmployee');
+    const value = localStorage.getItem('currentUser');
     if (value) this.iEmployeeId = JSON.parse(value)._id;
     if(this.bOpeningDayClosure) {
       if(this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
@@ -218,10 +216,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oBody =  {
       iBusinessId: this.iBusinessId,
     };
-    this.aBusinessPartner = [],
-      this.apiService.postNew('core', '/api/v1/business/partners/supplierList', oBody).subscribe((result: any) => {
+    this.aBusinessPartners = []
+      this.apiService.postNew('core', '/api/v1/business/partners/list', oBody).subscribe((result: any) => {
         if (result?.data?.length && result?.data[0]?.result?.length) {
-          this.aBusinessPartner = result.data[0].result;
+          this.aBusinessPartners = result.data[0].result;
         }
       }
     )
@@ -831,7 +829,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: true,
-        iBusinessPartnerId: this.iBusinessPartnerId
+        iBusinessPartnerId: this.aSelectedBusinessPartnerId
       },
     };
 
@@ -844,7 +842,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
       }
     }
-
     return oBody;
   }
 
@@ -1089,7 +1086,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         mode,
         sType: this.sOptionMenu.parent.sValue,
         sTransactionType: this.sOptionMenu.parent.sKey,
-        iBusinessPartnerId: this.iBusinessPartnerId,
+        iBusinessPartnerId: this.aSelectedBusinessPartnerId,
         sFrom: this.sFrom
       }
     });
@@ -1356,7 +1353,22 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
     const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
-    const oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
+    let oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
+    if (!oCashInSafePaymentMethod) {
+      const oBody = {
+        sName: 'CASH_IN_SAFE',
+        bIsDefaultPaymentMethod: true,
+        iBusinessId: this.iBusinessId,
+        bStockReduction: false,
+        bInvoice: false,
+        bAssignSavingPoints: false,
+        bAssignSavingPointsLastPayment: false,
+        sLedgerNumber: '',
+        bShowInCashRegister: false
+      }
+      const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', oBody).toPromise();
+      oCashInSafePaymentMethod = _result.data;
+    }
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     const oBody:any = {

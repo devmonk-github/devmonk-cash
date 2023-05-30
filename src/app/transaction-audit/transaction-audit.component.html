@@ -207,10 +207,10 @@
                                     </ng-select>
                                 </div>
 
-                                <div class="col-3" *ngIf="IsDynamicState">
+                                <div class="col-6" *ngIf="IsDynamicState">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'BUSINESS_PARTNER' | translate}}</label>
-                                    <ng-select class="form-control p-0" [(ngModel)]="iBusinessPartnerId" [clearable]="true" bindValue="_id" bindLabel="sName"
-                                        [items]="aBusinessPartner">
+                                    <ng-select class="form-control p-0" [multiple]="true" [(ngModel)]="aSelectedBusinessPartnerId" [clearable]="true" bindValue="_id" bindLabel="sName"
+                                        [items]="aBusinessPartners">
                                     </ng-select>
                                 </div>
 

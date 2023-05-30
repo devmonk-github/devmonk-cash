@@ -150,6 +150,8 @@ export class TransactionAuditUiPdfService {
         { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
         { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
         { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
+        { sLabel: '0.02', nValue: 0.02, nQuantity: 0, key: 'nType0_02' },
+        { sLabel: '0.01', nValue: 0.01, nQuantity: 0, key: 'nType0_01' },
     ];
     sLocations: string = '';
     sWorkstation: string = '';

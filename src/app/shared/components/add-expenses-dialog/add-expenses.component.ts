@@ -63,7 +63,7 @@ export class AddExpensesComponent implements OnInit {
   }
 
   async ngOnInit() {
-    const value = localStorage.getItem('currentEmployee');
+    const value = localStorage.getItem('currentUser');
     // this.nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: iLocationId });
     if (value) {
       this.currentEmployeeId = JSON.parse(value)._id;

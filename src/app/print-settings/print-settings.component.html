@@ -387,14 +387,13 @@
     </div>
   </div>
   <div class="card-body">
-    <ng-container *ngIf="bShowActionSettingsLoader; else actionsLoaded">
-      <div class="d-flex">
-        <div class="spinner-border mx-auto"></div>
-      </div>
-    </ng-container>
-    <ng-template #actionsLoaded>
+    <div class="d-flex">
+      <div class="spinner-border mx-auto" *ngIf="bShowActionSettingsLoader"> </div>
+    </div>
+    
+    <div *ngIf="aActionSettings?.length else noActions">
       <div class="" *ngFor="let item of aActionSettings;let actionSettingIndex=index;">
-        <div *ngIf="item?.aActions?.length">
+        <div *ngIf="item?.aActions?.length else noActions">
           <p class="fw-bold">{{item?.sWorkStationName}}</p>
           <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400">
             <thead>
@@ -429,6 +428,9 @@
           </table>
         </div>
       </div>
+    </div>
+    <ng-template #noActions>
+      <p>{{'NO_AUTO_ACTIONS_CREATED_FOR_YOUR_WORKSTATION' | translate}}</p>
     </ng-template>
   </div>
 </div>
