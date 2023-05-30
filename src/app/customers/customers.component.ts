@@ -216,31 +216,33 @@ export class CustomersComponent implements OnInit {
   /* Function to detect typed string and automatically prefill fields, if fields are not prefilled. */
   stringDetection() {
     this.aPlaceHolder = ["search"];
-    this.requestParams.searchValue = this.requestParams.searchValue;
-    if (this.requestParams.oFilterBy.aSearchField.length == 0 && this.requestParams.searchValue.length >= 3 ) {
-      if (this.requestParams.searchValue.length >= 4) {
-        /*If string contains number & >= 4 -> then add sPostalCode in selected field */
-        if (/\d/.test(this.requestParams.searchValue)) {
-          /*TODO: fill the selection with sPostalCode, the following code is is not showing the selected element on frontend*/
-          this.requestParams.oFilterBy.aSearchField.unshift('sPostalCode');
-          this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-          let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPostalCode");
-          this.aInputHint[pIndex] = "0000AB";
-          this.aInputHint = this.removeDuplicates(this.aInputHint);
+    const aSearchValueArray = this.requestParams.searchValue.split(',').map((el: any) => el.trim()).filter((elem: any) => elem != '');
 
-        }
-      } 
-      // else if (this.requestParams.searchValue.length < 4 && this.requestParams.searchValue.length >= 1) {
-      //   /* If string contains number & < 4 & >= 1, we will be able to detect if user is searching for someting in the sHouseNumber */
-      //   if (/\d/.test(this.requestParams.searchValue)) {
-      //     /*TODO: fill the selection with sHouseNumber, the following code is is not showing the selected element on frontend*/
-      //     this.requestParams.oFilterBy.aSearchField.unshift('sHouseNumber');
-      //     this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-      //     let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
-      //     this.aInputHint[hIndex] = "123A";
-      //     this.aInputHint = this.removeDuplicates(this.aInputHint);
-      //   }
-      // }
+     /* Prefill if no option is selected */
+    if (aSearchValueArray.length == 1 && aSearchValueArray[0].match(/\d+/g)) {
+      //console.log('This', aSearchValueArray[0], 'and', aSearchValueArray[0].match(/\d+/g)[0].length);
+
+      /* Prefill with house number */
+      if(aSearchValueArray[0].match(/\d+/g)[0].length <= 3 && !this.requestParams.oFilterBy.aSearchField.includes('sHouseNumber')){
+        //console.log('it is a house number!');
+        this.requestParams.oFilterBy.aSearchField.splice(0,0,'sHouseNumber');
+        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+        let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
+        this.aInputHint[pIndex] = "123A";
+        this.aInputHint = this.removeDuplicates(this.aInputHint);
+
+      /* Prefill with postal code */
+      }else if (aSearchValueArray[0].match(/\d+/g)[0].length >= 4 &&  !this.requestParams.oFilterBy.aSearchField.includes('sPostalCode')) {
+        /*If string contains number & >= 4 -> then add sPostalCode in selected field */
+        //console.log('It is a postal code!',  this.requestParams.oFilterBy.aSearchField.length)
+        this.requestParams.oFilterBy.aSearchField.splice(0,0,'sPostalCode');
+        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+        let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPostalCode");
+        this.aInputHint[pIndex] = "0000AB";
+        this.aInputHint = this.removeDuplicates(this.aInputHint);
+      }
+    } else if(aSearchValueArray.length > 1 && aSearchValueArray[0].length >= 3){
+      //console.log('Else', aSearchValueArray[0], 'and', aSearchValueArray.length);
     }
   }
 
