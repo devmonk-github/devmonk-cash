@@ -71,7 +71,7 @@ export const ChartColors = {
 export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   aCountryPhoneCodes: Array<any> = countryPhoneCodeList;
   dialogRef: DialogComponent;
-  salutations: Array<any> = ['Mr', 'Mrs', 'Mr/Mrs', 'Family', 'Firm']
+  salutations: Array<any> = ['MR', 'MRS', 'MR_MRS', 'FAMILY', 'FIRM']
   gender: Array<any> = ['Male', 'Female', "Other"]
   documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
@@ -126,7 +126,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customer: any = {
     _id: '',
     bNewsletter: true,
-    sSalutation: 'Mr',
+    sSalutation: 'MR',
     sEmail: '',
     sFirstName: '',
     sPrefix: '',

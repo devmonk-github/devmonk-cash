@@ -111,6 +111,7 @@ export class CustomersComponent implements OnInit {
   StreetString :any = "STREET";
   PCodeString :any = "POSTAL_CODE";
   HNumberString :any = "HOUSE_NUMBER";
+  showAdvanceSearch: boolean = false;
   
   constructor(
     private apiService: ApiService,
@@ -133,8 +134,8 @@ export class CustomersComponent implements OnInit {
         this.aPlaceHolder[index] = result[el];
       })
      });
-   })
-  this.getCustomers();
+    })
+    this.getCustomers();
   }
 
   getSettings() {
@@ -142,8 +143,7 @@ export class CustomersComponent implements OnInit {
       this.settings = result;
       if (this.settings?.aCustomerSearch) {
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
-      }else{
-        this.stringDetection();
+        this.showAdvanceSearch = this.requestParams.oFilterBy.aSearchField.length > 0 ? true : false;
       }
       this.setPlaceHolder();
     }, (error) => {
