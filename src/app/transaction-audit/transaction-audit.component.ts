@@ -1399,9 +1399,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       if (result?.data?.length) {
         this.allPaymentMethod = result.data;
         this.payMethods = [...result.data];
-        // result.data.forEach((element: any) => {
-        //   this.payMethods.push(element);
-        // });
         this.filterDuplicatePaymentMethods();
       }
     });
