@@ -4,24 +4,25 @@
             <div class="card card-flush">
                 <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                     <!-- <div class="card-title"> -->
-                        <div class="row w-100 px-2">
-                            <div class="col-7 d-flex align-items-center position-relative my-1">
-                                <span class="svg-icon svg-icon-4 position-absolute ms-4">
-                                    <i class="fas fa-xs fa-search"></i>
-                                </span>
-                                <input type="text" class="form-control form-control-solid w-450px ps-14 me-4" 
-                                   [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers(true)" (keyup)="customerEventHandler($event)" (ngModelChange)="stringDetection()" name="search"
-                                    placeholder="{{(aPlaceHolder).join(',')}}">
-                                <div class="col-lg-4 me-4 customers-fields">
-                                    <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                                        [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" placeholder="" (ngModelChange)="setPlaceHolder()">
-                                        <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
-                                    </ng-select>
+                        <div class="row w-100 px-2 d-flex align-items-end">
+                            <div class="col-7 d-flex align-items-end my-1">
+                                <div class="col-lg-6 d-flex align-items-center position-relative me-4">
+                                    <span class="svg-icon svg-icon-4 position-absolute ms-4">
+                                        <i class="fas fa-xs fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-solid w-100 ps-14" 
+                                       [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers(true)" (keyup)="customerEventHandler($event)" name="search"
+                                        placeholder="{{(aPlaceHolder).join(',')}}">
                                 </div>
                                 <button class="btn btn-primary me-2" (click)="getCustomers(true)">{{'SEARCH' | translate}} </button>
+                                <div class="d-flex align-items-center ads_search">
+                                    <button type="button" (click)="showAdvanceSearch = !showAdvanceSearch" class="btn btn-info me-5">
+                                      <i class="fa fa-filter"></i>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="col-5 card-toolbar flex-row-fluid justify-content-end gap-5">
+                            <div class="col-4 card-toolbar flex-row-fluid justify-content-end gap-5">
                  
                                 <div class="btn-group me-4">
                                     <label class="form-check form-switch form-check-custom form-check-solid">
@@ -50,12 +51,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row px-2">
-                            <p class="mb-0 text-muted small">
-                                {{"PLEASE_FOLLOW_EXAMPLE_ORDER_FOR_A_BETTER_EXPERIENCE" | translate}}
-                            </p>
-                            <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
-                            <label *ngIf="!bIsProperSearching && requestParams.oFilterBy.aSearchField?.length" class="text-warning"> {{ "PLEASE_SEARCH_AS_SHOWN" | translate }} </label>
+                        <div class="col-lg-12 d-flex align-items-end px-2">
+                            <div class="col-4 me-4 customers-fields" *ngIf="showAdvanceSearch">
+                                <label class="small form-label fw-bolder text-dark">{{ 'ADVANCED_SEARCH' | translate }}</label>
+                                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                                    [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" (ngModelChange)="setPlaceHolder()">
+                                    <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+                                </ng-select>
+                            </div>
+                            <div class="col-4 px-2" *ngIf="requestParams.oFilterBy.aSearchField.length">
+                                <p class="mb-0 text-muted fw-bolder small">
+                                    {{"PLEASE_FOLLOW_EXAMPLE_ORDER_FOR_A_BETTER_EXPERIENCE" | translate}}
+                                </p>
+                                <label class="text-muted"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
+                                <p *ngIf="!bIsProperSearching" class="text-warning m-0"> {{ "PLEASE_SEARCH_AS_SHOWN" | translate }} </p>
+                            </div>
                         </div>
                     </div>
                 
@@ -81,8 +91,9 @@
                                     </tr>
                                 </thead>
                                 <tbody class="fw-bold text-gray-600">
-                                    <tr *ngFor='let customer of customers | paginate: paginationConfig'                                        class="bg-hover-secondary" >
-                                        <td>{{customer.name}}
+                                    <tr *ngFor='let customer of customers | paginate: paginationConfig' class="bg-hover-secondary" >
+                                        <td>
+                                            <p class="m-0">{{customer.name}}</p>
                                             <div>
                                             <ng-container *ngIf="customer?.isUpdated">
                                                 <span class="badge badge-primary">Updated</span>

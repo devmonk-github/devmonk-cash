@@ -18,8 +18,8 @@
             <span *ngIf="item.bDiscountOnPercentage">{{item.nDiscount}}%</span>
             <span *ngIf="!item.bDiscountOnPercentage">{{item.nDiscount | currencyFormat: tillService.currency:tillService.separator}}</span>
           </div>
-          <div class="col" *ngIf="item.bShowGiftcardDiscountField">{{item.nGiftcardDiscount}}</div>
-          <div class="col" *ngIf="item.bShowLoyaltyPointsDiscountField">{{item.nRedeemedLoyaltyPoints}}</div>
+          <div class="col" *ngIf="item.bShowGiftcardDiscountField">{{item.nGiftcardDiscount | currencyFormat: tillService.currency:tillService.separator}}</div>
+          <div class="col" *ngIf="item.bShowLoyaltyPointsDiscountField">{{item.nRedeemedLoyaltyPoints | currencyFormat: tillService.currency:tillService.separator}}</div>
           <div class="col">{{item.tax}}%</div>
           <div class="col">{{ item.amountToBePaid | currencyFormat: tillService.currency:tillService.separator }}
           </div>
