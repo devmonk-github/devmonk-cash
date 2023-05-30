@@ -269,7 +269,7 @@ export class PaymentDistributionService {
     arrToUpdate.forEach((i: any) => {
       if (nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
 
-        i.nRedeemedLoyaltyPoints = +((i.amountToBePaid * nRedeemedLoyaltyPoints / totalAmountToBePaid).toFixed(0));
+        i.nRedeemedLoyaltyPoints = +((i.amountToBePaid * nRedeemedLoyaltyPoints / totalAmountToBePaid).toFixed(2));
         if (bTesting) console.log({ amountToBePaid : i.amountToBePaid })
 
         i.amountToBePaid -= i.nRedeemedLoyaltyPoints;

@@ -25,7 +25,9 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
   customDiscountValuePercent: number = 0
   @ViewChild("customDiscountRef") customDiscountRef!: ElementRef
   selectedDiscount: any = 'custom'
-  discount: any
+  discount: any;
+  nCalculatedDiscount: number = 0;
+  nDiscountedPrice: number = 0;
 
   amounts: any = {
     fixed: [
@@ -89,15 +91,24 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
     this.dialogRef.close.emit({ action: false })
   }
 
-  save(): void {
-    const _nDiscount  = (this.mode === 'fixed') ? this.selectedDiscount : (this.item.price * (this.selectedDiscount / 100));
-    this.item.discount = {
-      percent: this.mode === 'percent',
-      itemPrice: this.calculateDiscountPrice(),
-      value: this.discount // _nDiscount,
-      // value: _nDiscount
-    };
-    this.item.nDiscount = this.discount;
+  save() {
+    if(this.mode == 'discounted-price') {
+      this.item.discount = {
+        percent: false,
+        itemPrice: this.nDiscountedPrice,
+        value: this.nCalculatedDiscount
+      }
+      this.item.nDiscount = this.nCalculatedDiscount;
+    } else {
+      const _nDiscount  = (this.mode === 'fixed') ? this.selectedDiscount : (this.item.price * (this.selectedDiscount / 100));
+      this.item.discount = {
+        percent: this.mode === 'percent',
+        itemPrice: this.calculateDiscountPrice(),
+        value: this.discount // _nDiscount,
+        // value: _nDiscount
+      };
+      this.item.nDiscount = this.discount;
+    }
     this.dialogRef.close.emit({ action: true, item: this.item })
   }
 

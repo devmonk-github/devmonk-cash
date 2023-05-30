@@ -130,7 +130,7 @@ export class ProductComponent implements OnInit{
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) }, hasBackdrop: true })
       .instance.close.subscribe((data) => {
         if (data.item) {
           // console.log('data.item: ', data.item);
