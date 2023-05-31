@@ -173,6 +173,7 @@ export class CustomerDialogComponent implements OnInit {
   aInputHint:Array<any> = [""];
   bIsComaRemoved: boolean = false;
   bIsProperSearching: boolean = true;
+  showAdvanceSearch: boolean = false;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -211,8 +212,7 @@ export class CustomerDialogComponent implements OnInit {
       this.settings = result;
       if (this.settings?.aCustomerSearch) {
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
-      }else{
-        this.stringDetection();
+        this.showAdvanceSearch = this.requestParams.oFilterBy.aSearchField.length > 0 ? true : false;
       }
       this.setPlaceHolder();
     }, (error) => {
@@ -262,7 +262,7 @@ export class CustomerDialogComponent implements OnInit {
   }
 
    /* Function to detect typed string and automatically prefill fields, if fields are not prefilled. */
-   stringDetection() {
+  stringDetection() {
     this.aPlaceHolder = ["search"];
     this.requestParams.searchValue = this.requestParams.searchValue;
     if (this.requestParams.oFilterBy.aSearchField.length == 0 && this.requestParams.searchValue.length >= 3) {
