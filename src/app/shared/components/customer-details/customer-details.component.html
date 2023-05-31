@@ -607,7 +607,7 @@
                 <div class="col-8">
                     <div class="row d-flex align-items-center mb-3" *ngIf="!customer?.bIsCompany">
                         <div class="col-2">
-                            <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
+                            <ng-select [ngModel]="customer.sSalutation | translate" id="sSalutation" [clearable]="false"
                                 (ngModelChange)="customerType($event)">
                                 <ng-option value="">-</ng-option>
                                 <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation.value | translate}}
