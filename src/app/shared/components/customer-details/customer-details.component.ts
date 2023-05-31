@@ -71,7 +71,12 @@ export const ChartColors = {
 export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   aCountryPhoneCodes: Array<any> = countryPhoneCodeList;
   dialogRef: DialogComponent;
-  salutations: Array<any> = ['MR', 'MRS', 'MR_MRS', 'FAMILY', 'FIRM']
+  salutations: Array<any> = [
+    {key:'mr' , value:'MR'},
+    {key:'mrs' , value:'MRS'},
+    {key:'mr_mrs' , value:'MR_MRS'},
+    {key:'family' , value:'FAMILY'},
+    {key:'firm' , value:'FIRM'}];
   gender: Array<any> = ['Male', 'Female', "Other"]
   documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
@@ -406,7 +411,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   customerType(event:any){
-    if(event == 'Firm'){
+    this.customer.sSalutation = event.value;
+    if(event.key == 'firm'){
       this.customer.bIsCompany = true;
       this.customer.sGender = 'other';
       if(this.mode === 'create'){
