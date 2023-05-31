@@ -220,6 +220,17 @@ export class CustomerDialogComponent implements OnInit {
     })
   }
 
+  removeItemAll(arr: any, value: any) {
+    var i = 0;
+    while (i < arr.length) {
+      if (arr[i] === value) {
+        arr.splice(i, 1);
+      } else {
+        ++i;
+      }
+    }
+    return arr;
+  }
   setPlaceHolder() {
     if (this.requestParams.oFilterBy.aSearchField.length != 0) {
       let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPostalCode");
@@ -229,25 +240,57 @@ export class CustomerDialogComponent implements OnInit {
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
-      if (pIndex != -1 || sIndex != -1 || hIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
-        this.aPlaceHolder[pIndex] = this.translateService.instant(this.PCodeString);
-        this.aPlaceHolder[sIndex] = this.translateService.instant(this.StreetString);
-        this.aPlaceHolder[hIndex] = this.translateService.instant(this.HNumberString);
-        this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
-        this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
-        this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
-        this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
 
-        this.aInputHint[pIndex] = "0000AB";
-        this.aInputHint[sIndex] = "Mainstreet";
-        this.aInputHint[hIndex] = "123A";
-        this.aInputHint[fIndex] = "John";
-        this.aInputHint[lIndex] = "Doe";
-        this.aInputHint[cIndex] = "Modern Company";
-        this.aInputHint[nIndex] = "000000";
+      if (pIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.PCodeString));
+        this.removeItemAll(this.aInputHint, "0000AB");
       } else {
-        this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
-        this.aInputHint = this.requestParams.oFilterBy.aSearchField;
+        this.aPlaceHolder[pIndex] = this.translateService.instant(this.PCodeString);
+        this.aInputHint[pIndex] = "0000AB";
+      }
+
+      if (sIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.StreetString));
+        this.removeItemAll(this.aInputHint, "Mainstreet");
+      } else {
+        this.aPlaceHolder[sIndex] = this.translateService.instant(this.StreetString);
+        this.aInputHint[sIndex] = "Mainstreet";
+      }
+
+      if (hIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.HNumberString));
+        this.removeItemAll(this.aInputHint, "123A");
+      } else {
+        this.aPlaceHolder[hIndex] = this.translateService.instant(this.HNumberString);
+        this.aInputHint[hIndex] = "123A";
+      }
+      if (fIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.fNameString));
+        this.removeItemAll(this.aInputHint, "John");
+      } else {
+        this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
+        this.aInputHint[fIndex] = "John";
+      }
+      if (lIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.LNameString));
+        this.removeItemAll(this.aInputHint, "Doe");
+      } else {
+        this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
+        this.aInputHint[lIndex] = "Doe";
+      }
+      if (cIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.CNameString));
+        this.removeItemAll(this.aInputHint, "Modern Company");
+      } else {
+        this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
+        this.aInputHint[cIndex] = "Modern Company";
+      }
+      if (nIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.nCNameString));
+        this.removeItemAll(this.aInputHint, "000000");
+      } else {
+        this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
+        this.aInputHint[cIndex] = "Modern Company";
       }
     } else {
       this.aPlaceHolder = ["Search"];
@@ -257,9 +300,10 @@ export class CustomerDialogComponent implements OnInit {
     this.showSearchWarningText();
   }
 
-  removeDuplicates(arr:any) {
-    return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
+  removeDuplicates(arr: any) {
+    return arr.filter((item: any, index: any) => arr.indexOf(item) === index);
   }
+
 
    /* Function to detect typed string and automatically prefill fields, if fields are not prefilled. */
   stringDetection() {
