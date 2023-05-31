@@ -610,7 +610,7 @@
                             <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
                                 (ngModelChange)="customerType($event)">
                                 <ng-option value="">-</ng-option>
-                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation | translate}}
+                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation.value | translate}}
                                 </ng-option>
                             </ng-select>
                         </div>
@@ -638,7 +638,7 @@
                             <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
                                 (ngModelChange)="customerType($event)">
                                 <ng-option value="">-</ng-option>
-                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation | translate}}
+                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation.value | translate}}
                                 </ng-option>
                             </ng-select>
                         </div>
