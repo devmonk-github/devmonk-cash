@@ -178,6 +178,7 @@ export class ActivityDetailsComponent implements OnInit {
   sNumber:any;
   aDiscountRecords: any;
   sMessage:any;
+  aArticleGroup: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -234,6 +235,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
+    this.getAllArticleGroups();
       
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
@@ -242,6 +244,19 @@ export class ActivityDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
   }
+
+  getAllArticleGroups() {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+    }
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result:any) => {
+      if(result?.data?.length && result.data[0]?.result?.length){
+        this.aArticleGroup = result.data[0]?.result;
+      }
+    });
+  }
+
+
   getSettings() {
     this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.iBusinessId}`).subscribe((result: any) => {
       if (result?.sMessage) {
