@@ -1113,7 +1113,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sortOrder: '',
         searchValue: '',
         iTransactionId: 'all',
-        sFrom: 'turnover-group',
+        sFrom: 'audit',
         oFilterBy: {
           dStartDate: (this.IsDynamicState) ? new Date(this.filterDates.startDate) : this.statisticFilter.dFromState,
           dEndDate: (this.IsDynamicState) ? new Date(this.filterDates.endDate) : this.statisticFilter.dToState,
