@@ -77,23 +77,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
     }
     
-    ngOnInit(): void {
-      // console.log('this.transactionItems 1', this.transactionItems);
-      // const translation =['ACTIVITY_ITEM_NUMBER', 'BAG_NUMBER', 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
-      // this.transaltionService.get(translation).subscribe((res:any)=>{
-      //   console.log(res)
-      //   this.translation = res
-      // })
-      // this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+    ngOnInit() {
       this.apiService.setToastService(this.toastrService);
-      // this.itemType = this.dialogRef.context.itemType;
-      // this.transaction = this.dialogRef.context.transaction;
-      // this.selectedId = this.dialogRef.context.selectedId;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
 
-  getRelatedTransactionItem(iTransactionItemId: string) {  // ?iBusinessId=${this.iBusinessId}
+  getRelatedTransactionItem(iTransactionItemId: string) {
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/related/${iTransactionItemId}?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
   }
 
@@ -101,10 +91,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
     // console.log('TransactionItemsDetailsComponent fetchTransactionItems', this.transaction);
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
-    // console.log('fetchTransactionItems: ', url, this.transaction);
     let aRelatedTransactionItem:any;
     if (this.itemType === 'activity') {
-      // console.log('item type activity if')
       delete this.requestParams.iTransactionId;
       let id;
       if (this.transaction?.iActivityId) id = this.transaction.iActivityId
@@ -123,13 +111,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
       }
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
-      // console.log('this.transactionItems ', JSON.parse(JSON.stringify(this.transactionItems)));
-      // const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount' || o.oType.eKind === 'giftcard-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => !this.tillService.aDiscountTypes.includes(o.oType.eKind));
-      // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
         if(!element.bIsRefunded && !element.oType.bRefund){
           this.bIsDisable = true;
@@ -183,14 +167,15 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
-        // console.log(item?.nRedeemedLoyaltyPoints, item?.nRedeemedGiftcardAmount, (item.nTotalAmount * item.nDiscount / 100))
-        if (item.nPaidAmount < (item.nTotalAmount - item.nDiscountToShow)) {
+        if (item.nPaidAmount <= (item.nTotalAmount - item.nDiscountToShow)) {
           item.tType = 'pay';
-        } else {
+          if((item.nTotalAmount - item.nDiscountToShow) == 0) {
+            this.bIsDisable = false;
+          }
+        } else if(item.nPaidAmount === (item.nTotalAmount - item.nDiscountToShow)){
           item.tType = 'refund';
         }
         if (item.oType.bRefund) {
-          // to do partial refund
           item.tType = 'refunded';
         }
         if (this.aSelectedIds?.length && this.aSelectedIds.includes(item._id) || (this.selectedId && this.selectedId === item._id) &&  !item?.bIsRefunded) {
@@ -198,10 +183,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
         }
         if (this.itemType === 'transaction') { item.tType = 'refund'; }
       });
-      // if (discountRecords?.length) localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
-    }, (error) => {
-      alert(error.error.message);
-      this.dialogRef.close.emit(false);
+      if (this.dialogRef.context?.sBarcodeStartString == 'AI') {
+        this.transactionItems = this.transactionItems.filter(item => this.aSelectedIds.includes(item._id));
+      }
     });
   }
 
@@ -218,7 +202,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         if(event.checked) this.bIsDisable = true;
         else this.bIsDisable = false;
       }
-    });
+    });    
   }
 
   checkSelectedItem(index:any){
@@ -260,6 +244,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         this.toastrService.show({ type: 'success', text: 'Updated price successfully!' });
         if (item.nPaidAmount < ((item.nPriceIncVat - item.nDiscount) * item.nQuantity)) {
           item.tType = 'pay';
+          this.bIsDisable = true;
         }
       }
     });

@@ -1313,7 +1313,7 @@ export class TransactionAuditUiPdfService {
     fetchTransactionItems(bIsArticleGroupLevel: boolean, bIsSupplierMode: boolean){
         let data:any = {
             iTransactionId: 'all',
-            sFrom:'turnover-group',
+            sFrom:'audit',
             oFilterBy: {
                 dStartDate: this.oFilterData.oFilterDates.startDate,
                 dEndDate: this.oFilterData.oFilterDates.endDate,

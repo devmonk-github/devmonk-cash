@@ -274,6 +274,9 @@ export class TillService {
         bDiscount: i.nDiscount > 0,
         bPrepayment: bPrepayment
       };
+      if (i.bHasStock && i.oCurrentLocation.nStock == 0) {
+        oItem.oType.nStockCorrection = 0;
+      }
       // console.log(oItem.oType);
       oItem.iActivityItemId = i.iActivityItemId;
       oItem.oGoldFor = i.oGoldFor;

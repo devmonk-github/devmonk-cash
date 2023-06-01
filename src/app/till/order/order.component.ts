@@ -23,6 +23,7 @@ export class OrderComponent implements OnInit {
   @Input() taxes: any
   @Input() bSerialSearchMode: any
   @Output() itemChanged = new EventEmitter<any>();
+  @Input() oStaticData: any;
 
   faTimes = faTimes
   faPlus = faPlus
@@ -66,6 +67,8 @@ export class OrderComponent implements OnInit {
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
   @Input() settings:any;
+  @Output() articleGroupDataChanged = new EventEmitter<any>();
+  language: any = localStorage.getItem('language');
 
   constructor(
     private priceService: PriceService,
@@ -73,7 +76,13 @@ export class OrderComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService,
     private toastrService: ToastService,
     public tillService: TillService,
-    private dialogService: DialogService) { }
+    private dialogService: DialogService) { 
+    if (!this.oStaticData?.articleGroupsList?.length) {
+      this.oStaticData = {
+        articleGroupsList: []
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.checkArticleGroups();
@@ -117,6 +126,14 @@ export class OrderComponent implements OnInit {
         } else {
           this.deleteItem();
         }
+
+        this.oStaticData = {
+          articleGroupsList: data.articleGroupsList,
+          brandsList: data.brandsList,
+          partnersList: data.partnersList
+        }
+        this.articleGroupDataChanged.emit(this.oStaticData)
+
       });
   }
   numericOnly(event:any): boolean { 

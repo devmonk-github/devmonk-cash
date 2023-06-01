@@ -100,14 +100,19 @@
                 <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                     <thead class="bg-gray-100">
                         <tr class="fw-bold fs-6 text-gray-800">
-                            <th class="ps-9">{{'SERVICE_TITLE' | translate}}</th> <!--REPAIR_TITLE-->
+                            <th class="ps-9 mw-150px">{{'SERVICE_TITLE' | translate}}</th> <!--REPAIR_TITLE-->
                             <th class="text-center">{{'FOR_SERVICE_RECEIPT' | translate}}</th> <!--FOR_REPAIR-->
                             <th class="text-center">{{'FOR_SERVICE_ALTERNATIVE_RECEIPT' | translate}}</th> <!--FOR_REPAIR_ALTERNATIVE-->
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="p-2" *ngFor="let item of aRepairItems, let i = index">
-                            <td class="ps-9">{{item.sProductName}}</td>
+                            <td class="ps-9 mw-150px">
+                                <p class="mb-2">{{item.sProductName}}</p>
+                                <span class="badge badge-info" style="text-transform: capitalize;">
+                                    {{item.oType.eKind}}
+                                </span>
+                            </td>
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
                                     <button

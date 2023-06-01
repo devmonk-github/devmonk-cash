@@ -401,6 +401,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
       { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
       { key: 'CITY', value: 'oCustomer.oInvoiceAddress.sCity', width: '10%' },
+      { key: 'REPAIR_NUMBER', value: 'sBagNumber', width: '15%' },
       { key: 'COMMENT', value: 'sDescription', width: '15%' },
       { key: 'TOTAL_PRICE', value: 'nTotalAmount', width: '10%' },
       { key: 'CREATION_DATE', value: 'dCreatedDate', width: '10%' },

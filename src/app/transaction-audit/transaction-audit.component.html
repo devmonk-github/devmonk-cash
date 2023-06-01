@@ -1011,7 +1011,12 @@
                                                             <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                    <td> {{item.sProductName || item?.sProductNumber}}
+                                                                    <td>
+                                                                        <a (click)="openTransactionDetailsModal(item)" class="bg-success badge cursor-pointer fs-7 p-3 mb-2"
+                                                                            *ngIf="!item?.sProductName?.includes('_CASH')">
+                                                                            {{ item.sTransactionNumber}}
+                                                                        </a>
+                                                                        <span class="ms-3">{{item.sProductName || item?.sProductNumber}}</span>
                                                                     </td>
                                                                     <td class="w-150px"> {{ item.nQuantity }}</td>
                                                                     <td class="w-150px"> {{ item.nRevenueAmount | number
@@ -1185,9 +1190,12 @@
                                             <ng-container *ngIf="oPayment.bIsCollapseItem">
                                                 <tr class="bg-gray-100" *ngFor="let item of oPayment.aItems">
                                                     <td class="ps-9"> 
-                                                        <a (click)="openTransactionDetailsModal(item)" class="bg-success badge cursor-pointer p-3 mb-2" ngif>
+                                                        <a (click)="openTransactionDetailsModal(item)" class="bg-success badge cursor-pointer fs-7 p-3 mb-2" *ngIf="!item.sComment.includes('_CASH')">
                                                             {{ item.sComment}}
                                                         </a>
+                                                        <span *ngIf="item.sComment.includes('_CASH')">
+                                                            {{ item.sComment}}
+                                                        </span>
 
                                                          
                                                         {{ (!item?.sComment || item.sComment === '') ? item.sMethod : '' }}

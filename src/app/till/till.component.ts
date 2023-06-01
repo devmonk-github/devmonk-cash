@@ -636,11 +636,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }).instance.close.subscribe(async (data) => {
         if (data.customer) {
           this.customer = data.customer;
-          const str = this.customer.nClientId;
+          let str = this.customer?.nClientId;
+          if(str) str = str.replaceAll('undefined','-');
+          this.customer.nClientId = str;
           if (str.indexOf('/') > 0) {
             this.nClientId = str.substring(0, str.indexOf('/'));
           }else{
-            this.nClientId = this.customer.nClientId;
+            this.nClientId = this.customer.nClientId == '' ? '-': this.customer.nClientId;
           }
           if (this.customer?._id && this.customer._id != '') {
             const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
@@ -1376,7 +1378,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aLocation: product?.aLocation,
       bProductLoaded: true,
       sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
-      bQuickButton: isFrom === 'quick-button' ? true : false
+      bQuickButton: isFrom === 'quick-button' ? true : false,
+      bHasStock: product?.bHasStock
     });
     // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
@@ -1812,16 +1815,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
       if (activityItemResult?.data[0]?.result?.length) {
-
-        oBody = {
-          iBusinessId: this.iBusinessId,
-        }
-        const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
-        const iActivityItemId = activityItemResult?.data[0].result[0]._id;
-        this.openTransaction({ _id: iActivityId }, 'activity', [iActivityItemId]);
+        const oActivityItem = activityItemResult?.data[0].result[0];
+        this.openTransaction({ _id: oActivityItem.iActivityId, sNumber: oActivityItem.sNumber }, 'activity', [oActivityItem._id], 'AI');
       }
     } else if (barcode.startsWith("T")) {
-
       const oBody = {
         iBusinessId: this.iBusinessId,
         searchValue: barcode
@@ -1861,8 +1858,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
+  openTransaction(transaction: any, itemType: any, aSelectedIds?: any, sBarcodeStartString?:string) {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds, sBarcodeStartString }, hasBackdrop: true })
       .instance.close.subscribe(result => {
         if (result?.transaction) {
           const oData = this.tillService.processTransactionSearchResult(result);

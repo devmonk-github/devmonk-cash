@@ -62,13 +62,19 @@ export class RepairComponent implements OnInit {
   @Output() articleGroupDataChanged = new EventEmitter<any>();
   @Input() oStaticData:any;
   @Input() settings:any;
+  language:any = localStorage.getItem('language');
 
   constructor(private priceService: PriceService,
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastrService: ToastService,
-    public tillService: TillService,
-    private createArticleGroupService: CreateArticleGroupService) { }
+    public tillService: TillService) { 
+    if (!this.oStaticData?.articleGroupsList?.length) {
+      this.oStaticData = {
+        articleGroupsList: []
+      }
+    }
+  }
 
     async ngOnInit() {
     this.listSuppliers();

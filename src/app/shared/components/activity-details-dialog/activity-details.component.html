@@ -779,8 +779,7 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <button class="btn btn-sm btn-warning"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
-                                                        CHANGE' | translate}}</button>
+                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /CHANGE' | translate}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -915,6 +914,18 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row align-items-center">
+                                                            <div class="col-4">
+                                                                <label class="form-control-label mb-3">{{ "ARTICLE_GROUP" | translate }}</label>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <ng-select [(ngModel)]="activity.iArticleGroupId" class="form-control form-control-solid p-0" [clearable]="false">
+                                                                    <ng-option *ngFor="let oArticleGroup of aArticleGroup" [value]="oArticleGroup._id">
+                                                                        {{ oArticleGroup.oName[language] || oArticleGroup.oName['en'] }}
+                                                                    </ng-option>
+                                                                </ng-select>
                                                             </div>
                                                         </div>
                                                     </div>
