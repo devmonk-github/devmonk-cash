@@ -37,23 +37,14 @@ export class ServicesComponent implements OnInit, OnDestroy {
   userType: any = {};
   transactionStatuses: Array<any> =  [
     { key: 'NEW', value: 'new' },
-    // { key: 'INFO', value: 'info' },
     { key: 'PROCESSING', value: 'processing' },
     { key: 'CANCELLED', value: 'cancelled' },
     { key: 'INSPECTION', value: 'inspection' },
     { key: 'COMPLETED', value: 'completed' },
     { key: 'REFUND' , value:'refund'},
     { key: 'REFUNDINCASHREGISTER', value: 'refundInCashRegister' },
-    // { key: 'OFFER', value: 'offer' },
-    // { key: 'OFFER_IS_OK', value: 'offer-is-ok' },
-    // { key: 'OFFER_IS_NOT_OK', value: 'offer-is-not-ok' },
-    // { key: 'TO_REPAIR', value: 'to-repair' },
-    // { key: 'PART_ARE_ORDER', value: 'part-are-order' },
-    // { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
-    // { key: 'DELIVERED', value: 'delivered' }
   ]
   requestParams: any = {
-    // transactionStatuses: ['new', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'],
     selectedTransactionStatuses: [],
     locations: [],
     selectedLocations: [],
@@ -85,8 +76,6 @@ export class ServicesComponent implements OnInit, OnDestroy {
   iBusinessId: any = '';
   aFilterBusinessPartner: any = [];
 
-  // Advance search fields 
-
   addDays(date: any, days: any) {
     const inputDate = new Date(date);
     return new Date(inputDate.setDate(inputDate.getDate() + days));
@@ -100,8 +89,6 @@ export class ServicesComponent implements OnInit, OnDestroy {
     estimate: {
       minDate: undefined,
       maxDate: undefined
-      // minDate: new Date('01-01-2015'),
-      // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
     }
   }
 
@@ -217,22 +204,6 @@ export class ServicesComponent implements OnInit, OnDestroy {
     return str;
   }
 
-  // getBusinessLocations() {
-  //   // return new Promise<any>((resolve, reject) => {
-  //     return this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
-  //       // .subscribe((result: any) => {
-  //       //   if (result.message == "success" && result?.data) {
-  //       //     resolve(result);
-  //       //   }
-  //       //   // resolve(null);
-  //       // }
-  //       // , (error) => {
-  //       //   resolve(error);
-  //       //   console.error('error: ', error);
-  //       // })
-  //   // })
-  // }
-
   getLocations() {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result:any)=> {
       this.requestParams.locations = result.data.aLocation;
@@ -250,32 +221,6 @@ export class ServicesComponent implements OnInit, OnDestroy {
             this.iLocationId = aBusiness.aInLocation.find((location: any) => location.bIsWebshop)?._id || this.iLocationId;
           }
         }
-        // resolve()
-
-        // const aBusinessLocation = _aBusinessLocation.data;
-        // console.log(218, aBusinessLocation)
-        // let oNewLocation: any
-        // let bIsCurrentBIsWebshop = false
-        // for (let k = 0; k < aBusinessLocation?.data?.aBusiness?.length; k++) {
-        //   console.log(222)
-        //   const aAllLocations = aBusinessLocation?.data?.aBusiness[k]
-        //   for (let i = 0; i < aAllLocations?.aLocation?.length; i++) {
-        //     const l = aAllLocations?.aLocation[i];
-        //     if (l.bIsWebshop) oNewLocation = l
-        //     if (l._id.toString() === this.iLocationId) {
-        //       if (l.bIsWebshop) {
-        //         bIsCurrentBIsWebshop = true
-        //         this.iLocationId = l._id.toString()
-        //         break
-        //       }
-        //     }
-        //   }
-        // }
-        // console.log(230, oNewLocation, bIsCurrentBIsWebshop)
-        // if (!bIsCurrentBIsWebshop) {
-        //   this.iLocationId = oNewLocation._id.toString()
-        //   console.log(233, this.iLocationId)
-        // }
         resolve()
       } catch (error) {
         resolve()
