@@ -1379,6 +1379,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       iStatisticId: this.iStatisticId,
       oCountings: this.oCountings,
       sComment: this.oStatisticsDocument.sComment,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oCloseDayStateData: {
         oCashPaymentMethod,
         oCashInSafePaymentMethod,
@@ -1389,7 +1390,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if(org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
 
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-      this.toastService.show({ type: 'success', text: `Day-state is close now` });
+      this.toastService.show({ type: 'success', text: this.translateService.instant('DAY_STATE_IS_CLOSED_NOW')});
       this.closingDayState = false;
       this.bDayStateClosed = true;
       if(result?.data?._id) {
@@ -1397,7 +1398,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.statisticFilter.dToState = result?.data.dCloseDate;
       }
       this.getStaticData();
-      // this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
