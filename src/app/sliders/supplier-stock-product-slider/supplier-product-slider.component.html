@@ -107,7 +107,7 @@
             
           <div class="d-flex flex-column">
             <div *ngIf="productData?.iProductId" class="card-toolbar flex-row-fluid justify-content-end">
-                <button  (click)="viewOnSupplierWebShop(productData.sB2bUrl)" [disabled]="bIsSlideTurnOff"
+                <button  (click)="viewOnSupplierWebShop()" [disabled]="bIsSlideTurnOff"
                   class="btn btn-primary mb-5 w-100">{{"VIEW_ON_SUPPLIER_WEBSHOP" | translate}}</button>
             </div>
           </div>
