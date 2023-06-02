@@ -120,12 +120,15 @@ export class PaymentDistributionService {
       if (bTesting) console.log('still yet to pay',{ totalAmountToBePaid, availableAmount })
       if (totalAmountToBePaid !== 0) {
         if(availableAmount > totalAmountToBePaid) availableAmount = totalAmountToBePaid;
+        let nAssignedUntillNow = 0;
         aItems.forEach(i => {
           if (bTesting) console.log(107, { tType: i.tType, availableAmount });
           if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
-            const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
-            if (bTesting) console.log('set to payment',a)
-            i.paymentAmount = a;
+            const nCalculatedAmount = i.amountToBePaid * availableAmount / totalAmountToBePaid;
+            i.paymentAmount = ((nAssignedUntillNow + nCalculatedAmount) > availableAmount) ? availableAmount - nAssignedUntillNow : nCalculatedAmount;
+            i.paymentAmount = +(i.paymentAmount.toFixed(2))
+            if (bTesting) console.log('set to payment',i.paymentAmount)
+            nAssignedUntillNow += i.paymentAmount;
 
             nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
           }
@@ -155,7 +158,7 @@ export class PaymentDistributionService {
             }
           });
         }
-      } 
+      }
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
     const bShowGiftcardDiscountField = arrToUpdate.some(el => el.nGiftcardDiscount);
