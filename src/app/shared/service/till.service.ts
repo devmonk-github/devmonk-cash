@@ -934,8 +934,9 @@ export class TillService {
     return oDataSource;
   }
 
-  prepareDataForRepairReceipt(activityItems: any, transaction: any, employee:any, index:number = 0) {
-    const oDS = activityItems.filter((item: any) => item.oType.eKind === 'repair')[index];
+  prepareDataForRepairReceipt(oItem: any, transaction: any, employee:any) {
+    // console.log('prepareDataForOrderReceipt', { oItem, transaction })
+    const oDS = JSON.parse(JSON.stringify(oItem));
     oDS.oCustomer = transaction.oCustomer
     oDS.businessDetails = transaction.businessDetails;
     oDS.sAdvisedEmpFirstName = employee?.sFirstName || transaction?.sAdvisedEmpFirstName || 'a';

@@ -114,6 +114,7 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   async performAction(type: any, action: any, index?: number) {
+    // console.log(this.activity, this.activityItems, this.transaction, type)
     this.usedActions = true;
     let oDataSource = undefined;
     let template = undefined;
@@ -126,7 +127,7 @@ export class TransactionActionDialogComponent implements OnInit {
       
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
       template = this.aTemplates.filter((template: any) => template.eType === type)[0];
-      oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
+      oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems[index], this.transaction, null);
       pdfTitle = oDataSource.sNumber;
       sThermalTemplateType = type;
     
