@@ -460,6 +460,7 @@ export class ActivityDetailsComponent implements OnInit {
               (business: any) => {
                 if (business._id == this.iBusinessId) {
                   this.business = business;
+                  this.businessDetails = business;
                   this.tillService.selectCurrency(this.business?.aInLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0]);
                 }
               })

@@ -59,7 +59,7 @@ export class TransactionsPdfService {
     private apiService: ApiService,
     private toastService: ToastService,
     private transalteService: TranslateService) {
-    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'CITY', 'COMMENT', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
+    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
       'CREATE_MIN_DATE', 'CREATE_MAX_DATE', 'ESTIMATE_MIN_DATE', 'ESTIMATE_MAX_DATE', 'REPAIR_STATUS', 'EMPLOYEES', 'LOCATION', 'WORKSTATION', 'ASSIGNEE',
       'BUSINESS_PARTNER', 'E_KIND', 'IMPORT_STATUS'];
     this.transalteService.get(translate).subscribe((res: any) => {
@@ -92,6 +92,7 @@ export class TransactionsPdfService {
         if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
         if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
         if (headerObj['oCustomer.oInvoiceAddress.sCity']) obj['oCustomer.oInvoiceAddress.sCity'] = activityItem && activityItem?.oCustomer?.sCity ? activityItem?.oCustomer?.sCity : '-';
+        if (headerObj['sBagNumber']) obj['sBagNumber'] = activityItem && activityItem?.sBagNumber ? activityItem?.sBagNumber : '-';
         if (headerObj['sDescription']){
           if(activityItem?.sDescription?.length <= 15) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,14) : '-';
           else obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,11).concat(" ...") : '-';

@@ -277,6 +277,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customerGroupList :any=[];
   aSelectedGroups:any =[];
   businessDetails:any={};
+  nClientId:any="-";
   
   /* Check if saving points are enabled */
   savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
@@ -298,6 +299,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
+    let str = this.customer?.nClientId;
+    if(str) str = str.replaceAll('undefined','-');
+    this.customer.nClientId = str;
+    if (str.indexOf('/') > 0) {
+      this.nClientId = str.substring(0, str.indexOf('/'));
+
+    } else {
+      this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
+    }
     //console.log("this.customer------");
     //console.log(this.customer);
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']

@@ -636,7 +636,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }).instance.close.subscribe(async (data) => {
         if (data.customer) {
           this.customer = data.customer;
-          const str = this.customer.nClientId;
+          let str = this.customer?.nClientId;
+          if(str) str = str.replaceAll('undefined','-');
+          this.customer.nClientId = str;
           if (str.indexOf('/') > 0) {
             this.nClientId = str.substring(0, str.indexOf('/'));
           }else{

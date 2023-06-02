@@ -50,7 +50,7 @@
                                 <h2 class="fw-bolder mx-5 mb-0">
                                     <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">{{ customer.sSalutation | translate }} {{ customer.sFirstName }} {{ customer.sLastName}} </span>
                                     <span *ngIf="customer?.bIsCompany" style="text-transform: capitalize;">{{customer.sCompanyName}}</span>
-                                    <span *ngIf="customer.nClientId">({{customer.nClientId}})</span>
+                                    <span *ngIf="customer?.nClientId">({{nClientId}}) <i *ngIf="nClientId != '-'" class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{customer.nClientId}}"></i></span>
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
