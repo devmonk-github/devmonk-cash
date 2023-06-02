@@ -97,15 +97,15 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     this.productData = {};
   }
 
-  viewOnSupplierWebShop(url:any){
-    window.open(url , '_blank');
+  viewOnSupplierWebShop(){
+    const webShopUrl = this.productData?.ownBusinessProducts?.sB2bUrl ? this.productData?.ownBusinessProducts?.sB2bUrl : this.productData?.sB2bUrl;
+    window.open(webShopUrl , '_blank');
     let body = {
       'iBusinessId' : this.iBusinessId.toString() , 
       'iSupplierId' : this.productData.iSupplierId ,
       'iProductId': this.productData.iProductId ,
       'iLocationId':this.iLocationId ,
-      'sB2bUrl' : url
-
+      'sB2bUrl' : webShopUrl
     }
 
     this.apiService.postNew('core' , '/api/v1/business/products/viewSupplierOnWebshop' , body).subscribe((res:any)=>{
