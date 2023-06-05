@@ -692,7 +692,7 @@
                                     <ng-select class="form-control form-control-solid p-0" [(ngModel)]="customer.oPhone.sPrefixMobile"
                                         [clearable]="false" placeholder="">
                                         <ng-option *ngFor="let countryPhoneCode of aCountryPhoneCodes"
-                                            [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
+                                            [value]="countryPhoneCode.value"><div class="fflag fflag-{{countryPhoneCode.key}} ff-md ff-wave ff-app me-2"></div>{{countryPhoneCode.value}}</ng-option>
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
@@ -707,7 +707,7 @@
                                     <ng-select class="form-control form-control-solid p-0" [(ngModel)]="customer.oPhone.sPrefixLandline"
                                         [clearable]="false" placeholder="">
                                         <ng-option *ngFor="let countryPhoneCode of aCountryPhoneCodes"
-                                            [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
+                                            [value]="countryPhoneCode.value"><div class="fflag fflag-{{countryPhoneCode.key}} ff-md ff-wave ff-app me-2"></div>{{countryPhoneCode.value}}</ng-option>
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
