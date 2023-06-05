@@ -267,9 +267,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      oFilterBy: {
-        iWorkstationId: this.iWorkstationId
-      }
+      iWorkstationId: this.iWorkstationId,
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
