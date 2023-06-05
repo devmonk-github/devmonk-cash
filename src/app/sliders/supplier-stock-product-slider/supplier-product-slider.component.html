@@ -77,6 +77,14 @@
           </div>
           <!-- Product image: over -->
 
+          <div *ngIf="nTotalStock <= 0" class="alert alert-warning d-flex align-items-center p-5">
+            <div class="d-flex flex-column">
+              <span>
+                {{"PRODUCT_IS_NOT_AVALABLE_IN_SUPPLIER_ACCOUNT" | translate }}
+              </span>
+            </div>
+          </div>
+
           <div *ngIf="!productData?.iProductId" class="alert alert-warning d-flex align-items-center p-5">
 
             <div class="d-flex flex-column">
@@ -89,7 +97,7 @@
 
           </div>
 
-          <p>{{'CURRENT_STOCK_LEVEL' | translate}}: {{stock}} | {{'CURRENT_MIN_STOCK_LEVEL' | translate}}: {{productData?.oCurrentLocation?.nMinStock || 0 }}</p>
+          <p>{{'CURRENT_STOCK_LEVEL' | translate}}: {{stock}} | {{'CURRENT_MIN_STOCK_LEVEL' | translate}}: {{productData?.oCurrentLocation?.nMinStock || 0 }} | {{'TOTAL_SUPPLIER_STOCK' | translate}}: {{nTotalStock || 0}} | {{'SUPPLIER_PRICE' | translate}}:{{nHighestPrice || 0}}</p>
           
           <div *ngIf="showInputStock">
             <input class="form-control" id="ProductnStock" type="number" min="0" [(ngModel)]="productData.oCurrentLocation.nMinStock" (ngModelChange)="nMinStockChange($event)">
@@ -107,7 +115,7 @@
             
           <div class="d-flex flex-column">
             <div *ngIf="productData?.iProductId" class="card-toolbar flex-row-fluid justify-content-end">
-                <button  (click)="viewOnSupplierWebShop()" [disabled]="bIsSlideTurnOff"
+                <button  (click)="viewOnSupplierWebShop()" [disabled]="bWebShopUrl"
                   class="btn btn-primary mb-5 w-100">{{"VIEW_ON_SUPPLIER_WEBSHOP" | translate}}</button>
             </div>
           </div>
