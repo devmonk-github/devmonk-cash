@@ -1166,7 +1166,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.printSettings = [];
         result?.data[0]?.result.forEach((settings: any) => {
-          if (settings?.sMethod === 'actions' && settings.iWorkstationId === this.iWorkstationId) {
+          if (settings?.sMethod === 'actions') {
             this.printActionSettings = settings?.aActions || [];
           } else {
             this.printSettings.push(settings);

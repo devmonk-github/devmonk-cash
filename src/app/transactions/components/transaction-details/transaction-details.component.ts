@@ -267,9 +267,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      oFilterBy: {
-        iWorkstationId: this.iWorkstationId
-      }
+      iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
@@ -508,14 +506,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     aPayments.forEach((item: any) => {
       if (item.nAmount != item.nNewAmount) {
         aPromises.push(this.addExpenses({
-          amount: item.nNewAmount - item.nAmount,
+          amount: +((item.nNewAmount - item.nAmount).toFixed(2)),
           type: 'payment-method-change',
           comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
           oArticleGroup,
           oPayment: {
             iPaymentMethodId: item.iPaymentMethodId,
-            nAmount: item.nNewAmount - item.nAmount,
+            nAmount: +((item.nNewAmount - item.nAmount).toFixed(2)),
             sMethod: item.sMethod,
             sRemarks: 'PAYMENT_METHOD_CHANGE'
           },
@@ -528,14 +526,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.aNewSelectedPaymentMethods.forEach((item:any) => {
       if (item.nAmount) {
         aPromises.push(this.addExpenses({
-          amount: item.nAmount,
+          amount: +(item.nAmount.toFixed(2)),
           type: 'payment-method-change',
           comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
           oArticleGroup,
           oPayment: {
             iPaymentMethodId: item._id,
-            nAmount: item.nAmount,
+            nAmount: +(item.nAmount.toFixed(2)),
             sMethod: item.sName.toLowerCase(),
             sRemarks: 'PAYMENT_METHOD_CHANGE'
           },

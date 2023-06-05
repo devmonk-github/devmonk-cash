@@ -906,8 +906,8 @@ export class Pn2escposService {
     // var item = dataSourceObject; //Used for the eval() function
     const bTestResult = conditions.every((rule: any) => {
       const target = (rule?.type === 'var') ? dataSourceObject[rule.target] : rule.target;
-      // console.log({ rule, target }, dataSourceObject[rule.field]);
-      return (target != null && dataSourceObject[rule.field]) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
+      //console.log({ rule, target }, dataSourceObject[rule.field]);
+      return (target != null) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
       
     })
     // console.log({bTestResult})
