@@ -165,136 +165,169 @@
               </div>
               <!-- Trade Product:Over -->
               
-              <!-- Available Sizes -->
-              <div *ngSwitchCase="2" class="tab-pane fade show active overflow-scroll" style="height: 60vh;">
-                <div class="d-flex justify-content-center flex-column">
-                  <!-- Retailer Business Products -->
-                  <div class="my-5">
-                    <h4>{{'RETAILER_BUSINESS_PRODUCTS' | translate}}</h4>
-                    <table class="table table-row-bordered gy-5 w-100">
+             <!-- Available Sizes -->
+             <div *ngSwitchCase="2" class="tab-pane fade show active overflow-scroll" style="height: 60vh;">
+              <div class="d-flex justify-content-center flex-column">
+                <!-- Retailer Business Products -->
+                <div class="my-5">
+                  <h4>{{'BUSINESS_PRODUCT_VARIANT' | translate}}</h4>
+                  <div class="table-responsive">
+                    <table class="table table-row-bordered gy-5 w-100" style="caption-side: top;"
+                      *ngFor="let productVariant of aBusinessProductVariant; let i=index">
+                      <caption>{{productVariant?.sVariantBase }} {{'VARIANT' | translate}}</caption>
                       <thead>
                         <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                          <th>#</th>
-                          <th>{{'SIZE' | translate}}</th>
-                          <th>{{'STOCK' | translate}}</th>
-                          <th>{{'ADVICED' | translate}}</th>
-                          <th>{{'ACTION' | translate}}</th>
+                          <td>{{'NAME' | translate}}</td>
+                          <td> {{'PRODUCT_NUMBER' | translate}}</td>
+                          <td>{{'VALUE' | translate}} </td>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngIf="AvailableSizesProductsLoading" class="border-bottom border-gray-200">
-                          <td colspan="4">
-                            <div class="d-flex justify-content-center align-content-center">
-                              <div class="spinner-border mx-5"></div>
-                            </div>
-                          </td>
+                        <tr class="border-bottom border-gray-200"
+                          *ngFor="let variant of productVariant?.aBusinessProduct; let id=index">
+                          <td>{{variant?.oName[currentLanguage] || '-' }}</td>
+                          <td>{{variant?.sProductNumber}} </td>
+                          <td>{{variant?.value}} </td>
                         </tr>
-                        <tr
-                          *ngIf="!AvailableSizesProductsLoading  && !AvailableSizesProducts?.retailerBusinessProducts?.length"
-                          class="border-bottom border-gray-200">
-                          <td colspan="3">
-                            <div class="d-flex justify-content-center align-content-center">
-                              <div class="mx-5 d-flex justify-content-center align-items-center ">
-                                <p>
-                                    {{'NO_DATA_FOUND' | translate}}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                        <ng-container
-                          *ngIf="!AvailableSizesProductsLoading && AvailableSizesProducts?.retailerBusinessProducts?.length">
-                          <tr
-                            *ngFor="let retailerProduct of AvailableSizesProducts?.retailerBusinessProducts;let i = index"
-                            class="border-bottom border-gray-200">
-                            <td>
-                              {{i+1}}
-                            </td>
-                            <td>
-                              0
-                            </td>
-                            <td>
-                              {{retailerProduct?.nStock??0}}
-                            </td>
-                            <td [ngClass]="retailerProduct.isAdvisedProduct?'text-success':'text-danger'">
-                              {{retailerProduct.isAdvisedProduct?'Adviced':''}}
-                            </td>
-                            <td>
-                              <button (click)="onSelectAvailableSizeProduct(retailerProduct._id)" class="btn btn-light"
-                                type="button">
-                                {{'OPEN' | translate}}
-                              </button>
-                            </td>
-                          </tr>
-                        </ng-container>
                       </tbody>
                     </table>
                   </div>
-                  <!-- Supplier Business Products -->
-                  <div class="my-5">
-                    <h4>{{'SUPPLIER_BUSINESS_PRODUCT' | translate}}</h4>
-                    <table class="table table-row-bordered gy-5 w-100">
-                      <thead>
-                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                          <th>#</th>
-                          <th>{{'SIZE' | translate}}</th>
-                          <th>{{ 'STOCK'| translate}}</th>
-                          <th>{{'ACTION' | translate}}</th>
-
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngIf="AvailableSizesProductsLoading" class="border-bottom border-gray-200">
-                          <td colspan="4">
-                            <div class="d-flex justify-content-center align-content-center">
-                              <div class="spinner-border mx-5"></div>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr
-                          *ngIf="!AvailableSizesProductsLoading  && !AvailableSizesProducts?.supplierBusinessProducts?.length"
-                          class="border-bottom border-gray-200">
-                          <td colspan="3">
-                            <div class="d-flex justify-content-center align-content-center">
-                              <div class="mx-5 d-flex justify-content-center align-items-center ">
-                                <p>
-                                  {{'NO_DATA_FOUND' | translate}}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                        <ng-container
-                          *ngIf="!AvailableSizesProductsLoading && AvailableSizesProducts?.supplierBusinessProducts?.length">
-                          <tr
-                            *ngFor="let supplierProduct of AvailableSizesProducts?.supplierBusinessProducts;let i = index"
-                            class="border-bottom border-gray-200">
-                            <td>
-                              {{i+1}}
-                            </td>
-                            <td>
-                              0
-                            </td>
-                            <td>
-                              {{supplierProduct?.nStock??0}}
-                            </td>
-                            <td [ngClass]="supplierProduct.isAdvisedProduct?'text-success':'text-danger'">
-                              {{supplierProduct.isAdvisedProduct?'Adviced':''}}
-                            </td>
-                            <td>
-                              <button (click)="onSelectAvailableSizeProduct(supplierProduct._id)" class="btn btn-light"
-                                type="button">
-                                {{'OPEN' | translate}}
-                              </button>
-                            </td>
-                          </tr>
-                        </ng-container>
-                      </tbody>
-                    </table>
+                  <div class="d-flex">
+                    <h5 *ngIf='!aBusinessProductVariant?.length && !showProductVariantLoader'> {{ "NO_DATA_FOUND" | translate}} !</h5>
+                    <div *ngIf="showProductVariantLoader" class="spinner-border mx-auto"></div>
                   </div>
                 </div>
+                <button class="btn btn-primary" *ngIf="!isShowAvailableProduct" (click)="getAvailableSizesProducts()">{{'SHOW_MORE_DATA'
+                  | translate}}</button>
+                <button class="btn btn-secondary" *ngIf="isShowAvailableProduct" (click)="hideAvailableProduct()">{{'SHOW_LESS' |
+                  translate}}</button>
+
+                <div class="my-5" *ngIf="isShowAvailableProduct">
+                  <h4>{{'RETAILER_BUSINESS_PRODUCTS' | translate}}</h4>
+                  <table class="table table-row-bordered gy-5 w-100">
+                    <thead>
+                      <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                        <th>#</th>
+                        <th>{{'SIZE' | translate}}</th>
+                        <th>{{'STOCK' | translate}}</th>
+                        <th>{{'ADVICED' | translate}}</th>
+                        <th>{{'ACTION' | translate}}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngIf="AvailableSizesProductsLoading" class="border-bottom border-gray-200">
+                        <td colspan="4">
+                          <div class="d-flex justify-content-center align-content-center">
+                            <div class="spinner-border mx-5"></div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr
+                        *ngIf="!AvailableSizesProductsLoading  && !AvailableSizesProducts?.retailerBusinessProducts?.length"
+                        class="border-bottom border-gray-200">
+                        <td colspan="3">
+                          <div class="d-flex justify-content-center align-content-center">
+                            <div class="mx-5 d-flex justify-content-center align-items-center ">
+                              <p>
+                                  {{'NO_DATA_FOUND' | translate}}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <ng-container
+                        *ngIf="!AvailableSizesProductsLoading && AvailableSizesProducts?.retailerBusinessProducts?.length">
+                        <tr
+                          *ngFor="let retailerProduct of AvailableSizesProducts?.retailerBusinessProducts;let i = index"
+                          class="border-bottom border-gray-200">
+                          <td>
+                            {{i+1}}
+                          </td>
+                          <td>
+                            0
+                          </td>
+                          <td>
+                            {{retailerProduct?.nStock??0}}
+                          </td>
+                          <td [ngClass]="retailerProduct.isAdvisedProduct?'text-success':'text-danger'">
+                            {{retailerProduct.isAdvisedProduct?'Adviced':''}}
+                          </td>
+                          <td>
+                            <button (click)="onSelectAvailableSizeProduct(retailerProduct._id)" class="btn btn-light"
+                              type="button">
+                              {{'OPEN' | translate}}
+                            </button>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Supplier Business Products -->
+                <div class="my-5" *ngIf="isShowAvailableProduct">
+                  <h4>{{'SUPPLIER_BUSINESS_PRODUCT' | translate}}</h4>
+                  <table class="table table-row-bordered gy-5 w-100">
+                    <thead>
+                      <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                        <th>#</th>
+                        <th>{{'SIZE' | translate}}</th>
+                        <th>{{ 'STOCK'| translate}}</th>
+                        <th>{{'ACTION' | translate}}</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngIf="AvailableSizesProductsLoading" class="border-bottom border-gray-200">
+                        <td colspan="4">
+                          <div class="d-flex justify-content-center align-content-center">
+                            <div class="spinner-border mx-5"></div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr
+                        *ngIf="!AvailableSizesProductsLoading  && !AvailableSizesProducts?.supplierBusinessProducts?.length"
+                        class="border-bottom border-gray-200">
+                        <td colspan="3">
+                          <div class="d-flex justify-content-center align-content-center">
+                            <div class="mx-5 d-flex justify-content-center align-items-center ">
+                              <p>
+                                {{'NO_DATA_FOUND' | translate}}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <ng-container
+                        *ngIf="!AvailableSizesProductsLoading && AvailableSizesProducts?.supplierBusinessProducts?.length">
+                        <tr
+                          *ngFor="let supplierProduct of AvailableSizesProducts?.supplierBusinessProducts;let i = index"
+                          class="border-bottom border-gray-200">
+                          <td>
+                            {{i+1}}
+                          </td>
+                          <td>
+                            0
+                          </td>
+                          <td>
+                            {{supplierProduct?.nStock??0}}
+                          </td>
+                          <td [ngClass]="supplierProduct.isAdvisedProduct?'text-success':'text-danger'">
+                            {{supplierProduct.isAdvisedProduct?'Adviced':''}}
+                          </td>
+                          <td>
+                            <button (click)="onSelectAvailableSizeProduct(supplierProduct._id)" class="btn btn-light"
+                              type="button">
+                              {{'OPEN' | translate}}
+                            </button>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <!-- Available Sizes:Over-->
+            </div>
+            <!-- Available Sizes:Over-->
             </container-element>
           </div>
           <!-- tabs  -->
