@@ -950,7 +950,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">
@@ -1271,7 +1271,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">
@@ -1819,7 +1819,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">

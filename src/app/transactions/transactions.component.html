@@ -187,7 +187,7 @@
         <tbody class="fw-bold text-gray-600" *ngIf="!showLoader && businessDetailsLoaded">
           <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index" data-bs-toggle="tooltip"
             data-bs-placement="top" title={{toolTipData(transaction)}}>
-            <td scope="row">{{transaction.dCreatedDate | date:'MMM dd, yyyy, H:mm:ss'}}</td>
+            <td scope="row">{{transaction.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
     
             <td class="text-truncate" style="max-width: 120px;">{{transaction.sLocationName}}</td>
             <td>{{transaction.sNumber}}</td>
