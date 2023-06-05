@@ -1451,11 +1451,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     for (const item of this.aPaymentMethods) {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
-          amount: item.nNewAmount - item.nAmount,
-          comment: 'Payment method change',
+          amount: +((item.nNewAmount - item.nAmount).toFixed(2)),
+          comment: 'PAYMENT_METHOD_CHANGE',
           oPayment: {
             iPaymentMethodId: item.iPaymentMethodId,
-            nAmount: item.nNewAmount - item.nAmount,
+            nAmount: +((item.nNewAmount - item.nAmount).toFixed(2)),
             sMethod: item.sMethod
           },
           nVatRate: nVatRate
@@ -1467,11 +1467,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       for (const item of this.aNewSelectedPaymentMethods) {
         if (item.nAmount) {
           await this.addExpenses({
-            amount: item.nAmount,
-            comment: 'Payment method change',
+            amount: +(item.nAmount.toFixed(2)),
+            comment: 'PAYMENT_METHOD_CHANGE',
             oPayment: {
               iPaymentMethodId: item._id,
-              nAmount: item.nAmount,
+              nAmount: +(item.nAmount.toFixed(2)),
               sMethod: item.sName.toLowerCase()
             },
             nVatRate: nVatRate
