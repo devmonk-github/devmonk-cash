@@ -98,7 +98,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
       this.paginationConfig.totalItems = result.activities.count;
       this.activities = result.activities.records;
       this.activities.forEach((item: any) =>{
-        item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? [... new Set(item.aActivityItemMetaData.map((el:any) => el.sBagNumber))].join(',') : '';
+        item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? [... new Set(item.aActivityItemMetaData.map((el:any) => el?.sBagNumber))].join(',') : '';
+        //console.log("item.sBagNumbers", item.sBagNumbers,item.sBagNumbers.length);
       });
       this.totalActivities = result.activities.count;
       this.showLoader = false;

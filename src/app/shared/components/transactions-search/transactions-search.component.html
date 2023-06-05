@@ -36,7 +36,7 @@
                                 <tr *ngFor='let transaction of activities| paginate: paginationConfig'>
                                     <td class="">{{ transaction.sNumber }}</td>
                                     <td class="">{{ transaction.sBagNumbers }}</td>
-                                    <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
+                                    <td class="">{{ transaction.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                     <td>
                                         <button class="btn btn-primary"
                                             (click)="openTransaction(transaction, 'activity')">{{ "OPEN" |
