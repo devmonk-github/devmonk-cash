@@ -14,7 +14,7 @@
           <div class="row">
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.1.57
+                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.2.63
               </label>
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
@@ -385,7 +385,8 @@
         </div>
         <div class="col-8 text-end">
           <button class="btn btn-primary me-2" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
-          <button class="btn btn-primary" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' | translate}}</button>
+          <button class="btn btn-primary" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' |
+            translate}}</button>
         </div>
       </div>
       <div *ngIf="payMethods.length" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -413,7 +414,8 @@
                   <button class="btn btn-sm btn-info me-2" (click)="viewDetails(method)">
                     <fa-icon icon="pencil"></fa-icon>
                   </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteMethod(method)" *ngIf="!method.bIsDefaultPaymentMethod">
+                  <button class="btn btn-sm btn-danger" (click)="deleteMethod(method)"
+                    *ngIf="!method.bIsDefaultPaymentMethod">
                     <fa-icon icon="trash"></fa-icon>
                   </button>
                 </td>
