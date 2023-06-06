@@ -935,8 +935,7 @@ export class TillService {
   }
 
   prepareDataForRepairReceipt(oItem: any, transaction: any, employee:any) {
-    let oDS = JSON.parse(JSON.stringify(oItem));
-    oDS = oDS[0];
+    const oDS = JSON.parse(JSON.stringify(oItem));
     oDS.oCustomer = transaction.oCustomer
     oDS.businessDetails = transaction.businessDetails;
     oDS.sAdvisedEmpFirstName = employee?.sFirstName || transaction?.sAdvisedEmpFirstName || 'a';

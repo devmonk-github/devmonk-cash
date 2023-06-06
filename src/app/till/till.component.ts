@@ -1056,13 +1056,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bOrderCondition) {
       // print order receipt
-      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+      const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
       this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
     }
     if (bRegularCondition) {
       //print proof of payments receipt
-      const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
+      const template = aTemplates.find((template: any) => template.eType === 'regular');
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'regular');
     }
 
@@ -1072,9 +1072,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       //use two column layout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(this.activityItems, oDataSource, this.employee)
-      this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
+      const template = aTemplates.find((template: any) => template.eType === 'repair');
+      this.activityItems.filter((oItem:any) => oItem.oType.eKind == 'repair').forEach((oItem:any) => {
+        const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
+        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
+      })
     }
 
     if (bRepairAlternativeCondition) {
@@ -1095,9 +1097,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    const printActionSettings = this.printActionSettings?.filter((pas: any) => pas.eType === type);
-    if (printActionSettings?.length) {
-      const aActionToPerform = printActionSettings[0].aActionToPerform;
+    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === 'is_created');
+    // console.log({ oPrintActionSettings })
+    if (oPrintActionSettings) {
+      const aActionToPerform = oPrintActionSettings.aActionToPerform;
+      // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
@@ -1116,43 +1120,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           pdfTitle: title,
           templateData: template,
           printSettings: settings,
-          printActionSettings: this.printActionSettings,
+          printActionSettings: oPrintActionSettings,
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
         });
       }
-
-      // if(oDataSource?.oCustomer?.bCounter == false){
-      //   const response =  await this.receiptService.exportToPdf({
-      //     oDataSource: oDataSource,
-      //     pdfTitle: title,
-      //     templateData: template,
-      //     printSettings: settings,
-      //     // printActionSettings: this.printActionSettings,
-      //     // eSituation: 'is_created',
-      //     sAction: 'sentToCustomer',
-      //     // sApiKey: this.businessDetails.oPrintNode.sApiKey
-      //   });
-
-      //   const body = {
-      //     pdfContent: response,
-      //     iTransactionId: this.transaction._id,
-      //     receiptType: 'purchase-receipt',
-      //     sCustomerEmail: oDataSource.oCustomer.sEmail
-      //   }
-
-      //   this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
-      //     (result: any) => {
-      //       console.log("------------------successfully mail sent-----------------");
-      //       console.log(result);
-      //       if (result) {
-      //         // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
-      //       }
-      //     }, (error: any) => {
-
-      //     }
-      //   )
-      // }
     }
   }
 
