@@ -83,6 +83,12 @@ export class GoldPurchaseComponent implements OnInit {
     }
   }
 
+  notAllowedCommaAndSemiColon(event: any) {
+    let keyCode = (event.which) ? event.which : event.keyCode
+    if (keyCode == 59 || keyCode == 44) return false; /* 44=comma & 59= semicolon */
+    else return true;
+  }
+
   assignArticleGroupMetadata() {
     this.item.iArticleGroupId = this.articleGroup._id;
     this.item.oArticleGroupMetaData.oName = this.articleGroup.oName;
