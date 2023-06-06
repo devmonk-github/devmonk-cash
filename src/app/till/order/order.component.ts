@@ -136,10 +136,16 @@ export class OrderComponent implements OnInit {
 
       });
   }
+  notAllowedCommaAndSemiColon(event: any) {
+    let keyCode = (event.which) ? event.which : event.keyCode
+    if (keyCode == 59 || keyCode == 44) return false; /* 44=comma & 59= semicolon */
+    else return true;
+  }
+ 
   numericOnly(event:any): boolean { 
     let patt = /[0-9\,\.\ ]/; 
     let result = patt.test(event.key);
-    var itemprice = this.item?.price.toString();
+    let itemprice = this.item?.price.toString();
     itemprice = itemprice.includes(",");
     if(itemprice==true && event.keyCode==44){
       result = false;
