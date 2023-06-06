@@ -48,6 +48,9 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   AvailableSizesProductsLoading = false;
   ProductsLoading = true;
   showInputStock: boolean = false;
+  nHighestPrice=0;
+  nTotalStock=0;
+  bWebShopUrl:boolean = false;
   minStockSubject : Subject<string> = new Subject<string>();
   aBusinessProductVariant:any =[];
   currentLanguage:any = 'en';
@@ -209,6 +212,13 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
 
   getProductData(iBusinessProductId: string) {
     this.ProductsLoading = true;
+    this.nTotalStock = 0;
+    this.nHighestPrice =0;
+    if(!this.bIsSlideTurnOff){
+      this.bWebShopUrl =true;
+    }else{
+      this.bWebShopUrl = this.bIsSlideTurnOff;
+    }
     return new Promise<any>((resolve, reject) => {
       this.apiService
         .getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId.toString()}`)
@@ -216,7 +226,24 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
           (result: any) => {
             if (result.message === "success") {
               this.productData = result.data
+              if(!this.bIsSlideTurnOff){
+                this.bWebShopUrl =false;
+              }else{
+                this.bWebShopUrl = this.bIsSlideTurnOff;
+              }
               if (!this.productData?.oCurrentLocation) this.productData.oCurrentLocation = {};
+              if(this.productData?.ownBusinessProducts?.nHighestPrice) this.nHighestPrice = this.productData.ownBusinessProducts.nHighestPrice;
+              else this.nHighestPrice = this.productData.nHighestPrice;
+              if(this.productData?.ownBusinessProducts?.aLocation?.length){
+                  this.productData.ownBusinessProducts.aLocation.forEach((location:any)=>{
+                    if(location?.nStock) this.nTotalStock = this.nTotalStock + location.nStock;
+                  })
+              }else if(this.productData?.aLocation?.length){
+                this.productData.aLocation.forEach((location:any)=>{
+                  if(location?.nStock) this.nTotalStock = this.nTotalStock + location.nStock;
+                })
+              }
+
               this.findCurrentStock();
               this.ProductsLoading = false;
               resolve(result.data);

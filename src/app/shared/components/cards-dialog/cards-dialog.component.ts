@@ -140,14 +140,19 @@ export class CardsComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
-    // this.giftCardInfo.nAmount = this.nAmount;
-    this.giftCardInfo.nGiftcardRemainingAmount -= this.giftCardInfo.nAmount;
-    this.giftCardInfo.pincode = this.pincode;
-    this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
-    this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;
-    this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
-    // console.log(this.giftCardInfo.nAmount);
-    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedPointsValue });
+
+    if(this.giftCardInfo.nAmount > this.giftCardInfo.nGiftcardRemainingAmount){
+      this.toastService.show({type:'warning' , text: this.translateService.instant('USING_MORE_THAN_AVAILABLE')});
+    }else{
+      this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
+      // this.giftCardInfo.nAmount = this.nAmount;
+      this.giftCardInfo.nGiftcardRemainingAmount -= this.giftCardInfo.nAmount;
+      this.giftCardInfo.pincode = this.pincode;
+      this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
+      this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;
+      this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
+      // console.log(this.giftCardInfo.nAmount);
+      this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedPointsValue });
+    }
   }
 }

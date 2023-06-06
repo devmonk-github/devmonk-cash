@@ -32,13 +32,15 @@
                         </div>
                     </div>
                     <div class="row mt-5">
-                        <span *ngIf="giftCardDetails">{{"BALANCE_GIFTCARDS" | translate}}:
-                            {{giftCardDetails?.nGiftcardRemainingAmount}}</span>
+                        <span *ngIf="giftCardDetails">
+                            {{"BALANCE_GIFTCARDS" | translate}}:
+                            {{giftCardDetails?.nGiftcardRemainingAmount}}
+                        </span>
                         <div class="col-6">
                             {{"AMOUNT_TO_USE" | translate}}
                         </div>
                         <div class="col-6">
-                            <input name="" class="form-control" type="number" min="0"
+                            <input name="" class="form-control" type="number" min="0" [max]="giftCardDetails?.nGiftcardRemainingAmount"
                                 [disabled]="!giftCardDetails || giftCardDetails?.nGiftcardRemainingAmount <= 0" [(ngModel)]="giftCardInfo.nAmount">
                             <span *ngIf="nAmount > giftCardDetails?.nGiftcardRemainingAmount"
                                 class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
