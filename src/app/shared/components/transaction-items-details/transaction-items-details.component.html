@@ -110,18 +110,9 @@
                                 <td class="">
                                     <div *ngIf="!bPriceEditMode" class="d-flex align-items-center justify-content-center">
                                         <span class="me-2">{{transactionItem.nPriceIncVat}}</span>
-                                        <span *ngIf="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
-                                        <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="not allowed, item is refunded"> 
-                                        <button class="btn" (click)="bPriceEditMode = true" [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
+                                        <button class="btn" (click)="bPriceEditMode = true">
                                             <i class="fa fa-pencil-alt"></i>
                                         </button>
-                                        </i>
-                                    </span>
-                                    <span *ngIf="!(transactionItem.bIsRefunded) && !(transactionItem.oType.bRefund)">
-                                            <button class="btn" (click)="bPriceEditMode = true">
-                                                <i class="fa fa-pencil-alt"></i>
-                                            </button>
-                                    </span>
                                     </div>
                                     <div *ngIf="bPriceEditMode" class="d-flex align-items-center">
                                         <input class="form-control w-50 me-2" [(ngModel)]="transactionItem.nPriceIncVat">
