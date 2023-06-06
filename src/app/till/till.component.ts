@@ -637,12 +637,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data.customer) {
           this.customer = data.customer;
           let str = this.customer?.nClientId;
-          if(str) str = str.replaceAll('undefined','-');
-          this.customer.nClientId = str;
-          if (str.indexOf('/') > 0) {
+          if (str && str.indexOf('/') > 0) {
+            str = str.replaceAll('undefined','-');
             this.nClientId = str.substring(0, str.indexOf('/'));
+            this.customer.nClientId = str;
           }else{
-            this.nClientId = this.customer.nClientId == '' ? '-': this.customer.nClientId;
+            this.nClientId = this.customer?.nClientId == '' ? '-': this.customer?.nClientId;
           }
           if (this.customer?._id && this.customer._id != '') {
             const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();

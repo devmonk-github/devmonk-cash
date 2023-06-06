@@ -388,7 +388,7 @@
                               <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
                               <p *ngIf="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'" class="text break text-danger">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
-                              <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || "0"}} </p>
+                              <p [ngClass]="!bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'" class="text-gray-800">{{"STOCK"| translate}}: {{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}} </p>
                             </div>
                             <!-- </div> -->
                           </div>
