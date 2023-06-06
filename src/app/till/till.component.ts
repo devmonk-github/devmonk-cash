@@ -943,8 +943,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.transaction = transaction;
             this.activityItems = activityItems;
             this.activity = activity;
-
-            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) this.tillService.updateSettings();
+            const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');
+            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers && bHasRepairOrOrderItems) this.tillService.updateSettings();
 
             this.transaction.aTransactionItems.map((tItem: any) => {
               for (const aItem of this.activityItems) {

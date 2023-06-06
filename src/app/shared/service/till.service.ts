@@ -891,7 +891,7 @@ export class TillService {
       aBagNumbers: this.settings.aBagNumbers
     };
     
-    this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).subscribe((result:any)=> {
+    this.apiService.putNew('cashregistry', `/api/v1/settings/update/bagNumbers/${this.iBusinessId}`, body).subscribe((result:any)=> {
       // console.log('settings result', result);
     });
   }
