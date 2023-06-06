@@ -65,6 +65,12 @@ export class ProductComponent implements OnInit{
       });
   }
 
+  notAllowedCommaAndSemiColon(event: any) {
+    let keyCode = (event.which) ? event.which : event.keyCode
+    if (keyCode == 59 || keyCode == 44) return false; /* 44=comma & 59= semicolon */
+    else return true;
+  }
+
   numericOnly(event:any): boolean { 
     let patt = /[0-9\,\.\ ]/;
     let result = patt.test(event.key);
