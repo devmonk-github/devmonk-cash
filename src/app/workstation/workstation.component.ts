@@ -6,6 +6,7 @@ import { DialogService } from '../shared/service/dialog';
 import { AddEditWorkstationComponent } from '../shared/components/add-edit-workstation/add-edit-workstation.component';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-workstation',
@@ -27,6 +28,8 @@ export class WorkstationComponent implements OnInit {
   settings: Array<any> = [];
   computers: Array<any> = [];
   iLocationId: string = '';
+  workstationLoading: boolean = false;
+  setOrderSubscription !: Subscription;
 
   downloadOptions = [
     {
@@ -59,6 +62,35 @@ export class WorkstationComponent implements OnInit {
       .subscribe((result: any) => {
         this.businessDetails = result.data;
       });
+  }
+  shiftWorkstation(type: string, index: number) {
+    if (type == 'up') {
+      if (this.workstations[index - 1])
+        [this.workstations[index - 1], this.workstations[index]] = [this.workstations[index], this.workstations[index - 1]]
+
+    } else {
+      if (this.workstations[index + 1])
+        [this.workstations[index + 1], this.workstations[index]] = [this.workstations[index], this.workstations[index + 1]]
+    }
+  }
+
+  setOrder(event: any) {
+    event.target.disabled = true;
+    this.workstationLoading = true;
+    try {
+      this.setOrderSubscription = this.apiService.putNew('cashregistry', '/api/v1/workstations/updateSequence/' + this.businessDetails._id, this.workstations).subscribe((result: any) => {
+        this.toastService.show({ type: 'success', text: `workstations order saved successfully` });
+        this.workstationLoading = false;
+        event.target.disabled = false;
+      }, (error) => {
+        this.workstationLoading = false;
+        event.target.disabled = false;
+      })
+    } catch (e) {
+      this.workstationLoading = false;
+      event.target.disabled = false;
+    }
+
   }
 
   selectDropDown(key: String){
@@ -192,5 +224,9 @@ export class WorkstationComponent implements OnInit {
           this.getWorkstations();
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    if (this.setOrderSubscription) this.setOrderSubscription.unsubscribe();
   }
 }
