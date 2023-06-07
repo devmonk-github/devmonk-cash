@@ -486,10 +486,12 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       (result: any) => {
         if (result?.data?.length && result?.data[0]?.result?.length) {
           this.labelPrintSettings = result.data[0].result.filter((el: any) => el.sMethod === 'labelDefinition');
-          const oLabelMethodSettings = result.data[0].result.find((el: any) => el.sMethod === 'settings');
-          
-          if (oLabelMethodSettings.oSettings) {
-            this.oSettings = oLabelMethodSettings.oSettings;
+          const aSettings = result.data[0].result.filter((el: any) => el.sMethod === 'settings');
+          //const oLabelMethodSettings = result.data[0].result.find((el: any) => el.sMethod === 'settings');
+          //console.log('Here', this.labelPrintSettings);
+          //console.log(aSettings.oSettings);
+          if (aSettings.oSettings) {
+            this.oSettings = aSettings.oSettings;
           } else {
             this.oSettings = {
               bUseZpl: true,
