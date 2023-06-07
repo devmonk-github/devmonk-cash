@@ -113,13 +113,13 @@
                                         <span *ngIf="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
                                         <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="not allowed, item is refunded"> 
                                         <button class="btn" (click)="bPriceEditMode = true" [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
-                                            <i class="fa fa-pencil-alt"></i>
+                                            <i class="fa fa-edit"></i>
                                         </button>
                                         </i>
                                     </span>
                                     <span *ngIf="!(transactionItem.bIsRefunded) && !(transactionItem.oType.bRefund)">
                                             <button class="btn" (click)="bPriceEditMode = true">
-                                                <i class="fa fa-pencil-alt"></i>
+                                                <i class="fa fa-edit"></i>
                                             </button>
                                     </span>
                                     </div>
@@ -134,18 +134,12 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <div>
-                                    </div>
                                 </td>
                                 <td class="">{{transactionItem.nPaidAmount}}</td>
-                                <td></td>
-                                <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
-                                    'NO') | translate }}</td>
+                                <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :'NO') | translate }}</td>
                                 <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                                 <td>
-                            
                                     <div class="form-check-custom" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
-                            <!-- *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity" -->
                                         <div class="form-check form-check-solid">
                                             <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" type="radio"
                                                 name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'pay'"

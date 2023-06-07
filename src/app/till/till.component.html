@@ -581,6 +581,9 @@
                   <div *ngIf="giftcard.profileIconUrl">
                     <img class="ml-1" src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
                   </div>
+                  <div class="mx-2 cursor-pointer" (click)="openCardsModal('edit', giftcard)">
+                    <i class="fa fa-edit"></i>
+                  </div>
                   <div (click)="removeGift(i)">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                   </div>

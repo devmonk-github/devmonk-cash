@@ -1516,19 +1516,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }).instance.close.subscribe(result => { });
   }
 
-  openCardsModal(oGiftcard?: any) {
-    this.dialogService.openModal(CardsComponent,
-      {
-        cssClass: 'modal-lg',
-        context: { customer: this.customer, oGiftcard },
-        hasBackdrop: true,
-        closeOnBackdropClick: false,
-        closeOnEsc: false
-      })
-      .instance.close.subscribe(result => {
+  openCardsModal(mode:string = 'new', oGiftcard?: any) {
+    if(mode == 'edit') {
+      delete oGiftcard._id;
+      // oGiftcard = JSON.parse(JSON.stringify(oGiftcard));
+    }
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false,
+      context: { customer: this.customer, oGiftcard: JSON.parse(JSON.stringify(oGiftcard || '')), mode: mode, appliedGiftCards: this.appliedGiftCards }
+      }).instance.close.subscribe(result => {
         if (result) {
-          if (result.giftCardInfo.nAmount > 0) {
-            this.appliedGiftCards.push(result.giftCardInfo);
+          // console.log({result, oGiftcard})
+          if (result.oGiftCard.nAmount > 0) {
+            const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
+            if (mode == 'edit' || oExisting) {
+              oExisting.nAmount = result.oGiftCard.nAmount;
+            } else {
+              this.appliedGiftCards.push(result.oGiftCard);
+            }
             this.changeInPayment();
           }
           if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
