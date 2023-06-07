@@ -77,7 +77,15 @@
           </div>
           <!-- Product image: over -->
 
-          <div *ngIf="nTotalStock <= 0" class="alert alert-warning d-flex align-items-center p-5">
+          <div *ngIf="productData?.ownBusinessProducts && nTotalStock <= 0" class="alert alert-warning d-flex align-items-center p-5">
+            <div class="d-flex flex-column">
+              <span>
+                {{"PRODUCT_IS_NOT_AVALABLE_IN_SUPPLIER_ACCOUNT" | translate }}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="!productData?.ownBusinessProducts && stock <= 0" class="alert alert-warning d-flex align-items-center p-5">
             <div class="d-flex flex-column">
               <span>
                 {{"PRODUCT_IS_NOT_AVALABLE_IN_SUPPLIER_ACCOUNT" | translate }}
@@ -97,7 +105,9 @@
 
           </div>
 
-          <p>{{'CURRENT_STOCK_LEVEL' | translate}}: {{stock}} | {{'CURRENT_MIN_STOCK_LEVEL' | translate}}: {{productData?.oCurrentLocation?.nMinStock || 0 }} | {{'TOTAL_SUPPLIER_STOCK' | translate}}: {{nTotalStock || 0}} | {{'SUPPLIER_PRICE' | translate}}:{{nHighestPrice || 0}}</p>
+          <p>{{'CURRENT_STOCK_LEVEL' | translate}}: {{stock}} | {{'CURRENT_MIN_STOCK_LEVEL' | translate}}: {{productData?.oCurrentLocation?.nMinStock || 0 }}
+            <span *ngIf="productData?.ownBusinessProducts"> | {{'TOTAL_SUPPLIER_STOCK' | translate}}: {{nTotalStock || 0}} | {{'SUPPLIER_PRICE' | translate}}:{{nHighestPrice || 0}}</span>
+          </p>
           
           <div *ngIf="showInputStock">
             <input class="form-control" id="ProductnStock" type="number" min="0" [(ngModel)]="productData.oCurrentLocation.nMinStock" (ngModelChange)="nMinStockChange($event)">
