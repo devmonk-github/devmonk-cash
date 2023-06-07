@@ -34,7 +34,7 @@ export class TransactionActionDialogComponent implements OnInit {
   nOrderCount: number = 0;
   aTypes = ['regular', 'order', 'repair', 'giftcard', 'repair_alternative'];
   aActionSettings = ['DOWNLOAD', 'PRINT_THERMAL', 'EMAIL', 'PRINT_PDF']
-  aUniqueTypes: any = [];
+  // aUniqueTypes: any = [];
   aRepairItems: any = [];
   aTemplates: any = [];
   employees:any =[];
@@ -80,22 +80,21 @@ export class TransactionActionDialogComponent implements OnInit {
       this.nRepairCount = context.nRepairCount;
       this.printActionSettings = context.printActionSettings;
       this.printSettings = context.printSettings;
-      this.printSettings = context.printSettings;
-      this.bRegularCondition = context.bRegularCondition;
-      this.bOrderCondition = context.bOrderCondition;
+      // this.bRegularCondition = context.bRegularCondition;
+      // this.bOrderCondition = context.bOrderCondition;
 
       this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair' || item.oType.eKind === 'order');
       // this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
       // this.bOrderCondition = this.nOrderCount === 1 || this.nRepairCount >= 1 || this.nOrderCount >= 1; //&& this.nRepairCount === 1
 
-      if (this.bRegularCondition) this.aUniqueTypes.push('regular');
-      if (this.bOrderCondition) this.aUniqueTypes.push('order');
+      // if (this.bRegularCondition) this.aUniqueTypes.push('regular');
+      // if (this.bOrderCondition) this.aUniqueTypes.push('order');
       
       if (this.transaction.aTransactionItemType.includes('giftcard')) {
         this.bGiftcardCondition = true;
-        this.aUniqueTypes.push('giftcard')
+        // this.aUniqueTypes.push('giftcard')
       }
-      this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
+      // this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
 
     })
     this.listEmployee();

@@ -158,7 +158,7 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey:any) {
     // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
-    if (!printActionSettings?.length && !sAction) {
+    if (!printActionSettings && !sAction) {
       this.download(pdfObject, pdfTitle, printSettings?.nRotation);
       return;
     } 
@@ -166,7 +166,7 @@ export class PdfService {
     //   printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
     // }
 
-    //console.log({ printActionSettings })
+    // console.log({ printActionSettings })
     if (sAction && sAction === 'print') {
       // console.log('if sAction= print')
       this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
@@ -188,7 +188,7 @@ export class PdfService {
   }
 
   handlePrint(pdfObject: any, printSettings: any, pdfTitle: any, sApiKey:any) {
-    //console.log('handlePrint', printSettings)
+    // console.log('handlePrint', printSettings)
     if (!printSettings?.nPrinterId) {
       this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
       return;

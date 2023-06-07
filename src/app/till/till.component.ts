@@ -995,7 +995,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
-    const aUniqueItemTypes = [];
+    // const aUniqueItemTypes = [];
 
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
@@ -1005,18 +1005,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
 
-    const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
-    const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
-    const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
+    // const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
+    // const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
+    // const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
 
-    if (bRegularCondition) aUniqueItemTypes.push('regular')
+    // if (bRegularCondition) aUniqueItemTypes.push('regular')
 
-    if (bOrderCondition) aUniqueItemTypes.push('order');
+    // if (bOrderCondition) aUniqueItemTypes.push('order');
 
-    aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
+    // aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
 
     const aPromises:any = [];
-    aPromises.push(this.getTemplate(aUniqueItemTypes))
+    aPromises.push(this.getTemplate()) //aUniqueItemTypes
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
     if(this.employee._id != oDataSource.iEmployeeId) {
       aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
@@ -1040,7 +1040,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      aUniqueItemTypes: aUniqueItemTypes,
+      // aUniqueItemTypes: aUniqueItemTypes,
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
@@ -1048,51 +1048,53 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aTemplates: aTemplates,
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
-      bOrderCondition: bOrderCondition
+      // bOrderCondition: bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
-    if (bOrderCondition) {
+    // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
+    // if (bOrderCondition) {
       // print order receipt
       const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
       this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
-    }
+    // }
     if (bRegularCondition) {
       //print proof of payments receipt
       const template = aTemplates.find((template: any) => template.eType === 'regular');
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'regular');
     }
 
-    if (bRepairCondition) {
-      if (this.bHasIActivityItemId) {
-        this.bHasIActivityItemId = false;
-        return;
-      }
+    // if (bRepairCondition) {
+    //   if (this.bHasIActivityItemId) {
+    //     this.bHasIActivityItemId = false;
+    //     return;
+    //   }
       //use two column layout
       const template = aTemplates.find((template: any) => template.eType === 'repair');
       this.activityItems.filter((oItem:any) => oItem.oType.eKind == 'repair').forEach((oItem:any) => {
         const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
         this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
       })
-    }
+    // }
 
-    if (bRepairAlternativeCondition) {
+    // if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
+      const oAlternativeReceiptTemplate = aTemplates.find((template: any) => template.eType === 'repair_alternative');
       const oAlternativeDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oAlternativeDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       oAlternativeDataSource.forEach((data: any) => {
         data.sBusinessLogoUrl = aResult[1].data;
         data.businessDetails = this.businessDetails;
-        this.sendForReceipt(data, template, data.sNumber, 'repair_alternative');
+        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
       })
-    }
+    // }
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+    // console.log('sendForReceipt', {title, type})
     oDataSource?.aPayments?.forEach((payment: any) => {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
@@ -1152,13 +1154,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`).toPromise();
   }
 
-  getTemplate(types: any) {
+  getTemplate() { //types: any
     const body = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oFilterBy: {
-        eType: types
-      }
+      // oFilterBy: {
+      //   eType: types
+      // }
     }
     return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body).toPromise();
   }
