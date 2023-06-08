@@ -1042,8 +1042,8 @@ export class ActivityDetailsComponent implements OnInit {
     const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
     if(type == 'giftcard') {
       const oReceipt = oActivity.receipts.find((el:any) => el._id == oActivity.iTransactionItemId);
-      if(oReceipt) {
-        oActivity.sReceiptNumber = oReceipt?.sReceiptNumber || '';
+      if (oReceipt && oReceipt?.aTransactions?.length) {
+        oActivity.sReceiptNumber = oReceipt?.aTransactions[0]?.sReceiptNumber || '';
       }
     }
     oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
