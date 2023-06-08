@@ -77,8 +77,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
     }
     
-    ngOnInit() {
-      this.apiService.setToastService(this.toastrService);
+  ngOnInit() {
+    this.apiService.setToastService(this.toastrService);
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
@@ -167,11 +167,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
-        if (item.nPaidAmount < (item.nTotalAmount - item.nDiscountToShow)) {
+        if((item.nTotalAmount - item.nDiscountToShow) == 0){
+          item.tType = '';
+        }else if (item.nPaidAmount < (item.nTotalAmount - item.nDiscountToShow)) {
           item.tType = 'pay';
-          if((item.nTotalAmount - item.nDiscountToShow) == 0) {
-            this.bIsDisable = false;
-          }
         } else if(item.nPaidAmount === (item.nTotalAmount - item.nDiscountToShow)){
           item.tType = 'refund';
         }
@@ -224,7 +223,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
         this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
       } else {
-        this.dialogRef.close.emit(data);
+        console.log('here data', data?.transactionItems?.filter((item:any)=> item))
+        if(data?.transactionItems?.filter((item:any)=> item.tType == '')?.length){
+          this.toastrService.show({ type: 'warning', text: 'Please select action!' });
+        }else{
+          this.dialogRef.close.emit(data);
+        }
+       
       }
     }
   }

@@ -152,7 +152,7 @@
                                         <div class="form-check form-check-solid"
                                             *ngIf="transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)">
                                             <input class="form-check-input" id="ref1_tr_{{transactionItem.sNumber}}" type="radio"
-                                                name="tr_{{transactionItem.sNumber}}"
+                                                name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'refund'"
                                                 [checked]="(transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)) && transactionItem.nTotalAmount != 0"
                                                 [disabled]="transactionItem.bIsRefunded || transactionItem?.oType?.bRefund" />
                                             <label class="form-check-label" for="ref1_tr_{{transactionItem.sNumber}}">
