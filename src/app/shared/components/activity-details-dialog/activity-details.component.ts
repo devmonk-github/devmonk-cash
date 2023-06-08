@@ -460,7 +460,7 @@ export class ActivityDetailsComponent implements OnInit {
               (business: any) => {
                 if (business._id == this.iBusinessId) {
                   this.business = business;
-                  this.businessDetails = business;
+                  // this.businessDetails = business;
                   this.tillService.selectCurrency(this.business?.aInLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0]);
                 }
               })
@@ -536,9 +536,9 @@ export class ActivityDetailsComponent implements OnInit {
         console.log('error: ', error);
       });
   }
-  getBusinessDetails(): Observable<any> {
-    return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
-  }
+  // getBusinessDetails(): Observable<any> {
+  //   return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
+  // }
 
   async downloadCustomerReceipt(index: number, receipt: any, sAction:any, sType?:string) {
     if (receipt == 'customerReceipt') {
@@ -1038,9 +1038,14 @@ export class ActivityDetailsComponent implements OnInit {
 
   printThermalReceipt(oActivity:any, type:string = 'repair') {
     oActivity.businessDetails = this.businessDetails;
-    // console.log({oActivity, type});
+    // console.log({oActivity, type}, this.businessDetails);
     const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
-    
+    if(type == 'giftcard') {
+      const oReceipt = oActivity.receipts.find((el:any) => el._id == oActivity.iTransactionItemId);
+      if (oReceipt && oReceipt?.aTransactions?.length) {
+        oActivity.sReceiptNumber = oReceipt?.aTransactions[0]?.sReceiptNumber || '';
+      }
+    }
     oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
     this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,

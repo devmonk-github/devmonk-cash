@@ -107,7 +107,8 @@ export class ReceiptService {
         private pdfService: PdfService,
         private toastService: ToastService,
         private printService: PrintService,
-        private pn2escposService: Pn2escposService) {
+        private pn2escposService: Pn2escposService,
+        private translateService: TranslateService) {
 
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -783,11 +784,12 @@ export class ReceiptService {
         }
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
+            thermalPrintSettings = printSettings.find((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType);
         }
         // console.log({printSettings, sType, thermalPrintSettings })
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
-            this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+            const sText = this.translateService.instant('THERMAL_PRINT_SETTINGS_NOT_CONFIGURED_FOR') + sType
+            this.toastService.show({ type: 'danger', text: sText });
             return;
         }
         oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
