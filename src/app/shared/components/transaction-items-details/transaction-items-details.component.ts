@@ -167,7 +167,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
-        if (item.nPaidAmount <= (item.nTotalAmount - item.nDiscountToShow)) {
+        if (item.nPaidAmount < (item.nTotalAmount - item.nDiscountToShow)) {
           item.tType = 'pay';
           if((item.nTotalAmount - item.nDiscountToShow) == 0) {
             this.bIsDisable = false;
