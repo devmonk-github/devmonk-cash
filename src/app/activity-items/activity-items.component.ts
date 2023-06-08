@@ -30,8 +30,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   };
   importStatus: string = 'all';
   businessDetails: any = {};
-  iLocationId: string;
-  iBusinessId: string;
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
   
   requestParams: any = {
     create: {
@@ -129,8 +129,6 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
-    this.iBusinessId = localStorage.getItem('currentBusiness') || "";
-    this.iLocationId = localStorage.getItem('currentLocation') || "";
     this.fetchBusinessDetails();
     this.loadTransaction();
 
@@ -152,8 +150,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+    this.apiService.getNew('core', `/api/v1/business/${this.iBusinessId}`).subscribe((result: any) => {
       this.businessDetails = result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     })
   }
 
