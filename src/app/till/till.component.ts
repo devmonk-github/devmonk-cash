@@ -1520,15 +1520,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openCardsModal(mode:string = 'new', oGiftcard?: any) {
+    const oPassedGiftcard = JSON.parse(JSON.stringify(oGiftcard || ''));
     if(mode == 'edit') {
-      delete oGiftcard._id;
+      delete oPassedGiftcard._id;
       // oGiftcard = JSON.parse(JSON.stringify(oGiftcard));
     }
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false,
-      context: { customer: this.customer, oGiftcard: JSON.parse(JSON.stringify(oGiftcard || '')), mode: mode, appliedGiftCards: this.appliedGiftCards }
+      context: { customer: this.customer, oGiftcard: oPassedGiftcard , mode: mode, appliedGiftCards: this.appliedGiftCards }
       }).instance.close.subscribe(result => {
         if (result) {
-          // console.log({result, oGiftcard})
+          // console.log(this.appliedGiftCards)
+          // console.log({result, oGiftcard, mode})
           if (result.oGiftCard.nAmount > 0) {
             const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
             if (mode == 'edit' || oExisting) {
