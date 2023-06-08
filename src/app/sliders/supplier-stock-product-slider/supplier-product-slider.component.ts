@@ -233,17 +233,11 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
               }
               if (!this.productData?.oCurrentLocation) this.productData.oCurrentLocation = {};
               if(this.productData?.ownBusinessProducts?.nHighestPrice) this.nHighestPrice = this.productData.ownBusinessProducts.nHighestPrice;
-              else this.nHighestPrice = this.productData.nHighestPrice;
               if(this.productData?.ownBusinessProducts?.aLocation?.length){
                   this.productData.ownBusinessProducts.aLocation.forEach((location:any)=>{
                     if(location?.nStock) this.nTotalStock = this.nTotalStock + location.nStock;
                   })
-              }else if(this.productData?.aLocation?.length){
-                this.productData.aLocation.forEach((location:any)=>{
-                  if(location?.nStock) this.nTotalStock = this.nTotalStock + location.nStock;
-                })
               }
-
               this.findCurrentStock();
               this.ProductsLoading = false;
               resolve(result.data);

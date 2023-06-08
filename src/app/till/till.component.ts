@@ -1057,9 +1057,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
     // if (bOrderCondition) {
       // print order receipt
+    if(nOrderCount >= 1){
       const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
       this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
+    }
+
     // }
     if (bRegularCondition) {
       //print proof of payments receipt
