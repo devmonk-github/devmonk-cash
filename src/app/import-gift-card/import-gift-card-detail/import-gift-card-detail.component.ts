@@ -46,7 +46,6 @@ export class ImportGiftCardDetailComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedGiftCardData?.length) {
       this.headerOptions = [...Object.keys(this.parsedGiftCardData[0])];
-      console.log('this.headerOptions: ', this.headerOptions);
       this.headerOptions = this.headerOptions.sort();
       this.giftCardDetailsForm = {};
       this.updateTemplateForm = {};

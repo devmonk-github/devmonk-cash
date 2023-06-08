@@ -1022,9 +1022,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
     }
 
-
     const aResult:any = await Promise.all(aPromises);
-    // console.log({aResult});
     if (this.employee._id != oDataSource.iEmployeeId) {
       this.employee = aResult[2].data;
     }
