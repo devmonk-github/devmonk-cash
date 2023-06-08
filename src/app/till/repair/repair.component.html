@@ -226,9 +226,9 @@
             <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{ option.sName || "Unknown" }}
             </ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="oRepairer.sName">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="oRepairer.sName">
             {{ oRepairer.sName }}
-            <div (click)="oRepairer.sName = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="oRepairer.sName = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -249,9 +249,9 @@
               option.sName || "Unknown"
               }}</ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="supplier">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="supplier">
             {{ supplier }}
-            <div (click)="supplier = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="supplier = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -270,9 +270,9 @@
               option.sName || "Unknown"
               }}</ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="brand">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="brand">
             {{ brand }}
-            <div (click)="brand = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="brand = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>

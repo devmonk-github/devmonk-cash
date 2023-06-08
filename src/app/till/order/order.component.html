@@ -240,9 +240,9 @@
             <ng-option *ngFor="let option of supplierOptions" [value]="option">{{option.sName ||
               'Unknown'}}</ng-option>
           </ng-select>
-          <div class="chip d-flex py-4 px-8" *ngIf="supplier">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="supplier">
             {{supplier}}
-            <div (click)="supplier=null">
+            <div  class="d-flex align-items-center justify-content-center" (click)="supplier=null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -256,9 +256,9 @@
             <ng-option *ngFor="let option of filteredBrands" [value]="option">{{option.sName ||
               'Unknown'}}</ng-option>
           </ng-select>
-          <div class="chip d-flex py-4 px-8" *ngIf="brand">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="brand">
             {{brand}}
-            <div (click)="brand=null">
+            <div class="d-flex align-items-center justify-content-center" (click)="brand=null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
