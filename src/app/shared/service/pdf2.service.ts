@@ -131,7 +131,7 @@ export class PdfService {
       const pdfObject = this.generatePdf(docDefinition);
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
-      } else if ((printSettings && printActionSettings?.length) || sAction == 'print') {
+      } else if ((printSettings && printActionSettings) || sAction == 'print') {
         this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey);
         resolve(true);
       } else {
@@ -158,12 +158,14 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey:any) {
     // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
-    if (!printActionSettings?.length && !sAction) {
+    if (!printActionSettings && !sAction) {
       this.download(pdfObject, pdfTitle, printSettings?.nRotation);
       return;
-    } else if (printActionSettings?.length) {
-      printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
-    }
+    } 
+    // else if (printActionSettings) {
+    //   printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
+    // }
+
     // console.log({ printActionSettings })
     if (sAction && sAction === 'print') {
       // console.log('if sAction= print')
@@ -186,12 +188,13 @@ export class PdfService {
   }
 
   handlePrint(pdfObject: any, printSettings: any, pdfTitle: any, sApiKey:any) {
+    // console.log('handlePrint', printSettings)
     if (!printSettings?.nPrinterId) {
       this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
       return;
     }
 
-    if (printSettings?.nRotation == 0) {
+    if (!printSettings?.nRotation || printSettings?.nRotation == 0) {
       pdfObject.getBase64((data: any) => this.sendToPrint(data, printSettings, pdfTitle, sApiKey));
     } else {
       pdfObject.getBuffer(async (buffer: any) => {

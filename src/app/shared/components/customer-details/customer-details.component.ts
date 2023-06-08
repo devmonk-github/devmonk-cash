@@ -300,11 +300,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     let str = this.customer?.nClientId;
-    if(str) str = str.replaceAll('undefined','-');
-    this.customer.nClientId = str;
-    if (str.indexOf('/') > 0) {
+    if(str && str.indexOf('/') > 0) {
+      str = str.replaceAll('undefined','-');
+      this.customer.nClientId = str;
       this.nClientId = str.substring(0, str.indexOf('/'));
-
     } else {
       this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
     }

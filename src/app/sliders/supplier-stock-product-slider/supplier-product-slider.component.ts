@@ -48,7 +48,14 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   AvailableSizesProductsLoading = false;
   ProductsLoading = true;
   showInputStock: boolean = false;
+  nHighestPrice=0;
+  nTotalStock=0;
+  bWebShopUrl:boolean = false;
   minStockSubject : Subject<string> = new Subject<string>();
+  aBusinessProductVariant:any =[];
+  currentLanguage:any = 'en';
+  isShowAvailableProduct:Boolean = false;
+  showProductVariantLoader:Boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -60,6 +67,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.currentLanguage = localStorage.getItem('language');
     this.subscription = this.$data?.subscribe({
       next: async (data: any) => {
         // console.log('data',data);
@@ -97,15 +105,15 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     this.productData = {};
   }
 
-  viewOnSupplierWebShop(url:any){
-    window.open(url , '_blank');
+  viewOnSupplierWebShop(){
+    const webShopUrl = this.productData?.ownBusinessProducts?.sB2bUrl ? this.productData?.ownBusinessProducts?.sB2bUrl : this.productData?.sB2bUrl;
+    window.open(webShopUrl , '_blank');
     let body = {
       'iBusinessId' : this.iBusinessId.toString() , 
       'iSupplierId' : this.productData.iSupplierId ,
       'iProductId': this.productData.iProductId ,
       'iLocationId':this.iLocationId ,
-      'sB2bUrl' : url
-
+      'sB2bUrl' : webShopUrl
     }
 
     this.apiService.postNew('core' , '/api/v1/business/products/viewSupplierOnWebshop' , body).subscribe((res:any)=>{
@@ -125,7 +133,22 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
       }
     });
   }
+  async getBusinessProductVariant() {
+    this.aBusinessProductVariant = [];
+    if (this.productData?.iProductId) {
+      this.showProductVariantLoader = true;
+      this.apiService.postNew('core', '/api/v1/business-product-variants/productVariantList', { iBusinessId: this.iBusinessId, iProductId: this.productData?.iProductId }).subscribe((result: any) => {
+        this.showProductVariantLoader = false;
+        if (result?.data?.length) {
+          this.aBusinessProductVariant = result?.data;
+        }
+      }, (error) => {
+        console.log("Error", error);
+        this.showProductVariantLoader = false;
+      })
+    }
 
+  }
   setBuyNowButtonText() {
     this.buyNowButtonText = 'Buy Now';
     if (this.stock >= 1) this.buyNowButtonText = 'SET_AS_MIN_STOCK_PRODUCT';
@@ -143,15 +166,19 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     this.ComparableProductsLoading = true;
     await this.getProductData(productId.toString())
     if (this.currentTab === 1) this.getComparableProducts();
-    else if (this.currentTab === 2) this.getAvailableSizesProducts();
+    else if (this.currentTab === 2) this.getBusinessProductVariant();
     this.ComparableProductsLoading = false
+  }
+
+  hideAvailableProduct(){
+    this.isShowAvailableProduct = false;
   }
 
   async onSelectAvailableSizeProduct(productId: string) {
     this.ComparableProductsLoading = true;
     await this.getProductData(productId.toString())
     if (this.currentTab === 1) this.getComparableProducts();
-    else if (this.currentTab === 2) this.getAvailableSizesProducts();
+    else if (this.currentTab === 2) this.getBusinessProductVariant();
     this.ComparableProductsLoading = false
   }
 
@@ -167,7 +194,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     this.currentTab = index;
     if (index === 0) return;
     else if (index === 1) this.getComparableProducts()
-    else if (index === 2) this.getAvailableSizesProducts()
+    else if (index === 2) this.getBusinessProductVariant()
     else if (index === 3 || index === 4) this.getTradeProducts()
     else if (index === 5 ) this.getComparableProducts()
   }
@@ -185,6 +212,13 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
 
   getProductData(iBusinessProductId: string) {
     this.ProductsLoading = true;
+    this.nTotalStock = 0;
+    this.nHighestPrice =0;
+    if(!this.bIsSlideTurnOff){
+      this.bWebShopUrl =true;
+    }else{
+      this.bWebShopUrl = this.bIsSlideTurnOff;
+    }
     return new Promise<any>((resolve, reject) => {
       this.apiService
         .getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId.toString()}`)
@@ -192,7 +226,18 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
           (result: any) => {
             if (result.message === "success") {
               this.productData = result.data
+              if(!this.bIsSlideTurnOff){
+                this.bWebShopUrl =false;
+              }else{
+                this.bWebShopUrl = this.bIsSlideTurnOff;
+              }
               if (!this.productData?.oCurrentLocation) this.productData.oCurrentLocation = {};
+              if(this.productData?.ownBusinessProducts?.nHighestPrice) this.nHighestPrice = this.productData.ownBusinessProducts.nHighestPrice;
+              if(this.productData?.ownBusinessProducts?.aLocation?.length){
+                  this.productData.ownBusinessProducts.aLocation.forEach((location:any)=>{
+                    if(location?.nStock) this.nTotalStock = this.nTotalStock + location.nStock;
+                  })
+              }
               this.findCurrentStock();
               this.ProductsLoading = false;
               resolve(result.data);
@@ -270,40 +315,26 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
         );
     })
   }
-
   async getAvailableSizesProducts() {
+    this.isShowAvailableProduct = true;
     this.AvailableSizesProductsLoading = true
     const body = {
       iBusinessId: this.iBusinessId.toString(),
       iLocationId: this.iLocationId.toString(),
       iBusinessProductId: this.productData._id.toString(),
     };
-    return new Promise<any>((resolve, reject) => {
-
-      this.apiService
-        .postNew(
-          'core',
-          '/api/v1/business/products/list-product-available-sizes',
-          body
-        )
-        .subscribe(
-          (result: any) => {
-            this.AvailableSizesProducts = result.data;
-            this.AvailableSizesProductsLoading = false
-            resolve(result);
-
-          },
-          (err: any) => {
-            console.log({ err: err });
-            this.toastService.show({ type: 'danger', text: err?.error?.message })
-
-            this.AvailableSizesProductsLoading = false
-            resolve(err)
-          }
-        );
-    })
+    this.apiService.postNew('core', '/api/v1/business/products/list-product-available-sizes', body).subscribe((result: any) => {
+      this.AvailableSizesProducts = result?.data;
+      this.AvailableSizesProductsLoading = false
+    },
+      (err: any) => {
+        console.log({ err: err });
+        this.toastService.show({ type: 'danger', text: err?.error?.message })
+        this.AvailableSizesProductsLoading = false
+      }
+    );
   }
-
+  
   nMinStockChange(event:any){
     this.minStockSubject.next(event);
   }

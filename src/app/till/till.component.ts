@@ -637,12 +637,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data.customer) {
           this.customer = data.customer;
           let str = this.customer?.nClientId;
-          if(str) str = str.replaceAll('undefined','-');
-          this.customer.nClientId = str;
-          if (str.indexOf('/') > 0) {
+          if (str && str.indexOf('/') > 0) {
+            str = str.replaceAll('undefined','-');
             this.nClientId = str.substring(0, str.indexOf('/'));
+            this.customer.nClientId = str;
           }else{
-            this.nClientId = this.customer.nClientId == '' ? '-': this.customer.nClientId;
+            this.nClientId = this.customer?.nClientId == '' ? '-': this.customer?.nClientId;
           }
           if (this.customer?._id && this.customer._id != '') {
             const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
@@ -943,8 +943,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.transaction = transaction;
             this.activityItems = activityItems;
             this.activity = activity;
-
-            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) this.tillService.updateSettings();
+            const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');
+            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers && bHasRepairOrOrderItems) this.tillService.updateSettings();
 
             this.transaction.aTransactionItems.map((tItem: any) => {
               for (const aItem of this.activityItems) {
@@ -995,7 +995,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
-    const aUniqueItemTypes = [];
+    // const aUniqueItemTypes = [];
 
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
@@ -1005,18 +1005,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
 
-    const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
-    const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
-    const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
+    // const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
+    // const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
+    // const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
 
-    if (bRegularCondition) aUniqueItemTypes.push('regular')
+    // if (bRegularCondition) aUniqueItemTypes.push('regular')
 
-    if (bOrderCondition) aUniqueItemTypes.push('order');
+    // if (bOrderCondition) aUniqueItemTypes.push('order');
 
-    aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
+    // aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
 
     const aPromises:any = [];
-    aPromises.push(this.getTemplate(aUniqueItemTypes))
+    aPromises.push(this.getTemplate()) //aUniqueItemTypes
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
     if(this.employee._id != oDataSource.iEmployeeId) {
       aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
@@ -1038,7 +1038,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      aUniqueItemTypes: aUniqueItemTypes,
+      // aUniqueItemTypes: aUniqueItemTypes,
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
@@ -1046,56 +1046,65 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aTemplates: aTemplates,
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
-      bOrderCondition: bOrderCondition
+      // bOrderCondition: bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
-    if (bOrderCondition) {
+    // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
+    // if (bOrderCondition) {
       // print order receipt
-      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+    if(nOrderCount >= 1){
+      const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
       this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
     }
+
+    // }
     if (bRegularCondition) {
       //print proof of payments receipt
-      const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
+      const template = aTemplates.find((template: any) => template.eType === 'regular');
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'regular');
     }
 
-    if (bRepairCondition) {
-      if (this.bHasIActivityItemId) {
-        this.bHasIActivityItemId = false;
-        return;
-      }
+    // if (bRepairCondition) {
+    //   if (this.bHasIActivityItemId) {
+    //     this.bHasIActivityItemId = false;
+    //     return;
+    //   }
       //use two column layout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(this.activityItems, oDataSource, this.employee)
-      this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
-    }
+      const template = aTemplates.find((template: any) => template.eType === 'repair');
+      this.activityItems.filter((oItem:any) => oItem.oType.eKind == 'repair').forEach((oItem:any) => {
+        const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
+        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
+      })
+    // }
 
-    if (bRepairAlternativeCondition) {
+    // if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
+      const oAlternativeReceiptTemplate = aTemplates.find((template: any) => template.eType === 'repair_alternative');
       const oAlternativeDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oAlternativeDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       oAlternativeDataSource.forEach((data: any) => {
         data.sBusinessLogoUrl = aResult[1].data;
         data.businessDetails = this.businessDetails;
-        this.sendForReceipt(data, template, data.sNumber, 'repair_alternative');
+        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
       })
-    }
+    // }
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+    // console.log('sendForReceipt', {title, type})
     oDataSource?.aPayments?.forEach((payment: any) => {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    const printActionSettings = this.printActionSettings?.filter((pas: any) => pas.eType === type);
-    if (printActionSettings?.length) {
-      const aActionToPerform = printActionSettings[0].aActionToPerform;
+    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === 'is_created');
+    // console.log({ oPrintActionSettings })
+    if (oPrintActionSettings) {
+      const aActionToPerform = oPrintActionSettings.aActionToPerform;
+      // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
@@ -1114,43 +1123,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           pdfTitle: title,
           templateData: template,
           printSettings: settings,
-          printActionSettings: this.printActionSettings,
+          printActionSettings: oPrintActionSettings,
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
         });
       }
-
-      // if(oDataSource?.oCustomer?.bCounter == false){
-      //   const response =  await this.receiptService.exportToPdf({
-      //     oDataSource: oDataSource,
-      //     pdfTitle: title,
-      //     templateData: template,
-      //     printSettings: settings,
-      //     // printActionSettings: this.printActionSettings,
-      //     // eSituation: 'is_created',
-      //     sAction: 'sentToCustomer',
-      //     // sApiKey: this.businessDetails.oPrintNode.sApiKey
-      //   });
-
-      //   const body = {
-      //     pdfContent: response,
-      //     iTransactionId: this.transaction._id,
-      //     receiptType: 'purchase-receipt',
-      //     sCustomerEmail: oDataSource.oCustomer.sEmail
-      //   }
-
-      //   this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
-      //     (result: any) => {
-      //       console.log("------------------successfully mail sent-----------------");
-      //       console.log(result);
-      //       if (result) {
-      //         // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
-      //       }
-      //     }, (error: any) => {
-
-      //     }
-      //   )
-      // }
     }
   }
 
@@ -1164,7 +1141,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.printSettings = [];
         result?.data[0]?.result.forEach((settings: any) => {
-          if (settings?.sMethod === 'actions' && settings.iWorkstationId === this.iWorkstationId) {
+          if (settings?.sMethod === 'actions') {
             this.printActionSettings = settings?.aActions || [];
           } else {
             this.printSettings.push(settings);
@@ -1178,13 +1155,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`).toPromise();
   }
 
-  getTemplate(types: any) {
+  getTemplate() { //types: any
     const body = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oFilterBy: {
-        eType: types
-      }
+      // oFilterBy: {
+      //   eType: types
+      // }
     }
     return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body).toPromise();
   }
@@ -1540,19 +1517,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }).instance.close.subscribe(result => { });
   }
 
-  openCardsModal(oGiftcard?: any) {
-    this.dialogService.openModal(CardsComponent,
-      {
-        cssClass: 'modal-lg',
-        context: { customer: this.customer, oGiftcard },
-        hasBackdrop: true,
-        closeOnBackdropClick: false,
-        closeOnEsc: false
-      })
-      .instance.close.subscribe(result => {
+  openCardsModal(mode:string = 'new', oGiftcard?: any) {
+    if(mode == 'edit') {
+      delete oGiftcard._id;
+      // oGiftcard = JSON.parse(JSON.stringify(oGiftcard));
+    }
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false,
+      context: { customer: this.customer, oGiftcard: JSON.parse(JSON.stringify(oGiftcard || '')), mode: mode, appliedGiftCards: this.appliedGiftCards }
+      }).instance.close.subscribe(result => {
         if (result) {
-          if (result.giftCardInfo.nAmount > 0) {
-            this.appliedGiftCards.push(result.giftCardInfo);
+          // console.log({result, oGiftcard})
+          if (result.oGiftCard.nAmount > 0) {
+            const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
+            if (mode == 'edit' || oExisting) {
+              oExisting.nAmount = result.oGiftCard.nAmount;
+            } else {
+              this.appliedGiftCards.push(result.oGiftCard);
+            }
             this.changeInPayment();
           }
           if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {

@@ -891,7 +891,7 @@ export class TillService {
       aBagNumbers: this.settings.aBagNumbers
     };
     
-    this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).subscribe((result:any)=> {
+    this.apiService.putNew('cashregistry', `/api/v1/settings/update/bagNumbers/${this.iBusinessId}`, body).subscribe((result:any)=> {
       // console.log('settings result', result);
     });
   }
@@ -934,8 +934,8 @@ export class TillService {
     return oDataSource;
   }
 
-  prepareDataForRepairReceipt(activityItems: any, transaction: any, employee:any, index:number = 0) {
-    const oDS = activityItems.filter((item: any) => item.oType.eKind === 'repair')[index];
+  prepareDataForRepairReceipt(oItem: any, transaction: any, employee:any) {
+    const oDS = JSON.parse(JSON.stringify(oItem));
     oDS.oCustomer = transaction.oCustomer
     oDS.businessDetails = transaction.businessDetails;
     oDS.sAdvisedEmpFirstName = employee?.sFirstName || transaction?.sAdvisedEmpFirstName || 'a';

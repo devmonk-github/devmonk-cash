@@ -388,7 +388,7 @@
                               <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
                               <p *ngIf="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'" class="text break text-danger">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
-                              <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || "0"}} </p>
+                              <p [ngClass]="!bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'" class="text-gray-800">{{"STOCK"| translate}}: {{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}} </p>
                             </div>
                             <!-- </div> -->
                           </div>
@@ -530,7 +530,7 @@
                   </p>
                   <p class="mt-3 mb-0 text-gray-800" *ngIf="tillService.oSavingPointSettings.bEnabled && !customer.bCounter" >
                     <!-- <span class="fw-bolder">{{"SAVING_POINTS" | translate}}:</span> <span>{{ customer.oPoints.spendable }}</span> -->
-                    <span class="fw-bolder">{{"SAVING_POINTS" | translate}}: </span><span>{{ customer?.nLoyaltyPoints }} ({{ (customer?.nLoyaltyPointsValue || 0) | currency: tillService.currency}}) </span>
+                    <span class="fw-bolder">{{"SAVING_POINTS" | translate}}: </span><span>{{ customer?.nLoyaltyPoints || 0 }} ({{ (customer?.nLoyaltyPointsValue || 0) | currency: tillService.currency}}) </span>
                   </p>
                 </div>
               </div>
@@ -580,6 +580,9 @@
                   {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: tillService.currency}}
                   <div *ngIf="giftcard.profileIconUrl">
                     <img class="ml-1" src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
+                  </div>
+                  <div class="mx-2 cursor-pointer" (click)="openCardsModal('edit', giftcard)">
+                    <i class="fa fa-edit"></i>
                   </div>
                   <div (click)="removeGift(i)">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>

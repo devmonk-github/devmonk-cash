@@ -363,8 +363,7 @@
                                                     class="btn btn-lg btn-primary" (click)="submit(activity)"
                                                     type="submit">
                                                     <span *ngIf="submitted" class="mx-3">
-                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                            style="font-size:15px;"></i>
+                                                        <i class="fa fa-spinner fa-spin"  style="font-size:15px;"></i>
                                                     </span>
                                                     <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
                                                 </button>
@@ -951,7 +950,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">
@@ -1068,8 +1067,7 @@
                                                     class="btn btn-lg btn-primary" (click)="submit(activity)"
                                                     type="submit">
                                                     <span *ngIf="submitted" class="mx-3">
-                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                            style="font-size:15px;"></i>
+                                                        <i class="fa fa-spinner fa-spin"  style="font-size:15px;"></i>
                                                     </span>
                                                     <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
                                                 </button>
@@ -1273,7 +1271,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">
@@ -1377,8 +1375,7 @@
                                                     class="btn btn-lg btn-primary" (click)="submit(activity)"
                                                     type="submit">
                                                     <span *ngIf="submitted" class="mx-3">
-                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                            style="font-size:15px;"></i>
+                                                        <i class="fa fa-spinner fa-spin"  style="font-size:15px;"></i>
                                                     </span>
                                                     <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
                                                 </button>
@@ -1822,7 +1819,7 @@
                                                 <tbody class="fw-bold text-gray-600">
                                                     <tr *ngFor='let receipt of activity.receipts'>
                                                         <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                        <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency:
                                                             tillService.currency}}</td>
                                                         <ng-container *ngIf="from != 'transaction-details'">
