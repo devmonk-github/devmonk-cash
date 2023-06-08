@@ -12,6 +12,7 @@ import { CustomerDialogComponent } from '../shared/components/customer-dialog/cu
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { faLongArrowAltDown, faLongArrowAltUp } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -112,7 +113,17 @@ export class CustomersComponent implements OnInit {
   PCodeString :any = "POSTAL_CODE";
   HNumberString :any = "HOUSE_NUMBER";
   showAdvanceSearch: boolean = false;
-  
+  faArrowUp = faLongArrowAltUp;
+  faArrowDown = faLongArrowAltDown;
+  tableHeaders: Array<any> = [
+    { key: 'NAME',  disabled: true },
+    { key: 'PHONE', disabled: true },
+    { key: 'EMAIL', disabled: true },
+    { key: 'SHIPPING_ADDRESS', selected: false, sort: '' },
+    { key: 'INVOICE_ADDRESS', selected: false, sort: '' },
+    {key:'ACTION' , disabled:true }
+  ]
+ 
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
@@ -160,6 +171,34 @@ export class CustomersComponent implements OnInit {
       }
     }
     return arr;
+  }
+  
+  //  Function for set sort option on customer table
+  setSortOption(sortHeader: any) {
+    if (sortHeader.selected) {
+      sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
+      this.sortAndLoadCustomers(sortHeader)
+    } else {
+      this.tableHeaders = this.tableHeaders.map((th: any) => {
+        if (sortHeader.key == th.key) {
+          th.selected = true;
+          th.sort = 'asc';
+        } else {
+          th.selected = false;
+        }
+        return th;
+      })
+      this.sortAndLoadCustomers(sortHeader)
+    }
+  }
+  sortAndLoadCustomers(sortHeader: any) {
+    let sortBy = 'dCreatedDate';
+    if (sortHeader.key == 'SHIPPING_ADDRESS') sortBy = 'oShippingAddress.sStreet';
+    if (sortHeader.key == 'INVOICE_ADDRESS') sortBy = 'oInvoiceAddress.sStreet';
+    
+    this.requestParams.sortBy = sortBy;
+    this.requestParams.sortOrder = sortHeader.sort;
+    this.getCustomers();
   }
   setPlaceHolder() {
     if (this.requestParams.oFilterBy.aSearchField.length != 0) {
