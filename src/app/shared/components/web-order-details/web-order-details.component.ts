@@ -388,7 +388,7 @@ export class WebOrderDetailsComponent implements OnInit {
       eSituation: 'is_created',
       sAction: sAction,
       sApiKey: this.businessDetails?.oPrintNode?.sApiKey
-    });
+    }).toPromise();
 
     if (sAction == 'sentToCustomer') {
       this.sendMailToCustomer(response);
@@ -619,12 +619,12 @@ export class WebOrderDetailsComponent implements OnInit {
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     oDataSource.aTransactionItems = this.activityItems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
-    this.receiptService.printThermalReceipt({
+    await this.receiptService.printThermalReceipt({
       oDataSource: oDataSource,
       printSettings: this.printSettings,
       sAction: 'thermal',
       apikey: this.businessDetails.oPrintNode.sApiKey
-    });
+    }).toPromise();
   }
 
   sendMailToCustomer(pdfContent: any) {

@@ -329,6 +329,7 @@
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'IMAGE' | translate}}</td>
+                                    <td class="text-muted">{{'TYPE' | translate}}</td>
                                     <td class="text-muted">{{'PRODUCT' | translate}}</td>
                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
@@ -354,11 +355,22 @@
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
+                                    <td>
+                                        <span class="badge badge-info" style="text-transform: capitalize;">
+                                            {{item.eKind}}
+                                        </span>
+                                    </td>
                                     <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
                                             <p class="m-0" *ngIf="!item.sProductName">
-                                                {{ item.sArticleGroupName }} {{item.sProductNumber }}</p>
-                                            <p class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
+                                                {{ item.sArticleGroupName }} {{item.sProductNumber }}
+                                            </p>
+                                            <p class="m-0" *ngIf="item.sProductName">
+                                                {{ item.sProductName}}
+                                            </p>
+                                            <p class="m-0 text-muted">
+                                                ({{item.sArticleNumber || '-'}})
+                                            </p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
                                             <span *ngIf="item?.bPrepayment">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount}}
@@ -430,6 +442,7 @@
                                     </td>
                                 </tr>
                                 <tr class="fw-bolder">
+                                    <td></td>
                                     <td></td>
                                     <td>{{ 'TOTAL' | translate }}</td>
                                     <td>{{ transaction.totalAfterDisc | currency: tillService.currency }}</td>

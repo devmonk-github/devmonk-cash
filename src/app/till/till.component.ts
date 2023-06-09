@@ -566,7 +566,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iCustomerId: this.customer?._id,
 
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
-      eType: '',
+      eType: 'giftcard',
       nPriceIncVat: this.transactionItems[index].price,
       nPurchasePrice: this.transactionItems[index].price / 1.21,
       nVatRate: this.transactionItems[index].tax,
@@ -995,28 +995,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
-    // const aUniqueItemTypes = [];
-
-    const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
-    const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
+    let nRepairCount = 0, nOrderCount = 0, nGiftcardCount = 0;
+    oDataSource.aTransactionItems.forEach((item:any) => {
+      if(item.oType.eKind == 'repair') nRepairCount++;
+      else if(item.oType.eKind == 'order') nOrderCount++;
+      else if(item.oType.eKind == 'giftcard') nGiftcardCount++;
+    })
 
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
 
-    // const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
-    // const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
-    // const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
-
-    // if (bRegularCondition) aUniqueItemTypes.push('regular')
-
-    // if (bOrderCondition) aUniqueItemTypes.push('order');
-
-    // aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
-
     const aPromises:any = [];
-    aPromises.push(this.getTemplate()) //aUniqueItemTypes
+    aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
     if(this.employee._id != oDataSource.iEmployeeId) {
       aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
@@ -1040,7 +1032,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      // aUniqueItemTypes: aUniqueItemTypes,
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
@@ -1048,7 +1039,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aTemplates: aTemplates,
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
-      // bOrderCondition: bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });
@@ -1094,6 +1084,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
       })
     // }
+
+    const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
+    this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
+      const oDataSource = { ...oItem };
+      oDataSource.businessDetails = this.transaction.businessDetails;
+      oDataSource.nTotal = oDataSource.nPaidAmount;
+      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
+      oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+      this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'giftcard');
+    })
+
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -1108,7 +1109,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
       // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        this.receiptService.printThermalReceipt({
+        await this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
           sAction: 'thermal',
@@ -1116,11 +1117,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           title: oDataSource.sNumber,
           sType: type,
           sTemplateType: 'business-receipt'
-        });
+        }).toPromise();
       }
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
-        this.receiptService.exportToPdf({
+        await this.receiptService.exportToPdf({
           oDataSource: oDataSource,
           pdfTitle: title,
           templateData: template,
@@ -1128,7 +1129,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printActionSettings: oPrintActionSettings,
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
-        });
+        }).toPromise();
       }
     }
   }
