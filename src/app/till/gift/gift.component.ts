@@ -115,12 +115,6 @@ export class GiftComponent implements OnInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  generateBarcodeURI(data:any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128" });
-    return canvas.toDataURL("image/png");
-  }
-
   async generatePDF(print: boolean) {
     this.downloading = true;
     const template = await this.getTemplate('giftcard').toPromise();
@@ -135,15 +129,15 @@ export class GiftComponent implements OnInit {
     }
 
     const oDataSource = JSON.parse(JSON.stringify(this.item));
-    oDataSource.sBarcodeURI = this.generateBarcodeURI('G-'+oDataSource.sGiftCardNumber);
+    oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(false, 'G-'+oDataSource.sGiftCardNumber);
     oDataSource.nPriceIncVat = oDataSource.price;
     oDataSource.dCreatedDate = new Date();
 
-    this.receiptService.exportToPdf({
+    await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       templateData: template.data,
       pdfTitle: oDataSource.sGiftCardNumber
-    })
+    }).toPromise();
 
     return;
   }

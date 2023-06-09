@@ -388,7 +388,7 @@ export class WebOrderDetailsComponent implements OnInit {
       eSituation: 'is_created',
       sAction: sAction,
       sApiKey: this.businessDetails?.oPrintNode?.sApiKey
-    });
+    }).toPromise();
 
     if (sAction == 'sentToCustomer') {
       this.sendMailToCustomer(response);

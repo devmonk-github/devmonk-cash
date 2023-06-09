@@ -868,7 +868,7 @@ export class ActivityDetailsComponent implements OnInit {
         return;
       }
 
-      this.receiptService.exportToPdf({
+      await this.receiptService.exportToPdf({
         oDataSource: oDataSource,
         pdfTitle: title,
         templateData: template,
@@ -877,7 +877,7 @@ export class ActivityDetailsComponent implements OnInit {
         eSituation: 'is_created',
         sAction,
         sApiKey: this.businessDetails?.oPrintNode?.sApiKey
-      });
+      }).toPromise();
     }
 
     if (receipt == 'customerReceipt') {

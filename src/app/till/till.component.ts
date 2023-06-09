@@ -1084,6 +1084,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
       })
     // }
+
+    const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
+    this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
+      const oDataSource = { ...oItem };
+      oDataSource.businessDetails = this.transaction.businessDetails;
+      oDataSource.nTotal = oDataSource.nPaidAmount;
+      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
+      oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+      this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'giftcard');
+    })
+
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -1110,7 +1121,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
-        this.receiptService.exportToPdf({
+        await this.receiptService.exportToPdf({
           oDataSource: oDataSource,
           pdfTitle: title,
           templateData: template,
@@ -1118,7 +1129,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printActionSettings: oPrintActionSettings,
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
-        });
+        }).toPromise();
       }
     }
   }

@@ -181,12 +181,14 @@ export class PdfService {
             return;
           }
           // console.log('action to perform handlePrint printpdf')
-          this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
+          await this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey).toPromise();
+          resolve(true);
         }
 
         if (printActionSettings && printActionSettings.aActionToPerform.includes('DOWNLOAD')) {
           // console.log('action to perform autodownload')
           this.download(pdfObject, pdfTitle, printSettings?.nRotation);
+          resolve(true);
         }
       }
     });

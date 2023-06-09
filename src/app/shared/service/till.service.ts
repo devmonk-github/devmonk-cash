@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 // import * as _moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from './tax.service';
+import * as JsBarcode from 'jsbarcode';
 // const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
@@ -990,5 +991,11 @@ export class TillService {
       })
     }
     return sDescription;
+  }
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
   }
 }

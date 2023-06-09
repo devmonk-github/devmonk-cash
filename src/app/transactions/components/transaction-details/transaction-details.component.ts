@@ -180,7 +180,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       templateData: template.data,
       printSettings: oSettings,
       sAction: 'sentToCustomer'
-    });
+    }).toPromise();
     if (this.transaction?.oCustomer?.sEmail) {
       const body = {
         pdfContent: response,
@@ -330,7 +330,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
 
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    this.receiptService.exportToPdf({
+    await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
       templateData: template.data,
@@ -338,7 +338,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       eSituation: 'is_created',
       sAction: (print) ? 'print' : 'download',
       sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    });
+    }).toPromise();
     if (print) {
       this.printWithVATLoading = false
       this.printInvoiceLoading = false

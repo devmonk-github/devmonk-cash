@@ -131,7 +131,7 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.businessDetails = this.transaction.businessDetails;
       oDataSource.nTotal = oDataSource.nPaidAmount;
       oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
-      oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+      oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
       pdfTitle = oDataSource.sGiftCardNumber;
     
     } else if (type === 'order') {
@@ -196,12 +196,6 @@ export class TransactionActionDialogComponent implements OnInit {
       }).toPromise();
       event.target.disabled = false;
     }
-  }
-
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
   }
   
   openTransactionDetail() {
