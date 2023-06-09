@@ -44,7 +44,7 @@ export class TransactionActionDialogComponent implements OnInit {
   businessDetails: any;
   bRegularCondition: boolean = false;
   bOrderCondition: boolean = false;
-  bGiftcardCondition: boolean = false;
+  
   bProcessingTransaction: boolean = false;
   bRepairDisabled: boolean = false;
   bOrderDisabled: boolean = false;
@@ -55,6 +55,7 @@ export class TransactionActionDialogComponent implements OnInit {
   bReceiveNewsletter: boolean = false;
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iWorkstationId: any = localStorage.getItem('currentWorkstation');
+  aGiftcardItems: any;
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -80,23 +81,12 @@ export class TransactionActionDialogComponent implements OnInit {
       this.nRepairCount = context.nRepairCount;
       this.printActionSettings = context.printActionSettings;
       this.printSettings = context.printSettings;
-      // this.bRegularCondition = context.bRegularCondition;
-      // this.bOrderCondition = context.bOrderCondition;
 
       this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair' || item.oType.eKind === 'order');
+      this.aGiftcardItems = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard');
       
       this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
       this.bOrderCondition = this.nOrderCount >= 1; //this.nOrderCount === 1 || this.nRepairCount >= 1 || // && this.nRepairCount === 1
-
-      // if (this.bRegularCondition) this.aUniqueTypes.push('regular');
-      // if (this.bOrderCondition) this.aUniqueTypes.push('order');
-      
-      if (this.transaction.aTransactionItemType.includes('giftcard')) {
-        this.bGiftcardCondition = true;
-        // this.aUniqueTypes.push('giftcard')
-      }
-      // this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
-
     })
     this.listEmployee();
   }
@@ -113,42 +103,39 @@ export class TransactionActionDialogComponent implements OnInit {
     })
   }
 
-  async performAction(type: any, action: any, index?: number) {
-    // console.log(this.activity, this.activityItems, this.transaction, type)
+  async performAction(type: any, action: any, index: number = 0, event:any) {
     this.usedActions = true;
-    let oDataSource = undefined;
-    let template = undefined;
+    let oDataSource;
+    const oTemplate = this.aTemplates.find((template: any) => template.eType === type);
     let pdfTitle = '';
-    let sThermalTemplateType = '';
+    let sThermalTemplateType = type;
+    event.target.disabled = true;
 
     if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
+      
       if(type == 'repair') this.bRepairDisabled = true;
       else if(type == 'repair_alternative') this.bRepairAlternativeDisabled = true;
-      
-      // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
-      template = this.aTemplates.filter((template: any) => template.eType === type)[0];
       oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems[index], this.transaction, null);
       pdfTitle = oDataSource.sNumber;
       sThermalTemplateType = type;
     
     } else if (type === 'regular') {
-      this.bRegularDisabled = true;
+      
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
-      template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
       sThermalTemplateType = 'business-receipt';
     
     } else if (type === 'giftcard') {
-      this.bGiftCardDisabled = true;
-      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
+      
+      oDataSource = { ...this.aGiftcardItems[index] };
+      oDataSource.businessDetails = this.transaction.businessDetails;
       oDataSource.nTotal = oDataSource.nPaidAmount;
+      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
       oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
       pdfTitle = oDataSource.sGiftCardNumber;
-      template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
-
+    
     } else if (type === 'order') {
-      this.bOrderDisabled = true;
-      template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
+
       oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, this.transaction); 
       pdfTitle = oDataSource.sActivityNumber;
     }
@@ -157,24 +144,30 @@ export class TransactionActionDialogComponent implements OnInit {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    
     if (action == 'PRINT_THERMAL') {
-      this.receiptService.printThermalReceipt({
+
+      await this.receiptService.printThermalReceipt({
         oDataSource: oDataSource,
-        printSettings: this.printSettings.filter((s: any) => s.sType === type),
-        sAction: 'thermal',
+        printSettings: this.printSettings,
         apikey: this.businessDetails.oPrintNode.sApiKey,
         title: this.transaction.sNumber,
         sType: type,
         sTemplateType: sThermalTemplateType
-      });
+      }).toPromise();
+      event.target.disabled = false;
+
     } else if (action == 'EMAIL') {
+      
       const response = await this.receiptService.exportToPdf({
         oDataSource: oDataSource,
         pdfTitle: pdfTitle,
-        templateData: template,
+        templateData: oTemplate,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: 'sentToCustomer',
-      });
+      }).toPromise();
+      event.target.disabled = false;
+
       const body = {
         pdfContent: response,
         iTransactionId: this.transaction._id,
@@ -182,15 +175,10 @@ export class TransactionActionDialogComponent implements OnInit {
         sCustomerEmail: oDataSource.oCustomer.sEmail
       }
 
-      this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
-        (result: any) => {
-          if (result) {
-            this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
-          }
-        }, (error: any) => {
-
-        }
-      )
+      this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe((result: any) => {
+        if (result) this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+      })
+    
     } else {
       const oSettings = this.printSettings.find((s: any) => s.sType === type && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
       if (!oSettings && action === 'PRINT_PDF') {
@@ -198,26 +186,15 @@ export class TransactionActionDialogComponent implements OnInit {
         this.bRegularDisabled = false;
         return;
       }
-      this.receiptService.exportToPdf({
+      await this.receiptService.exportToPdf({
         oDataSource: oDataSource,
         pdfTitle: pdfTitle,
-        templateData: template,
+        templateData: oTemplate,
         printSettings: oSettings,
         sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
         sApiKey: this.businessDetails.oPrintNode.sApiKey
-      });
-      
-      if(type === 'repair'){
-        this.bRepairDisabled = false
-      }else if(type === 'repair_alternative'){
-        this.bRepairAlternativeDisabled = false
-      }else if(type === 'regular'){
-        this.bRegularDisabled = false
-      }else if(type === 'giftcard'){
-          this.bGiftCardDisabled = false
-      }else if(type === 'order'){
-        this.bOrderDisabled = false
-      }    
+      }).toPromise();
+      event.target.disabled = false;
     }
   }
 

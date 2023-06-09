@@ -6,6 +6,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { PrintService } from './print.service';
 import pdfActions from "pdf-actions";
 import { saveAs } from 'file-saver';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -122,7 +123,7 @@ export class PdfService {
   }
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
-    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey, addPageBreakBefore }: any) {
+    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey, addPageBreakBefore }: any):Promise<any> {
     return new Promise(async (resolve, reject) => {
       // console.log('getPdfData', {
       //   styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
@@ -132,8 +133,9 @@ export class PdfService {
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
       } else if ((printSettings && printActionSettings) || sAction == 'print') {
-        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey);
-        resolve(true);
+        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey).then(() => {
+          resolve(true);
+        });
       } else {
         this.download(pdfObject, pdfTitle, printSettings?.nRotation);
         resolve(true)
@@ -156,74 +158,87 @@ export class PdfService {
     }
   }
 
-  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey:any) {
-    // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
-    if (!printActionSettings && !sAction) {
-      this.download(pdfObject, pdfTitle, printSettings?.nRotation);
-      return;
-    } 
-    // else if (printActionSettings) {
-    //   printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
-    // }
+  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
+      if (!printActionSettings && !sAction) {
+        this.download(pdfObject, pdfTitle, printSettings?.nRotation);
+        resolve(true);
+        return;
+      }
+      // else if (printActionSettings) {
+      //   printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
+      // }
 
-    // console.log({ printActionSettings })
-    if (sAction && sAction === 'print') {
-      // console.log('if sAction= print')
-      this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
-    } else {
-      if (printActionSettings && printActionSettings.aActionToPerform.includes('PRINT_PDF')) {
+      // console.log({ printActionSettings })
+      if (sAction && sAction === 'print') {
+        await this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey).toPromise();
+        resolve(true);
+      } else {
+        if (printActionSettings && printActionSettings.aActionToPerform.includes('PRINT_PDF')) {
           if (!printSettings?.nPrinterId) {
             this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
             return;
           }
           // console.log('action to perform handlePrint printpdf')
           this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
-      }
+        }
 
-      if (printActionSettings && printActionSettings.aActionToPerform.includes('DOWNLOAD')) {
-        // console.log('action to perform autodownload')
-        this.download(pdfObject, pdfTitle, printSettings?.nRotation);
+        if (printActionSettings && printActionSettings.aActionToPerform.includes('DOWNLOAD')) {
+          // console.log('action to perform autodownload')
+          this.download(pdfObject, pdfTitle, printSettings?.nRotation);
+        }
       }
-    }
+    });
   }
 
-  handlePrint(pdfObject: any, printSettings: any, pdfTitle: any, sApiKey:any) {
-    // console.log('handlePrint', printSettings)
-    if (!printSettings?.nPrinterId) {
-      this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
-      return;
-    }
+  handlePrint(pdfObject: any, printSettings: any, pdfTitle: any, sApiKey: any): Observable<any> {
+    return new Observable((observer: any) => {
+      if (!printSettings?.nPrinterId) {
+        this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+        return;
+      }
 
-    if (!printSettings?.nRotation || printSettings?.nRotation == 0) {
-      pdfObject.getBase64((data: any) => this.sendToPrint(data, printSettings, pdfTitle, sApiKey));
-    } else {
-      pdfObject.getBuffer(async (buffer: any) => {
-        const PDFDocument = await pdfActions.createPDF.PDFDocumentFromPDFArray(buffer);
-        const RotatedPDFDocument = await pdfActions.rotatePDF(PDFDocument, printSettings?.nRotation);
-        const pdfBytes = await RotatedPDFDocument.save()
-        const blob = await pdfActions.pdfArrayToBlob(pdfBytes)
-        const data:any = await this.blobToBase64(blob);
-        this.sendToPrint(data, printSettings, pdfTitle, sApiKey)
-      });
-    }
+      if (!printSettings?.nRotation || printSettings?.nRotation == 0) {
+        pdfObject.getBase64(async (data: any) =>{
+          await this.sendToPrint(data, printSettings, pdfTitle, sApiKey).toPromise();
+          observer.complete();
+        });
+      } else {
+        pdfObject.getBuffer(async (buffer: any) => {
+          const PDFDocument = await pdfActions.createPDF.PDFDocumentFromPDFArray(buffer);
+          const RotatedPDFDocument = await pdfActions.rotatePDF(PDFDocument, printSettings?.nRotation);
+          const pdfBytes = await RotatedPDFDocument.save()
+          const blob = await pdfActions.pdfArrayToBlob(pdfBytes)
+          const data: any = await this.blobToBase64(blob);
+          await this.sendToPrint(data, printSettings, pdfTitle, sApiKey).toPromise()
+          observer.complete();
+        });
+      }
+    });
   }
 
-  sendToPrint(data:any, printSettings:any, pdfTitle:string, sApiKey:any){
-    this.printService.printPDF(
-      this.iBusinessId,
-      data,
-      printSettings.nPrinterId,
-      printSettings.nComputerId,
-      1,
-      '',
-      pdfTitle,
-      {
-        rotate: printSettings?.nRotation || 0,
-        paper: printSettings?.sPrinterPageFormat,
-        tray: printSettings?.sPaperTray,
-        title: pdfTitle
-      }
-    ).then((response: any) => this.handlePrintRespoinse(response, sApiKey))
+  sendToPrint(data: any, printSettings: any, pdfTitle: string, sApiKey: any):Observable<any> {
+    return new Observable((observer: any) => {
+      this.printService.printPDF(
+        this.iBusinessId,
+        data,
+        printSettings.nPrinterId,
+        printSettings.nComputerId,
+        1,
+        '',
+        pdfTitle,
+        {
+          rotate: printSettings?.nRotation || 0,
+          paper: printSettings?.sPrinterPageFormat,
+          tray: printSettings?.sPaperTray,
+          title: pdfTitle
+        }
+      ).then((response: any) => {
+        this.handlePrintRespoinse(response, sApiKey)
+        observer.complete();
+      })
+    });
   }
 
   handlePrintRespoinse(response:any, sApiKey:any) {

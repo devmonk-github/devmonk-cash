@@ -9,11 +9,23 @@ import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from '../../service/till.service';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-cards-dialog',
   templateUrl: './cards-dialog.component.html',
-  styleUrls: ['./cards-dialog.component.scss']
+  styleUrls: ['./cards-dialog.component.scss'],
+  animations: [
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('500ms', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
