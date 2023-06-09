@@ -252,6 +252,12 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result:any) => {
       if(result?.data?.length && result.data[0]?.result?.length){
         this.aArticleGroup = result.data[0]?.result;
+
+        this.aArticleGroup.forEach((articleGroup:any) => {
+            if(articleGroup.oName != undefined){
+              articleGroup.oName = articleGroup.oName[this.language];
+            }
+        });
       }
     });
   }
