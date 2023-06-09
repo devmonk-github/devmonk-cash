@@ -69,7 +69,7 @@ export class OrderComponent implements OnInit {
   @Input() settings:any;
   @Output() articleGroupDataChanged = new EventEmitter<any>();
   language: any = localStorage.getItem('language');
-
+  articleGroupsList : any = [];
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -77,14 +77,14 @@ export class OrderComponent implements OnInit {
     private toastrService: ToastService,
     public tillService: TillService,
     private dialogService: DialogService) { 
-    if (!this.oStaticData?.articleGroupsList?.length) {
-      this.oStaticData = {
-        articleGroupsList: []
-      }
-    }
+    // if (!this.oStaticData?.articleGroupsList?.length) {
+    //   this.oStaticData = {
+    //     articleGroupsList: []
+    //   }
+    // }
   }
 
-  ngOnInit(): void {
+ async ngOnInit() {
     this.checkArticleGroups();
     this.getProperties();
     this.listSuppliers();
@@ -93,6 +93,21 @@ export class OrderComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
+   
+    let data = {
+      //iBusinessPartnerId:this.item.iBusinessPartnerId,
+      iBusinessId: localStorage.getItem('currentBusiness'),
+    };
+
+    const result: any = await this.getAllArticleGroupList(data);
+    if(result.data?.length && result.data[0]?.result?.length){
+     //if(!this.oStaticData.articleGroupsList.length)
+      this.articleGroupsList = result.data[0].result;
+    }
+  }
+
+  async getAllArticleGroupList(data: any) {
+    return this.apiService.postNew('core', '/api/v1/business/article-group/list', data).toPromise();
   }
 
   selectArticleGroup() {
@@ -107,6 +122,8 @@ export class OrderComponent implements OnInit {
         closeOnBackdropClick: false,
         closeOnEsc: false 
       }).instance.close.subscribe((data) => {
+
+        console.log("data", data);
         
         if (data.action) {
           const { articlegroup, brand, supplier, nMargin } = data;
@@ -132,7 +149,8 @@ export class OrderComponent implements OnInit {
           brandsList: data.brandsList,
           partnersList: data.partnersList
         }
-        this.articleGroupDataChanged.emit(this.oStaticData)
+        this.articleGroupDataChanged.emit(this.oStaticData);
+        console.log(this.articleGroupDataChanged , this.articleGroupDataChanged);
 
       });
   }
