@@ -944,7 +944,7 @@ export class ActivityDetailsComponent implements OnInit {
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
-    if (bIsCounterCustomer) {
+    if (bIsCounterCustomer || oCurrentCustomer.bCounter) {
       this.selectCustomer();
       return;
     }
