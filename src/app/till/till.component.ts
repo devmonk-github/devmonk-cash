@@ -1098,7 +1098,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
       // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        this.receiptService.printThermalReceipt({
+        await this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
           sAction: 'thermal',
@@ -1106,7 +1106,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           title: oDataSource.sNumber,
           sType: type,
           sTemplateType: 'business-receipt'
-        });
+        }).toPromise();
       }
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {

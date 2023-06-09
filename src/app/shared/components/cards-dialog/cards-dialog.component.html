@@ -54,7 +54,7 @@
                                 <input class="form-control" type="number" min="0" [max]="oGiftcard.nCurrentLimit"
                                     [disabled]="!oGiftcard || oGiftcard?.nCurrentLimit <= 0" [(ngModel)]="oGiftcard.nAmount">
                                 <span @fade *ngIf="oGiftcard.nAmount > oGiftcard.nCurrentLimit"
-                                    class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
+                                    class="err-msg">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
                                     translate}}.</span>
                             </div>
                         </div>
@@ -150,8 +150,8 @@
         </app-pn-tabs>
     </div>
     <div class="card-footer">
-        <button class="btn btn-warning me-5" type="button">{{"CANCEL" | translate }}</button>
-        <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="oGiftcard?.nCurrentLimit == 0 || oGiftcard.nAmount > oGiftcard.nCurrentLimit">
+        <button class="btn btn-warning me-5" type="button" (click)="close(false)">{{"CANCEL" | translate }}</button>
+        <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="oGiftcard?.nCurrentLimit == 0 || oGiftcard.nAmount > oGiftcard.nCurrentLimit || oGiftcard.nAmount == 0">
             {{"USE" | translate}}
         </button>
     </div>

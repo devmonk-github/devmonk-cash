@@ -1036,7 +1036,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.processDiscounts([oActivity]);
   }
 
-  printThermalReceipt(oActivity:any, type:string = 'repair') {
+  async printThermalReceipt(oActivity:any, type:string = 'repair') {
     oActivity.businessDetails = this.businessDetails;
     // console.log({oActivity, type}, this.businessDetails);
     const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
@@ -1047,7 +1047,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
     }
     oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
-    this.receiptService.printThermalReceipt({
+    await this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,
       oDataSource: JSON.parse(JSON.stringify(oActivity)),
       printSettings: this.printSettings,
@@ -1055,6 +1055,6 @@ export class ActivityDetailsComponent implements OnInit {
       title: oActivity.sNumber,
       sType: type,
       sTemplateType: type
-    });
+    }).toPromise();;
   }
 }
