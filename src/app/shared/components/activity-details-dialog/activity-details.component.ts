@@ -252,6 +252,12 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result:any) => {
       if(result?.data?.length && result.data[0]?.result?.length){
         this.aArticleGroup = result.data[0]?.result;
+
+        this.aArticleGroup.forEach((articleGroup:any) => {
+            if(articleGroup.oName != undefined){
+              articleGroup.oName = articleGroup.oName[this.language];
+            }
+        });
       }
     });
   }
@@ -938,7 +944,7 @@ export class ActivityDetailsComponent implements OnInit {
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
-    if (bIsCounterCustomer) {
+    if (bIsCounterCustomer || oCurrentCustomer.bCounter) {
       this.selectCustomer();
       return;
     }

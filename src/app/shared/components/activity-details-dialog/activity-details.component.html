@@ -921,7 +921,7 @@
                                                                     <div class="col-lg-8 fv-row">
                                                                         <ng-select [(ngModel)]="activity.iArticleGroupId" class="form-control form-control-solid p-0" [clearable]="false">
                                                                             <ng-option *ngFor="let oArticleGroup of aArticleGroup" [value]="oArticleGroup._id">
-                                                                                {{ oArticleGroup.oName[language] || oArticleGroup.oName['en'] }}
+                                                                                {{oArticleGroup.oName}}
                                                                             </ng-option>
                                                                         </ng-select>
                                                                     </div>
