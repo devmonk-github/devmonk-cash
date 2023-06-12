@@ -36,7 +36,7 @@
       <div class="col-3">
         <app-dialer [(quantity)]="item.quantity" (quantityChange)="updatePayments()"></app-dialer>
 
-        <div class="my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
+        <div class="mt-2 mb-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
           <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
             <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
           </span>
@@ -94,7 +94,7 @@
             </div>
           </div>
       
-          <div class="col-3">
+          <div class="col-3 ps-0">
             <div class="form-group mb-4">
               <!-- <label class="form-control-label mb-3"></label> -->
               <button class="btn btn-icon btn-secondary mb-2 mt-9" (click)="openDiscountDialog()"
