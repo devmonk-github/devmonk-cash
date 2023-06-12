@@ -161,6 +161,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bShowOverassignedWarning: boolean;
   nClientId:any="-";
 
+  bFromBarcode: boolean = false;
+
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -1234,6 +1236,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         const response = result.data[0];
         this.shopProducts = response.result;
         this.shopProducts.map((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
+        if(this.bFromBarcode && this.shopProducts.length == 1){
+          this.bFromBarcode = false;
+          this.onSelectProduct(this.shopProducts[0], 'business', 'shopProducts');
+        }
       }
       this.bSearchingProduct = false;
     }, (error) => {
@@ -1838,7 +1844,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-    }
+    } else{
+      //this.toastrService.show({ type: 'success', text: 'Article number: ' + barcode });
+      this.bFromBarcode = true;
+      this.listShopProducts(barcode, false); 
+    } // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
 
   }
 
