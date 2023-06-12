@@ -323,9 +323,9 @@ export class TillService {
         i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
 
         if(bTesting) console.log(305, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
-        
-        const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
-        records.forEach((record: any) => {
+        //console.log('here discount records',discountRecords);
+        const records = discountRecords?.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
+        records?.forEach((record: any) => {
           if (bTesting) console.log('IN IF CONDITION record: ', record);
           i.nPaymentAmount += record.nPaymentAmount;
           record.nPaymentAmount = -1 * record.nPaymentAmount;
