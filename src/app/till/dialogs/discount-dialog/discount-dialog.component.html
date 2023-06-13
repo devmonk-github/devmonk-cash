@@ -2,8 +2,8 @@
   <div class="card-header p-4 px-5">
     <h3 class="card-title">{{ "SET_DISCOUNT_FOR" | translate}} {{item.name}}</h3>
     <div class="card-toolbar m-0">
-      <button type="button" class="btn btn-icon btn-secondary w-35px h-35px" (click)="close()">
-        <i class="fa fa-times"></i>
+      <button type="button" class="btn btn-sm btn-light" (click)="close()">
+        <fa-icon [icon]="faTimes"></fa-icon>
       </button>
     </div>
   </div>
@@ -95,8 +95,8 @@
     </div>
 
   </div>
-  <div class="card-footer">
-    <button class="btn btn-secondary" type="button" (click)="save()" [disabled]="showDiscountAlert">{{ "SAVE" |
+  <div class="card-footer d-flex justify-content-end align-items-center">
+    <button class="btn btn-primary" type="button" (click)="save()" [disabled]="showDiscountAlert">{{ "SAVE" |
       translate}}</button>
     <button class="btn btn-danger" type="button" (click)="removeDiscount()" *ngIf="showCurrentDiscount">{{
       "REMOVE_DISCOUNT" | translate}}</button>
