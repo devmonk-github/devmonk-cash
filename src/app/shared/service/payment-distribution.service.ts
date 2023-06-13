@@ -26,6 +26,9 @@ export class PaymentDistributionService {
   distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0, payMethods:any = []): any[] {
     const bTesting = false;
     if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
+    
+    const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
+
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
@@ -47,6 +50,7 @@ export class PaymentDistributionService {
           if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid)
         } else {
           i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
+          this.calculateSavingsPoints(i, nSavingsPointRatio);
         }
         if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
         availableAmount += -i.amountToBePaid;
@@ -62,9 +66,7 @@ export class PaymentDistributionService {
     });
     
     const arrToUpdate = transactionItems.filter(item => !item?.manualUpdate && !item?.isExclude);
-    const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);
-    
-    const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
+    const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);   
 
     const aEligibleForSavingPoints = payMethods.filter((p: any) => p.amount > 0 && p.bAssignSavingPoints);
     if (bTesting) console.log({ aEligibleForSavingPoints }, this.tillService.oSavingPointSettings)
@@ -130,7 +132,7 @@ export class PaymentDistributionService {
             if (bTesting) console.log('set to payment',i.paymentAmount)
             nAssignedUntillNow += i.paymentAmount;
 
-            nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
+            if(i.tType != 'refund') nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
           }
         });
       }
@@ -179,13 +181,13 @@ export class PaymentDistributionService {
     return transactionItems;
   }
 
-  calculateSavingsPoints(oItem: any, nSavingsPointRatio:number, nEligibleAmount:number, totalAmountToBePaid:number) {
-    const bTesting = false;
+  calculateSavingsPoints(oItem: any, nSavingsPointRatio:number, nEligibleAmount:number = 1, totalAmountToBePaid:number = 1) {
+    const bTesting = true;
     if(bTesting) console.log('calculateSavingsPoints', {nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid, oItem})
     if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(oItem.iArticleGroupId)) {
       if (bTesting) console.log('updating the saving points')
-      const nAmountConsideredForSavingPoint = +((oItem.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2))
-      oItem.nSavingsPoints = Math.floor(nAmountConsideredForSavingPoint * nSavingsPointRatio)
+      const nAmountConsideredForSavingPoint = +((oItem.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2)) * nSavingsPointRatio; 
+      oItem.nSavingsPoints = (oItem?.tType == 'refund') ? Math.ceil(nAmountConsideredForSavingPoint) : Math.floor(nAmountConsideredForSavingPoint)
       if (bTesting) console.log({ nSavingsPoints: oItem.nSavingsPoints, nAmountConsideredForSavingPoint })
     } else {
       if (bTesting) console.log('this article group is excluded from saving points so setting it to 0')

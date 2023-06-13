@@ -180,7 +180,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       templateData: template.data,
       printSettings: oSettings,
       sAction: 'sentToCustomer'
-    });
+    }).toPromise();
     if (this.transaction?.oCustomer?.sEmail) {
       const body = {
         pdfContent: response,
@@ -330,7 +330,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
 
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    this.receiptService.exportToPdf({
+    await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
       templateData: template.data,
@@ -338,7 +338,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       eSituation: 'is_created',
       sAction: (print) ? 'print' : 'download',
       sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    });
+    }).toPromise();
     if (print) {
       this.printWithVATLoading = false
       this.printInvoiceLoading = false
@@ -358,10 +358,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType }, hasBackdrop: true })
       .instance.close.subscribe(result => {
         if (result.transaction) {
           const data = this.tillService.processTransactionSearchResult(result);
+          // console.log('response of processTransactionSearchResult',JSON.parse(JSON.stringify({data})))
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           setTimeout(() => {
             this.close({ action: true });
@@ -408,7 +409,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async getThermalReceipt(type: string) {
     this.transaction.nTotalSavedPoints = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.transaction.iCustomerId}`).toPromise();
     this.transaction.currentLocation.currency = this.tillService.currency;
-    this.receiptService.printThermalReceipt({
+    await this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,
       oDataSource: this.transaction,
       printSettings: this.printSettings,
@@ -416,7 +417,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       title: this.transaction.sNumber,
       sType: 'regular',
       sTemplateType: type
-    });
+    }).toPromise();
   }
 
   addRow() {

@@ -161,6 +161,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bShowOverassignedWarning: boolean;
   nClientId:any="-";
 
+  bFromBarcode: boolean = false;
+
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -273,6 +275,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
       this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+      localStorage.removeItem('fromTransactionPage');
+      localStorage.removeItem('recentUrl');
     } else {
       this.bIsTransactionLoading = false;
     }
@@ -566,7 +570,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iCustomerId: this.customer?._id,
 
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
-      eType: '',
+      eType: 'giftcard',
       nPriceIncVat: this.transactionItems[index].price,
       nPurchasePrice: this.transactionItems[index].price / 1.21,
       nVatRate: this.transactionItems[index].tax,
@@ -995,28 +999,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
-    // const aUniqueItemTypes = [];
-
-    const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
-    const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
+    let nRepairCount = 0, nOrderCount = 0, nGiftcardCount = 0;
+    oDataSource.aTransactionItems.forEach((item:any) => {
+      if(item.oType.eKind == 'repair') nRepairCount++;
+      else if(item.oType.eKind == 'order') nOrderCount++;
+      else if(item.oType.eKind == 'giftcard') nGiftcardCount++;
+    })
 
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
 
-    // const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
-    // const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
-    // const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
-
-    // if (bRegularCondition) aUniqueItemTypes.push('regular')
-
-    // if (bOrderCondition) aUniqueItemTypes.push('order');
-
-    // aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
-
     const aPromises:any = [];
-    aPromises.push(this.getTemplate()) //aUniqueItemTypes
+    aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
     if(this.employee._id != oDataSource.iEmployeeId) {
       aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
@@ -1038,7 +1034,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      // aUniqueItemTypes: aUniqueItemTypes,
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
@@ -1046,7 +1041,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aTemplates: aTemplates,
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
-      // bOrderCondition: bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });
@@ -1092,6 +1086,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
       })
     // }
+
+    const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
+    this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
+      const oDataSource = { ...oItem };
+      oDataSource.businessDetails = this.transaction.businessDetails;
+      oDataSource.nTotal = oDataSource.nPaidAmount;
+      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
+      oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+      this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'giftcard');
+    })
+
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -1106,7 +1111,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
       // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        this.receiptService.printThermalReceipt({
+        await this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
           sAction: 'thermal',
@@ -1114,11 +1119,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           title: oDataSource.sNumber,
           sType: type,
           sTemplateType: 'business-receipt'
-        });
+        }).toPromise();
       }
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
-        this.receiptService.exportToPdf({
+        await this.receiptService.exportToPdf({
           oDataSource: oDataSource,
           pdfTitle: title,
           templateData: template,
@@ -1126,7 +1131,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printActionSettings: oPrintActionSettings,
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
-        });
+        }).toPromise();
       }
     }
   }
@@ -1231,6 +1236,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         const response = result.data[0];
         this.shopProducts = response.result;
         this.shopProducts.map((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
+        if(this.bFromBarcode && this.shopProducts.length == 1){
+          this.bFromBarcode = false;
+          this.onSelectProduct(this.shopProducts[0], 'business', 'shopProducts');
+        }
       }
       this.bSearchingProduct = false;
     }, (error) => {
@@ -1518,15 +1527,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openCardsModal(mode:string = 'new', oGiftcard?: any) {
+    const oPassedGiftcard = JSON.parse(JSON.stringify(oGiftcard || ''));
     if(mode == 'edit') {
-      delete oGiftcard._id;
+      delete oPassedGiftcard._id;
       // oGiftcard = JSON.parse(JSON.stringify(oGiftcard));
     }
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false,
-      context: { customer: this.customer, oGiftcard: JSON.parse(JSON.stringify(oGiftcard || '')), mode: mode, appliedGiftCards: this.appliedGiftCards }
+      context: { customer: this.customer, oGiftcard: oPassedGiftcard , mode: mode, appliedGiftCards: this.appliedGiftCards }
       }).instance.close.subscribe(result => {
         if (result) {
-          // console.log({result, oGiftcard})
+          // console.log(this.appliedGiftCards)
+          // console.log({result, oGiftcard, mode})
           if (result.oGiftCard.nAmount > 0) {
             const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
             if (mode == 'edit' || oExisting) {
@@ -1833,7 +1844,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-    }
+    } else{
+      //this.toastrService.show({ type: 'success', text: 'Article number: ' + barcode });
+      this.bFromBarcode = true;
+      this.listShopProducts(barcode, false); 
+    } // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
 
   }
 

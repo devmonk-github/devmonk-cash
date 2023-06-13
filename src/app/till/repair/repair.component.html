@@ -36,7 +36,7 @@
       <div class="col-3">
         <app-dialer [(quantity)]="item.quantity" (quantityChange)="updatePayments()"></app-dialer>
 
-        <div class="my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
+        <div class="mt-2 mb-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
           <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
             <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
           </span>
@@ -94,7 +94,7 @@
             </div>
           </div>
       
-          <div class="col-3">
+          <div class="col-3 ps-0">
             <div class="form-group mb-4">
               <!-- <label class="form-control-label mb-3"></label> -->
               <button class="btn btn-icon btn-secondary mb-2 mt-9" (click)="openDiscountDialog()"
@@ -226,9 +226,9 @@
             <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{ option.sName || "Unknown" }}
             </ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="oRepairer.sName">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="oRepairer.sName">
             {{ oRepairer.sName }}
-            <div (click)="oRepairer.sName = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="oRepairer.sName = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -249,9 +249,9 @@
               option.sName || "Unknown"
               }}</ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="supplier">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="supplier">
             {{ supplier }}
-            <div (click)="supplier = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="supplier = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -270,9 +270,9 @@
               option.sName || "Unknown"
               }}</ng-option>
           </ng-select>
-          <div class="form-control form-control-solid p-0" *ngIf="brand">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="brand">
             {{ brand }}
-            <div (click)="brand = null">
+            <div class="d-flex align-items-center justify-content-center" (click)="brand = null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>

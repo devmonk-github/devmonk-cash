@@ -107,7 +107,8 @@ export class ReceiptService {
         private pdfService: PdfService,
         private toastService: ToastService,
         private printService: PrintService,
-        private pn2escposService: Pn2escposService) {
+        private pn2escposService: Pn2escposService,
+        private translateService: TranslateService) {
 
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -116,7 +117,8 @@ export class ReceiptService {
         // this.pn2escposService = new Pn2escposService(Object);
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any) {
+    exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
+        return new Observable<any>((observer:any) => {
         this.oOriginalDataSource = oDataSource;
         // console.log({oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey});
 
@@ -125,7 +127,7 @@ export class ReceiptService {
         this.content = [];
         this.processTemplate(templateData.layout);
         // console.log(this.content)
-        const response = await this.pdfServiceNew.getPdfData({
+        this.pdfServiceNew.getPdfData({
             styles: this.styles,
             content: this.content,
             orientation: this.commonService.oCommonParameters.orientation,
@@ -140,9 +142,12 @@ export class ReceiptService {
             eSituation,
             sAction: sAction,
             sApiKey: sApiKey
+        }).then((response) => {
+            observer.complete();
+            if (sAction == 'sentToCustomer') return response;
         });
+    });
         // this.cleanUp();
-        if (sAction == 'sentToCustomer') return response;
     }
 
     processTemplate(layout: any) {
@@ -773,75 +778,79 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({oDataSource, printSettings, apikey, title, sType, sTemplateType }: any) {
-        oDataSource = JSON.parse(JSON.stringify(oDataSource));
-        if(oDataSource?.aPayments?.length) {
-            // console.log(oDataSource?.aPayments);
-            oDataSource?.aPayments?.forEach((payment:any) => {
-                payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-            })
-        }
-        let thermalPrintSettings: any;
-        if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
-        }
-        // console.log({printSettings, sType, thermalPrintSettings })
-        if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
-            this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-            return;
-        }
-        oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-
-        this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-            // console.log({result})
-            if (result?.data?.aTemplate?.length > 0) {
-                // console.log("transactionDetails", oDataSource);
-                oDataSource.businessDetails = {
-                    ...oDataSource.businessDetails,
-                    ...oDataSource.businessDetails?.oPhone,
-                    ...oDataSource.businessDetails?.currentLocation?.oAddress,
-                }
-                oDataSource.oCustomer = {
-                    ...oDataSource.oCustomer,
-                    ...oDataSource.oCustomer.oPhone,
-                    ...oDataSource.oCustomer.oInvoiceAddress
-                };
-                if (oDataSource.sBusinessPartnerName) oDataSource.sRepairByName = oDataSource.sBusinessPartnerName;
-
-                let command;
-                try {
-                    const oParameters:any = {
-                        nLineLength_large: result.data?.nLineLength_large,
-                        nLineLength_normal: result.data?.nLineLength_normal
-                    }
-
-                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
-                     //console.log(command);
-                     //return;
-                } catch (e) {
-                    this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-                    console.log(e);
-                    return;
-                }
-
-                this.printService.createPrintJob(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey, title).then((response: any) => {
-                    if (response.status == "PRINTJOB_NOT_CREATED") {
-                        let message = '';
-                        if (response.computerStatus != 'online') {
-                            message = 'Your computer status is : ' + response.computerStatus + '.';
-                        } else if (response.printerStatus != 'online') {
-                            message = 'Your printer status is : ' + response.printerStatus + '.';
-                        }
-                        this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-                    } else {
-                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
-                    }
+    printThermalReceipt({ oDataSource, printSettings, apikey, title, sType, sTemplateType }: any): Observable<any> {
+        return new Observable(subscriber => {
+            oDataSource = JSON.parse(JSON.stringify(oDataSource));
+            if (oDataSource?.aPayments?.length) {
+                // console.log(oDataSource?.aPayments);
+                oDataSource?.aPayments?.forEach((payment: any) => {
+                    payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
                 })
-            } else if (result?.data?.aTemplate?.length == 0) {
-                this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
-            } else {
-                this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
             }
+            let thermalPrintSettings: any;
+            if (printSettings?.length > 0) {
+                thermalPrintSettings = printSettings.find((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType);
+            }
+            // console.log({printSettings, sType, thermalPrintSettings })
+            if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
+                const sText = this.translateService.instant('THERMAL_PRINT_SETTINGS_NOT_CONFIGURED_FOR') + sType
+                this.toastService.show({ type: 'danger', text: sText });
+                return;
+            }
+            oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+
+            this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+                // console.log({result})
+                if (result?.data?.aTemplate?.length > 0) {
+                    // console.log("transactionDetails", oDataSource);
+                    oDataSource.businessDetails = {
+                        ...oDataSource.businessDetails,
+                        ...oDataSource.businessDetails?.oPhone,
+                        ...oDataSource.businessDetails?.currentLocation?.oAddress,
+                    }
+                    oDataSource.oCustomer = {
+                        ...oDataSource.oCustomer,
+                        ...oDataSource.oCustomer.oPhone,
+                        ...oDataSource.oCustomer.oInvoiceAddress
+                    };
+                    if (oDataSource.sBusinessPartnerName) oDataSource.sRepairByName = oDataSource.sBusinessPartnerName;
+
+                    let command;
+                    try {
+                        const oParameters: any = {
+                            nLineLength_large: result.data?.nLineLength_large,
+                            nLineLength_normal: result.data?.nLineLength_normal
+                        }
+
+                        command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
+                        // console.log(command);
+                        //  return;
+                    } catch (e) {
+                        this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
+                        console.log(e);
+                        return;
+                    }
+
+                    this.printService.createPrintJob(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey, title).then((response: any) => {
+                        if (response.status == "PRINTJOB_NOT_CREATED") {
+                            let message = '';
+                            if (response.computerStatus != 'online') {
+                                message = 'Your computer status is : ' + response.computerStatus + '.';
+                            } else if (response.printerStatus != 'online') {
+                                message = 'Your printer status is : ' + response.printerStatus + '.';
+                            }
+                            this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+                        } else {
+                            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+                        }
+                        subscriber.complete();
+                    })
+                } else if (result?.data?.aTemplate?.length == 0) {
+                    this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
+                } else {
+                    this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
+                }
+            });
         });
     }
 

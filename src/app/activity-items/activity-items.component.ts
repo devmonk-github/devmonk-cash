@@ -30,8 +30,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   };
   importStatus: string = 'all';
   businessDetails: any = {};
-  iLocationId: string;
-  iBusinessId: string;
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
   
   requestParams: any = {
     create: {
@@ -129,8 +129,6 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
-    this.iBusinessId = localStorage.getItem('currentBusiness') || "";
-    this.iLocationId = localStorage.getItem('currentLocation') || "";
     this.fetchBusinessDetails();
     this.loadTransaction();
 
@@ -152,8 +150,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+    this.apiService.getNew('core', `/api/v1/business/${this.iBusinessId}`).subscribe((result: any) => {
       this.businessDetails = result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     })
   }
 
@@ -185,7 +184,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.loadTransaction();
   }
 
-  loadTransaction() {
+ async loadTransaction() {
     if(this.bIsSearch){
       this.requestParams.skip = 0;
     }
@@ -204,6 +203,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (result: any) => {
         this.isDownloadEnable = true;
         this.activityItems = result.data;
+        this.activityItems.forEach(async (oActivityItem) => {
+          if(!oActivityItem.sBusinessPartnerName && oActivityItem?.iBusinessPartnerId) oActivityItem.sBusinessPartnerName = await this.fetchBusinessPartnerName(oActivityItem?.iBusinessPartnerId);
+        });
         this.paginationConfig.totalItems = result.count;
         this.fetchLocationName();
         this.showLoader = false;
@@ -217,7 +219,11 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       })
       
   }
-
+  async fetchBusinessPartnerName(iBusinessPartnerId: any) {
+    let result: any = await this.apiService.getNew('core', `/api/v1/business/partners/${iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).toPromise();
+    return result?.data?.sName;
+  }
+  
   openActivity(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent, {
       cssClass: 'w-fullscreen mt--5',

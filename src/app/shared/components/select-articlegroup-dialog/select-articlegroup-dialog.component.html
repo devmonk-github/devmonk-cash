@@ -9,13 +9,12 @@
                 <div *ngIf="articleGroupLoading" class="spinner-border mx-3 h-15px w-15px"></div>
             </label>
             <ng-select class="form-control form-control-solid p-0" *ngIf="!articlegroup"  [isOpen]="filteredArticleGroups.length > 0" placeholder="{{'SEARCH_ARTICLE' | translate}}" (search)="searchArticlegroup($event.term)" (ngModelChange)="changeInArticleGroup()" [clearable]="false" #articleGroupRef  [(ngModel)]="articlegroup">
-                <ng-option *ngFor="let option of filteredArticleGroups" [value]="option">{{option?.oName[selectedLanguage] ||
-                    'Unknown'}}</ng-option>
+                <ng-option *ngFor="let option of filteredArticleGroups" [value]="option">{{option?.oName[selectedLanguage] || 'Unknown'}}</ng-option>
             </ng-select>
              
-            <div class="form-control form-control-solid p-0" *ngIf="articlegroup">
+            <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="articlegroup">
                {{articlegroup?.oName[selectedLanguage]}}
-                <div (click)="articlegroup=null">
+                <div class="d-flex align-items-center justify-content-center" (click)="articlegroup=null">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
             </div>
@@ -29,9 +28,9 @@
                 <ng-option *ngFor="let option of filteredBrandList" [value]="option">{{option.sName ||
                     'Unknown'}}</ng-option>
             </ng-select>
-            <div class="form-control form-control-solid p-0" *ngIf="brand">
+            <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="brand">
                 {{brand.sName}}
-                <div (click)="brand=null">
+                <div class="d-flex align-items-center justify-content-center" (click)="brand=null">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
             </div>
@@ -48,9 +47,9 @@
                 <ng-option *ngFor="let option of filteredSupplierList" [value]="option">{{option.sName ||
                     'Unknown'}}</ng-option>
             </ng-select>
-            <div class="form-control form-control-solid p-0" *ngIf="supplier">
+            <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="supplier">
                 {{supplier.sName}}
-                <div (click)="supplier=null">
+                <div class="d-flex align-items-center justify-content-center" (click)="supplier=null">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
             </div>

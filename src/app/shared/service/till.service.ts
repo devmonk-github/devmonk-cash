@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 // import * as _moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from './tax.service';
+import * as JsBarcode from 'jsbarcode';
 // const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
@@ -308,36 +309,23 @@ export class TillService {
     // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     const aToBeAddedItems:any = []
     body.transactionItems.map((i: any) => {
-      let discountRecords: any = localStorage.getItem('discountRecords');
-      if (discountRecords) {
-        discountRecords = JSON.parse(discountRecords);
-      }
+      // let discountRecords: any = localStorage.getItem('discountRecords');
+      // if (discountRecords) {
+      //   discountRecords = JSON.parse(discountRecords);
+      // }
       let _nDiscount = +((i?.bDiscountOnPercentage ? (i.nPriceIncVat * i.nDiscount / 100) : i.nDiscount)); //.toFixed(2)
       if (bTesting) console.log({ _nDiscount });
       if (i.oType.bRefund && _nDiscount !== 0) {
-        i.nPaymentAmount -= _nDiscount * i.nQuantity;
-        i.nRevenueAmount = i.nPaymentAmount;
+        i.nDiscount = 0;
+      //   i.nPaymentAmount -= _nDiscount * i.nQuantity;
+      //   i.nRevenueAmount = i.nPaymentAmount;
 
-        i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
-        i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
+      //   i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
+      //   i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
 
-        if(bTesting) console.log(305, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
-        
-        const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
-        records.forEach((record: any) => {
-          if (bTesting) console.log('IN IF CONDITION record: ', record);
-          i.nPaymentAmount += record.nPaymentAmount;
-          record.nPaymentAmount = -1 * record.nPaymentAmount;
-          record.nRevenueAmount = -1 * record.nRevenueAmount;
-          record.nPaidAmount = -1 * record.nPaidAmount;
-          record.oType.bRefund = true;
-          record.nRedeemedLoyaltyPoints = -1 * record.nRedeemedLoyaltyPoints;
-          aToBeAddedItems.push(record);
-          if (i.oType.eKind === 'loyalty-points-discount') {
-            body.redeemedLoyaltyPoints += record.nRedeemedLoyaltyPoints;
-          }
-        });
-      } else {
+      //   if(bTesting) console.log(305, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
+      } 
+      // else {
         if (_nDiscount && _nDiscount > 0 && !i.iActivityItemId) {
           if (bTesting) console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
           i.nPaymentAmount += (_nDiscount * i.nQuantity);
@@ -358,13 +346,13 @@ export class TillService {
           tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           aToBeAddedItems.push(tItem1);
         }
-      }
+      // }
       i.nPaymentAmount += i?.nGiftcardDiscount || 0;
       i.nRevenueAmount += i?.nGiftcardDiscount || 0;
 
       if (bTesting) console.log(346, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
     });
-    localStorage.removeItem('discountRecords');
+    // localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
       // let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
@@ -711,8 +699,8 @@ export class TillService {
       let sRelatedDescription = '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
-        
-        if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
+        // console.log({item})
+        if ((item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) || item.oType.bRefund) {
           sRelatedDescription += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
         }
 
@@ -990,5 +978,11 @@ export class TillService {
       })
     }
     return sDescription;
+  }
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
   }
 }

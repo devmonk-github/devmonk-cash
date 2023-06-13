@@ -52,7 +52,7 @@ export class GiftComponent implements OnInit {
     this.itemChanged.emit({type:'delete'});
   }
 
-  checkNumber(): void {
+  checkNumber() {
     this.item.isGiftCardNumberValid = false;
     const checkAvailabilty = this.transactionItems.find((o: any) => String(o.sGiftCardNumber) === String(this.item.sGiftCardNumber) && o.index !== this.item.index);
     if (this.item.sGiftCardNumber.toString().length < 4 || checkAvailabilty) {
@@ -106,61 +106,38 @@ export class GiftComponent implements OnInit {
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 
-  create(): void {
+  create() {
     this.generatePDF(false);
     this.createGiftCard.emit('create');
   }
-
-  // getPrintSetting() {
-  //   this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
-  //     (result: any) => {
-  //       this.computerId = result?.data?.nComputerId;
-  //       this.printerId = result?.data?.nPrinterId;
-  //     },
-  //     (error: any) => {
-  //       console.error(error)
-  //     }
-  //   );
-  // }
 
   getTemplate(type: string): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  generateBarcodeURI(data:any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128" });
-    return canvas.toDataURL("image/png");
-    // this.getBase64FromUrl('')  
-  }
-
   async generatePDF(print: boolean) {
-    const sName = 'Default Giftcard', eType = 'giftcard';
     this.downloading = true;
-    const template = await this.getTemplate(eType).toPromise();
-    // this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?&eType=' + eType).subscribe(
-    //   (result: any) => {
-    const filename = new Date().getTime().toString()
+    const template = await this.getTemplate('giftcard').toPromise();
     let printData = null
     if (print) {
       printData = {
         computerId: this.computerId,
         printerId: this.printerId,
-        title: filename,
+        title: this.item.sGiftCardNumber,
         quantity: 1
       }
     }
 
     const oDataSource = JSON.parse(JSON.stringify(this.item));
-    oDataSource.sBarcodeURI = this.generateBarcodeURI('G-'+oDataSource.sGiftCardNumber);
+    oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(false, 'G-'+oDataSource.sGiftCardNumber);
     oDataSource.nPriceIncVat = oDataSource.price;
     oDataSource.dCreatedDate = new Date();
 
-    this.receiptService.exportToPdf({
+    await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       templateData: template.data,
-      pdfTitle: 'Giftcard'
-    })
+      pdfTitle: oDataSource.sGiftCardNumber
+    }).toPromise();
 
     return;
   }

@@ -77,8 +77,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
     }
     
-    ngOnInit() {
-      this.apiService.setToastService(this.toastrService);
+  ngOnInit() {
+    this.apiService.setToastService(this.toastrService);
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
@@ -112,6 +112,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
+      // console.log('orignal items', this.transactionItems)
       this.bIsAnyGiftCardDiscount = this.transactionItems.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => !this.tillService.aDiscountTypes.includes(o.oType.eKind));
       this.transactionItems.forEach(element => {
@@ -145,37 +146,44 @@ export class TransactionItemsDetailsComponent implements OnInit {
             element.nPaidAmount += element.nDiscount;
           }
         // }
-        // console.log('before', element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
+        // console.log('before', { nQuantity: element.nQuantity, nPaidAmount: element.nPaidAmount, nPriceIncVat: element.nPriceIncVat})
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         const nDiscountAmount = +((element.bDiscountOnPercentage ? this.tillService.getPercentOf(element.nPriceIncVat, element?.nDiscount || 0) : element.nDiscount).toFixed(2));
-        // console.log({ nDiscountAmount })
-        element.nDiscountToShow = nDiscountAmount + (element.nRedeemedLoyaltyPoints || 0) + (element?.nRedeemedGiftcardAmount || 0);
+        element.nDiscountToShow = (nDiscountAmount * element.nQuantity) + (element.nRedeemedLoyaltyPoints || 0) + (element?.nRedeemedGiftcardAmount || 0);
+        // console.log({ nDiscountAmount, nDiscountToShow: element.nDiscountToShow })
         element.nPaymentAmount -= element.nDiscountToShow;
         element.nPaidAmount -= element.nDiscountToShow;
-        element.nPriceIncVat -= element.nDiscountToShow;
+        element.nPriceIncVat -= nDiscountAmount;
         element.nRevenueAmount -= element.nDiscountToShow;
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
         element.nRevenueAmount = +(element.nRevenueAmount.toFixed(2));
-        // console.log('after',element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
+        // console.log('after', { nQuantity: element.nQuantity, nPaidAmount: element.nPaidAmount, nPriceIncVat: element.nPriceIncVat })
       });
       // this.transactionItems = this.transactionItems.map(v => ({ ...v }));
       if(this.transactionItems.every((item:any)=> item.isSelected)) this.bAllSelected = true;
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
+        // console.log(168, {item})
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
-        if (item.nPaidAmount <= (item.nTotalAmount - item.nDiscountToShow)) {
+        // console.log('total amount', item.nTotalAmount, 'priceIncVat', item.nPriceIncVat, 'discount to show', item.nDiscountToShow, 'paid amount', item.nPaidAmount)
+        const nTotalAmount = +((item.nPriceIncVat * item.nQuantity).toFixed(2));
+        // console.log(174, {nTotalAmount})
+        if (nTotalAmount == 0){
+          // console.log('173 tType = empty')
+          item.tType = '';
+        } else if (item.nPaidAmount < nTotalAmount) {
+          // console.log('175 setting to pay - paid amount', item.nPaidAmount, 'total amount', nTotalAmount, 'n discount to show', item.nDiscountToShow)
           item.tType = 'pay';
-          if((item.nTotalAmount - item.nDiscountToShow) == 0) {
-            this.bIsDisable = false;
-          }
-        } else if(item.nPaidAmount === (item.nTotalAmount - item.nDiscountToShow)){
+        } else if(item.nPaidAmount === nTotalAmount){
+          // console.log('178 setting to refund - paid amount', item.nPaidAmount, 'total amount', item.nTotalAmount, 'n discount to show', item.nDiscountToShow)
           item.tType = 'refund';
         }
         if (item.oType.bRefund) {
+          // console.log('182 bRefund flag true setting item.tType refunded')
           item.tType = 'refunded';
         }
         if (this.aSelectedIds?.length && this.aSelectedIds.includes(item._id) || (this.selectedId && this.selectedId === item._id) &&  !item?.bIsRefunded) {
@@ -186,6 +194,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if (this.dialogRef.context?.sBarcodeStartString == 'AI') {
         this.transactionItems = this.transactionItems.filter(item => this.aSelectedIds.includes(item._id));
       }
+      // console.log(198, this.transactionItems)
     });
   }
 
@@ -224,7 +233,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
         this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
       } else {
-        this.dialogRef.close.emit(data);
+        // console.log('here data', data?.transactionItems?.filter((item:any)=> item))
+        if(data?.transactionItems?.filter((item:any)=> item.tType == '')?.length){
+          this.toastrService.show({ type: 'warning', text: 'Please select action!' });
+        }else{
+          this.dialogRef.close.emit(data);
+        }
+       
       }
     }
   }

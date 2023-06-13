@@ -53,7 +53,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     limit: 10,
     searchValue: '',
     sortBy: 'dCreatedDate',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    bankConfirmedStatus:'all'
   };
   showLoader: boolean = false;
   widgetLog: string[] = [];

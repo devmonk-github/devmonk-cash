@@ -6,3 +6,6 @@
         width: 100%;
     }
 }
+.form-control.ng-invalid {
+    outline: 1px solid red
+}

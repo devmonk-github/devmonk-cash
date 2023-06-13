@@ -28,32 +28,41 @@
                             </button>
                         </div>
                     </div>
-                    <ng-container *ngIf="oGiftcard?._id">
+                    <div @fade *ngIf="oGiftcard?._id">
                         <div class="row mb-4">
                             <div class="col-6">{{"TOTAL_REMAINING_BALANCE" | translate}}</div>
                             <div class="col-6" *ngIf="oGiftcard">{{ oGiftcard.nGiftcardRemainingAmount }}</div>
                         </div>
-                        <ng-container *ngIf="mode == 'edit'">
+                        <div @fade *ngIf="mode == 'edit'">
                             <div class="row mb-4">
                                 <div class="col-6">{{"AMOUNT_USED_ALREADY" | translate}}</div>
                                 <div class="col-6">{{ oGiftcard.nCurrentRedeemedAmount || 0 }}</div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-6">{{"CURRENT_LIMIT" | translate}}</div>
-                                <div class="col-6">{{ oGiftcard.nCurrentLimit || 0 }}</div>
+                                <div class="col-6">
+                                    {{ oGiftcard.nCurrentLimit || 0 }}
+                                    <span class="ms-3 err-msg" @fade *ngIf="oGiftcard?.nCurrentLimit == 0">
+                                        {{ 'NO_BALANCE_LEFT_ON_THIS_VOUCHER' | translate }}
+                                    </span>
+                                </div>
                             </div>
-                        </ng-container>
+                        </div>
                         <div class="row mb-4 align-items-center">
                             <div class="col-6">{{"AMOUNT_TO_USE" | translate}}</div>
                             <div class="col-6">
-                                <input name="" class="form-control" type="number" min="0" [max]="oGiftcard.nCurrentLimit"
+                                <input class="form-control" type="number" min="0" [max]="oGiftcard.nCurrentLimit"
                                     [disabled]="!oGiftcard || oGiftcard?.nCurrentLimit <= 0" [(ngModel)]="oGiftcard.nAmount">
-                                <span *ngIf="oGiftcard.nAmount > oGiftcard.nCurrentLimit"
-                                    class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
+                                <span @fade *ngIf="oGiftcard.nAmount > oGiftcard.nCurrentLimit"
+                                    class="err-msg">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
                                     translate}}.</span>
                             </div>
                         </div>
-                    </ng-container>
+                        <div class="row mb-4" @fade *ngIf="oGiftcard?.nCurrentLimit && oGiftcard.nAmount <= oGiftcard.nCurrentLimit">
+                            <div class="col-6">{{"BALANCE_WILL_REMAIN_AFTER_REDEEMED_AMOUNT" | translate}}</div>
+                            <div class="col-6">{{ (oGiftcard.nCurrentLimit || 0) - oGiftcard.nAmount }}</div>
+                        </div>
+                    </div>
                 </div>
             </app-pn-tab>
             <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" #externalGiftcards>
@@ -141,7 +150,9 @@
         </app-pn-tabs>
     </div>
     <div class="card-footer">
-        <button class="btn btn-warning me-5" type="button">{{"CANCEL" | translate }}</button>
-        <button class="btn btn-primary" type="submit" (click)="submit()">{{"USE" | translate}}</button>
+        <button class="btn btn-warning me-5" type="button" (click)="close(false)">{{"CANCEL" | translate }}</button>
+        <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="oGiftcard?.nCurrentLimit == 0 || oGiftcard.nAmount > oGiftcard.nCurrentLimit || oGiftcard.nAmount == 0">
+            {{"USE" | translate}}
+        </button>
     </div>
 </div>

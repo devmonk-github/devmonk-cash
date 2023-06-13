@@ -40,19 +40,8 @@
         <app-dialer [(quantity)]="item.quantity" [item]="item" [bSerialSearchMode]="bSerialSearchMode"
           (quantityChange)="updatePayments()"></app-dialer>
 
-        <div class="my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
-          <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-            <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
-          </span>
-          <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-            {{ 'GET'| translate }}
-            <strong>{{ item.nSavingsPoints || 0 }} </strong>
-            {{ 'LOYALTY_POINTS' | translate }}
-          </span>
-        </div>
-
         <div class="form-group mb-4">
-          <select name="status" id="status" class="form-control form-control-solid" [(ngModel)]="item.oType.bRefund"
+          <select name="status" id="status" class="form-control py-2 form-control-solid" [(ngModel)]="item.oType.bRefund"
             disabled>
             <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.title | translate}}</option>
           </select>
@@ -64,8 +53,17 @@
               [(ngModel)]="item.nBrokenProduct" class="form-control" (change)="changeInbrokenAmount(item)">
           </div>
         </div>
-
-
+  
+        <div class="mt-2 mb-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
+          <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+            <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
+          </span>
+          <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+            {{ 'GET'| translate }}
+            <strong>{{ item.nSavingsPoints || 0 }} </strong>
+            {{ 'LOYALTY_POINTS' | translate }}
+          </span>
+        </div>
       </div>
 
       <div class="col-3">
@@ -114,7 +112,7 @@
                 [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
             </div>
           </div>
-          <div class="col-3">
+          <div class="col-3 ps-0">
             <div class="form-group mb-4">
               <!-- <label class="form-control-label mb-3"></label> -->
               <button class="btn btn-icon btn-secondary mb-2 mt-9" (click)="openDiscountDialog()"
@@ -125,19 +123,16 @@
               </button>
             </div>
           </div>
-          <div class="col-5">
-            <div class="row">
-              <div class="col-6">
-                <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>
-              </div>
-              <div class="col-6">
-                <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
-                  <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (change)="updatePayments()">
-                </label>
-              </div>
+          <div class="col-12 mt-1 mb-3">
+            <div class="btn-group w-100">
+              <button [ngClass]="{active:item.eActivityItemStatus === 'offer-is-ok'}" type="button" class="btn btn-primary fs-6 p-2"
+                (click)="item.eActivityItemStatus ='offer-is-ok'"> {{ "PRICE_AGREED" |
+                translate}}</button>
+              <button [ngClass]="{active:item.eActivityItemStatus === 'offer'}" type="button"
+                class="btn btn-primary fs-6 p-2 " (click)="item.eActivityItemStatus = 'offer'">{{ "QUOTATION" |
+                translate}}</button>
             </div>
           </div>
-          
         </div>
       </div>
 
@@ -206,7 +201,20 @@
           [(ngModel)]="item.sCommentVisibleServicePartner"></textarea>
       </div>
 
-      <div class="col-3"></div>
+      <div class="col-3">
+        <div class="col-12">
+          <div class="row d-flex justify-content-between align-items-center">
+            <div class="col-6">
+              <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>
+            </div>
+            <div class="col-6">
+              <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (change)="updatePayments()">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="col-3">
         <div class="row">
@@ -240,9 +248,9 @@
             <ng-option *ngFor="let option of supplierOptions" [value]="option">{{option.sName ||
               'Unknown'}}</ng-option>
           </ng-select>
-          <div class="chip d-flex py-4 px-8" *ngIf="supplier">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="supplier">
             {{supplier}}
-            <div (click)="supplier=null">
+            <div  class="d-flex align-items-center justify-content-center" (click)="supplier=null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -256,9 +264,9 @@
             <ng-option *ngFor="let option of filteredBrands" [value]="option">{{option.sName ||
               'Unknown'}}</ng-option>
           </ng-select>
-          <div class="chip d-flex py-4 px-8" *ngIf="brand">
+          <div class="form-control form-control-solid d-flex justify-content-between align-items-center p-3" *ngIf="brand">
             {{brand}}
-            <div (click)="brand=null">
+            <div class="d-flex align-items-center justify-content-center" (click)="brand=null">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
             </div>
           </div>
@@ -267,7 +275,7 @@
         <div class="mb-4">
           <label class="form-control-label mb-3">{{ "ARTICLE_GROUP" | translate }}</label>
           <ng-select [(ngModel)]="item.iArticleGroupId" class="form-control form-control-solid p-0" [clearable]="false">
-            <ng-option *ngFor="let oArticleGroup of oStaticData.articleGroupsList" [value]="oArticleGroup._id">
+            <ng-option *ngFor="let oArticleGroup of articleGroupsList" [value]="oArticleGroup._id">
               {{ oArticleGroup.oName[language] || oArticleGroup.oName['en'] }}
             </ng-option>
           </ng-select>
