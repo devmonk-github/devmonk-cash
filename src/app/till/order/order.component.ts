@@ -93,15 +93,14 @@ export class OrderComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
-   
     let data = {
-      //iBusinessPartnerId:this.item.iBusinessPartnerId,
+     // iBusinessPartnerId:this.item.iBusinessPartnerId,
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
     const result: any = await this.getAllArticleGroupList(data);
     if(result.data?.length && result.data[0]?.result?.length){
-     //if(!this.oStaticData.articleGroupsList.length)
+      //if(!this.oStaticData?.articleGroupsList.length)
       this.articleGroupsList = result.data[0].result;
     }
   }
@@ -122,12 +121,11 @@ export class OrderComponent implements OnInit {
         closeOnBackdropClick: false,
         closeOnEsc: false 
       }).instance.close.subscribe((data) => {
-
-        console.log("data", data);
-        
         if (data.action) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
+          this.item.iBusinessPartnerId = supplier._id;
+          this.item.sBusinessPartnerName = supplier.sName;
           this.item.iArticleGroupId = articlegroup._id;
           this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
@@ -337,6 +335,7 @@ export class OrderComponent implements OnInit {
         if (this.item.iSupplierId) {
           const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
           this.supplier = tempsupp.sName;
+          this.item.sBusinessPartnerName = tempsupp.sName;
         }
       }
     }, (error) => {
