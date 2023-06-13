@@ -182,7 +182,7 @@ export class PaymentDistributionService {
   }
 
   calculateSavingsPoints(oItem: any, nSavingsPointRatio:number, nEligibleAmount:number = 1, totalAmountToBePaid:number = 1) {
-    const bTesting = true;
+    const bTesting = false;
     if(bTesting) console.log('calculateSavingsPoints', {nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid, oItem})
     if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(oItem.iArticleGroupId)) {
       if (bTesting) console.log('updating the saving points')

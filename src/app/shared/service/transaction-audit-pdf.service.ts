@@ -267,6 +267,8 @@ export class TransactionAuditUiPdfService {
         if (sDisplayMethod != "aVatRates" && this.bDetailedMode) {
             if(!bIsDynamicState) this.processCashCountings(oStatisticsDocument);
             this.processVatRates(oStatisticsDocument?.aVatRates);
+        } else if (!this.bDetailedMode && this.tillService.settings.oStatisticsSettings.bShowVatInCompactMode) {
+            this.processVatRates(oStatisticsDocument?.aVatRates);
         }
         this.sDisplayMethod = sDisplayMethod;
         
