@@ -275,6 +275,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
       this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+      localStorage.removeItem('fromTransactionPage');
+      localStorage.removeItem('recentUrl');
     } else {
       this.bIsTransactionLoading = false;
     }
