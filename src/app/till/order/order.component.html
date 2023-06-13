@@ -275,7 +275,7 @@
         <div class="mb-4">
           <label class="form-control-label mb-3">{{ "ARTICLE_GROUP" | translate }}</label>
           <ng-select [(ngModel)]="item.iArticleGroupId" class="form-control form-control-solid p-0" [clearable]="false">
-            <ng-option *ngFor="let oArticleGroup of oStaticData.articleGroupsList" [value]="oArticleGroup._id">
+            <ng-option *ngFor="let oArticleGroup of articleGroupsList" [value]="oArticleGroup._id">
               {{ oArticleGroup.oName[language] || oArticleGroup.oName['en'] }}
             </ng-option>
           </ng-select>

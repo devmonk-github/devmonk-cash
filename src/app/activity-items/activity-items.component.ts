@@ -184,7 +184,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.loadTransaction();
   }
 
-  loadTransaction() {
+ async loadTransaction() {
     if(this.bIsSearch){
       this.requestParams.skip = 0;
     }
@@ -203,6 +203,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (result: any) => {
         this.isDownloadEnable = true;
         this.activityItems = result.data;
+        this.activityItems.forEach(async (oActivityItem) => {
+          if(!oActivityItem.sBusinessPartnerName && oActivityItem?.iBusinessPartnerId) oActivityItem.sBusinessPartnerName = await this.fetchBusinessPartnerName(oActivityItem?.iBusinessPartnerId);
+        });
         this.paginationConfig.totalItems = result.count;
         this.fetchLocationName();
         this.showLoader = false;
@@ -216,7 +219,11 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       })
       
   }
-
+  async fetchBusinessPartnerName(iBusinessPartnerId: any) {
+    let result: any = await this.apiService.getNew('core', `/api/v1/business/partners/${iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).toPromise();
+    return result?.data?.sName;
+  }
+  
   openActivity(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent, {
       cssClass: 'w-fullscreen mt--5',
