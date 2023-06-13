@@ -227,6 +227,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
     this.requestParams.bIsDetailRequire = true;  // to fetch the extra detail;
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
