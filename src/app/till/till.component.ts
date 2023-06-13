@@ -153,7 +153,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
 
   /* Check if saving points are enabled */
-  savingPointsSetting: boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+  // savingPointsSetting: boolean;// = JSON.parse(localStorage.getItem('savingPoints') || '');
 
   bIsTransactionLoading = false;
   nGiftcardAmount = 0;
@@ -1100,7 +1100,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
-    // console.log('sendForReceipt', {title, type})
     oDataSource?.aPayments?.forEach((payment: any) => {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
@@ -1118,7 +1117,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           apikey: this.businessDetails.oPrintNode.sApiKey,
           title: oDataSource.sNumber,
           sType: type,
-          sTemplateType: 'business-receipt'
+          sTemplateType: (type == 'regular') ? 'business-receipt' : type
         }).toPromise();
       }
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
