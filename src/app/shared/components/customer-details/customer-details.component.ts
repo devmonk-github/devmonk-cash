@@ -4,6 +4,7 @@ import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from 'src/app/shared/service/till.service';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -84,6 +85,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   bIsCurrentCustomer: boolean = false;
   bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
+  savingPointsSetting: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
@@ -279,9 +281,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   businessDetails:any={};
   nClientId:any="-";
   
-  /* Check if saving points are enabled */
-  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
-  
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -289,6 +288,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private toastService: ToastService,
     private dialogService: DialogService,
     private translateService: TranslateService,
+    public tillService: TillService,
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -296,6 +296,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit(): void {
+    this.savingPointsSetting = this.tillService?.oSavingPointSettings?.bEnabled;
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
