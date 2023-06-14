@@ -4,6 +4,7 @@ import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from 'src/app/shared/service/till.service';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -84,7 +85,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   bIsCurrentCustomer: boolean = false;
   bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
-  savingPointsSetting: boolean = false;
+  //savingPointsSetting: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
@@ -279,6 +280,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   aSelectedGroups:any =[];
   businessDetails:any={};
   nClientId:any="-";
+  oS:any;
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -287,6 +289,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private toastService: ToastService,
     private dialogService: DialogService,
     private translateService: TranslateService,
+    public tillService: TillService,
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -328,7 +331,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();
-    this.fetchPointsSettings();
+   
     // this.activitiesChartOptions = {
     //   series: this.aActivityTitles.map((el: any) => el.value),
     //   colors: this.aActivityTitles.map((el: any) => el.color),
@@ -356,11 +359,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     // this.loadStatisticsTabData();
     this.getCustomerGroups();
   }
-  fetchPointsSettings() {
-    this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result:any) => {
-     this.savingPointsSetting = result?.bEnabled;
-    });
-  }
+  
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE" } })
       .instance.close.subscribe((data) => {
