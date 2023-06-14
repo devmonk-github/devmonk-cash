@@ -432,6 +432,15 @@ export class ReceiptService {
                             this.content.push(obj);
                         }
                     }
+                } else {
+                    let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
+                    let obj: any = { text: text };
+                    if (el?.alignment) obj.alignment = el.alignment;
+                    if (el?.size) obj.width = this.getWidth(el.size);
+                    if (el?.styles) {
+                        obj = { ...obj, ...el.styles }
+                    }
+                    this.content.push(obj);
                 }
 
             } else if (el?.type === 'image') {

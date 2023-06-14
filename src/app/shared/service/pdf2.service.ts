@@ -175,6 +175,7 @@ export class PdfService {
         await this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey).toPromise();
         resolve(true);
       } else {
+        // console.log({printActionSettings})
         if (printActionSettings && printActionSettings.aActionToPerform.includes('PRINT_PDF')) {
           if (!printSettings?.nPrinterId) {
             this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
@@ -182,14 +183,13 @@ export class PdfService {
           }
           // console.log('action to perform handlePrint printpdf')
           await this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey).toPromise();
-          resolve(true);
         }
 
         if (printActionSettings && printActionSettings.aActionToPerform.includes('DOWNLOAD')) {
           // console.log('action to perform autodownload')
           this.download(pdfObject, pdfTitle, printSettings?.nRotation);
-          resolve(true);
         }
+        resolve(true);
       }
     });
   }

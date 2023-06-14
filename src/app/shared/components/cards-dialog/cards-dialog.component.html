@@ -123,7 +123,7 @@
                     </div> -->
                 </div>
             </app-pn-tab>
-            <app-pn-tab *ngIf="savingPointsSetting" tabTitle="{{ 'LOYALTY_POINTS' | translate}}" #loyaltyPointElem> <!-- (click)="nAmount = 0" -->
+            <app-pn-tab *ngIf="tillService.oSavingPointSettings.bEnabled" tabTitle="{{ 'LOYALTY_POINTS' | translate}}" #loyaltyPointElem> <!-- (click)="nAmount = 0" -->
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row" *ngIf="!customer">
                         {{"COUNTER_CUSTOMER_SELECTED" | translate}}

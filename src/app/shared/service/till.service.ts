@@ -943,6 +943,15 @@ export class TillService {
     return oDS;
   }
 
+  prepareDataForGiftcardReceipt(oItem:any, transaction:any) {
+    const oDS = {...oItem };
+    oDS.businessDetails = transaction.businessDetails;
+    oDS.nTotal = oDS.nGiftcardRemainingAmount;
+    oDS.sReceiptNumber = transaction.sReceiptNumber;
+    oDS.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDS.sGiftCardNumber);
+    return oDS;
+  }
+
   processBusinessDetails(businessDetails:any) {
     const oLocation = businessDetails.aLocation.find((l:any) => l._id === this.iLocationId);
     businessDetails.sBusinessAddress = (oLocation.oAddress?.street || '') + ' ' + (oLocation.oAddress?.houseNumber || '') + ' ' + 

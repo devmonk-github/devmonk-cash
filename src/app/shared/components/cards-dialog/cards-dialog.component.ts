@@ -51,8 +51,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
   activeTabIndex:number = 0;
   fetchInProgress = false;
 
-  /* Check if saving points are enabled */
-  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
   redeemedPointsValue:number = 0;
 
   constructor(

@@ -999,11 +999,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
-    let nRepairCount = 0, nOrderCount = 0, nGiftcardCount = 0;
+    let nRepairCount = 0, nOrderCount = 0;
     oDataSource.aTransactionItems.forEach((item:any) => {
       if(item.oType.eKind == 'repair') nRepairCount++;
       else if(item.oType.eKind == 'order') nOrderCount++;
-      else if(item.oType.eKind == 'giftcard') nGiftcardCount++;
     })
 
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
@@ -1052,14 +1051,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if(nOrderCount >= 1){
       const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
-      this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
+      this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'is_created', 'order');
     }
 
     // }
     if (bRegularCondition) {
       //print proof of payments receipt
       const template = aTemplates.find((template: any) => template.eType === 'regular');
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'regular');
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'is_created', 'regular');
     }
 
     // if (bRepairCondition) {
@@ -1071,7 +1070,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const template = aTemplates.find((template: any) => template.eType === 'repair');
       this.activityItems.filter((oItem:any) => oItem.oType.eKind == 'repair').forEach((oItem:any) => {
         const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
-        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
+        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
       })
     // }
 
@@ -1083,28 +1082,34 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oAlternativeDataSource.forEach((data: any) => {
         data.sBusinessLogoUrl = aResult[1].data;
         data.businessDetails = this.businessDetails;
-        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'repair_alternative');
+        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
       })
     // }
 
     const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
-      const oDataSource = { ...oItem };
-      oDataSource.businessDetails = this.transaction.businessDetails;
-      oDataSource.nTotal = oDataSource.nPaidAmount;
-      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
-      oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
-      this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'giftcard');
+      const oDataSource = this.tillService.prepareDataForGiftcardReceipt(oItem, this.transaction);
+      this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'is_created', 'giftcard');
     })
+
+    if(this.appliedGiftCards?.length) {
+      this.appliedGiftCards.forEach((oAppliedGiftcard:any) => {
+        if (oAppliedGiftcard.nGiftcardRemainingAmount) {
+          const oDataSource = this.tillService.prepareDataForGiftcardReceipt(oAppliedGiftcard, this.transaction);
+          this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'partly_redeemed', 'giftcard');
+        }
+      })
+    }
 
   }
 
-  async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, eSituation:string = 'is_created', type: any) {
+    // console.log('sendForReceipt', {oDataSource, template, title, eSituation, type})
     oDataSource?.aPayments?.forEach((payment: any) => {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     })
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === 'is_created');
+    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({ oPrintActionSettings })
     if (oPrintActionSettings) {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
