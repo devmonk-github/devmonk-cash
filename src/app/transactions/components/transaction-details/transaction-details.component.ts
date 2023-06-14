@@ -90,6 +90,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   changeAmount: number = 0;
   refundedAmount: number = 0;
   bGenerateInvoice: boolean = false;
+  savingPointsSetting: boolean = false;
   employee: any;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -139,10 +140,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
     this.fetchLocationName();
+    this.fetchPointsSettings();
   }
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
+  }
+
+  fetchPointsSettings() {
+    this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
+     this.savingPointsSetting = result?.bEnabled;
+    });
   }
 
   getEmployee(id: any) {
