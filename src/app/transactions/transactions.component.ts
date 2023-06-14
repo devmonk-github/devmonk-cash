@@ -227,6 +227,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
     this.requestParams.bIsDetailRequire = true;  // to fetch the extra detail;
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
@@ -440,8 +441,11 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       if (result?.data?._id) {
         this.showTransaction(result?.data);
       }
-    } else if (barcode.startsWith("A") || barcode.startsWith("AI" || barcode.startsWith("G"))){
-      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
+    } else if (barcode.startsWith("A") || barcode.startsWith("AI")){
+      this.requestParams.searchValue = barcode;
+      this.loadTransaction();
+    } else {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
 
   }

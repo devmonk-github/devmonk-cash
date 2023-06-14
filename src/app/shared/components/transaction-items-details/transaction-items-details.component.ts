@@ -234,7 +234,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
       } else {
         // console.log('here data', data?.transactionItems?.filter((item:any)=> item))
-        if(data?.transactionItems?.filter((item:any)=> item.tType == '')?.length){
+        if(data?.transactionItems?.filter((item:any)=> item.tType == '' && item.isSelected)?.length){
           this.toastrService.show({ type: 'warning', text: 'Please select action!' });
         }else{
           this.dialogRef.close.emit(data);

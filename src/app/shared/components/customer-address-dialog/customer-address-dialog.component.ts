@@ -2,7 +2,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-
 import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -280,9 +279,6 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
   businessDetails:any={};
   customerList :any=[];
   bMUpdated:boolean=true;
-  
-  /* Check if saving points are enabled */
-  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
   
   constructor(
     private viewContainerRef: ViewContainerRef,

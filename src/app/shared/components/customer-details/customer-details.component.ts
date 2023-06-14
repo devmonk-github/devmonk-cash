@@ -84,6 +84,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   bIsCurrentCustomer: boolean = false;
   bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
+  savingPointsSetting: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
@@ -279,9 +280,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   businessDetails:any={};
   nClientId:any="-";
   
-  /* Check if saving points are enabled */
-  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
-  
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -330,6 +328,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();
+    this.fetchPointsSettings();
     // this.activitiesChartOptions = {
     //   series: this.aActivityTitles.map((el: any) => el.value),
     //   colors: this.aActivityTitles.map((el: any) => el.color),
@@ -357,7 +356,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     // this.loadStatisticsTabData();
     this.getCustomerGroups();
   }
-
+  fetchPointsSettings() {
+    this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result:any) => {
+     this.savingPointsSetting = result?.bEnabled;
+    });
+  }
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE" } })
       .instance.close.subscribe((data) => {

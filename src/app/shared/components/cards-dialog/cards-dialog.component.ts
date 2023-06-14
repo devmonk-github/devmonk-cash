@@ -50,8 +50,8 @@ export class CardsComponent implements OnInit, AfterViewInit {
   pincode: any;
   activeTabIndex:number = 0;
   fetchInProgress = false;
-
   redeemedPointsValue:number = 0;
+  savingPointsSetting: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -67,6 +67,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.fetchPointsSettings();
     if (this.customer) this.fetchLoyaltyPoints();
     
     // console.log(this.oGiftcard)
@@ -88,7 +89,11 @@ export class CardsComponent implements OnInit, AfterViewInit {
       }
     }
   }
-
+  fetchPointsSettings() {
+    this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
+     this.savingPointsSetting = result?.bEnabled;
+    });
+  }
   ngAfterViewInit() {
     const keyup$ = fromEvent(this.input.nativeElement, 'keyup');
     const searchExternalGift$ = fromEvent(this.serachExternal.nativeElement, 'keyup');
