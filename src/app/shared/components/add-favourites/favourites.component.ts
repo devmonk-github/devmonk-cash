@@ -55,7 +55,7 @@ export class AddFavouritesComponent implements OnInit {
   translation:any =[];
   button?:any;
   bValid:boolean = false;
-  limit: number = 20;
+  limit: number;
   currentLanguage='en';
 
   constructor(
@@ -75,7 +75,9 @@ export class AddFavouritesComponent implements OnInit {
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.translation = this.translateService.instant('SUCCESSFULLY_UPDATED');
     this.currentLanguage = localStorage.getItem('language') || 'en';
-      
+    if(this.mode === 'create'){
+      this.limit = 20;
+    }
 
     if(this.mode==='edit') {
       this.newSelectedProduct.nPrice = this.button?.nPrice || 0;
