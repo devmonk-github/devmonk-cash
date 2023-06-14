@@ -49,9 +49,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   iLocationId: any = localStorage.getItem("currentLocation");
   iWorkstationId: any = localStorage.getItem("currentWorkstation");
 
-  
-  /* Check if saving points are enabled */
-  savingPointsSetting:boolean = false;
+ 
 
   loading: boolean = true;
   customerLoading: boolean = true;
@@ -112,9 +110,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
-    //console.log("localStorage.getItem('savingPoints')", localStorage.getItem('savingPoints'))
-    if(localStorage.getItem('savingPoints')) this.savingPointsSetting = JSON.parse(localStorage.getItem('savingPoints') || '')
-   
     this.getEmployee(this.transaction.iEmployeeId)
     let sIndex = this.transaction.aPayments.findIndex((value: any) => value.sRemarks == "CHANGE_MONEY");
     if (sIndex > -1) {
