@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, El
 import { HttpClient } from '@angular/common/http';
 import { faTimes, faSearch, faSpinner, faRefresh, faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
-
+import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent } from "../../service/dialog";
 import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';
@@ -40,8 +40,13 @@ export class TerminalDialogComponent implements OnInit {
   totalAmount:any = 0;
   changeAmount:any = 0;
   isProceed = false;
+  iWorkstationId = localStorage.getItem('currentWorkstation');
+  iBusinessId = localStorage.getItem('currentBusiness');
+  bEnable : boolean = false;
+
   constructor(
     private viewContainer: ViewContainerRef,
+    private apiService: ApiService,
     private terminalService: TerminalService,
     private toastrService: ToastService,
     private httpClient: HttpClient,
@@ -67,6 +72,8 @@ export class TerminalDialogComponent implements OnInit {
       this.isProceed = true;
       return o;
     });
+   
+    this.getPaymentsProviderSettings();
     // if (this.cardPayments.length > 0) {
     //   this.startTerminal(this.cardPayments[this.paymentSequenceNo]);
     //   this.paymentSequenceNo += this.paymentSequenceNo + 1;
@@ -76,6 +83,31 @@ export class TerminalDialogComponent implements OnInit {
     // this.startProgressBar();
   }
 
+  getPaymentsProviderSettings(){
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        eName: ['paynl', 'ccv'],
+        "oWebshop.bUseForWebshop" : false
+      }
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).subscribe((result: any) => {
+      if (result.data?.length > 0){
+        let settings = result.data[0];
+       //console.log(settings)
+        if(settings.aPaymentIntegration?.length){
+          settings.aPaymentIntegration?.forEach(((paymentIntegration: any) => {
+            if(paymentIntegration.iWorkstationId == this.iWorkstationId){
+              this.bEnable = true;
+            }else{
+              this.bEnable = false;
+            }
+          }))
+        }
+        
+      }
+    })
+  }
   startProgressBar() {
     this.restartPaymentTimer = 45;
     this.progressValue = 0;
