@@ -9,6 +9,7 @@ import { ConfirmationDialogComponent } from '../shared/components/confirmation-d
 import { ToastService } from '../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
 import { SetPaymentMethodSequenceComponent } from '../shared/components/set-payment-method-sequence-dialog/set-payment-method-sequence.component';
+import { TillService } from '../shared/service/till.service';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -89,7 +90,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastService: ToastService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    public tillService: TillService
   ) { }
 
   ngOnInit(): void {

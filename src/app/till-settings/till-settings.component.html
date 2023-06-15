@@ -447,33 +447,46 @@
       <div class="">
         <div *ngIf="quickButtonsLoading" class="spinner-border mx-auto"></div>
         <h5 *ngIf='!quickButtons.length && !quickButtonsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
-        <ul *ngIf="quickButtons.length && !quickButtonsLoading" class="list-group">
-          <li class="list-group-item" *ngFor="let button of quickButtons; let i = index">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <span class="d-flex justify-content-start align-items-center my-3">
-                  <h4 class="text-gray-800 fw-bold fs-6 lh-1 text-center mb-0">{{button.sName}}</h4>
-                  <span class="text-gray-600 mx-3"> ({{button.nPrice | currency: '€'}})</span>
-                  <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
-                </span>
-              </div>
-              <div>
-                <button class="btn p-3 hover" (click)="shiftQuickButton('up', i)">
-                  <i class="fa fa-arrow-up"></i>
-                </button>
-                <button class="btn p-3 hover" (click)="shiftQuickButton('down', i)">
-                  <i class="fa fa-arrow-down"></i>
-                </button>
-                <button class="btn p-3 hover" (click)="editQuickButton(button)">
-                  <i class="fa fa-edit"></i>
-                </button>
-                <button class="btn p-3 hover" (click)="removeQuickButton(button)">
-                  <i class="fa fa-trash" style="color:#a63b55"></i>
-                </button>
-              </div>
-            </div>
-          </li>
-        </ul>
+        <div class="table-responsive" *ngIf="quickButtons.length && !quickButtonsLoading">
+          <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+            <thead>
+              <tr class="text-center">
+                <th>{{ 'PRODUCT' | translate}}</th>
+                <th>{{ 'PRICE' | translate}}</th>
+                <th>{{ 'KEYBOARD_SHORTCUT' | translate}}</th>
+                <th>{{ 'ACTION' | translate}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="text-center" *ngFor="let button of quickButtons; let i = index">
+                <td>{{button.sName}}</td>
+                <td>{{button.nPrice | currency: tillService.currency}}</td>
+                <td>
+                    {{ button.oKeyboardShortcut?.sKey1 }}
+                  <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> + </span>
+                    {{ button.oKeyboardShortcut?.sKey2 }}
+                </td>
+                <td>
+                  <div>
+                    <button class="btn p-3 hover" (click)="shiftQuickButton('up', i)">
+                      <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn p-3 hover" (click)="shiftQuickButton('down', i)">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn p-3 hover" (click)="editQuickButton(button)">
+                      <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn p-3 hover" (click)="removeQuickButton(button)">
+                      <i class="fa fa-trash" style="color:#a63b55"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+      
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

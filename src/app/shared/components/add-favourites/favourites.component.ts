@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, HostListener, OnInit, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { ToastService } from '../toast';
@@ -16,21 +16,20 @@ export class AddFavouritesComponent implements OnInit {
   searchKeyword: any;
   oActivityItem:any;
   shopProducts: any;
-  // commonProducts: any;
-  business: any = {};
   mode: string = '';
-  // isStockSelected = true;
-  newSelectedProduct: any = {};
-  requestParams: any = {
-    iBusinessId: ''
-  }
+  newSelectedProduct: any = {
+    oKeyboardShortcut: {
+      sKey1: '',
+      sKey2: ''
+    }
+  };
+  
   searching: boolean = false;
   creating: boolean = false;
   customMethod: any = {
     sName: '',
     bStockReduction: false,
     bInvoice: false,
-    // bAssignSavingPoints : false,
     bAssignSavingPointsLastPayment: true,
     sLedgerNumber: ''
   }
@@ -51,12 +50,30 @@ export class AddFavouritesComponent implements OnInit {
     'iBusinessPartnerId',
     'iBusinessBrandId',
   ];
-  iLocationId: string = '';
-  translation:any =[];
+  iBusinessId:any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
+  currentLanguage = localStorage.getItem('language') || 'en';
   button?:any;
   bValid:boolean = false;
   limit: number = 20;
-  currentLanguage='en';
+
+  
+  aFunctionKeys:any = [
+    { title: 'Control' },
+    { title: 'Alt' },
+    { title: 'F1' },
+    { title: 'F2' },
+    { title: 'F3' },
+    { title: 'F4' },
+    { title: 'F5' },
+    { title: 'F6' },
+    { title: 'F7' },
+    { title: 'F8' },
+    { title: 'F9' },
+    { title: 'F10' },
+    { title: 'F11' },
+    { title: 'F12' },
+  ]
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -71,32 +88,21 @@ export class AddFavouritesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.business._id = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.translation = this.translateService.instant('SUCCESSFULLY_UPDATED');
-    this.currentLanguage = localStorage.getItem('language') || 'en';
-      
 
     if(this.mode==='edit') {
       this.newSelectedProduct.nPrice = this.button?.nPrice || 0;
       this.newSelectedProduct.sName = this.button?.sName || 'No name';
       this.newSelectedProduct._id = this.button?._id;
-      // this.onSelectProduct(this.button)
+      if (this.button?.oKeyboardShortcut) this.newSelectedProduct.oKeyboardShortcut = this.button?.oKeyboardShortcut;
+      this.validate();
     }
   } 
 
   async search() {
-
     this.shopProducts = [];
-    // this.commonProducts = [];
-    // if (searchValue && searchValue.length > 2) {
-    //   this.isLoading = true;
     let data = {
-      iBusinessId: this.business._id,
-      skip: 0,
+      iBusinessId: this.iBusinessId,
       limit: 10,
-      sortBy: '',
-      sortOrder: '',
       searchValue: this.searchKeyword,
       aProjection: this.aProjection,
       oFilterBy: {
@@ -129,7 +135,7 @@ export class AddFavouritesComponent implements OnInit {
   }
 
   assignProduct(){
-    this.oActivityItem.iBusinessId = this.business._id;
+    this.oActivityItem.iBusinessId = this.iBusinessId;
     this.oActivityItem.sProductName = this.newSelectedProduct.sName;
     this.oActivityItem.aImage = this.newSelectedProduct.aImage
     this.oActivityItem.iBusinessProductId = this.newSelectedProduct.iBusinessProductId
@@ -144,7 +150,7 @@ export class AddFavouritesComponent implements OnInit {
       .subscribe((result: any) => {
         if(result.message == 'success'){
           this.apiService.activityItemDetails.next(this.oActivityItem);
-          this.toastService.show({type:"success" , text:this.translation['SUCCESSFULLY_UPDATED']});
+          this.toastService.show({ type: "success", text: this.translateService.instant('SUCCESSFULLY_UPDATED') });
           this.close(this.oActivityItem);
         }
         else
@@ -164,9 +170,9 @@ export class AddFavouritesComponent implements OnInit {
     this.creating = true;
 
     let data = {
-      iBusinessId: this.business._id,
-      iLocationId: localStorage.getItem('currentLocation'),
-      oQuickButton: this.newSelectedProduct
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      oQuickButton: this.newSelectedProduct,
     };
 
     if (!data.iLocationId) {

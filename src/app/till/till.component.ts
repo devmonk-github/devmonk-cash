@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
@@ -165,6 +165,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    event.preventDefault();
+    if(event.key.startsWith("F")) {
+      const oButton = this.quickButtons.find((el:any) => el?.oKeyboardShortcut?.sKey1 == event.key)
+      if (oButton) this.onSelectProduct(oButton, 'quick-button', '', oButton)
+    } else {
+      const oKeyboardShortcut = {
+        sKey1: '', 
+        sKey2: event.key
+      }
+      if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control'; 
+      if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt'; 
+      const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
+      if (oButton) this.onSelectProduct(oButton, 'quick-button', '', oButton)
+    }
   }
 
   constructor(

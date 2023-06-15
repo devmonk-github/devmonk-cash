@@ -109,8 +109,21 @@
                 </div>
                 <div class="row mb-5">
                     <label> {{ "PRICE" | translate}}</label>
-                    <input type="text" class="form-control" [placeholder]="'ENTER_PRICE' |translate" disabled
+                    <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
                         [(ngModel)]="newSelectedProduct.nPrice">
+                </div>
+                <div class="row mb-5">
+                    <label> {{ "SHORTCUT_KEY" | translate}}</label>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="w-100 mx-2">
+                            <ng-select [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
+                                [clearable]="false" placeholder="{{'SELECT_FUNCTION_KEY' | translate }}"></ng-select>
+                        </div>
+                        <div class="w-100 mx-2" *ngIf="!newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F')">
+                            <input type="text" class="form-control" placeholder="{{'SELECT_NUMBER' | translate}}"
+                                [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey2">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
