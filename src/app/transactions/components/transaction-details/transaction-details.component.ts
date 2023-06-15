@@ -324,12 +324,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     if (oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
-    oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    })
+    // oDataSource?.aPayments?.forEach((payment: any) => {
+    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // })
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
 
-    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,

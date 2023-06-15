@@ -1,14 +1,12 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faCheck, faRefresh, faSearch, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
-import * as JsBarcode from 'jsbarcode';
+import * as _moment from 'moment';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from "../../service/dialog";
 import { ReceiptService } from '../../service/receipt.service';
-import { ToastService } from '../toast';
 import { TillService } from '../../service/till.service';
-import * as _moment from 'moment';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-transaction-action',
   templateUrl: './transaction-action-dialog.component.html',
@@ -140,10 +138,10 @@ export class TransactionActionDialogComponent implements OnInit {
       pdfTitle = oDataSource.sActivityNumber;
     }
 
-    oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    })
-    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // oDataSource?.aPayments?.forEach((payment: any) => {
+    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // })
+    // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     
     if (action == 'PRINT_THERMAL') {
 

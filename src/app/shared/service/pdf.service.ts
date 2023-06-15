@@ -189,9 +189,9 @@ export class PdfService {
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
-        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
+        return (val === '' || val === 'NO_DATE_SELECTED' || moment(val).format(this.dateFormat) == 'Invalid date') ? val : moment(val).format(this.dateFormat);
       case 'dateonly':
-        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateOnlyFormat);
+        return (val === '' || val === 'NO_DATE_SELECTED' || moment(val).format(this.dateOnlyFormat) == 'Invalid date') ? val : moment(val).format(this.dateOnlyFormat);
       case 'uppercase':
         return val.toUpperCase();
       case 'lowercase':

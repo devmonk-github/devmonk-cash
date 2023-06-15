@@ -1121,10 +1121,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation:string = 'is_created', type: any) {
     // console.log('sendForReceipt', {oDataSource, template, title, eSituation, type})
-    oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    })
-    oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // oDataSource?.aPayments?.forEach((payment: any) => {
+    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // })
+    // console.log('before', oDataSource.dCreatedDate)
+    // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // console.log('after', oDataSource.dCreatedDate)
     const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({ oPrintActionSettings })
     if (oPrintActionSettings) {

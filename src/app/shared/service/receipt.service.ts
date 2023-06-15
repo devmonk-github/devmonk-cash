@@ -790,11 +790,12 @@ export class ReceiptService {
     printThermalReceipt({ oDataSource, printSettings, apikey, title, sType, sTemplateType }: any): Observable<any> {
         return new Observable(subscriber => {
             oDataSource = JSON.parse(JSON.stringify(oDataSource));
+            // console.log({oDataSource})
             if (oDataSource?.aPayments?.length) {
                 // console.log(oDataSource?.aPayments);
-                oDataSource?.aPayments?.forEach((payment: any) => {
-                    payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-                })
+                // oDataSource?.aPayments?.forEach((payment: any) => {
+                //     payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+                // })
             }
             let thermalPrintSettings: any;
             if (printSettings?.length > 0) {
@@ -806,7 +807,7 @@ export class ReceiptService {
                 this.toastService.show({ type: 'danger', text: sText });
                 return;
             }
-            oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+            // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
 
             this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
                 // console.log({result})
