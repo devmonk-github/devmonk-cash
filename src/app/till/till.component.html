@@ -21,36 +21,29 @@
 
     <div class="row " [ngClass]="{'opacity-25': parkedTransactionLoading}">
       <div class="col-12">
-        <div class="row">
-          <div class="col-8">
-            <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
-              <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;">
-                <span style="margin-right:1rem; font-weight:bolder">!</span>
-                {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" |
-                translate }}
-                ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
-              </p>
-              <a routerLink="../day-closure"><span class="badge btn btn-primary btnclose">{{
-                  "CLOSE_DAYSTATE" |
-                  translate}}</span></a>
-            </div>
-          </div>
+        <div class="alert alert-warning d-flex align-items-center w-100" *ngIf="!bIsPreviousDayStateClosed">
+          <p class="mb-0 me-3" style="font-size: 1.2rem;font-weight: bold;">
+            <span style="margin-right:1rem; font-weight:bolder">!</span>
+            {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" |
+            translate }}
+            ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
+          </p>
+          <a routerLink="../day-closure" class="badge btn btn-primary btn-sm btnclose m-0">
+            {{"CLOSE_DAYSTATE" | translate}}
+          </a>
         </div>
-
       </div>
     </div>
+
     <div class="row">
       <div class="col-12">
         <div class="row">
           <div class="col-lg-9 col-md-8 col-7 col-xs-12 item-section">
-            <div class="d-flex justify-content-between align-items-end">
+            <div class="d-flex justify-content-between align-items-end mb-3">
 
-              <div class="d-flex justify-content-start">
+              <div [ngClass]="sNumber && sNumber != ''? 'col-xl-8 col-sm-7 d-flex justify-content-start' : 'col-12 d-flex justify-content-start'" style="overflow-x: auto;">
 
-                <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                  [ngClass]="{'btn-color-primary': eKind === 'regular' }" (click)="onSelectRegular()"
-                  [disabled]="isGoldForPayments">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+                <!-- <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px">
                     <div class="symbol symbol-40px mb-2">
                       <span class="symbol-label">
                         <span class="svg-icon svg-icon-1qx me-0">
@@ -58,69 +51,67 @@
                         </span>
                       </span>
                     </div>
-                    <div class="fs-6">
-                      <span [ngClass]="eKind === 'regular'?'text-primary': 'text-gray-800'" class=" fw-bold">{{"STOCK" |
-                        translate}}</span>
-                    </div>
+                    <span [ngClass]="eKind === 'regular'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class=" fw-bold">HEEEEREEEEEEE</span>
+                </button> -->
+
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
+                  [ngClass]="{'btn-color-primary': eKind === 'regular' }" (click)="onSelectRegular()"
+                  [disabled]="isGoldForPayments">
+                  <div class="symbol symbol-40px mb-2">
+                    <span class="symbol-label">
+                      <span class="svg-icon svg-icon-1qx me-0">
+                        <fa-icon [icon]="faBoxesStacked"></fa-icon>
+                      </span>
+                    </span>
                   </div>
+                  <span [ngClass]="eKind === 'regular'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class=" fw-bold">{{"STOCK" |
+                    translate}}</span>
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowOrder" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowOrder" class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
                   [ngClass]="{'btn-color-primary': eKind === 'order' }" (click)="onSelectOrder()">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-                    <div class="symbol symbol-40px mb-2">
-                      <span class="symbol-label">
-                        <span class="svg-icon svg-icon-1qx me-0">
-                          <fa-icon [icon]="faTruck"></fa-icon>
-                        </span>
+                  <div class="symbol symbol-40px mb-2">
+                    <span class="symbol-label">
+                      <span class="svg-icon svg-icon-1qx me-0">
+                        <fa-icon [icon]="faTruck"></fa-icon>
                       </span>
-                    </div>
-                    <div class="fs-6">
-                      <span [ngClass]="eKind === 'order'?'text-primary': 'text-gray-800'" class="fw-bold">{{"ORDER" |
-                        translate}}</span>
-                    </div>
+                    </span>
                   </div>
+                  <span [ngClass]="eKind === 'order'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class="fw-bold">{{"ORDER" |
+                    translate}}</span>
                 </button>
 
-                <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
                   [ngClass]="{'btn-color-primary': eKind === 'repair' }" (click)="eKind = 'repair'; addItem('repair')">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-                    <div class="symbol symbol-40px mb-2">
-                      <span class="symbol-label">
-                        <span class="svg-icon svg-icon-1qx me-0">
-                          <fa-icon [icon]="faScrewdriverWrench"></fa-icon>
-                        </span>
+                  <div class="symbol symbol-40px mb-2">
+                    <span class="symbol-label">
+                      <span class="svg-icon svg-icon-1qx me-0">
+                        <fa-icon [icon]="faScrewdriverWrench"></fa-icon>
                       </span>
-                    </div>
-                    <div class="fs-6">
-                      <span [ngClass]="eKind === 'repair'?'text-primary': 'text-gray-800'" class="fw-bold">{{"REPAIR" |
-                        translate}}</span>
-                    </div>
+                    </span>
                   </div>
+                  
+                  <span [ngClass]="eKind === 'repair'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class="fw-bold">{{"REPAIR" |
+                    translate}}</span>           
                 </button>
 
-                <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
                   [ngClass]="{'btn-color-primary': eKind === 'giftcard' }"
                   (click)="eKind = 'giftcard'; addItem('giftcard')">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-                    <div class="symbol symbol-40px mb-2">
-                      <span class="symbol-label">
-                        <span class="svg-icon svg-icon-1qx me-0">
-                          <fa-icon [icon]="faGifts"></fa-icon>
-                        </span>
+                  <div class="symbol symbol-40px mb-2">
+                    <span class="symbol-label">
+                      <span class="svg-icon svg-icon-1qx me-0">
+                        <fa-icon [icon]="faGifts"></fa-icon>
                       </span>
-                    </div>
-                    <div class="fs-6">
-                      <span [ngClass]="eKind === 'giftcard'?'text-primary': 'text-gray-800'"
-                        class="fw-bold">{{"GIFTCARD" |
-                        translate}}</span>
-                    </div>
+                    </span>
                   </div>
+                  <span [ngClass]="eKind === 'giftcard'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class="fw-bold">
+                    {{"GIFTCARD" | translate}}
+                  </span>        
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowGoldPurchase" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowGoldPurchase" class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
                   (click)="eKind = 'gold-purchase'; addItem('gold-purchase')">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
                       <span class="symbol-label">
                         <span class="svg-icon svg-icon-1qx me-0">
@@ -128,31 +119,24 @@
                         </span>
                       </span>
                     </div>
-                    <div class="fs-6">
-                      <span [ngClass]="eKind === 'gold-purchase'?'text-primary': 'text-gray-800'"
+                      <span [ngClass]="eKind === 'gold-purchase'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'"
                         class="fw-bold">{{"GOLD_PURCHASE" |
                         translate}}</span>
-                    </div>
-                  </div>
                 </button>
 
-                <button class="btn d-flex btn-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
                   (click)="openExpenses()">
-                  <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-                    <div class="symbol symbol-40px mb-2">
-                      <span class="symbol-label">
-                        <span class="svg-icon svg-icon-1qx me-0">
-                          <fa-icon [icon]="faMoneyBill"></fa-icon>
-                        </span>
+                  <div class="symbol symbol-40px mb-2">
+                    <span class="symbol-label">
+                      <span class="svg-icon svg-icon-1qx me-0">
+                        <fa-icon [icon]="faMoneyBill"></fa-icon>
                       </span>
-                    </div>
-                    <div class="fs-6">
-                      <span class="fw-bold text-gray-800">{{"ADD_EXPENSES" | translate}}</span>
-                    </div>
+                    </span>
                   </div>
+                  <span class="d-block fw-bold text-gray-800 text-truncate">{{"ADD_EXPENSES" | translate}}</span>
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn d-flex btn-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
                   (click)="openDrawer()">
                   <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
@@ -163,24 +147,30 @@
                       </span>
                     </div>
                     <div class="fs-6">
-                      <span class="fw-bold text-gray-800">{{"OPEN_DRAWER" | translate}}</span>
+                      <span class="d-block fw-bold text-gray-800 text-truncate">{{"OPEN_DRAWER" | translate}}</span>
                     </div>
                   </div>
                 </button>
               </div>
 
-              <div *ngIf="sNumber && sNumber != ''" class="d-flex justify-content-between align-items-center">
-                <p class="fw-bolder text-gray-600 m-0">You are modifying an existing item with: {{sNumber}}</p>
-                <button class="btn btn-secondary btn-sm ms-2" (click)="clearAll()">
-                  <i class="fa fa-times"></i>
+              <div *ngIf="sNumber && sNumber != ''" class="col-lg-4 col-sm-5 mb-3 rounded bg-white p-4 d-flex justify-content-between align-items-center">
+                <p class="text-gray-600 m-0 ms-xl-3 ms-sm-5 fs-xl-5 fs-sm-7">
+                  {{"YOU_ARE_MODIFYING_EXISTING_ITEM" | translate}}:
+                  <br>
+                  <span class="fw-bolder"> {{sNumber}} </span>
+                </p>
+                <button class="btn btn-sm btn-link text-danger pe-auto fs-1" (click)="clearAll()">
+                  <fa-icon [icon]="faTimes"></fa-icon>
                 </button>
               </div>
+
             </div>
+
             <div class="column-auto till-body ps-0 pe-0">
-              <div class="card card-flush mb-4">
+              <div class="card card-flush mb-4 mt-3">
                 <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
                   <div class="row w-100 fw-bolder text-gray-600 align-items-center">
-                    <span class="col-1">{{ "QUANTITY" | translate}}</span>
+                    <span class="col-1 text-truncate">{{"QUANTITY" | translate}}</span>
                     <span class="col-4">{{ "DESCRIPTION" | translate}}</span>
                     <span class="col">{{ "PRICE" | translate}}</span>
                     <span class="col">{{ "DISCOUNT" | translate}}</span>
@@ -266,8 +256,8 @@
              
               <div class="card card-flush">
                 <div class="card-body p-3">
-                  <div class="d-flex flex-wrap-reverse align-items-center mb-5" style="row-gap: 10px;">
-                    <div class="d-flex col-xxl-6 col-sm-12 align-items-center me-3">
+                  <div class="d-flex flex-wrap-reverse justify-content-between align-items-center mb-5" style="row-gap: 10px;">
+                    <div class="d-flex col-xxl-5 col-lg-12 align-items-center me-3">
                       <div class="flex-grow-1 me-3">
                         <input type="text" *ngIf="eKind == 'order'" class="form-control highlight-search"
                           placeholder="{{'SEARCH_ORDER' | translate}} ..." [(ngModel)]="searchKeyword"
@@ -474,7 +464,7 @@
           </div>
           <div class="col-lg-3 col-md-4 col-5 col-xs-12 payment-section">
             <div class="fixed-content">
-              <button *ngIf="!customer" class="btn d-flex btn-white rounded p-5 mb-3 text-hover-primary w-100"
+              <button *ngIf="!customer" class="btn d-flex btn-white rounded p-3 mb-3 text-hover-primary w-100"
                 (click)="openCustomerDialog()">
                 <div class="d-flex justify-center align-items-center flex-grow-1">
                   <div class="symbol symbol-40px me-2">
@@ -485,12 +475,12 @@
                     </span>
                   </div>
                   <div class="fs-5 ms-4">
-                    <span class="text-gray-800 fw-bold">{{"CUSTOMER" | translate}}</span>
+                    <span class="text-gray-700 fw-bolder">{{"CUSTOMER" | translate}}</span>
                   </div>
                 </div>
               </button>
 
-              <div *ngIf="customer" class="d-flex flex-column bg-white rounded p-5 mb-3 w-100">
+              <div *ngIf="customer" class="d-flex flex-column bg-white rounded p-3 mb-3 w-100">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px me-2">
@@ -504,7 +494,7 @@
                       <span class="text-gray-800 fw-bold">{{"CUSTOMER" | translate}}</span>
                     </div>
                   </div>
-                  <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="customer = null">
+                  <button class="btn btn-sm btn-light" (click)="customer = null">
                     <span class="svg-icon svg-icon-1qx me-0">
                       <i class="fa fa-times"></i>
                     </span>
@@ -561,10 +551,11 @@
               <!-- Payment Buttons  -->
               <ng-container *ngFor="let payment of payMethods; let i = index">
                 <div class="input-group" [ngClass]="{'mb-3':i===0,'my-3':i>0}">
-                  <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
+                  <input type="number" class="form-control col-6" [(ngModel)]="payment.amount"
                     placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="changeInPayment()">
-                  <button class="btn btn-primary col-7" [disabled]="payment.isDisabled" (click)="assignAllAmount(i)">{{
-                    payment.sName | uppercase | translate}}</button>
+                  <button class="btn btn-primary col-6 text-truncate" [disabled]="payment.isDisabled" (click)="assignAllAmount(i)">
+                    {{payment.sName | uppercase | translate}}
+                  </button>
                 </div>
               </ng-container>
               <div class="input-group till-padding mt-2">
@@ -631,7 +622,7 @@
                     {{ "C_CHECKOUT" | translate}}
                   </span>
                 </button>
-                <button class="btn btn-primary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">
+                <button class="btn btn-secondary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">
                   <fa-icon [icon]="faRotateLeft" class="fa-spin"></fa-icon>
                 </button>
                 <div @fade *ngIf="!bAllGiftcardPaid" class="badge badge-danger mt-3">
