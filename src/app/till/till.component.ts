@@ -167,10 +167,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    event.preventDefault();
+    // event.preventDefault();
+    let bFound = false;
     if(event.key.startsWith("F")) {
       const oButton = this.quickButtons.find((el:any) => el?.oKeyboardShortcut?.sKey1 == event.key)
-      if (oButton) this.onSelectProduct(oButton, 'quick-button', '', oButton)
+      if (oButton){
+        bFound = true;
+        this.onSelectProduct(oButton, 'quick-button', '', oButton)
+      } 
     } else {
       const oKeyboardShortcut = {
         sKey1: '', 
@@ -179,8 +183,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control'; 
       if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt'; 
       const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
-      if (oButton) this.onSelectProduct(oButton, 'quick-button', '', oButton)
+      if (oButton){
+        bFound = true;
+        this.onSelectProduct(oButton, 'quick-button', '', oButton)
+      } 
     }
+    if(bFound) event.preventDefault();
   }
 
   constructor(
