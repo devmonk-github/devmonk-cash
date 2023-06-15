@@ -212,6 +212,11 @@ export class PaymentIntegrationComponent implements OnInit {
     }
     const _result: any = await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).toPromise();
     workstation[provider].sTerminalId = '';
+
+    if(_result)
+      this.toastService.show({ type: 'success', text: 'DELETED' });
+    else
+      this.toastService.show({ type: 'danger', text: 'ERROR' });
   }
 
   toggleSettings(provider:any){
@@ -258,6 +263,13 @@ export class PaymentIntegrationComponent implements OnInit {
     workstation[provider].sTerminalName = this.aTerminalList.find((el: any) => el.id === event).name;
     
     const _result: any = await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).toPromise();
+    
+    if(_result)
+      this.toastService.show({ type: 'success', text: 'SAVED' });
+    else
+      this.toastService.show({ type: 'danger', text: 'ERROR' });
+    
+    this.fetchPaymentProviderSetting();
     // console.log(oBody, iPaymentServiceProviderId);
     
   }
@@ -290,12 +302,12 @@ export class PaymentIntegrationComponent implements OnInit {
 
     if(id) { ///update
       await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${id}`, oBody).toPromise();
-      this.toastService.show({ type: 'success', text: 'UPDATED!' });
+      this.toastService.show({ type: 'success', text: 'UPDATED' });
       this.fetchTerminals();
     } else { // create
       const result: any = await this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).toPromise();
       if (result?.data?._id) {
-        this.toastService.show({ type: 'success', text: 'Saved!' });
+        this.toastService.show({ type: 'success', text: 'SAVED' });
         if (sType === 'paynl') this.oPaynl.iPaymentServiceProviderId = result.data._id;
         else this.oCCV.iPaymentServiceProviderId = result.data._id;
       }

@@ -175,10 +175,10 @@
             data-bs-placement="top" title={{toolTipData(transaction)}}>
             <td scope="row">{{transaction.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
     
-            <td class="text-truncate" style="max-width: 120px;">{{transaction.sLocationName}}</td>
+            <td class="text-truncate tab">{{transaction.sLocationName}}</td>
             <td>{{transaction.sNumber}}</td>
             <td>{{transaction.sReceiptNumber}}</td>
-            <td class="text-truncate" style="max-width: 120px;">
+            <td class="text-truncate tab">
               <span *ngIf="!transaction?.oCustomer?.bIsCompany">{{transaction?.oCustomer?.sFirstName || ''}}
                 {{transaction?.oCustomer?.sLastName || ''}}</span>
               <span *ngIf="transaction?.oCustomer?.bIsCompany">{{transaction?.oCustomer?.sCompanyName}} </span>
