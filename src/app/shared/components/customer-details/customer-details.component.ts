@@ -443,9 +443,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     else{
       this.customer.bIsCompany = false;
       if(this.mode === 'create'){
-        this.customer.sFirstName = this.customer.oContactPerson.sFirstName;
-        this.customer.sPrefix = this.customer.oContactPerson.sPrefix;
-        this.customer.sLastName = this.customer.oContactPerson.sLastName;
+        this.customer.sFirstName = this.customer.sFirstName || this.customer.oContactPerson.sFirstName;
+        this.customer.sPrefix = this.customer.sPrefix || this.customer.oContactPerson.sPrefix;
+        this.customer.sLastName = this.customer.sLastName || this.customer.oContactPerson.sLastName;
         this.customer.oContactPerson.sFirstName = "";
         this.customer.oContactPerson.sPrefix = "";
         this.customer.oContactPerson.sLastName = "";
