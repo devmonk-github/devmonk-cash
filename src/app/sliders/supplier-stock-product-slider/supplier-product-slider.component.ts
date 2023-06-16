@@ -50,7 +50,6 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   showInputStock: boolean = false;
   nHighestPrice=0;
   nTotalStock=0;
-  bWebShopUrl:boolean = false;
   minStockSubject : Subject<string> = new Subject<string>();
   aBusinessProductVariant:any =[];
   currentLanguage:any = 'en';
@@ -233,23 +232,13 @@ fetchSupplierDetail(iSupplierId: any) {
     this.ProductsLoading = true;
     this.nTotalStock = 0;
     this.nHighestPrice =0;
-    if(!this.bIsSlideTurnOff){
-      this.bWebShopUrl =true;
-    }else{
-      this.bWebShopUrl = this.bIsSlideTurnOff;
-    }
     return new Promise<any>((resolve, reject) => {
       this.apiService
         .getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId.toString()}`)
         .subscribe(
           (result: any) => {
             if (result.message === "success") {
-              this.productData = result.data
-              if(!this.bIsSlideTurnOff){
-                this.bWebShopUrl =false;
-              }else{
-                this.bWebShopUrl = this.bIsSlideTurnOff;
-              }
+              this.productData = result.data;
               if (!this.productData?.oCurrentLocation) this.productData.oCurrentLocation = {};
               if(this.productData?.ownBusinessProducts?.nHighestPrice) this.nHighestPrice = this.productData.ownBusinessProducts.nHighestPrice;
               if(this.productData?.ownBusinessProducts?.aLocation?.length){
