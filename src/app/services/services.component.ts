@@ -351,7 +351,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length){
         this.activities = result?.data.map((item:any) => {
-          item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? item.aActivityItemMetaData.map((el: any) => el.sBagNumber).join(',') : '';
+          this.setBagNumber(item);
           return item;
         });
 
@@ -367,6 +367,16 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }, (error) => {
       this.showLoader = false;
     })
+  }
+
+  setBagNumber(item: any) {
+    let aBagNumber: any = [];
+    if (item?.aActivityItemMetaData?.length) {
+      item?.aActivityItemMetaData.forEach((detail: any) => {
+        if (detail?.sBagNumber && detail.sBagNumber != undefined) aBagNumber.push(detail?.sBagNumber);
+      });
+    }
+    item.sBagNumbers = aBagNumber;
   }
 
   getCustomers() {
