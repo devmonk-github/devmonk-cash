@@ -80,7 +80,7 @@
           <div *ngIf="productData?.ownBusinessProducts && nTotalStock <= 0" class="alert alert-warning d-flex align-items-center p-5">
             <div class="d-flex flex-column">
               <span>
-                {{"PRODUCT_IS_NOT_AVALABLE_IN_SUPPLIER_ACCOUNT" | translate }}
+                {{"THE_SUPPLIER'S_STOCK_IS_ZERO_YOU_CAN_RECONFIRM_WITH_SUPPLIER" | translate }}
               </span>
             </div>
           </div>
@@ -124,8 +124,8 @@
             {{buyNowButtonText | translate}} </button>
             
           <div class="d-flex flex-column">
-            <div *ngIf="productData?.iProductId" class="card-toolbar flex-row-fluid justify-content-end">
-                <button  (click)="viewOnSupplierWebShop()" [disabled]="bWebShopUrl"
+            <div *ngIf="productData?.iProductId && (productData?.ownBusinessProducts?.sB2bUrl || productData?.sB2bUrl)" class="card-toolbar flex-row-fluid justify-content-end">
+                <button  (click)="viewOnSupplierWebShop()" [disabled]="bIsSlideTurnOff"
                   class="btn btn-primary mb-5 w-100">{{"VIEW_ON_SUPPLIER_WEBSHOP" | translate}}</button>
             </div>
           </div>

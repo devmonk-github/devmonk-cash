@@ -50,12 +50,12 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   showInputStock: boolean = false;
   nHighestPrice=0;
   nTotalStock=0;
-  bWebShopUrl:boolean = false;
   minStockSubject : Subject<string> = new Subject<string>();
   aBusinessProductVariant:any =[];
   currentLanguage:any = 'en';
   isShowAvailableProduct:Boolean = false;
   showProductVariantLoader:Boolean = false;
+  oSupplierDetail:any;
 
   constructor(
     private apiService: ApiService,
@@ -76,8 +76,8 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
           DrawerComponent.reinitialization();
           if (!data?.oCurrentLocation) data.oCurrentLocation = {};
           this.productData = data;
-          const response :any= await this.getSupplierDetails(data.iSupplierId)
-          this.productData.bCanRightSliderTurnOnSupplier = response.bCanRightSliderTurnOn;
+          await this.getSupplierDetails(data?.iBusinessPartnerId);
+          this.productData.bCanRightSliderTurnOnSupplier = this.oSupplierDetail?.bCanRightSliderTurnOn;
           this.bCanRightSliderTurnOnRetailer = this.productData?.bCanRightSliderTurnOnRetailer;
           this.bCanRightSliderTurnOnSupplier = this.productData?.bCanRightSliderTurnOnSupplier;
           this.bIsSlideTurnOff = !this.bCanRightSliderTurnOnRetailer && !this.bCanRightSliderTurnOnSupplier ? true : false
@@ -199,38 +199,46 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     else if (index === 5 ) this.getComparableProducts()
   }
 
-  getSupplierDetails(supplierId:any){
-    return new Promise<any>((resolve , reject)=>{
-       this.apiService.getNew('core', '/api/v1/suppliers/' + supplierId).subscribe((res:any)=>{
-        resolve(res.data);
+  getSupplierDetails(id: any) {
+    this.iBusinessId = localStorage.getItem("currentBusiness");
+    const url = '/api/v1/business/partners/' + id + '?iBusinessId=' + this.iBusinessId;
+    return new Promise<any>((resolve, reject) => {
+    this.apiService.getNew('core', url).subscribe((result: any) => {
+         const oSupplier:any = result.data;
+        if (oSupplier?.iSupplierId){
+          this.oSupplierDetail= this.fetchSupplierDetail(oSupplier?.iSupplierId); /* This is to fetch the supplier detail */
+           resolve(this.oSupplierDetail);
+        }else{
+          resolve(result.data);
+        }
         return
-       }, (error)=>{
-          resolve(error);
-       })
+      }, (error) => {
+        resolve(error);
+      })
     })
   }
+
+fetchSupplierDetail(iSupplierId: any) {
+  this.apiService.getNew('core', '/api/v1/suppliers/' + iSupplierId)
+    .subscribe(
+      (result: any) => {
+        if (result?.data) {
+          return result.data;
+        }
+      })
+}
 
   getProductData(iBusinessProductId: string) {
     this.ProductsLoading = true;
     this.nTotalStock = 0;
     this.nHighestPrice =0;
-    if(!this.bIsSlideTurnOff){
-      this.bWebShopUrl =true;
-    }else{
-      this.bWebShopUrl = this.bIsSlideTurnOff;
-    }
     return new Promise<any>((resolve, reject) => {
       this.apiService
         .getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId.toString()}`)
         .subscribe(
           (result: any) => {
             if (result.message === "success") {
-              this.productData = result.data
-              if(!this.bIsSlideTurnOff){
-                this.bWebShopUrl =false;
-              }else{
-                this.bWebShopUrl = this.bIsSlideTurnOff;
-              }
+              this.productData = result.data;
               if (!this.productData?.oCurrentLocation) this.productData.oCurrentLocation = {};
               if(this.productData?.ownBusinessProducts?.nHighestPrice) this.nHighestPrice = this.productData.ownBusinessProducts.nHighestPrice;
               if(this.productData?.ownBusinessProducts?.aLocation?.length){
