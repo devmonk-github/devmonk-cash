@@ -71,7 +71,7 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clickOnBackdrop() {
-    this.triggerEvent.emit('close');
+    if (this.closeOnBackdropClick) this.triggerEvent.emit('close');
   }
 
   ngOnDestroy(): void {
