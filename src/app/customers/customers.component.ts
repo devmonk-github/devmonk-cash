@@ -91,6 +91,7 @@ export class CustomersComponent implements OnInit {
 
   aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
+    { key: 'INSERT', value: 'sPrefix' },
     { key: 'LASTNAME', value: 'sLastName' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
@@ -107,6 +108,7 @@ export class CustomersComponent implements OnInit {
   aPlaceHolder: Array<any> = ["Search"];
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
+  PrefixString:any = "INSERT";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
   StreetString :any = "STREET";
@@ -206,6 +208,7 @@ export class CustomersComponent implements OnInit {
       let sIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sStreet");
       let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
       let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
+      let prIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPrefix");
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
@@ -239,6 +242,13 @@ export class CustomersComponent implements OnInit {
       } else {
         this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
         this.aInputHint[fIndex] = "John";
+      }
+      if (prIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.PrefixString));
+        this.removeItemAll(this.aInputHint, "Van");
+      } else {
+        this.aPlaceHolder[prIndex] = this.translateService.instant(this.PrefixString);
+        this.aInputHint[prIndex] = "Van";
       }
       if (lIndex == -1) {
         this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.LNameString));

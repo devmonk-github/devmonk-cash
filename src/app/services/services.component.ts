@@ -345,12 +345,13 @@ export class ServicesComponent implements OnInit, OnDestroy {
       minDate: this.filterDates.create.minDate,
       maxDate: this.filterDates.create.maxDate,
     }
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.showLoader = true;
     this.activities = [];
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length){
         this.activities = result?.data.map((item:any) => {
-          item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? item.aActivityItemMetaData.map((el: any) => el.sBagNumber).join(',') : '';
+          this.setBagNumber(item);
           return item;
         });
 
@@ -366,6 +367,16 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }, (error) => {
       this.showLoader = false;
     })
+  }
+
+  setBagNumber(item: any) {
+    let aBagNumber: any = [];
+    if (item?.aActivityItemMetaData?.length) {
+      item?.aActivityItemMetaData.forEach((detail: any) => {
+        if (detail?.sBagNumber && detail.sBagNumber != undefined) aBagNumber.push(detail?.sBagNumber);
+      });
+    }
+    item.sBagNumbers = aBagNumber;
   }
 
   getCustomers() {
@@ -461,9 +472,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("T")) {
-      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
+      this.requestParams.searchValue = barcode;
+      this.loadTransaction();
+    } else {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
-    console.log('barcode ', barcode);
   }
 
   openCardsModal(oGiftcard?: any, oCustomer?: any) {

@@ -197,7 +197,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     const oBody = { ... this.requestParams }
     oBody.aPropertyOptionIds = this.aPropertyOptionIds;
     oBody.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
-    oBody.sSearchValue = this.sSearchValue;
+    oBody.sSearchValue = this.sSearchValue.trim();
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
@@ -441,8 +441,12 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       }
     } else if (barcode.startsWith("R")) {
     } else if (barcode.startsWith("T")) {
-      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
+      this.sSearchValue = barcode;
+      this.loadTransaction();
+    } else {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
+
 
   }
 
