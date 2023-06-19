@@ -107,9 +107,10 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
       this.activities = result?.data?.records;
       this.activities.forEach((item: any) =>{
         this.prepareRecordMetadata(item);
-        item.sActivityItemNumbers = item?.aActivityItemMetaData?.map((oActivityItem: any) => oActivityItem.sActivityItemNumber).join(',')
-        item.sTransactionNumbers = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sNumber).join(',')
-        item.sReceiptNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sReceiptNumber).join(',')
+        item.sActivityItemNumbers = item?.aActivityItemMetaData?.map((oActivityItem: any) => oActivityItem.sActivityItemNumber?.split('-').shift()).join(' , ');
+        item.sTransactionNumbers = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sNumber?.split('-').shift()).join(' , ');
+        item.sReceiptNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sReceiptNumber?.split('-').shift()).join(' , ');
+        item.sInvoiceNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sInvoiceNumber?.split('-').shift()).join(' , ');
       });
       this.totalActivities = result?.data?.count;
       this.showLoader = false;
