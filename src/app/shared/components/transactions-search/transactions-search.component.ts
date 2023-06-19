@@ -90,6 +90,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
       // console.log('transaction search - findTransactions search result', result);
