@@ -14,7 +14,7 @@
           <div class="row">
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.2.68
+                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.2.69
               </label>
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
@@ -462,9 +462,10 @@
                 <td>{{button.sName}}</td>
                 <td>{{button.nPrice | currency: tillService.currency}}</td>
                 <td>
-                    {{ button.oKeyboardShortcut?.sKey1 }}
-                  <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> + </span>
-                    {{ button.oKeyboardShortcut?.sKey2 }}
+                  {{ button.oKeyboardShortcut?.sKey1 }}
+                  <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> +
+                  </span>
+                  {{ button.oKeyboardShortcut?.sKey2 }}
                 </td>
                 <td>
                   <div>
@@ -483,7 +484,7 @@
                   </div>
                 </td>
               </tr>
-      
+
             </tbody>
           </table>
         </div>
