@@ -179,7 +179,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    if(this.oGiftcard.nAmount > this.oGiftcard.nGiftcardRemainingAmount){
+    if((this.oGiftcard?.nCurrentLimit == 0 || this.oGiftcard.nAmount > this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount == 0) && (this.redeemedLoyaltyPoints==0 || this.loyaltyPoints < this.redeemedLoyaltyPoints)){
       this.toastService.show({type:'warning' , text: this.translateService.instant('USING_MORE_THAN_AVAILABLE')});
     } else {
       const oGiftcard = { ...this.oGiftcard }

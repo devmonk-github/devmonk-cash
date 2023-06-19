@@ -79,7 +79,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
 
 
   findTransactions() {
-    // console.log('transaction search - findTransactions');
     this.transactions = [];
     this.totalTransactions = 0;
     this.activities = [];
@@ -87,6 +86,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.requestParams.type = 'transaction';
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.showLoader = true;
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
       
       /* new approach */

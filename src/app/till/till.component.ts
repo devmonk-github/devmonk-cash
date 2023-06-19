@@ -787,7 +787,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customer = null;
     this.saveInProgress = false;
     this.clearPaymentAmounts();
-    localStorage.removeItem('fromTransactionPage');
+    // localStorage.removeItem('fromTransactionPage');
   }
 
   clearPaymentAmounts() {
@@ -1066,7 +1066,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       bRegularCondition: bRegularCondition,
     });
 
-    oDialogComponent.close.subscribe(() => { this.clearAll(); });
+    oDialogComponent.close.subscribe((result:any) => { 
+      if(result){
+        this.loadTransaction()
+      } else {
+        this.clearAll();
+      } 
+
+    });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
     // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
@@ -1894,7 +1901,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async handleTransactionResponse(data: any) {
     // console.log('handleTransactionResponse', data)
-    // this.clearAll();
+    this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems.push(...transactionItems);
     this.iActivityId = transaction.iActivityId || transaction._id;
