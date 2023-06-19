@@ -9,6 +9,7 @@
         </div>
     </div>
     <div class="card-body bg-light-gray">
+        <div class="col-sm-12 col-md-12">
         <div class="row">
             <div class="col-2"></div>
             <div class="col-10">
@@ -16,7 +17,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-2 pe-0">
+            <div class="col-md-2 col-sm-6 col-xs-6">
                 <div class="card pt-2"> <!-- style="width: 18rem;" -->
                     <span class="card-header justify-content-center align-items-center text-center m-0 ps-0 pe-0">
                         <h3 class="my-1">{{sNumber}}
@@ -151,7 +152,7 @@
                                         </div>
                                     </div>
                                 </ng-container>
-                                <button class="btn btn-primary my-3 btn-custom"
+                                <button class="col-sm-3 col-md-6 btn btn-primary my-3 btn-custom"
                                     (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
                                 </button>
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
@@ -195,7 +196,7 @@
                 </div>
             </div>
 
-            <div class="col-10">
+            <div class="col-md-10 col-sm-6 col-xs-6">
 
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; let activityindex = index">
@@ -1836,4 +1837,6 @@
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
