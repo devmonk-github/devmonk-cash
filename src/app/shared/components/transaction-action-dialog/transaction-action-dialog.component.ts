@@ -90,7 +90,7 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   close(data: any): void {
-    this.dialogRef.close.emit(this.usedActions)
+    this.dialogRef.close.emit(data)
   }
 
   listEmployee() {
@@ -212,8 +212,8 @@ export class TransactionActionDialogComponent implements OnInit {
         closeOnBackdropClick: false, 
         closeOnEsc: false 
       }).instance.close.subscribe(
-        res => {
-          this.close(false);
+        result => {
+          this.close(result?.action);
           // if (res) this.routes.navigate(['business/till']);
         });
   }

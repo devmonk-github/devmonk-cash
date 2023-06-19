@@ -358,7 +358,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType }, hasBackdrop: true })
+    // console.log('transaction details open transaction', transaction, itemType)
+    const oBody = {
+      _id: transaction.iActivityId,
+      sNumber: transaction.sActivityNumber,
+      iLocationId: transaction.iLocationId,
+      dCreatedDate: transaction.dCreatedDate
+    }
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction: oBody, itemType }, hasBackdrop: true })
       .instance.close.subscribe(result => {
         if (result.transaction) {
           const data = this.tillService.processTransactionSearchResult(result);
