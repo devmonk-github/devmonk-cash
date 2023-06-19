@@ -1851,8 +1851,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         searchValue: barcode
       }
       const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.transactions?.records?.length) {
-        this.openTransaction(result?.transactions?.records[0], 'transaction');
+      if (result?.data?.records?.length) {
+        this.openTransaction(result?.data?.records[0], 'activity');
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
@@ -1862,8 +1862,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         searchValue: barcode
       }
       const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.activities?.records?.length) {
-        this.openTransaction(result?.activities?.records[0], 'activity');
+      if (result?.data?.records?.length) {
+        this.openTransaction(result?.data?.records[0], 'activity');
       }
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {

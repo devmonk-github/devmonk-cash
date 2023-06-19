@@ -101,21 +101,24 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
       //   this.totalActivities = result.data.count;
       // }
 
-      this.transactions = result?.transactions?.records;
-      this.totalTransactions = result?.transactions?.count;
-      this.paginationConfig.totalItems = result?.activities?.count;
-      this.activities = result?.activities?.records;
+      // this.transactions = result?.data?.records;
+      // this.totalTransactions = result?.transactions?.count;
+      this.paginationConfig.totalItems = result?.data?.count;
+      this.activities = result?.data?.records;
       this.activities.forEach((item: any) =>{
-        this.setBagNumber(item);
+        this.prepareRecordMetadata(item);
+        item.sActivityItemNumbers = item?.aActivityItemMetaData?.map((oActivityItem: any) => oActivityItem.sActivityItemNumber).join(',')
+        item.sTransactionNumbers = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sNumber).join(',')
+        item.sReceiptNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sReceiptNumber).join(',')
       });
-      this.totalActivities = result?.activities?.count;
+      this.totalActivities = result?.data?.count;
       this.showLoader = false;
     }, (error) => {
       this.showLoader = false;
     })
   }
 
-  setBagNumber(item: any) {
+  prepareRecordMetadata(item: any) {
     let aBagNumber: any = [];
     if (item?.aActivityItemMetaData?.length) {
       item?.aActivityItemMetaData.forEach((detail: any) => {

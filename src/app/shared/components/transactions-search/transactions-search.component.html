@@ -27,7 +27,11 @@
                             <thead>
                                 <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="min-w-100px sorting" tabindex="0"> {{"ACTIVITY_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"ACTIVITY_ITEM_NUMBER" | translate}}</th>
                                     <th class="min-w-100px sorting" tabindex="0"> {{"BAG_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"TRANSACTION_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"RECEIPT_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"INVOICE_NUMBER" | translate}}</th>
                                     <th class="min-w-100px sorting" tabindex="0"> {{"DATE" |translate}}</th>
                                     <th class="min-w-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
                                 </tr>
@@ -35,7 +39,11 @@
                             <tbody class="fw-bold text-gray-600">
                                 <tr *ngFor='let transaction of activities| paginate: paginationConfig'>
                                     <td class="">{{ transaction.sNumber }}</td>
+                                    <td class="">{{ transaction.sActivityItemNumbers }}</td>
                                     <td class="">{{ transaction.sBagNumbers }}</td>
+                                    <td class="">{{ transaction.sTransactionNumbers }}</td>
+                                    <td class="">{{ transaction.sReceiptNumber }}</td>
+                                    <td class="">{{ transaction.sInvoiceNumber }}</td>
                                     <td class="">{{ transaction.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                     <td>
                                         <button class="btn btn-primary"
