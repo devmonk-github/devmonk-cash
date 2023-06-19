@@ -60,7 +60,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     private toastService:ToastService , 
     private translateService:TranslateService,
     public tillService: TillService) {
-    const _injector = this.viewContainerRef.injector;;
+    const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 

@@ -57,7 +57,7 @@ export class AddExpensesComponent implements OnInit {
     private tillService: TillService
     // private taxService: TaxService
   ) {
-    const _injector = this.viewContainerRef.injector;;
+    const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.paymentMethod = this.dialogRef.context.paymentMethod;
   }

@@ -33,7 +33,7 @@ export class MorePaymentsDialogComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService,
     private fb: FormBuilder,
   ) {
-    const _injector = this.viewContainerRef.injector;;
+    const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
