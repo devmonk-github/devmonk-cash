@@ -25,7 +25,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   business: any = {}
   transactions: Array<any> = [];
   activities: Array<any> = [];
-  selectedWorkstations: Array<any> = [];
   selectedLocations: Array<any> = [];
   requestParams: any = {
     searchValue: '',
@@ -80,34 +79,47 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
 
 
   findTransactions() {
-    // console.log('transaction search - findTransactions');
     this.transactions = [];
     this.totalTransactions = 0;
     this.activities = [];
     this.totalActivities = 0;
     this.requestParams.type = 'transaction';
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
-    this.requestParams.workstations = this.selectedWorkstations;
-    this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
+    this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
-      // console.log('transaction search - findTransactions search result', result);
-      this.transactions = result.transactions.records;
-      this.totalTransactions = result.transactions.count;
-      this.paginationConfig.totalItems = result.activities.count;
-      this.activities = result.activities.records;
+      
+      /* new approach */
+      // if (result?.data?.records?.length) {
+      //   this.transactions = result.data.records;
+      //   this.totalTransactions = result.data.count;
+      //   this.paginationConfig.totalItems = result.data.count;
+      //   this.activities = result.data.records;
+      //   this.activities.forEach((item: any) =>{
+      //     this.setBagNumber(item);
+      //   });
+      //   this.totalActivities = result.data.count;
+      // }
+
+      // this.transactions = result?.data?.records;
+      // this.totalTransactions = result?.transactions?.count;
+      this.paginationConfig.totalItems = result?.data?.count;
+      this.activities = result?.data?.records;
       this.activities.forEach((item: any) =>{
-        this.setBagNumber(item);
+        this.prepareRecordMetadata(item);
+        item.sActivityItemNumbers = item?.aActivityItemMetaData?.map((oActivityItem: any) => oActivityItem.sActivityItemNumber?.split('-').shift()).join(' , ');
+        item.sTransactionNumbers = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sNumber?.split('-').shift()).join(' , ');
+        item.sReceiptNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sReceiptNumber?.split('-').shift()).join(' , ');
+        item.sInvoiceNumber = item?.aTransactionMetaData?.map((oTransaction: any) => oTransaction.sInvoiceNumber?.split('-').shift()).join(' , ');
       });
-      this.totalActivities = result.activities.count;
+      this.totalActivities = result?.data?.count;
       this.showLoader = false;
     }, (error) => {
       this.showLoader = false;
     })
   }
 
-  setBagNumber(item: any) {
+  prepareRecordMetadata(item: any) {
     let aBagNumber: any = [];
     if (item?.aActivityItemMetaData?.length) {
       item?.aActivityItemMetaData.forEach((detail: any) => {

@@ -787,7 +787,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customer = null;
     this.saveInProgress = false;
     this.clearPaymentAmounts();
-    localStorage.removeItem('fromTransactionPage');
+    // localStorage.removeItem('fromTransactionPage');
   }
 
   clearPaymentAmounts() {
@@ -1066,7 +1066,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       bRegularCondition: bRegularCondition,
     });
 
-    oDialogComponent.close.subscribe(() => { this.clearAll(); });
+    oDialogComponent.close.subscribe((result:any) => { 
+      if(result){
+        this.loadTransaction()
+      } else {
+        this.clearAll();
+      } 
+
+    });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
     // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
@@ -1844,8 +1851,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         searchValue: barcode
       }
       const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.transactions?.records?.length) {
-        this.openTransaction(result?.transactions?.records[0], 'transaction');
+      if (result?.data?.records?.length) {
+        this.openTransaction(result?.data?.records[0], 'activity');
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
@@ -1855,8 +1862,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         searchValue: barcode
       }
       const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.activities?.records?.length) {
-        this.openTransaction(result?.activities?.records[0], 'activity');
+      if (result?.data?.records?.length) {
+        this.openTransaction(result?.data?.records[0], 'activity');
       }
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
@@ -1894,7 +1901,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async handleTransactionResponse(data: any) {
     // console.log('handleTransactionResponse', data)
-    // this.clearAll();
+    this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems.push(...transactionItems);
     this.iActivityId = transaction.iActivityId || transaction._id;
