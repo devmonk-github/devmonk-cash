@@ -96,7 +96,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     { key: 'DATE', selected: true, sort: 'desc' },
     { key: 'LOCATION', disabled: true },
     { key: 'TRANSACTION_NUMBER', selected: false, sort: '' },
-    { key: 'RECEIPT_NUMBER', selected: false, sort: '' },
+    { key: 'RECEIPT_INVOICE_NUMBER', selected: false, sort: '' },
     { key: 'CUSTOMER', selected: false, sort: '' },
     { key: 'METHOD', disabled: true },
     { key: 'TOTAL', disabled: true },
@@ -198,17 +198,14 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   toolTipData(item: any) {
     var itemList = []
     var returnArr = [];
-    if (item.oCustomer && (item.oCustomer.sFirstName || item.oCustomer.sLastName)) {
-      returnArr.push(item.oCustomer.sFirstName + ' ' + item.oCustomer.sLastName)
-    }
-
+   
     if (item.aTransactionItems && item.aTransactionItems.length > 0) {
       for (var i = 0; i < item.aTransactionItems.length; i++) {
         itemList.push(item.aTransactionItems[i].sProductName)
-        returnArr.push('- ' + item.aTransactionItems[i].sProductName + ' | €' + (item.aTransactionItems[i].nPriceIncVat || 0))
+        returnArr.push(item.aTransactionItems[i].sProductName + ' - ' + this.tillService.currency + (item.aTransactionItems[i].nPriceIncVat || 0));
       }
     }
-    return returnArr.join("<br>")
+    return returnArr.join(" | ");
   }
 
   goToCashRegister() {
