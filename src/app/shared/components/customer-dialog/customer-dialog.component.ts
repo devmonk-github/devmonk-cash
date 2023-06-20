@@ -152,6 +152,7 @@ export class CustomerDialogComponent implements OnInit {
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'INSERT', value: 'sPrefix' },
     { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'PHONE', value: 'sMobile' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
@@ -165,6 +166,7 @@ export class CustomerDialogComponent implements OnInit {
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
   PrefixString:any = "INSERT";
+  PhoneString:any ="PHONE";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
   StreetString :any = "STREET";
@@ -239,6 +241,7 @@ export class CustomerDialogComponent implements OnInit {
       let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
       let prIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPrefix");
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
+      let mIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sMobile");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
 
@@ -285,6 +288,13 @@ export class CustomerDialogComponent implements OnInit {
       } else {
         this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
         this.aInputHint[lIndex] = "Doe";
+      }
+      if (mIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.PhoneString));
+        this.removeItemAll(this.aInputHint, "1234567890");
+      } else {
+        this.aPlaceHolder[mIndex] = this.translateService.instant(this.PhoneString);
+        this.aInputHint[mIndex] = "1234567890";
       }
       if (cIndex == -1) {
         this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.CNameString));

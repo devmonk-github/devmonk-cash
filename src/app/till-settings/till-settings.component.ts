@@ -75,6 +75,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'INSERT', value: 'sPrefix' },
     { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'PHONE', value: 'sMobile' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
