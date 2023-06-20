@@ -205,7 +205,9 @@
             <th *ngIf="type !== 'repair'">{{"TYPE" | translate}}</th>
             <th *ngIf="type == 'order' || type == 'repair'">{{"REPAIR_NUMBER" | translate}}</th>
             <th *ngIf="type == 'repair' || type == 'gold-purchase'">{{"AINAME" | translate}}</th>
-            <th>{{"INTAKE_DATE" | translate}}</th>
+            <th><div *ngIf="type == 'giftcard'">{{"ISSUE_DATE" | translate}}</div>
+                <div *ngIf="type != 'giftcard'">{{"INTAKE_DATE" | translate}}</div>
+            </th>
             <th *ngIf="type !== 'giftcard'">{{"ESTIMATED_DATE" | translate}}</th>
             <th>{{"STATUS" | translate}}</th>
             <th *ngIf="type == 'giftcard'">{{"AIAMOUNT" | translate}}</th>
