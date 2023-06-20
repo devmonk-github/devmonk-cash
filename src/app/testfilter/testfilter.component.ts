@@ -10,6 +10,7 @@ import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { ActivityItemExportComponent } from '../shared/components/activity-item-export/activity-item-export.component';
+import { TillService } from '../shared/service/till.service';
 
 @Component({
   selector: 'app-testfilter',
@@ -127,7 +128,8 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     private routes: Router,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-    private serializer: UrlSerializer
+    private serializer: UrlSerializer,
+    public tillService: TillService
   ) {
 
     
@@ -312,6 +314,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
   fetchBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
       this.businessDetails = result.data;
+      this.tillService.selectCurrency(this.businessDetails.currentLocation);
     })
   }
 

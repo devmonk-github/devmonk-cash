@@ -236,11 +236,9 @@
               <td *ngIf="type !== 'giftcard'" style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date:
                 'yyyy-MM-dd HH:mm'}}</td>
               <td>{{activity?.eActivityItemStatus}}</td>
-              <td *ngIf="type == 'giftcard'">{{activity?.nPriceIncVat || '0'}}</td>
+              <td *ngIf="type == 'giftcard'">{{(activity?.nPriceIncVat || '0') | currency: tillService.currency}}</td>
               <td *ngIf="type == 'giftcard'">
-                <div *ngIf="activity?.nGiftcardRemainingAmount">{{activity?.nGiftcardRemainingAmount.toFixed(2)}}</div>
-                <div *ngIf="activity.nGiftcardRemainingAmount == undefined">0</div>
-    
+                {{(activity?.nGiftcardRemainingAmount || '0') | currency: tillService.currency}}
               </td>
               <td *ngIf="type !== 'giftcard'" class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
               <td class="custom-overflow">
