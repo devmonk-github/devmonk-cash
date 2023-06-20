@@ -398,7 +398,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         closeOnEsc: false 
       }).instance;
       
-    oDialogComponent.close.subscribe(result => {
+    oDialogComponent.close.subscribe(async (result) => {
+      if (result)transaction.sInvoiceNumber = result?.sInvoiceNumber;
       if (result?.oData?.oCurrentCustomer) {
         transaction.oCustomer._id = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.oCustomer._id;
         transaction.iCustomerId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.iCustomerId;
