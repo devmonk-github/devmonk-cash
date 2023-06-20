@@ -77,7 +77,8 @@ export class CustomersComponent implements OnInit {
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
       'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
     oFilterBy: {
-      aSearchField: []
+      aSearchField: [],
+      aSelectedGroups: []
     },
     customerType: 'all'
   };
@@ -127,6 +128,7 @@ export class CustomersComponent implements OnInit {
     { key: 'INVOICE_ADDRESS', selected: false, sort: '' },
     {key:'ACTION' , disabled:true }
   ]
+  customerGroupList :any=[];
  
   constructor(
     private apiService: ApiService,
@@ -151,6 +153,7 @@ export class CustomersComponent implements OnInit {
      });
     })
     this.getCustomers();
+    this.getCustomerGroups();
   }
 
   getSettings() {
@@ -165,6 +168,40 @@ export class CustomersComponent implements OnInit {
       console.log(error);
     })
   }
+
+  getCustomerGroups(){
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.data?.length) {
+        this.customerGroupList = res?.data[0]?.result;
+      }
+    }, (error) => {})
+  }
+
+  // Function for reset selected filters
+  resetFilters() {
+    this.aPlaceHolder = ["SEARCH"];
+    this.requestParams.searchValue = '';
+    this.requestParams = {
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '_id',
+      sortOrder: -1,
+      searchValue: '',
+      aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+        'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+        'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
+        'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
+      oFilterBy: {
+        aSearchField: [],
+        aSelectedGroups: []
+      },
+      customerType: 'all'
+    };
+    this.getCustomers();
+    this.getSettings();
+  }
+
   removeItemAll(arr: any, value: any) {
     var i = 0;
     while (i < arr.length) {
