@@ -41,9 +41,9 @@
           <div class="col-lg-9 col-md-8 col-7 col-xs-12 item-section">
             <div class="d-flex justify-content-between align-items-end mb-3">
 
-              <div [ngClass]="sNumber && sNumber != ''? 'col-xl-8 col-sm-7 d-flex justify-content-start' : 'col-12 d-flex justify-content-start'" style="overflow-x: auto;">
+              <div [ngClass]="sNumber && sNumber != ''? 'col-xl-7 col-sm-7 d-flex justify-content-start' : 'col-12 d-flex justify-content-start'" style="overflow-x: auto;">
 
-                <!-- <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px">
+                <!-- <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary  w-100px">
                     <div class="symbol symbol-40px mb-2">
                       <span class="symbol-label">
                         <span class="svg-icon svg-icon-1qx me-0">
@@ -54,7 +54,7 @@
                     <span [ngClass]="eKind === 'regular'?'d-block text-truncate text-primary': 'd-block text-truncate text-gray-800'" class=" fw-bold">HEEEEREEEEEEE</span>
                 </button> -->
 
-                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
                   [ngClass]="{'btn-color-primary': eKind === 'regular' }" (click)="onSelectRegular()"
                   [disabled]="isGoldForPayments">
                   <div class="symbol symbol-40px mb-2">
@@ -68,7 +68,7 @@
                     translate}}</span>
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowOrder" class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
+                <button *ngIf="tillService.settings?.bShowOrder" class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
                   [ngClass]="{'btn-color-primary': eKind === 'order' }" (click)="onSelectOrder()">
                   <div class="symbol symbol-40px mb-2">
                     <span class="symbol-label">
@@ -81,7 +81,7 @@
                     translate}}</span>
                 </button>
 
-                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
                   [ngClass]="{'btn-color-primary': eKind === 'repair' }" (click)="eKind = 'repair'; addItem('repair')">
                   <div class="symbol symbol-40px mb-2">
                     <span class="symbol-label">
@@ -95,7 +95,7 @@
                     translate}}</span>           
                 </button>
 
-                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary w-90px"
+                <button class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
                   [ngClass]="{'btn-color-primary': eKind === 'giftcard' }"
                   (click)="eKind = 'giftcard'; addItem('giftcard')">
                   <div class="symbol symbol-40px mb-2">
@@ -110,7 +110,7 @@
                   </span>        
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowGoldPurchase" class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
+                <button *ngIf="tillService.settings?.bShowGoldPurchase" class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary  w-100px"
                   (click)="eKind = 'gold-purchase'; addItem('gold-purchase')">
                     <div class="symbol symbol-40px mb-2">
                       <span class="symbol-label">
@@ -124,7 +124,7 @@
                         translate}}</span>
                 </button>
 
-                <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
+                <button class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary  w-100px"
                   (click)="openExpenses()">
                   <div class="symbol symbol-40px mb-2">
                     <span class="symbol-label">
@@ -136,7 +136,7 @@
                   <span class="d-block fw-bold text-gray-800 text-truncate">{{"ADD_EXPENSES" | translate}}</span>
                 </button>
 
-                <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-90px"
+                <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-100px"
                   (click)="openDrawer()">
                   <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
