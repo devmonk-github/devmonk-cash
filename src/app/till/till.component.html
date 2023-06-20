@@ -369,10 +369,10 @@
                             <div class="l-content">
                               <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
                                   "BUSINESS_PRODUCT"| translate}}</label> -->
-                              <span>
+                              <!-- <span>
                                 <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                              </span>
-                              <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                              </span> -->
+                              <p class="block m-0 mb-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                               <p class="mt-2 text-gray-800">{{ product.sEan || ('NO_EAN' | translate)}}</p>
                               <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
                               <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
@@ -407,7 +407,7 @@
                               <span>
                                 <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                               </span>
-                              <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                              <p class="block m-0 mb-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                               <p class="mt-2 text-gray-800">{{ product.sEan || ('NO_EAN' | translate)}}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sProductNumber || '-'}}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
