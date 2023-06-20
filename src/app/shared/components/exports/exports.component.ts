@@ -8,7 +8,7 @@ import { DialogService } from '../../service/dialog';
 import { DialogComponent } from '../../service/dialog';
 import { CustomerStructureService } from '../../service/customer-structure.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-exports',
   templateUrl: './exports.component.html',
@@ -35,6 +35,7 @@ export class ExportsComponent implements OnInit {
   secondAGId: String = '';
   firstAGId: String = '';
   iBusinessId:any;
+  bAllSelected = true;
 
   fieldsToRemove : Array<any> = [];
   dataForCSV: Array<any> = [];
@@ -77,6 +78,13 @@ export class ExportsComponent implements OnInit {
     if(this.secondAProjection.indexOf(data) < 0 && data) this.secondAProjection.push(data);
   }
 
+  selectAll(event: any) {
+    this.bAllSelected = event.checked;
+    this.customerHeaderList.forEach(element => {
+        element.isSelected = event.checked;
+    });
+  }
+
   close(flag: Boolean){
     var data = this.fieldsToRemove;
     this.fieldsToRemove = [];
@@ -110,23 +118,32 @@ export class ExportsComponent implements OnInit {
           this.dataForCSV = result.data[0].result;
         }
           for (const customer of this.dataForCSV) {
+            if(customer.dDateOfBirth) customer.dDateOfBirth = moment(customer.dDateOfBirth).format('DD-MM-yyyy');
+            
             if(typeof(customer['oPoints']) == 'number'){
               customer['oPoints'] = (customer.oPoints ? customer.oPoints : '-')
             }else{
               customer['oPoints'] = '-'
             }
-            // customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
-            // customer['oShippingAddress'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-            // customer['oInvoiceAddress'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
             customer['sEmail'] = customer.sEmail;
-            customer['oPhone.sLandLine'] = customer.oPhone && customer.oPhone.sLandLine? customer.oPhone.sLandLine:'';
-            customer['oPhone.sMobile'] =customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile :"";
+            if(customer?.oPhone?.sPrefixLandline){
+              customer['oPhone.sLandLine'] = customer?.oPhone?.sPrefixLandline+customer?.oPhone?.sLandLine;
+            }else{
+              customer['oPhone.sLandLine'] = (customer.oPhone  && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '')
+            }
+            if(customer?.oPhone?.sPrefixMobile){
+              customer['oPhone.sMobile'] = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
+            }else{
+              customer['oPhone.sMobile'] = (customer.oPhone  && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            }
             customer['oShippingAddress.sStreet'] = customer.oShippingAddress && customer.oShippingAddress.sStreet ? customer.oShippingAddress.sStreet :"";
             customer['oShippingAddress.sHouseNumber'] = customer.oShippingAddress &&  customer.oShippingAddress.sHouseNumber ? customer.oShippingAddress.sHouseNumber :"";
             customer['oShippingAddress.sPostalCode'] =customer.oShippingAddress &&  customer.oShippingAddress.sPostalCode? customer.oShippingAddress.sPostalCode:"";
             customer['oShippingAddress.sCountryCode'] = customer.oShippingAddress && customer.oShippingAddress.sCountryCode ? customer.oShippingAddress.sCountryCode:"";
             // customer['oPhone'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
             customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
+            if(customer.bIsCompany) customer['bIsCompany'] = "Company";
+            else customer['bIsCompany']  = "Private";
           }
           
 
@@ -150,6 +167,7 @@ export class ExportsComponent implements OnInit {
   }
 
   removeFields(obj : any){
+    if(!obj.isSelected) this.bAllSelected =false;
     var index = this.fieldsToRemove.findIndex((field)=>field.value == obj.value);
     if(index > -1) this.fieldsToRemove.splice(index, 1);
     else this.fieldsToRemove.push(obj)

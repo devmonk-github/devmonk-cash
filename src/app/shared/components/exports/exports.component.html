@@ -33,11 +33,15 @@
         </div>
         <div class="d-flex flex-wrap justify-content-between my-1">
             <div class="w-100 mb-3 d-flex">
-                <input type="checkbox" class="form-check-input me-2" />
-                <p class="m-0 fw-bolder">{{"SELECT_ALL" | translate}}</p>
+                <label class="form-check form-check-custom form-check-solid me-2">{{"SELECT_ALL" | translate}}</label>
+                <input class="form-check-input" type="checkbox" [checked]="bAllSelected" id="kt_roles_select_all1"
+                                        (change)="selectAll($event.target)" />
+                <!-- <input type="checkbox" class="form-check-input me-2" /> -->
+                <!-- <p class="m-0 fw-bolder">{{"SELECT_ALL" | translate}}</p> -->
             </div>
             <div class="w-150px mb-3" *ngFor="let obj of customerHeaderList">
-                <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' />
+                <input class="form-check-input" type="checkbox" id="kt_roles_select_all" [(ngModel)]="obj.isSelected" (click)='removeFields(obj)'/>
+                <!-- <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' /> -->
                 {{obj.value}}
             </div>
         </div>

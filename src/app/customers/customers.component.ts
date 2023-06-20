@@ -38,6 +38,7 @@ import { faLongArrowAltDown, faLongArrowAltUp } from '@fortawesome/free-solid-sv
 export class CustomersComponent implements OnInit {
 
   customer: any = null;
+  separator:string = ',';
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
   updated_customer: any = null;
@@ -151,6 +152,7 @@ export class CustomersComponent implements OnInit {
      });
     })
     this.getCustomers();
+    this.getBusinessSettings();
   }
 
   getSettings() {
@@ -443,13 +445,20 @@ export class CustomersComponent implements OnInit {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
   }
 
+  async getBusinessSettings() {
+    const result: any = await this.apiService.getNew('core', `/api/v1/business/setting/${this.requestParams.iBusinessId}`).toPromise();
+    if (result) {
+      this.separator = result?.data?.eExportCSVOption;
+    }
+  }
+
   export() {
     const headerList = [
-      { key: "sSalutation", value: 'Salutation' }, { key: "sFirstName", value: 'First name' }, { key: "sPrefix", value: 'Prefix' }, { key: "sLastName", value: 'Last name' }, { key: "dDateOfBirth", value: 'Date of birth' }, { key: "nClientId", value: 'Client id' }, { key: "sGender", value: 'Gender' }, { key: "bIsEmailVerified", value: 'Email verified' }, { key: "bCounter", value: 'Counter' }, { key: "sEmail", value: 'Email' }, { key: "oPhone.sLandLine", value: 'Landline' },
-      { key: 'oPhone.sMobile', value: 'Mobile' }, { key: 'oShippingAddress.sStreet', value: 'street' }, { key: 'oShippingAddress.sHouseNumber', value: 'House Number' }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code' }, { key: 'oShippingAddress.sCountryCode', value: 'country code' }, { key: "sComment", value: 'Comment' }, { key: "bNewsletter", value: 'Newsletter' }, { key: "sCompanyName", value: 'Company name' }, { key: "oPoints", value: 'Points' }, { key: "oIdentity", value: 'Identity' }, { key: "sVatNumber", value: 'Vat number' },
-      { key: "sCocNumber", value: 'Coc number' }, { key: "nPaymentTermDays", value: 'Payment term days' }, { key: "nDiscount", value: 'Discount' }, { key: "bWhatsApp", value: 'Whatsapp' }, { key: "nMatchingCode", value: 'Matching code' }, { key: "sNote", value: 'Note' }, { key: "bIsMigrated", value: 'Migrated customer' }
+      { key: "sSalutation", value: 'Salutation',isSelected:true }, { key: "sFirstName", value: 'First name',isSelected:true }, { key: "sPrefix", value: 'Prefix',isSelected:true }, { key: "sLastName", value: 'Last name',isSelected:true }, { key: "dDateOfBirth", value: 'Date of birth' ,isSelected:true}, { key: "nClientId", value: 'Client id',isSelected:true }, { key: "sGender", value: 'Gender',isSelected:true }, { key: "bIsEmailVerified", value: 'Email verified' ,isSelected:true}, { key: "bCounter", value: 'Counter',isSelected:true }, { key: "sEmail", value: 'Email',isSelected:true }, { key: "oPhone.sLandLine", value: 'Landline',isSelected:true },
+      { key: 'oPhone.sMobile', value: 'Mobile',isSelected:true }, { key: 'oShippingAddress.sStreet', value: 'street' ,isSelected:true}, { key: 'oShippingAddress.sHouseNumber', value: 'House Number',isSelected:true }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code',isSelected:true }, { key: 'oShippingAddress.sCountryCode', value: 'country code',isSelected:true }, { key: "sComment", value: 'Comment',isSelected:true }, { key: "bNewsletter", value: 'Newsletter',isSelected:true }, { key: "sCompanyName", value: 'Company name',isSelected:true }, { key: "oPoints", value: 'Points',isSelected:true }, { key: "oIdentity", value: 'Identity',isSelected:true }, { key: "sVatNumber", value: 'Vat number',isSelected:true },
+      { key: "sCocNumber", value: 'Coc number' ,isSelected:true}, { key: "nPaymentTermDays", value: 'Payment term days' ,isSelected:true}, { key: "nDiscount", value: 'Discount',isSelected:true }, { key: "bWhatsApp", value: 'Whatsapp',isSelected:true }, { key: "nMatchingCode", value: 'Matching code',isSelected:true }, { key: "sNote", value: 'Note',isSelected:true }, { key: "bIsMigrated", value: 'Migrated customer' ,isSelected:true},{ key: "bIsCompany", value: 'User Type' ,isSelected:true}
     ];
-    this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: '' } }).instance.close.subscribe(result => {})
+    this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }
 
   openCustomer(customer: any) {
