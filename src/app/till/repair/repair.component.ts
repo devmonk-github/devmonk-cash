@@ -55,7 +55,13 @@ export class RepairComponent implements OnInit {
   supplier: any;
   sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
   contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
-  bShowServicePartnerRemark = false
+  bShowServicePartnerRemark = false;
+  bShowColleagueRemark = false;
+  sServicePartnerRemark = '';
+  sCommentVisibleServicePartner = '';
+  sColleagueRemark = '';
+  sCommentVisibleColleague = '';
+
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   @Input() disablePrepayment:any;
   @Input() availableAmount:any;

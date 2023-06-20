@@ -194,8 +194,8 @@
       </div>
     </div>
 
-    <div [class]="!bShowServicePartnerRemark? 'row d-flex align-items-center mb-3': 'row d-flex align-items-start mb-3'">
-      <div class="col-6 col-sm-5">
+    <div [ngClass]="(bShowServicePartnerRemark || bShowColleagueRemark) ? 'row d-flex align-items-start mb-3' : 'row d-flex align-items-center mb-3'">
+      <div class="col-6 col-sm-6">
         <button *ngIf="bShowServicePartnerRemark" (click)="bShowServicePartnerRemark = !bShowServicePartnerRemark"
           type="button" class="btn btn-light-primary fs-6 p-2 w-100">{{'HIDE_SERVICE_PARTNER_REMARK' | translate}}
         </button>
@@ -207,28 +207,16 @@
           [(ngModel)]="item.sCommentVisibleServicePartner"></textarea>
       </div>
 
-      <div class="col-3 col-sm-4">
-        <div class="row">
-          <div class="col-12">
-            <button class="btn btn-secondary btn-sm w-100" (click)="openImageModal()"> {{ "PHOTO" | translate}}
-              <fa-icon [icon]="faUpload"></fa-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="row">
-          <div class="col-12">
-            <button class="btn btn-secondary btn-sm w-100" type="button" data-bs-toggle="collapse"
-              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
-              data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
-              {{ "MORE" | translate }}
-              <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
-              <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
-            </button>
-          </div>
-        </div>
+      <div class="col-6 col-sm-6">
+        <button *ngIf="bShowColleagueRemark" (click)="bShowColleagueRemark = !bShowColleagueRemark"
+        type="button" class="btn btn-light-primary fs-6 p-2 w-100">{{'HIDE_COLLEAGUE_REMARK' | translate}}
+        </button>
+        <button *ngIf="!bShowColleagueRemark" (click)="bShowColleagueRemark = !bShowColleagueRemark"
+          type="button" class="btn btn-light-primary fs-6 p-2 w-100">{{'SHOW_COLLEAGUE_REMARK' | translate}}
+        </button>
+        <textarea *ngIf="bShowColleagueRemark" class="form-control my-3" name="REMARK_FOR_COLLEAGUES"
+          placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate }}" lines="10"
+          [(ngModel)]="item.sCommentVisibleColleagues"></textarea>
       </div>
     </div>
 
@@ -278,6 +266,13 @@
       </div>
 
       <div class="col-5 col-sm-5">
+        <div class="row mb-3">
+          <div class="col-12">
+            <button class="btn btn-secondary btn-sm w-100" (click)="openImageModal()"> {{ "PHOTO" | translate}}
+              <fa-icon [icon]="faUpload"></fa-icon>
+            </button>
+          </div>
+        </div>
         <label class="form-control-label mb-3">{{ "IMAGES" | translate }}</label>
         <div *ngIf="item.aImage.length == 0">
           <p class="text-muted">{{"NO_IMAGES_AVAILABLE" | translate}}</p>
@@ -337,8 +332,19 @@
         </div> -->
       </div>
 
-      <div class="col-4 col-sm-3" [class]="collapsedBtn? '': 'bg-secondary bg-opacity-25 min-h-100'">
-        
+      <div class="col-4 col-sm-3">
+      
+        <div class="row mb-3">
+          <div class="col-12">
+            <button class="btn btn-secondary btn-sm w-100" type="button" data-bs-toggle="collapse"
+              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
+              data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+              {{ "MORE" | translate }}
+              <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
+              <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
+            </button>
+          </div>
+        </div>
         <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
           <div class="row">
             <div class="col-6 col-sm-12">

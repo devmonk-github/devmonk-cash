@@ -60,9 +60,12 @@ export class OrderComponent implements OnInit {
   collapsedBtn: Boolean = false;
 
   contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
-  bShowServicePartnerRemark = false
+  bShowServicePartnerRemark = false;
+  bShowColleagueRemark = false;
   sServicePartnerRemark = '';
   sCommentVisibleServicePartner = '';
+  sColleagueRemark = '';
+  sCommentVisibleColleague = '';
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
