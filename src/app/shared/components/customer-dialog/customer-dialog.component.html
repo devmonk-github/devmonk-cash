@@ -28,7 +28,10 @@
             <div class="col-3 d-flex">
                 <button class="btn btn-primary me-2" (click)="getCustomers()">{{'SEARCH' | translate}} </button>
                 <div class="d-flex align-items-center ads_search">
-                    <button type="button" (click)="showAdvanceSearch = !showAdvanceSearch" class="btn btn-info me-5">
+                    <button class="btn btn-secondary me-2" (click)="resetFilters()">
+                        <i class="fa fa-sync"></i>
+                    </button>
+                    <button type="button" (click)="showAdvanceSearch = !showAdvanceSearch" class="btn btn-info me-3">
                         <i class="fa fa-filter"></i>
                     </button>
                 </div>
@@ -37,23 +40,49 @@
                 </button> -->
             </div>
             <div class="col-5 d-flex justify-content-end">
+                <!-- <div class="btn-group me-4">
+                    <label class="form-check form-switch form-check-custom form-check-solid">
+                    <ng-select class="form-control form-control-solid p-0 w-150px"
+                    [(ngModel)]="requestParams.customerType" [clearable]="false" (change)="getCustomers()">
+                    <ng-option *ngFor="let customerType of customerTypes" [value]="customerType.value">{{customerType.key |
+                        translate}}
+                    </ng-option>
+                    </ng-select>
+                    </label>
+                </div> -->
                 <button type="button" class="btn btn-secondary" (click)="AddCustomer()"> {{ "ADD_CUSTOMER" | translate}}</button>
             </div>
         </div>
-        <div class="col-lg-12 d-flex align-items-end px-2">
-            <div class="col-4 me-4 customers-fields" *ngIf="showAdvanceSearch">
-                <label class="small form-label fw-bolder text-dark">{{ 'ADVANCED_SEARCH' | translate }}</label>
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                    [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" (ngModelChange)="setPlaceHolder()">
-                    <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
-                </ng-select>
-            </div>
-            <div class="col-4 px-2" *ngIf="requestParams.oFilterBy.aSearchField.length">
+        <div class="col-lg-12 d-flex align-items-end flex-wrap px-2" *ngIf="showAdvanceSearch">
+            <label class="col-12 small form-label fw-bolder text-dark">{{ 'ADVANCED_SEARCH' | translate }}</label>
+            <div class="col-12" *ngIf="requestParams.oFilterBy.aSearchField.length">
                 <p class="mb-0 text-muted fw-bolder small">
                     {{"PLEASE_FOLLOW_EXAMPLE_ORDER_FOR_A_BETTER_EXPERIENCE" | translate}}
                 </p>
                 <label class="text-muted"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
                 <p *ngIf="!bIsProperSearching" class="text-warning m-0"> {{ "PLEASE_SEARCH_AS_SHOWN" | translate }} </p>
+            </div>
+            <div class="col-4 me-4 customers-fields">
+                <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_FIELDS' | translate}} </label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" (ngModelChange)="setPlaceHolder()">
+                    <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-3 me-4 customers-fields" *ngIf="showAdvanceSearch">
+                <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false" [(ngModel)]="requestParams.oFilterBy.aSelectedGroups">
+                    <ng-option *ngFor="let group of customerGroupList" [value]="group._id">{{group.sName}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-3 me-4 customers-fields">
+                <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_TYPE' | translate}} </label>
+                <ng-select class="form-control form-control-solid p-0"
+                    [(ngModel)]="requestParams.customerType" [clearable]="false" (change)="getCustomers()">
+                    <ng-option *ngFor="let customerType of customerTypes" [value]="customerType.value">{{customerType.key |
+                        translate}}
+                    </ng-option>
+                </ng-select>
             </div>
         </div>
     

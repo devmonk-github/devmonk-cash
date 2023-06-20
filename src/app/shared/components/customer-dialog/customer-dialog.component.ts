@@ -55,8 +55,10 @@ export class CustomerDialogComponent implements OnInit {
     skip:0 , 
     limit:10,
     oFilterBy: {
-      aSearchField: []
+      aSearchField: [],
+      aSelectedGroups: []
     },
+    customerType: 'all'
   }
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
@@ -176,6 +178,13 @@ export class CustomerDialogComponent implements OnInit {
   bIsComaRemoved: boolean = false;
   bIsProperSearching: boolean = true;
   showAdvanceSearch: boolean = false;
+  customerGroupList :any=[];
+
+  customerTypes:any=[
+    { key:'ALL', value:'all'},
+     {key:'PRIVATE' , value:'private'},
+     {key:'COMPANY' , value:'company'}
+   ]
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -208,6 +217,7 @@ export class CustomerDialogComponent implements OnInit {
        });
      })
     this.allcustomer = this.dialogRef?.context?.allcustomer;
+    this.getCustomerGroups();
   }
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
@@ -220,6 +230,40 @@ export class CustomerDialogComponent implements OnInit {
     }, (error) => {
       console.log(error);
     })
+  }
+
+  getCustomerGroups(){
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.data?.length) {
+        this.customerGroupList = res?.data[0]?.result;
+      }
+    }, (error) => {})
+  }
+
+  // Function for reset selected filters
+  resetFilters() {
+    this.aPlaceHolder = ["SEARCH"];
+    this.requestParams.searchValue = '';
+    this.requestParams = {
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '_id',
+      sortOrder: -1,
+      searchValue: '',
+      aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+        'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+        'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
+        'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
+      oFilterBy: {
+        aSearchField: [],
+        aSelectedGroups: []
+      },
+      customerType: 'all'
+    };
+    this.customers = [];
+    this.isCustomerSearched = false;
+    this.getSettings();
   }
 
   removeItemAll(arr: any, value: any) {
