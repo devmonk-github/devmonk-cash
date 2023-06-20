@@ -383,7 +383,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
       iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder,
-      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair
+      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair,
+      bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

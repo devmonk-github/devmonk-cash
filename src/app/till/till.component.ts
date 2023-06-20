@@ -1071,6 +1071,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadTransaction()
       } else {
         this.clearAll();
+        if (this.tillService.settings.bLockCashRegisterAfterTransaction)
+          window.dispatchEvent(new Event('transactionFinished'))
       } 
 
     });
