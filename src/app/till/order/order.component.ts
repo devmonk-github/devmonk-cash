@@ -151,8 +151,6 @@ export class OrderComponent implements OnInit {
           partnersList: data.partnersList
         }
         this.articleGroupDataChanged.emit(this.oStaticData);
-        console.log(this.articleGroupDataChanged , this.articleGroupDataChanged);
-
       });
   }
   notAllowedCommaAndSemiColon(event: any) {
