@@ -556,7 +556,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'delete':
         // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
-        if(!this.transactionItems?.length) {
+        if(!this.transactionItems?.length && this.sNumber) {
           const buttons = [
             { text: 'YES_CLEAR_CASH_REGISTER', value: true, class: 'btn-primary' },
             { text: 'NO_KEEP_EXISTING_TRANSACTION', value: false, status: 'success', class: 'btn-secondary ml-auto mr-2' },
