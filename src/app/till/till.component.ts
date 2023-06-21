@@ -1853,6 +1853,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openModal(barcode: any) {
+    barcode.toUpperCase();
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
@@ -1861,33 +1862,36 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iBusinessId: this.iBusinessId,
       searchValue: barcode
     }
-    const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-    if (result?.data?.records?.length) {
-      if (barcode.startsWith("AI")) {
-        const oActivity = result?.data?.records[0];
-        const oActivityItem = oActivity.aActivityItemMetaData.find((el: any) => el.sActivityItemNumber == barcode)
-        this.openTransaction(oActivity, 'activity', [oActivityItem.iActivityItemId], 'AI');
-      } else if (barcode.startsWith("T") || barcode.startsWith("A")) {
-        this.openTransaction(result?.data?.records[0], 'activity');
-      } else if (barcode.startsWith("G")) {
-        const oBody: any = {
-          iBusinessId: this.iBusinessId,
-          oFilterBy: {
-            sGiftCardNumber: barcode.substring(2)
-          }
-        }
-        const oItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-        if (oItemResult?.data[0]?.result?.length) {
-          const oGiftcard = oItemResult?.data[0]?.result[0];
-          this.openCardsModal(oGiftcard)
-        }
-      } else if (barcode.startsWith("R")) {
-        // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-      } else {
-        //this.toastrService.show({ type: 'success', text: 'Article number: ' + barcode });
+    /**THIS IS TO ADD ARTICLES AUTOMATICALLY IN THE CASH REGISTER */
+    if(!barcode.startsWith("AI") && !barcode.startsWith("T") && !barcode.startsWith("A") && !barcode.startsWith("G")){
         this.bFromBarcode = true;
         this.listShopProducts(barcode, false);
-      } // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
+       // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
+    }else{
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.data?.records?.length) {
+        if (barcode.startsWith("AI")) {
+          const oActivity = result?.data?.records[0];
+          const oActivityItem = oActivity.aActivityItemMetaData.find((el: any) => el.sActivityItemNumber == barcode)
+          this.openTransaction(oActivity, 'activity', [oActivityItem.iActivityItemId], 'AI');
+        } else if (barcode.startsWith("T") || barcode.startsWith("A")) {
+          this.openTransaction(result?.data?.records[0], 'activity');
+        } else if (barcode.startsWith("G")) {
+          const oBody: any = {
+            iBusinessId: this.iBusinessId,
+            oFilterBy: {
+              sGiftCardNumber: barcode.substring(2)
+            }
+          }
+          const oItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+          if (oItemResult?.data[0]?.result?.length) {
+            const oGiftcard = oItemResult?.data[0]?.result[0];
+            this.openCardsModal(oGiftcard)
+          }
+        } else if (barcode.startsWith("R")) {
+          // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+        } 
+      }
     }
   }
 
