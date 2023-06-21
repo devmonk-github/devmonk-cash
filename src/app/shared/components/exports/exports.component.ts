@@ -41,6 +41,11 @@ export class ExportsComponent implements OnInit {
   dataForCSV: Array<any> = [];
   fieldObject: any = {};
   faTimes = faTimes;
+  customerTypes:any=[
+    { key:'ALL', value:'all'},
+     {key:'PRIVATE' , value:'private'},
+     {key:'COMPANY' , value:'company'}
+  ]
 
   dialogRef: DialogComponent;
 
@@ -58,7 +63,6 @@ export class ExportsComponent implements OnInit {
 
   ngOnInit(): void { 
     this.iBusinessId = localStorage.getItem('currentBusiness');
-    // this.fetchSecondHeaderList();
   }
 
   fetchSecondHeaderList(){
@@ -93,7 +97,6 @@ export class ExportsComponent implements OnInit {
   }
 
   getExportData(separator:any){
-    this.separator = separator;
     for(let index in this.secondAProjection){
       if(this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
     }
@@ -110,48 +113,43 @@ export class ExportsComponent implements OnInit {
     })
 
     this.requestParams.aProjection = this.valuesList;
+    this.requestParams.aProjection.push('oPhone.sPrefixMobile','oPhone.sPrefixLandline','bIsCompany');
     if(!this.useSameFilter){ this.requestParams.oFilterBy.oDynamic = {}; this.requestParams.oFilterBy.oStatic = {}; }
     var body = this.requestParams;
     this.apiService.postNew('customer', '/api/v1/customer/exports', body).subscribe(
       (result : any) => {
-        if(result && result.data && result.data.length){
+        if (result && result.data && result.data.length) {
           this.dataForCSV = result.data[0].result;
         }
-          for (const customer of this.dataForCSV) {
-            if(customer.dDateOfBirth) customer.dDateOfBirth = moment(customer.dDateOfBirth).format('DD-MM-yyyy');
-            
-            if(typeof(customer['oPoints']) == 'number'){
-              customer['oPoints'] = (customer.oPoints ? customer.oPoints : '-')
-            }else{
-              customer['oPoints'] = '-'
-            }
-            customer['sEmail'] = customer.sEmail;
-            if(customer?.oPhone?.sPrefixLandline){
-              customer['oPhone.sLandLine'] = customer?.oPhone?.sPrefixLandline+customer?.oPhone?.sLandLine;
-            }else{
-              customer['oPhone.sLandLine'] = (customer.oPhone  && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '')
-            }
-            if(customer?.oPhone?.sPrefixMobile){
-              customer['oPhone.sMobile'] = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
-            }else{
-              customer['oPhone.sMobile'] = (customer.oPhone  && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-            }
-            customer['oShippingAddress.sStreet'] = customer.oShippingAddress && customer.oShippingAddress.sStreet ? customer.oShippingAddress.sStreet :"";
-            customer['oShippingAddress.sHouseNumber'] = customer.oShippingAddress &&  customer.oShippingAddress.sHouseNumber ? customer.oShippingAddress.sHouseNumber :"";
-            customer['oShippingAddress.sPostalCode'] =customer.oShippingAddress &&  customer.oShippingAddress.sPostalCode? customer.oShippingAddress.sPostalCode:"";
-            customer['oShippingAddress.sCountryCode'] = customer.oShippingAddress && customer.oShippingAddress.sCountryCode ? customer.oShippingAddress.sCountryCode:"";
-            // customer['oPhone'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-            customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
-            if(customer.bIsCompany) customer['bIsCompany'] = "Company";
-            else customer['bIsCompany']  = "Private";
+        for (const customer of this.dataForCSV) {
+          if (customer.dDateOfBirth) customer.dDateOfBirth = moment(customer.dDateOfBirth).format('DD-MM-yyyy');
+          if (typeof (customer['oPoints']) == 'number') {
+            customer['oPoints'] = (customer.oPoints ? customer.oPoints : '-')
+          } else {
+            customer['oPoints'] = '-'
           }
+          customer['sEmail'] = customer.sEmail;
+          if (customer?.oPhone?.sPrefixLandline) {
+            customer['oPhone.sLandLine'] = customer?.oPhone?.sPrefixLandline + customer?.oPhone?.sLandLine;
+          } else {
+            customer['oPhone.sLandLine'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '')
+          }
+          if (customer?.oPhone?.sPrefixMobile) {
+            customer['oPhone.sMobile'] = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
+          } else {
+            customer['oPhone.sMobile'] = (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+          }
+          customer['oShippingAddress.sStreet'] = customer.oShippingAddress && customer.oShippingAddress.sStreet ? customer.oShippingAddress.sStreet : "";
+          customer['oShippingAddress.sHouseNumber'] = customer.oShippingAddress && customer.oShippingAddress.sHouseNumber ? customer.oShippingAddress.sHouseNumber : "";
+          customer['oShippingAddress.sPostalCode'] = customer.oShippingAddress && customer.oShippingAddress.sPostalCode ? customer.oShippingAddress.sPostalCode : "";
+          customer['oShippingAddress.sCountryCode'] = customer.oShippingAddress && customer.oShippingAddress.sCountryCode ? customer.oShippingAddress.sCountryCode : "";
+          customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
           
-
-        for(let index in this.headerList){
+        }
+        for (let index in this.headerList) {
           this.fieldObject[this.headerList[index]] = this.valuesList[index]
         }
-      
-        this.download()
+        this.download();
       },
       (error : any) =>{
         this.dataForCSV = [];
@@ -160,9 +158,9 @@ export class ExportsComponent implements OnInit {
   }
 
 
-  download(){  
-    var data = { from: 'Assortment-stock-export'};
-    this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Assortment-stock', this.separator, data)
+  download(){
+    var data = { from: 'Customers-export'};
+    this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Customers', this.separator, data)
     this.dialogRef.close.emit({ action: false });
   }
 
