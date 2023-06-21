@@ -169,24 +169,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     // event.preventDefault();
     let bFound = false;
-    if(event.key.startsWith("F")) {
-      const oButton = this.quickButtons.find((el:any) => el?.oKeyboardShortcut?.sKey1 == event.key)
-      if (oButton){
-        bFound = true;
-        this.onSelectProduct(oButton, 'quick-button', '', oButton)
-      } 
-    } else {
-      const oKeyboardShortcut = {
-        sKey1: '', 
-        sKey2: event.key
+    if (event?.key?.length) {
+      if (event?.key?.startsWith("F")) {
+        const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == event.key)
+        if (oButton) {
+          bFound = true;
+          this.onSelectProduct(oButton, 'quick-button', '', oButton)
+        }
+      } else {
+        const oKeyboardShortcut = {
+          sKey1: '',
+          sKey2: event.key
+        }
+        if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control';
+        if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt';
+        const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
+        if (oButton) {
+          bFound = true;
+          this.onSelectProduct(oButton, 'quick-button', '', oButton)
+        }
       }
-      if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control'; 
-      if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt'; 
-      const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
-      if (oButton){
-        bFound = true;
-        this.onSelectProduct(oButton, 'quick-button', '', oButton)
-      } 
     }
     if(bFound) event.preventDefault();
   }
@@ -542,8 +544,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.transactionItems = []
           this.clearAll();
         }
-      }
-      )
+      })
     }
     this.resetSearch();
   }
@@ -555,6 +556,24 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'delete':
         // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
+        if(!this.transactionItems?.length && this.sNumber) {
+          const buttons = [
+            { text: 'YES_CLEAR_CASH_REGISTER', value: true, class: 'btn-primary' },
+            { text: 'NO_KEEP_EXISTING_TRANSACTION', value: false, status: 'success', class: 'btn-secondary ml-auto mr-2' },
+          ]
+          this.dialogService.openModal(ConfirmationDialogComponent, {
+            context: {
+              header: 'CLEAR_EXISTING_TRANSACTION',
+              bodyText: 'NO_ITEMS_LEFT_IN_THE_TRANSACTION_YOU_ARE_MODIFYING_WANT_TO_CLEAR_THE_CASH_REGISTER',
+              buttonDetails: buttons
+            },
+            hasBackdrop: true,
+            closeOnBackdropClick: false,
+            closeOnEsc: false
+          }).instance.close.subscribe(result => {
+            if (result) this.clearAll();
+          })
+        }
         this.clearPaymentAmounts();
         break;
       case 'update':
@@ -795,7 +814,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.transactionItems.forEach((item: any) => {
       if (item.type === 'loyalty-points') return;
-      item.paymentAmount = 0;
+      if (item.paymentAmount > 0) item.paymentAmount = 0;
       if (item.type === 'repair' || item.type === 'order') {
         if (item?.prepaymentTouched) {
           item.manualUpdate = false;
@@ -810,8 +829,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
-    this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    if (this.appliedGiftCards?.length) this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+    if (this.transactionItems?.length) this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.updateAmountVariables();
   }
 
@@ -872,6 +891,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async createTransaction() {
+    this.dispatchEvent('stopIdle');
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) return;
     let giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
@@ -950,8 +970,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             {
               cssClass: 'modal-lg',
               hasBackdrop: true,
-              closeOnBackdropClick: true,
-              closeOnEsc: true
+              closeOnBackdropClick: false,
+              closeOnEsc: false
             }).instance;
 
           if (this.bIsFiscallyEnabled) {
@@ -1065,6 +1085,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
     });
+    this.dispatchEvent('startIdle');
 
     oDialogComponent.close.subscribe((result:any) => { 
       if(result){
@@ -1072,7 +1093,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.clearAll();
         if (this.tillService.settings.bLockCashRegisterAfterTransaction)
-          window.dispatchEvent(new Event('transactionFinished'))
+          this.dispatchEvent('lockScreen')
       } 
 
     });
@@ -1950,5 +1971,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.redeemedLoyaltyPoints = 0;
     this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
     this.changeInPayment();
+  }
+
+  dispatchEvent(event:string) {
+    window.dispatchEvent(new Event(event))    
   }
 }

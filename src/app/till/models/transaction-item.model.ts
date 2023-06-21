@@ -88,6 +88,7 @@ export class TransactionItem {
   bGiftcardTaxHandling: string;
   bDiscountOnPercentage: boolean;  
   sCommentVisibleServicePartner: string;
+  sCommentVisibleColleagues: string;
   nGiftcardRemainingAmount:number;  
   nActualCost:number;
   sSerialNumber: any;

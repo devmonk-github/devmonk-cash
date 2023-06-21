@@ -165,6 +165,7 @@ export class TillService {
       oTransaction: transaction,
       payments: payMethods,//this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
+      sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
     };
 
     body.payments.forEach((payment: any) => payment.amount = parseFloat(payment.amount.toFixed(2)))
@@ -291,6 +292,7 @@ export class TillService {
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
       oItem.sCommentVisibleServicePartner = i.sCommentVisibleServicePartner;
+      oItem.sCommentVisibleColleagues = i.sCommentVisibleColleagues;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';

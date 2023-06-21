@@ -146,24 +146,26 @@
                                     <div class="form-check-custom" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
                                         <div class="form-check form-check-solid">
                                             <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" type="radio"
-                                                name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'pay'"
-                                                [checked]="transactionItem.tType == 'pay'" [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund" />
+                                                (click)="transactionItem.tType = 'pay'"
+                                                [checked]="transactionItem.tType == 'pay'" 
+                                                [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund" />
                             
                                             <label class="form-check-label" for="prep_tr_{{transactionItem.sNumber}}">
                                                 {{ 'RESET_PAYMENT' | translate}}
                                             </label>
                                         </div>
-                                        <div class="form-check form-check-solid"
-                                            *ngIf="transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)">
+                                        <!-- *ngIf="transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)" -->
+                                        <div class="form-check form-check-solid">
                                             <input class="form-check-input" id="ref1_tr_{{transactionItem.sNumber}}" type="radio"
-                                                name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'refund'"
-                                                [checked]="(transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)) && transactionItem.nTotalAmount != 0"
+                                                (click)="transactionItem.tType = 'refund'"
+                                                [checked]="transactionItem.tType == 'refund'"
                                                 [disabled]="transactionItem.bIsRefunded || transactionItem?.oType?.bRefund" />
+                                        <!-- condition for checked :(transactionItem.nPaidAmount === (transactionItem.nPriceIncVat * transactionItem.nQuantity)) && transactionItem.nTotalAmount != 0 -->
                                             <label class="form-check-label" for="ref1_tr_{{transactionItem.sNumber}}">
                                                 {{ "REFUND" | translate}}
                                             </label>
                                         </div>
-                                        <div class="form-check form-check-solid"
+                                        <!-- <div class="form-check form-check-solid"
                                             *ngIf="transactionItem.nPaidAmount < (transactionItem.nPriceIncVat * transactionItem.nQuantity)">
                                             <input class="form-check-input" id="ref2_tr_{{transactionItem.sNumber}}" type="radio"
                                                 name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'refund'"
@@ -172,7 +174,7 @@
                                             <label class="form-check-label" for="ref2_tr_{{transactionItem.sNumber}}">
                                                 {{ "REFUND" | translate}}
                                             </label>
-                                        </div>
+                                        </div> -->
                             
                                         <!--<div class= "btn-group btn-toggle"
                                                                 [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
