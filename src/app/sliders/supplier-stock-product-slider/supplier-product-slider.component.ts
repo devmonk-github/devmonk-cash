@@ -85,7 +85,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
           for (const oTab of this.tabs) {
             if (oTab?.name == 'Comparable' || oTab?.name == 'Most sold' || oTab?.name == '/ purchased') oTab.isDisable = this.bIsSlideTurnOff;
           }
-          await this.getProductData(data?._id.toString())
+          await this.getProductData(data?.iBusinessProductId.toString())
 
         }
       },
