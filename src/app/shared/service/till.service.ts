@@ -165,6 +165,7 @@ export class TillService {
       oTransaction: transaction,
       payments: payMethods,//this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
+      sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
     };
 
     body.payments.forEach((payment: any) => payment.amount = parseFloat(payment.amount.toFixed(2)))

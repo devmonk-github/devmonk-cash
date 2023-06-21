@@ -62,6 +62,10 @@ export class PaymentDistributionService {
       
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+      if(i.paymentAmount < 0) {
+        if (bTesting) console.log('payment amount is < 0 so addig that to available amount')
+        availableAmount += -i.amountToBePaid;
+      }
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
     
@@ -125,7 +129,7 @@ export class PaymentDistributionService {
         let nAssignedUntillNow = 0;
         aItems.forEach(i => {
           if (bTesting) console.log(107, { tType: i.tType, availableAmount });
-          if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
+          if (i.amountToBePaid > 0 && (!i?.tType || i.tType !== 'refund')) {
             const nCalculatedAmount = i.amountToBePaid * availableAmount / totalAmountToBePaid;
             i.paymentAmount = ((nAssignedUntillNow + nCalculatedAmount) > availableAmount) ? availableAmount - nAssignedUntillNow : nCalculatedAmount;
             i.paymentAmount = +(i.paymentAmount.toFixed(2))
