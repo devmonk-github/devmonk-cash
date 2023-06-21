@@ -489,12 +489,35 @@ export class CustomersComponent implements OnInit {
       else this.separator = ';';
     }
   }
-
+ 
   export() {
     const headerList = [
-      { key: "sSalutation", value: 'Salutation',isSelected:true }, { key: "sFirstName", value: 'First name',isSelected:true }, { key: "sPrefix", value: 'Prefix',isSelected:true }, { key: "sLastName", value: 'Last name',isSelected:true }, { key: "dDateOfBirth", value: 'Date of birth' ,isSelected:true}, { key: "nClientId", value: 'Client id',isSelected:true }, { key: "sGender", value: 'Gender',isSelected:true }, { key: "bIsEmailVerified", value: 'Email verified' ,isSelected:true}, { key: "bCounter", value: 'Counter',isSelected:true }, { key: "sEmail", value: 'Email',isSelected:true }, { key: "oPhone.sLandLine", value: 'Landline',isSelected:true },
-      { key: 'oPhone.sMobile', value: 'Mobile',isSelected:true }, { key: 'oShippingAddress.sStreet', value: 'street' ,isSelected:true}, { key: 'oShippingAddress.sHouseNumber', value: 'House Number',isSelected:true }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code',isSelected:true }, { key: 'oShippingAddress.sCountryCode', value: 'country code',isSelected:true }, { key: "sComment", value: 'Comment',isSelected:true }, { key: "bNewsletter", value: 'Newsletter',isSelected:true }, { key: "sCompanyName", value: 'Company name',isSelected:true }, { key: "oPoints", value: 'Points',isSelected:true }, { key: "oIdentity", value: 'Identity',isSelected:true }, { key: "sVatNumber", value: 'Vat number',isSelected:true },
-      { key: "sCocNumber", value: 'Coc number' ,isSelected:true}, { key: "nPaymentTermDays", value: 'Payment term days' ,isSelected:true}, { key: "nDiscount", value: 'Discount',isSelected:true }, { key: "bWhatsApp", value: 'Whatsapp',isSelected:true }, { key: "nMatchingCode", value: 'Matching code',isSelected:true }, { key: "sNote", value: 'Note',isSelected:true }, { key: "bIsMigrated", value: 'Migrated customer' ,isSelected:true}
+      { name: 'SALUTATION', key: "sSalutation", value: 'Salutation', isSelected: true },
+      { name: 'FIRST_NAME', key: "sFirstName", value: 'First name', isSelected: true },
+      { name: 'INSERT', key: "sPrefix", value: 'Prefix', isSelected: true },
+      { name: 'LAST_NAME', key: "sLastName", value: 'Last name', isSelected: true },
+      { name: 'DATE_OF_BIRTH', key: "dDateOfBirth", value: 'Date of birth', isSelected: true },
+      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true },
+      { name: 'GENDER', key: "sGender", value: 'Gender', isSelected: true },
+      { name: 'EMAIL_VERIFIED', key: "bIsEmailVerified", value: 'Email verified', isSelected: true },
+      { name: 'COUNTER', key: "bCounter", value: 'Counter', isSelected: true },
+      { name: 'EMAIL', key: "sEmail", value: 'Email', isSelected: true },
+      { name: 'PHONE_LANDLINE', key: "oPhone.sLandLine", value: 'Landline', isSelected: true },
+      { name: 'PHONE_MOBILE', key: 'oPhone.sMobile', value: 'Mobile', isSelected: true },
+      { name: 'STREET', key: 'oShippingAddress.sStreet', value: 'street', isSelected: true },
+      { name: 'HOUSE_NUMBER', key: 'oShippingAddress.sHouseNumber', value: 'House Number', isSelected: true },
+      { name: 'POSTAL_CODE', key: 'oShippingAddress.sPostalCode', value: 'Postal code', isSelected: true },
+      { name: 'COMMENTS', key: "sComment", value: 'Comment', isSelected: true },
+      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true },
+      { name: 'COMPANY_NAME', key: "sCompanyName", value: 'Company name', isSelected: true },
+      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true },
+      { name: 'VAT_NUMBER', key: "sVatNumber", value: 'Vat number', isSelected: true },
+      { name: 'COC_NUMBER', key: "sCocNumber", value: 'Coc number', isSelected: true },
+      { name: 'PAYMENT_TERM_IN_DAYS', key: "nPaymentTermDays", value: 'Payment term days', isSelected: true },
+      { name: 'USE_FOR_WHATSAPP', key: "bWhatsApp", value: 'Whatsapp', isSelected: true },
+      { name: 'MATCHING_CODE', key: "nMatchingCode", value: 'Matching code', isSelected: true },
+      { name: 'NOTES', key: "sNote", value: 'Note', isSelected: true },
+      { name: 'MIGRATED_CUSTOMER', key: "bIsMigrated", value: 'Migrated customer', isSelected: true }
     ];
     this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }

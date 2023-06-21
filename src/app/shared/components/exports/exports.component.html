@@ -25,9 +25,9 @@
                 <!-- <p class="m-0 fw-bolder">{{"SELECT_ALL" | translate}}</p> -->
             </div>
             <div class="w-150px mb-3" *ngFor="let obj of customerHeaderList">
-                <input class="form-check-input" type="checkbox" id="kt_roles_select_all" [(ngModel)]="obj.isSelected" (click)='removeFields(obj)'/>
-                <!-- <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' /> -->
-                {{obj.value}}
+                <!-- <input class="form-check-input" type="checkbox" id="kt_roles_select_all" [checked]="obj.isSelected" [(ngModel)]="obj.isSelected" (click)='removeFields(obj,$event)'/> -->
+                <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' />
+                {{obj.name | translate}}
             </div>
         </div>
         <div class="row p-0" *ngIf="loader">
