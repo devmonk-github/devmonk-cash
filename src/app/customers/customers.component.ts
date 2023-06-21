@@ -484,8 +484,9 @@ export class CustomersComponent implements OnInit {
 
   async getBusinessSettings() {
     const result: any = await this.apiService.getNew('core', `/api/v1/business/setting/${this.requestParams.iBusinessId}`).toPromise();
-    if (result) {
-      this.separator = result?.data?.eExportCSVOption;
+    if (result && result?.data?.eExportCSVOption) {
+      if(result.data.eExportCSVOption == "comma-and-dot-as-price-decimal")this.separator = ',';
+      else this.separator = ';';
     }
   }
 
@@ -493,7 +494,7 @@ export class CustomersComponent implements OnInit {
     const headerList = [
       { key: "sSalutation", value: 'Salutation',isSelected:true }, { key: "sFirstName", value: 'First name',isSelected:true }, { key: "sPrefix", value: 'Prefix',isSelected:true }, { key: "sLastName", value: 'Last name',isSelected:true }, { key: "dDateOfBirth", value: 'Date of birth' ,isSelected:true}, { key: "nClientId", value: 'Client id',isSelected:true }, { key: "sGender", value: 'Gender',isSelected:true }, { key: "bIsEmailVerified", value: 'Email verified' ,isSelected:true}, { key: "bCounter", value: 'Counter',isSelected:true }, { key: "sEmail", value: 'Email',isSelected:true }, { key: "oPhone.sLandLine", value: 'Landline',isSelected:true },
       { key: 'oPhone.sMobile', value: 'Mobile',isSelected:true }, { key: 'oShippingAddress.sStreet', value: 'street' ,isSelected:true}, { key: 'oShippingAddress.sHouseNumber', value: 'House Number',isSelected:true }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code',isSelected:true }, { key: 'oShippingAddress.sCountryCode', value: 'country code',isSelected:true }, { key: "sComment", value: 'Comment',isSelected:true }, { key: "bNewsletter", value: 'Newsletter',isSelected:true }, { key: "sCompanyName", value: 'Company name',isSelected:true }, { key: "oPoints", value: 'Points',isSelected:true }, { key: "oIdentity", value: 'Identity',isSelected:true }, { key: "sVatNumber", value: 'Vat number',isSelected:true },
-      { key: "sCocNumber", value: 'Coc number' ,isSelected:true}, { key: "nPaymentTermDays", value: 'Payment term days' ,isSelected:true}, { key: "nDiscount", value: 'Discount',isSelected:true }, { key: "bWhatsApp", value: 'Whatsapp',isSelected:true }, { key: "nMatchingCode", value: 'Matching code',isSelected:true }, { key: "sNote", value: 'Note',isSelected:true }, { key: "bIsMigrated", value: 'Migrated customer' ,isSelected:true},{ key: "bIsCompany", value: 'User Type' ,isSelected:true}
+      { key: "sCocNumber", value: 'Coc number' ,isSelected:true}, { key: "nPaymentTermDays", value: 'Payment term days' ,isSelected:true}, { key: "nDiscount", value: 'Discount',isSelected:true }, { key: "bWhatsApp", value: 'Whatsapp',isSelected:true }, { key: "nMatchingCode", value: 'Matching code',isSelected:true }, { key: "sNote", value: 'Note',isSelected:true }, { key: "bIsMigrated", value: 'Migrated customer' ,isSelected:true}
     ];
     this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }
