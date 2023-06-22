@@ -37,7 +37,7 @@ export class ExportsComponent implements OnInit {
   iBusinessId:any;
   bAllSelected = true;
 
-  fieldsToRemove : Array<any> = [];
+  fieldsToAdd : Array<any> = [];
   dataForCSV: Array<any> = [];
   fieldObject: any = {};
   faTimes = faTimes;
@@ -91,8 +91,8 @@ export class ExportsComponent implements OnInit {
   }
 
   close(flag: Boolean){
-    var data = this.fieldsToRemove;
-    this.fieldsToRemove = [];
+    var data = this.fieldsToAdd;
+    this.fieldsToAdd = [];
     if(flag) this.dialogRef.close.emit({ action: true, data });
     else this.dialogRef.close.emit({ action: false })
   }
@@ -102,14 +102,8 @@ export class ExportsComponent implements OnInit {
     for(let index in this.secondAProjection){
       if(this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
     }
-    let secondHeader = _.clone(this.customerHeaderList);
-    for(let index in this.fieldsToRemove){
-      const headerIndex =secondHeader.findIndex((customerheader:any)=> customerheader.key == this.fieldsToRemove[index].key)
-      if(headerIndex >-1){
-         secondHeader.splice(headerIndex , 1);
-      }
-    }
-    secondHeader.forEach((header:any)=>{
+    if(this.bAllSelected && !this.fieldsToAdd.length)this.fieldsToAdd = this.customerHeaderList;
+    this.fieldsToAdd.forEach((header:any)=>{
       this.headerList.push(header.value);
       this.valuesList.push(header.key);
     })
@@ -156,19 +150,17 @@ export class ExportsComponent implements OnInit {
       }
     );
   }
-
-
   download(){
     var data = { from: 'Customers-export'};
     this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Customers', this.separator, data)
     this.dialogRef.close.emit({ action: false });
   }
-  removeFields(obj : any){
-    if(!obj.isSelected) this.bAllSelected =false;
-    var index = this.fieldsToRemove.findIndex((field)=>field.value == obj.value);
-    if(index > -1) this.fieldsToRemove.splice(index, 1);
-    else this.fieldsToRemove.push(obj);
+  removeFields(obj: any, event: any) {
+    if (event?.target?.checked) {
+      this.fieldsToAdd.push(obj);
+    } else {
+      var index = this.fieldsToAdd.findIndex((field) => field.value == obj.value);
+      if (index > -1) this.fieldsToAdd.splice(index, 1);
+    }
   }
-
-  
 }
