@@ -800,6 +800,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTransaction = null;
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.appliedGiftCards = [];
+    this.nGiftcardAmount = 0;
     this.redeemedLoyaltyPoints = 0;
     this.iActivityId = '';
     this.sNumber = '';

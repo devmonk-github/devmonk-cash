@@ -17,7 +17,7 @@
 
 </div>
 <div class="container">
-  <div class="content">
+  <div class="content p-0">
 
     <div class="row " [ngClass]="{'opacity-25': parkedTransactionLoading}">
       <div class="col-12">
@@ -564,28 +564,28 @@
                 <button class="btn btn-primary w-100" (click)="openMorePaymentMethodModal()">{{"MORE" |
                   translate}}...</button>
               </div>
-              <div class="input-group till-padding mt-2">
+              <div class="input-group till-padding mt-2 mb-2">
                 <button class="btn btn-primary w-100" (click)="openCardsModal()">{{"REDEEM_GIFTCARD" |
                   translate}}</button>
               </div>
               <div class="mt-2" *ngIf="appliedGiftCards.length || redeemedLoyaltyPoints > 0">
-                <div class="chip d-flex" *ngFor="let giftcard of appliedGiftCards; index as i">
+                <div class="chip d-flex align-items-center" *ngFor="let giftcard of appliedGiftCards; index as i">
                   {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: tillService.currency}}
                   <div *ngIf="giftcard.profileIconUrl">
                     <img class="ml-1" src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
                   </div>
                   <div class="mx-2 cursor-pointer" (click)="openCardsModal('edit', giftcard)">
-                    <i class="fa fa-edit"></i>
+                    <i class="fa fa-edit text-info"></i>
                   </div>
                   <div (click)="removeGift(i)">
-                    &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                    &nbsp;<i class="close fas fa-times cursor-pointer text-danger"></i>
                   </div>
                 </div>
-                <div class="chip d-flex" *ngIf="redeemedLoyaltyPoints">
+                <div class="chip d-flex align-items-center my-2" *ngIf="redeemedLoyaltyPoints">
                   {{ "LOYALTY_POINTS" | translate }}, {{redeemedLoyaltyPoints | currency: tillService.currency}}
-                  <img class="ml-1" src="../assets/images/loyalty_points.png" alt="" height="20px" width="20px">
+                  <img class="mx-1" src="../assets/images/loyalty_points.png" alt="" height="20px" width="20px">
                   <div (click)="removeLoyaltyPoints()">
-                    &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                    &nbsp;<i class="close fas fa-times cursor-pointer  text-danger"></i>
                   </div>
                 </div>
               </div>
@@ -594,26 +594,29 @@
                 <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
               </div>
 
-              <h1>
+              <h1 class="m-0 fs-xl-1 fs-sm-2">
                 <span *ngIf="nTotalPayment < nItemsTotalToBePaid && availableAmount <= nTotalPayment">{{ "YET_TO_PAY" | translate}}</span>
                 <span *ngIf="availableAmount >= nItemsTotalToBePaid || nTotalPayment < availableAmount || nTotalPayment == nItemsTotalToBePaid">{{ "CHANGE" | translate}}</span>:
 
                 {{ nFinalAmount | currency: tillService.currency}}
               </h1>
 
-              <h4 *ngIf="nTotalPayment < nItemsTotalToBePaid">
-                {{ "PREPAYMENT" | translate}}: {{ nTotalPayment | currency: tillService.currency}}
-                {{'FROM_TOTAL' | translate}} {{ nItemsTotalToBePaid | currency:tillService.currency}}
-              </h4>
+              <div class="m-0" *ngIf="nTotalPayment < nItemsTotalToBePaid">
+                <p class="m-0 fs-xl-6 fs-sm-7">
+                  {{ "PREPAYMENT" | translate}}: {{ nTotalPayment | currency: tillService.currency}}
+                  <br>
+                  {{'FROM_TOTAL' | translate}} {{ nItemsTotalToBePaid | currency:tillService.currency}}
+                </p>
+              </div>
 
-              <h4 *ngIf="nTotalPayment == nItemsTotalToBePaid">{{ "PAYMENT" | translate}}: {{nTotalPayment | currency:
+              <h4  class="m-0 fs-xl-6 fs-sm-7" *ngIf="nTotalPayment == nItemsTotalToBePaid">{{ "PAYMENT" | translate}}: {{nTotalPayment | currency:
                 tillService.currency}}
               </h4>
               <!-- <h4 *ngIf="nFinalAmount > 0">{{ "PREPAYMENT" | translate}}: {{nTotalPayment | currency:
                 tillService.currency}}
               </h4> -->
 
-              <div class="d-flex flex-wrap">
+              <div class="d-flex flex-wrap mt-2">
                 <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
                   [disabled]="bDisableCheckout">
                   <!-- [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid"> -->

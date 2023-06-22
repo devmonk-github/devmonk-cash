@@ -166,11 +166,12 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     this.ComparableProductsLoading = true;
     await this.getProductData(productId.toString())
     if (this.currentTab === 1) this.getComparableProducts();
+    else if (this.currentTab === 5) this.getComparableProductsSupplier();
     else if (this.currentTab === 2) this.getBusinessProductVariant();
     this.ComparableProductsLoading = false
   }
 
-  hideAvailableProduct(){
+  hideAvailableProduct() {
     this.isShowAvailableProduct = false;
   }
 
@@ -196,19 +197,19 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
     else if (index === 1) this.getComparableProducts()
     else if (index === 2) this.getBusinessProductVariant()
     else if (index === 3 || index === 4) this.getTradeProducts()
-    else if (index === 5 ) this.getComparableProducts()
+    else if (index === 5) this.getComparableProductsSupplier()
   }
 
   getSupplierDetails(id: any) {
     this.iBusinessId = localStorage.getItem("currentBusiness");
     const url = '/api/v1/business/partners/' + id + '?iBusinessId=' + this.iBusinessId;
     return new Promise<any>((resolve, reject) => {
-    this.apiService.getNew('core', url).subscribe((result: any) => {
-         const oSupplier:any = result.data;
-        if (oSupplier?.iSupplierId){
-          this.oSupplierDetail= this.fetchSupplierDetail(oSupplier?.iSupplierId); /* This is to fetch the supplier detail */
-           resolve(this.oSupplierDetail);
-        }else{
+      this.apiService.getNew('core', url).subscribe((result: any) => {
+        const oSupplier: any = result.data;
+        if (oSupplier?.iSupplierId) {
+          this.oSupplierDetail = this.fetchSupplierDetail(oSupplier?.iSupplierId); /* This is to fetch the supplier detail */
+          resolve(this.oSupplierDetail);
+        } else {
           resolve(result.data);
         }
         return
@@ -299,6 +300,38 @@ fetchSupplierDetail(iSupplierId: any) {
       iBusinessId: this.iBusinessId.toString(),
       iLocationId: this.iLocationId.toString(),
       iBusinessProductId: this.productData._id.toString(),
+    };
+    return new Promise<any>((resolve, reject) => {
+      this.apiService
+        .postNew(
+          'core',
+          '/api/v1/business/products/list-comparable-products',
+          body
+        )
+        .subscribe(
+          (result: any) => {
+            this.ComparableProducts = result.data;
+            this.ComparableProductsLoading = false;
+            resolve(result);
+          },
+          (err: any) => {
+            this.ComparableProductsLoading = false;
+            console.log({ err: err });
+            this.toastService.show({ type: 'danger', text: err?.error?.message })
+
+            resolve(err)
+          }
+        );
+    })
+  }
+  async getComparableProductsSupplier() {
+    this.ComparableProducts = [];
+    this.ComparableProductsLoading = true;
+    const body = {
+      iBusinessId: this.iBusinessId.toString(),
+      iLocationId: this.iLocationId.toString(),
+      iBusinessProductId: this.productData._id.toString(),
+      onlySupplier: true
     };
     return new Promise<any>((resolve, reject) => {
       this.apiService
