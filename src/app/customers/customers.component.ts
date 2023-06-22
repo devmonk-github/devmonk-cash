@@ -497,27 +497,21 @@ export class CustomersComponent implements OnInit {
       { name: 'INSERT', key: "sPrefix", value: 'Prefix', isSelected: true },
       { name: 'LAST_NAME', key: "sLastName", value: 'Last name', isSelected: true },
       { name: 'DATE_OF_BIRTH', key: "dDateOfBirth", value: 'Date of birth', isSelected: true },
-      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true },
       { name: 'GENDER', key: "sGender", value: 'Gender', isSelected: true },
-      { name: 'EMAIL_VERIFIED', key: "bIsEmailVerified", value: 'Email verified', isSelected: true },
-      { name: 'COUNTER', key: "bCounter", value: 'Counter', isSelected: true },
       { name: 'EMAIL', key: "sEmail", value: 'Email', isSelected: true },
       { name: 'PHONE_LANDLINE', key: "oPhone.sLandLine", value: 'Landline', isSelected: true },
       { name: 'PHONE_MOBILE', key: 'oPhone.sMobile', value: 'Mobile', isSelected: true },
-      { name: 'STREET', key: 'oShippingAddress.sStreet', value: 'street', isSelected: true },
-      { name: 'HOUSE_NUMBER', key: 'oShippingAddress.sHouseNumber', value: 'House Number', isSelected: true },
-      { name: 'POSTAL_CODE', key: 'oShippingAddress.sPostalCode', value: 'Postal code', isSelected: true },
-      { name: 'COMMENTS', key: "sComment", value: 'Comment', isSelected: true },
-      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true },
+      { name: 'SHIPPING_ADDRESS', key: 'oShippingAddress', value: 'ShippingAddress', isSelected: true },
+      { name: 'INVOICE_ADDRESS', key: 'oInvoiceAddress', value: 'InvoiceAddress', isSelected: true },
       { name: 'COMPANY_NAME', key: "sCompanyName", value: 'Company name', isSelected: true },
-      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true },
       { name: 'VAT_NUMBER', key: "sVatNumber", value: 'Vat number', isSelected: true },
       { name: 'COC_NUMBER', key: "sCocNumber", value: 'Coc number', isSelected: true },
       { name: 'PAYMENT_TERM_IN_DAYS', key: "nPaymentTermDays", value: 'Payment term days', isSelected: true },
-      { name: 'USE_FOR_WHATSAPP', key: "bWhatsApp", value: 'Whatsapp', isSelected: true },
       { name: 'MATCHING_CODE', key: "nMatchingCode", value: 'Matching code', isSelected: true },
+      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true },
       { name: 'NOTES', key: "sNote", value: 'Note', isSelected: true },
-      { name: 'MIGRATED_CUSTOMER', key: "bIsMigrated", value: 'Migrated customer', isSelected: true }
+      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true },
+      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true }
     ];
     this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }

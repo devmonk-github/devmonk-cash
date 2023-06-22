@@ -60,8 +60,10 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
-        <button class="cancel btn btn-primary ms-auto m-0" (click)="getExportData(';')">{{"EXPORT_TO_CSV" |
+        <button class="cancel btn btn-primary" style="margin-right: 10px;" (click)="getExportData()">{{"EXPORT_TO_CSV" |
             translate}}</button>
+            <button class="cancel btn btn-secondary" (click)="getExportPDF()">{{"EXPORT_TO_PDF" |
+                translate}}</button>
         <!--TODO: EXPORT AS PDF-->
         <!-- <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button> -->
     </div>
