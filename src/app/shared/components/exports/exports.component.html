@@ -14,20 +14,18 @@
             <div class="col-md-2 mb-3">
                 <strong>{{"BASIC_DETAILS" | translate}}</strong>
             </div>
-            
+
         </div>
         <div class="d-flex flex-wrap justify-content-between my-1">
             <div class="w-100 mb-3 d-flex">
                 <label class="form-check form-check-custom form-check-solid me-2">{{"SELECT_ALL" | translate}}</label>
                 <input class="form-check-input" type="checkbox" [checked]="bAllSelected" id="kt_roles_select_all1"
-                                        (change)="selectAll($event.target)" />
-                <!-- <input type="checkbox" class="form-check-input me-2" /> -->
-                <!-- <p class="m-0 fw-bolder">{{"SELECT_ALL" | translate}}</p> -->
+                    (change)="selectAll($event.target)" />
             </div>
             <div class="w-150px mb-3" *ngFor="let obj of customerHeaderList">
-                <input class="form-check-input" type="checkbox" id="kt_roles_select_all" [(ngModel)]="obj.isSelected" (click)='removeFields(obj)'/>
-                <!-- <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' /> -->
-                {{obj.value}}
+                <input class="form-check-input" type="checkbox" id="kt_roles_select_all" [checked]="obj.isSelected"
+                    [(ngModel)]="obj.isSelected" (click)='removeFields(obj,$event)' />
+                {{obj.name | translate}}
             </div>
         </div>
         <div class="row p-0" *ngIf="loader">
@@ -41,27 +39,29 @@
                 <strong>{{"ADVANCED" | translate}}</strong>
             </div>
             <div class="row">
-            <div class="col-12 me-4 customers-fields">
-                 <div class="col-3 me-4 customers-fields">
-                    <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_TYPE' | translate}} </label>
-               
-                </div>
+                <div class="col-12 me-4 customers-fields">
+                    <div class="col-3 me-4 customers-fields">
+                        <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_TYPE' | translate}}
+                        </label>
+                    </div>
 
-                <div class="col-3 me-4 customers-fields">
-                    <ng-select class="form-control form-control-solid p-0"
-                    [(ngModel)]="requestParams.customerType" [clearable]="false">
-                    <ng-option *ngFor="let customerType of customerTypes" [value]="customerType.value">{{customerType.key |
-                        translate}}
-                    </ng-option>
-                </ng-select>
+                    <div class="col-3 me-4 customers-fields">
+                        <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.customerType"
+                            [clearable]="false">
+                            <ng-option *ngFor="let customerType of customerTypes"
+                                [value]="customerType.value">{{customerType.key |
+                                translate}}
+                            </ng-option>
+                        </ng-select>
+                    </div>
                 </div>
             </div>
-           </div>
-            
+
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
-        <button class="cancel btn btn-primary ms-auto m-0" (click)="getExportData(';')">{{"EXPORT_TO_CSV" | translate}}</button>
+        <button class="cancel btn btn-primary ms-auto m-0" (click)="getExportData(';')">{{"EXPORT_TO_CSV" |
+            translate}}</button>
         <!--TODO: EXPORT AS PDF-->
         <!-- <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button> -->
     </div>

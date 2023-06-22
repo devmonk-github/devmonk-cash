@@ -37,7 +37,7 @@ export class ExportsComponent implements OnInit {
   iBusinessId:any;
   bAllSelected = true;
 
-  fieldsToRemove : Array<any> = [];
+  fieldsToAdd : Array<any> = [];
   dataForCSV: Array<any> = [];
   fieldObject: any = {};
   faTimes = faTimes;
@@ -63,6 +63,7 @@ export class ExportsComponent implements OnInit {
 
   ngOnInit(): void { 
     this.iBusinessId = localStorage.getItem('currentBusiness');
+    // this.fetchSecondHeaderList();
   }
 
   fetchSecondHeaderList(){
@@ -90,30 +91,24 @@ export class ExportsComponent implements OnInit {
   }
 
   close(flag: Boolean){
-    var data = this.fieldsToRemove;
-    this.fieldsToRemove = [];
+    var data = this.fieldsToAdd;
+    this.fieldsToAdd = [];
     if(flag) this.dialogRef.close.emit({ action: true, data });
     else this.dialogRef.close.emit({ action: false })
   }
 
   getExportData(separator:any){
+    this.separator = separator;
     for(let index in this.secondAProjection){
       if(this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
     }
-    let secondHeader = _.clone(this.customerHeaderList);
-    for(let index in this.fieldsToRemove){
-      const headerIndex =secondHeader.findIndex((customerheader:any)=> customerheader.key == this.fieldsToRemove[index].key)
-      if(headerIndex >-1){
-         secondHeader.splice(headerIndex , 1);
-      }
-    }
-     secondHeader.forEach((header:any)=>{
+    if(this.bAllSelected && !this.fieldsToAdd.length)this.fieldsToAdd = this.customerHeaderList;
+    this.fieldsToAdd.forEach((header:any)=>{
       this.headerList.push(header.value);
       this.valuesList.push(header.key);
     })
-
     this.requestParams.aProjection = this.valuesList;
-    this.requestParams.aProjection.push('oPhone.sPrefixMobile','oPhone.sPrefixLandline','bIsCompany');
+    this.requestParams.aProjection.push('oPhone.sPrefixMobile','oPhone.sPrefixLandline');
     if(!this.useSameFilter){ this.requestParams.oFilterBy.oDynamic = {}; this.requestParams.oFilterBy.oStatic = {}; }
     var body = this.requestParams;
     this.apiService.postNew('customer', '/api/v1/customer/exports', body).subscribe(
@@ -143,8 +138,7 @@ export class ExportsComponent implements OnInit {
           customer['oShippingAddress.sHouseNumber'] = customer.oShippingAddress && customer.oShippingAddress.sHouseNumber ? customer.oShippingAddress.sHouseNumber : "";
           customer['oShippingAddress.sPostalCode'] = customer.oShippingAddress && customer.oShippingAddress.sPostalCode ? customer.oShippingAddress.sPostalCode : "";
           customer['oShippingAddress.sCountryCode'] = customer.oShippingAddress && customer.oShippingAddress.sCountryCode ? customer.oShippingAddress.sCountryCode : "";
-          customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
-          
+         
         }
         for (let index in this.headerList) {
           this.fieldObject[this.headerList[index]] = this.valuesList[index]
@@ -156,18 +150,17 @@ export class ExportsComponent implements OnInit {
       }
     );
   }
-
-
   download(){
     var data = { from: 'Customers-export'};
     this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Customers', this.separator, data)
     this.dialogRef.close.emit({ action: false });
   }
-
-  removeFields(obj : any){
-    if(!obj.isSelected) this.bAllSelected =false;
-    var index = this.fieldsToRemove.findIndex((field)=>field.value == obj.value);
-    if(index > -1) this.fieldsToRemove.splice(index, 1);
-    else this.fieldsToRemove.push(obj)
+  removeFields(obj: any, event: any) {
+    if (event?.target?.checked) {
+      this.fieldsToAdd.push(obj);
+    } else {
+      var index = this.fieldsToAdd.findIndex((field) => field.value == obj.value);
+      if (index > -1) this.fieldsToAdd.splice(index, 1);
+    }
   }
 }
