@@ -94,7 +94,6 @@ export class SelectArticleDialogComponent implements OnInit {
           const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
           this.articlegroup = result?.data;//[0]?.result[0];
           this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
-
         }
       }
     }

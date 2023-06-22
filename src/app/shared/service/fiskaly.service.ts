@@ -155,7 +155,7 @@ export class FiskalyService {
   }
 
   async createClient() {
-    console.log('fs create client')
+    // console.log('fs create client')
     if (!this.fiskalyAuth) {
       await this.loginToFiskaly();
     }

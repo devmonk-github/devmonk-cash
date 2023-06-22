@@ -195,6 +195,7 @@
                         <div class="accordion-item w-100 d-table-cell" *ngIf="item.type === 'order'" till-order
                           [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="tillService.taxes"
                           [availableAmount]="availableAmount" [bSerialSearchMode]="bSerialSearchMode"  [settings]="tillService.settings.currentLocation"
+                          [oStaticData]="oStaticData"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         
@@ -203,6 +204,7 @@
                         <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
                           [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="tillService.taxes"
                           [availableAmount]="availableAmount"  [settings]="tillService.settings.currentLocation"
+                          [oStaticData]="oStaticData"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         <!-- giftcard -->
