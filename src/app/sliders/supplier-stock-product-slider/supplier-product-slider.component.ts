@@ -300,6 +300,7 @@ fetchSupplierDetail(iSupplierId: any) {
       iBusinessId: this.iBusinessId.toString(),
       iLocationId: this.iLocationId.toString(),
       iBusinessProductId: this.productData._id.toString(),
+      onlySupplier: true
     };
     return new Promise<any>((resolve, reject) => {
       this.apiService
@@ -330,8 +331,7 @@ fetchSupplierDetail(iSupplierId: any) {
     const body = {
       iBusinessId: this.iBusinessId.toString(),
       iLocationId: this.iLocationId.toString(),
-      iBusinessProductId: this.productData._id.toString(),
-      onlySupplier: true
+      iBusinessProductId: this.productData._id.toString()
     };
     return new Promise<any>((resolve, reject) => {
       this.apiService
