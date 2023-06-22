@@ -66,6 +66,12 @@ export class TransactionsPdfService {
       this.translations = res;
     })
   }
+  getTableWidth(header: number) {
+    let value = 100 / header + '%';
+    let aTableWidth = [];
+    for (let i = 1; i <= header; i++) aTableWidth.push("" + value);
+    return aTableWidth;
+  };
 
   async exportToPdf({ requestParams, customerHeader, page, businessDetail, aWorkstation, aLocation, aAssignee, aBusinessPartner }: any) {
     let aTableBody: Array<any> = [];
@@ -81,7 +87,7 @@ export class TransactionsPdfService {
       tableHeader.push({ text: this.translations[header.key], bold: true });
       headerObj = { ...headerObj, [header.value]: header.key }
     })
-
+    tableWidth = this.getTableWidth(tableWidth.length);
     const result: any = await this.fetchActivityItem(requestParams);
     if (result && result?.data && result?.data?.length) {
       aActivityItem = result.data;
