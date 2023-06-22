@@ -146,7 +146,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nItemsTotalQuantity = 0;
   nTotalPayment = 0;
 
-  oStaticData: any;
+  oStaticData: any = {};
 
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
@@ -1712,22 +1712,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('discount')
-      .subscribe((res: any) => {
-        if (res.data) {
-          this.discountArticleGroup = res.data;
-        } else {
-          this.createArticleGroup();
-        }
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
-  }
+    this.createArticleGroupService.checkArticleGroups('discount').subscribe((res: any) => {
+      if (res.data) this.discountArticleGroup = res.data;
+    });
 
-  async createArticleGroup() {
-    const articleBody = { name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' };
-    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.discountArticleGroup = result.data;
+    const data = {
+      iBusinessId: this.iBusinessId,
+    };
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result:any) => {
+      if(result?.data?.length && result?.data[0]?.result?.length)
+      this.oStaticData.articleGroupsList = result.data[0].result;
+    });
+    
   }
 
   fetchQuickButtons() {

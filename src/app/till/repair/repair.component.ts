@@ -75,14 +75,10 @@ export class RepairComponent implements OnInit {
     private dialogService: DialogService,
     private toastrService: ToastService,
     public tillService: TillService) { 
-    if (!this.oStaticData?.articleGroupsList?.length) {
-      this.oStaticData = {
-        articleGroupsList: []
-      }
-    }
+    
   }
 
-    async ngOnInit() {
+  async ngOnInit() {
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
@@ -92,7 +88,6 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
-    
   }
 
   /* setting a property if item already having the property */
