@@ -1052,8 +1052,8 @@
                                                 </div>
                                             </div>
 
-                                            <!--TODO: UNCOMMENT THIS-->
-                                            <!-- <div class="col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
+                                            
+                                            <div class="col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
                                                 <p class="fw-bolder m-0 mb-3 text-uppercase">{{"USAGE_HISTORY"| translate}}</p>
                                                 <div class="w-100 bg-gray-100 rounded-top p-3">
                                                     <div class="w-100 border-bottom border-gray-400 d-flex align-items-center">
@@ -1063,23 +1063,21 @@
                                                         <div class="col-2"></div>
                                                     </div>
                                                 </div>
-                                                <div class="w-100 bg-gray-100 p-3 pt-1 rounded-bottom" style="max-height: 150px; overflow-y: auto;"> -->
-                                                    <!-- TODO: FETCH USAGE HISTORY OF THE GIFTCARD -->
-                                                    <!-- REPLACE WITH TRUE VALUE -->
-                                                    <!-- <div class="border-bottom border-gray-300"> --> <!--start here for *ngFor='let receipt of activity.receipts' -->
-                                                        <!-- <div class="w-100 d-flex align-items-center my-2">
-                                                            <p class="m-0 col-4">T-NUMBER</p>
-                                                            <p class="m-0 col-3 text-truncate">Jun 21, 2023, 11:10:02</p>
-                                                            <p class="m-0 col-3">€100.00</p>
-                                                            <div class="col-2 d-flex justify-content-end"> -->
-                                                                <!-- <button class="btn btn-info btn-sm">--> <!-- (click)="showTransaction(receipt, $event)" -->
-                                                                    <!--<i class="fa fa-eye"></i>
+                                                <div class="w-100 bg-gray-100 p-3 pt-1 rounded-bottom" style="max-height: 150px; overflow-y: auto;">
+                                                    <div class="border-bottom border-gray-300" *ngFor="let oItem of activity.aGiftcardRedeemedTransactionData">
+                                                        <div class="w-100 d-flex align-items-center my-2">
+                                                            <p class="m-0 col-4">{{ oItem.sNumber }}</p>
+                                                            <p class="m-0 col-3 text-truncate">{{ oItem.dRedeemedDate | date:'MMM dd, yyyy, HH:mm:ss' }}</p>
+                                                            <p class="m-0 col-3">{{ oItem.nAmount | currency: tillService.currency }}</p>
+                                                            <!-- <div class="col-2 d-flex justify-content-end"> 
+                                                                 <button class="btn btn-info btn-sm">
+                                                                   <i class="fa fa-eye"></i>
                                                                 </button>
-                                                            </div>
+                                                            </div> -->
                                                         </div> 
                                                     </div>
                                                 </div> 
-                                            </div>-->
+                                            </div>
 
                                         </div>
                                         <div class="row table-responsive">
