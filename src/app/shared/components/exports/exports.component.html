@@ -63,6 +63,7 @@
             translate}}</button>
             <button class="cancel btn btn-secondary" (click)="getExportPDF()">{{"EXPORT_TO_PDF" |
                 translate}}</button>
+                <div *ngIf="isPdfLoading" class="spinner-border mx-4"></div>
         <!--TODO: EXPORT AS PDF-->
         <!-- <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button> -->
     </div>

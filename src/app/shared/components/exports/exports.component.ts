@@ -37,6 +37,7 @@ export class ExportsComponent implements OnInit {
   firstAGId: String = '';
   iBusinessId: any;
   bAllSelected = true;
+  isPdfLoading: boolean = false;
 
   fieldsToAdd: Array<any> = [];
   dataForCSV: Array<any> = [];
@@ -98,53 +99,72 @@ export class ExportsComponent implements OnInit {
     if (flag) this.dialogRef.close.emit({ action: true, data });
     else this.dialogRef.close.emit({ action: false })
   }
+
+  getTableWidth(header: number) {
+    let value = 100 / header + '%';
+    let aTableWidth = [];
+    for (let i = 1; i <= header; i++) aTableWidth.push("" + value);
+    return aTableWidth;
+  };
  
   getExportPDF() {
     var body = this.requestParams;
+    let aTableBody: Array<any> = [];
+    this.isPdfLoading = true;
     var arr:any = [];
+    let tableWidth: any = [];
+    let tableHeader: any = [];
+    let headerObj: any = {};
+
+    if (this.bAllSelected && !this.fieldsToAdd.length) this.fieldsToAdd = this.customerHeaderList;
+    this.fieldsToAdd.forEach((header: any) => {
+      tableWidth.push(header.width);
+      tableHeader.push({ text: header.value, bold: true });
+      headerObj = { ...headerObj, [header.key]: header.value }
+    })
+    tableWidth = this.getTableWidth(tableWidth.length);
+    
     this.apiService.postNew('customer', '/api/v1/customer/exports', body).subscribe(
       (result: any) => {
         this.customerList = result.data[0].result;
         this.customerList?.forEach((customer: any, index: Number) => {
           let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " "+ customer?.oShippingAddress?.sPostalCode;
           let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " "+ customer?.oInvoiceAddress?.sPostalCode;
-          
+          let Mobile = customer?.oPhone?.sMobile;
+          if(customer?.oPhone?.sPrefixMobile) Mobile = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
+          let Landline = customer?.oPhone?.sLandLine;
+          if(customer?.oPhone?.sPrefixLandline) Landline =  customer?.oPhone?.sPrefixLandline + customer?.oPhone?.sLandLine;
           var obj: any = {};
-          obj['Salutation'] = customer?.sSalutation ? customer?.sSalutation : '';
-          obj['First name'] = customer?.sFirstName ? customer?.sFirstName : '';
-          obj['Prefix'] = customer?.sPrefix ? customer?.sPrefix : '';
-          obj['Last name'] = customer?.sLastName ? customer?.sLastName : '';
-          obj['Date of birth'] = customer?.dDateOfBirth ? moment(customer?.dDateOfBirth).format('DD-MM-yyyy') : '';
-          obj['Gender'] = customer?.sGender ? customer?.sGender : '';
-          obj['Email'] = customer?.sEmail ? customer?.sEmail : '';
-          obj['Landline'] = customer?.oPhone.sLandLine ? customer?.oPhone.sLandLine : '';
-          obj['Mobile'] = customer?.oPhone.sMobile ? customer?.oPhone.sMobile : '';
-          obj['ShippingAddress'] = ShippingAddress || '';
-          obj['InvoiceAddress'] = InvoiceAddress || '';
-          obj['Company name'] = customer?.sCompanyName ? customer?.sCompanyName : '';
-          obj['Vat number'] = customer?.sVatNumber ? customer?.sVatNumber : '';
-          obj['Coc number'] = customer?.sCocNumber ? customer?.sCocNumber : '';
-          obj['Payment term days'] = customer?.nPaymentTermDays ? customer?.nPaymentTermDays : 0;
-          obj['Matching code'] = customer?.nMatchingCode ? customer?.nMatchingCode : 0;
-          obj['Client id'] = customer?.nClientId ? customer?.nClientId : '';
-          obj['Note'] = customer?.sNote ? customer?.sNote : '';
-          obj['Points'] =  0;
-          obj['Newsletter'] = customer?.bNewsletter ? customer?.bNewsletter : '';
-          arr.push(obj);
+          if (headerObj['sSalutation'])obj['Salutation'] = customer?.sSalutation ? customer?.sSalutation : '';
+          if (headerObj['sFirstName'])obj['First name'] = customer?.sFirstName ? customer?.sFirstName : '';
+          if (headerObj['sPrefix'])obj['Prefix'] = customer?.sPrefix ? customer?.sPrefix : '';
+          if (headerObj['sLastName'])obj['Last name'] = customer?.sLastName ? customer?.sLastName : '';
+          if (headerObj['dDateOfBirth'])obj['Date of birth'] = customer?.dDateOfBirth ? moment(customer?.dDateOfBirth).format('DD-MM-yyyy') : '';
+          if (headerObj['sGender'])obj['Gender'] = customer?.sGender ? customer?.sGender : '';
+          if (headerObj['sEmail'])obj['Email'] = customer?.sEmail ? customer?.sEmail : '';
+          if (headerObj['oPhone.sLandLine'])obj['Landline'] = Landline ? Landline : '';
+          if (headerObj['oPhone.sMobile'])obj['Mobile'] = Mobile ? Mobile : '';
+          if (headerObj['oShippingAddress'])obj['ShippingAddress'] = ShippingAddress ? ShippingAddress : '';
+          if (headerObj['oInvoiceAddress'])obj['InvoiceAddress'] = InvoiceAddress ? InvoiceAddress : '';
+          if (headerObj['sCompanyName'])obj['Company name'] = customer?.sCompanyName ? customer?.sCompanyName : '';
+          if (headerObj['sVatNumber'])obj['Vat number'] = customer?.sVatNumber ? customer?.sVatNumber : '';
+          if (headerObj['sCocNumber'])obj['Coc number'] = customer?.sCocNumber ? customer?.sCocNumber : '';
+          if (headerObj['nPaymentTermDays'])obj['Payment term days'] = customer?.nPaymentTermDays ? customer?.nPaymentTermDays : 0;
+          if (headerObj['nMatchingCode'])obj['Matching code'] = customer?.nMatchingCode ? customer?.nMatchingCode : 0;
+          if (headerObj['nClientId'])obj['Client id'] = customer?.nClientId ? customer?.nClientId : '';
+          if (headerObj['sNote'])obj['Note'] = customer?.sNote ? customer?.sNote : '';
+          if (headerObj['oPoints'])obj['Points'] =  0;
+          if (headerObj['bNewsletter'])obj['Newsletter'] = customer?.bNewsletter ? customer?.bNewsletter : '';
+          aTableBody.push(obj);
         })
-        if (this.bAllSelected && !this.fieldsToAdd.length) this.fieldsToAdd = this.customerHeaderList;
-        var header = this.customerHeaderList;
-        var date = Date.now();
-        date = moment(date).format('DD-MM-yyyy');
-        var headerList: Array<any> = [];
-        header.forEach((singleHeader: any) => {
-          headerList.push({ text: singleHeader.value, bold: true })
-        })
-        var bodyData: Array<any> = [];
-        arr.forEach((singleRecord: any) => {
-          bodyData.push(Object.values(singleRecord));
-        })
-        const tableWidth = ['10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%','10%' ]
+       
+        let date: any = Date.now();
+      date = moment(date).format('DD-MM-yyyy');
+
+      let bodyData: Array<any> = [];
+      aTableBody.forEach((singleRecord: any) => {
+        bodyData.push(Object.values(singleRecord));
+      })
         
         var content = [
           { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
@@ -153,7 +173,7 @@ export class ExportsComponent implements OnInit {
             table: {
               headerRows: 1,
               widths: tableWidth,
-              body: [headerList]
+             body: [tableHeader]
             },
             layout: {
               hLineStyle: function () {
@@ -219,16 +239,18 @@ export class ExportsComponent implements OnInit {
           },
         };
 
-        this.pdf.getPdfData({styles, content, orientation: 'portrait', pageSize: 'A3', pdfTitle: "Customer" + '-' + date })
-              
+        this.pdf.getPdfData({styles, content, orientation: 'portrait', pageSize: 'A4', pdfTitle: "Customer" + '-' + date })
+        this.isPdfLoading = false;
       },
       (error: any) => {
         this.dataForCSV = [];
+        this.isPdfLoading = false;
       }
     );
   }
 
   getExportData() {
+    this.isPdfLoading = true;
     //this.separator = separator;
     for (let index in this.secondAProjection) {
       if (this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
@@ -280,12 +302,14 @@ export class ExportsComponent implements OnInit {
       },
       (error: any) => {
         this.dataForCSV = [];
+        this.isPdfLoading = false;
       }
     );
   }
   download() {
     var data = { from: 'Customers-export' };
     this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Customers', this.separator, data)
+    this.isPdfLoading = false;
     this.dialogRef.close.emit({ action: false });
   }
   removeFields(obj: any, event: any) {

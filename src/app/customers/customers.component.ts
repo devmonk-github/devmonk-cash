@@ -492,26 +492,26 @@ export class CustomersComponent implements OnInit {
  
   export() {
     const headerList = [
-      { name: 'SALUTATION', key: "sSalutation", value: 'Salutation', isSelected: true },
-      { name: 'FIRST_NAME', key: "sFirstName", value: 'First name', isSelected: true },
-      { name: 'INSERT', key: "sPrefix", value: 'Prefix', isSelected: true },
-      { name: 'LAST_NAME', key: "sLastName", value: 'Last name', isSelected: true },
-      { name: 'DATE_OF_BIRTH', key: "dDateOfBirth", value: 'Date of birth', isSelected: true },
-      { name: 'GENDER', key: "sGender", value: 'Gender', isSelected: true },
-      { name: 'EMAIL', key: "sEmail", value: 'Email', isSelected: true },
-      { name: 'PHONE_LANDLINE', key: "oPhone.sLandLine", value: 'Landline', isSelected: true },
-      { name: 'PHONE_MOBILE', key: 'oPhone.sMobile', value: 'Mobile', isSelected: true },
-      { name: 'SHIPPING_ADDRESS', key: 'oShippingAddress', value: 'ShippingAddress', isSelected: true },
-      { name: 'INVOICE_ADDRESS', key: 'oInvoiceAddress', value: 'InvoiceAddress', isSelected: true },
-      { name: 'COMPANY_NAME', key: "sCompanyName", value: 'Company name', isSelected: true },
-      { name: 'VAT_NUMBER', key: "sVatNumber", value: 'Vat number', isSelected: true },
-      { name: 'COC_NUMBER', key: "sCocNumber", value: 'Coc number', isSelected: true },
-      { name: 'PAYMENT_TERM_IN_DAYS', key: "nPaymentTermDays", value: 'Payment term days', isSelected: true },
-      { name: 'MATCHING_CODE', key: "nMatchingCode", value: 'Matching code', isSelected: true },
-      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true },
-      { name: 'NOTES', key: "sNote", value: 'Note', isSelected: true },
-      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true },
-      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true }
+      { name: 'SALUTATION', key: "sSalutation", value: 'Salutation', isSelected: true , width:'10%' },
+      { name: 'FIRST_NAME', key: "sFirstName", value: 'First name', isSelected: true , width:'10%' },
+      { name: 'INSERT', key: "sPrefix", value: 'Prefix', isSelected: true , width:'10%' },
+      { name: 'LAST_NAME', key: "sLastName", value: 'Last name', isSelected: true , width:'10%' },
+      { name: 'DATE_OF_BIRTH', key: "dDateOfBirth", value: 'Date of birth', isSelected: true , width:'10%' },
+      { name: 'GENDER', key: "sGender", value: 'Gender', isSelected: true , width:'10%' },
+      { name: 'EMAIL', key: "sEmail", value: 'Email', isSelected: true , width:'10%' },
+      { name: 'PHONE_LANDLINE', key: "oPhone.sLandLine", value: 'Landline', isSelected: true , width:'10%' },
+      { name: 'PHONE_MOBILE', key: 'oPhone.sMobile', value: 'Mobile', isSelected: true , width:'10%' },
+      { name: 'SHIPPING_ADDRESS', key: 'oShippingAddress', value: 'ShippingAddress', isSelected: true , width:'10%' },
+      { name: 'INVOICE_ADDRESS', key: 'oInvoiceAddress', value: 'InvoiceAddress', isSelected: true , width:'10%' },
+      { name: 'COMPANY_NAME', key: "sCompanyName", value: 'Company name', isSelected: true , width:'10%' },
+      { name: 'VAT_NUMBER', key: "sVatNumber", value: 'Vat number', isSelected: true , width:'10%' },
+      { name: 'COC_NUMBER', key: "sCocNumber", value: 'Coc number', isSelected: true , width:'10%' },
+      { name: 'PAYMENT_TERM_IN_DAYS', key: "nPaymentTermDays", value: 'Payment term days', isSelected: true , width:'10%' },
+      { name: 'MATCHING_CODE', key: "nMatchingCode", value: 'Matching code', isSelected: true , width:'10%' },
+      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true , width:'10%' },
+      { name: 'NOTES', key: "sNote", value: 'Note', isSelected: true , width:'10%' },
+      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true , width:'10%' },
+      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true , width:'10%' }
     ];
     this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }
