@@ -132,14 +132,12 @@ class DrawerComponent {
   }
 
   public static bootstrap = () => {
-    console.log('bootstrap');
     DrawerComponent.createInstances('[data-kt-drawer="true"]');
     DrawerComponent.initGlobalHandlers();
     DrawerComponent.handleDismiss();
   }
 
   public static reinitialization = () => {
-    console.log('reinitialization');
     DrawerComponent.createInstances('[data-kt-drawer="true"]');
     DrawerComponent.hideAll();
     DrawerComponent.updateAll();
@@ -153,7 +151,6 @@ class DrawerComponent {
       const item = el as HTMLElement;
       const instance = DrawerComponent.getInstance(item);
       if (instance.name === 'explore') {
-        console.log('show');
         instance.show();
       }
     });
