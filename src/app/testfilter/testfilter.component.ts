@@ -132,34 +132,20 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     public tillService: TillService
   ) {
 
-    
-
     this.activatedRoute.queryParams.subscribe(params => {
-
-
       let data1 = params['from_end_date'];
       let data2 = params['to_end_date'];
       let data3 = params['type'];
-      //let data4 = params['repair_status'];
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
       let data7 = params['assignee'];
-
       this.type = data3;
-
       console.log("this.type", this.type);
-
       var fromdate = new Date();
       fromdate = new Date(fromdate.getTime());
       fromdate.setDate(fromdate.getDate() - 30);
       let fromDate = this.convert(fromdate);
-      //console.log("fromDate", fromDate);
-
       let ToDate = this.convert(new Date());
-      //console.log("ToDate", ToDate);
-
-
-
       const queryParams: any = {
         //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
         from_create_date: fromDate,
@@ -208,42 +194,14 @@ export class TestFilterComponent implements OnInit, OnDestroy {
           { queryParams: queryParams }
         );
       }
-
-
-
-
-      console.log(typeof data3);
-      // console.log(data1);
-      // console.log(data2);
-      // console.log(data3);
-      // console.log(data4);
-      // console.log(data5);
-      // console.log(data6);
-      // console.log(data7);
-      // console.log(data7);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
-
       if (typeof data3 == "string") {
         this.requestParams.selectedKind = [data3];
       } else {
         this.requestParams.selectedKind = data3;
       }
-
-
-      // if(data4 == undefined){
-      //   this.requestParams.selectedRepairStatuses = queryParams.repair_status;
-      // }
-      // else{
-      // if(typeof data4 == "string"){
-      //   this.requestParams.selectedRepairStatuses = [data4];
-      // }else{
-      //   this.requestParams.selectedRepairStatuses = data4;
-      // }
-      // }
-
-
       if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase" || data3 == "repair") {
         this.requestParams.estimate = { minDate: "", maxDate: "" };
       } else {
@@ -257,23 +215,17 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       }
 
       if (data5 == undefined && data6 == undefined) {
-
         let create = { minDate: new Date(queryParams.from_create_date), maxDate: new Date(new Date(queryParams.to_create_date).setHours(23, 59, 59)) };
         this.requestParams.create = create;
-
       } else {
         let create = { minDate: new Date(data5), maxDate: new Date(new Date(data6).setHours(23, 59, 59)) };
         this.requestParams.create = create;
       }
-
-
       if (data7 == undefined) {
         this.requestParams.iAssigneeId = queryParams.assignee;
       } else {
         this.requestParams.iAssigneeId = data7;
       }
-
-
       this.loadTransaction();
     });
 
@@ -400,7 +352,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
   }
 
   openExportModel() {
-    const header = [
+    let header = [
       { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
       { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
       { key: 'CITY', value: 'oCustomer.oInvoiceAddress.sCity', width: '10%' },
@@ -412,10 +364,22 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       { key: 'DELIVERED_DATE', value: 'dActualFinishDate', width: '10%' },
       { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' }
     ]
+    if(this.type == 'giftcard') header = [
+        { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
+        { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
+        { key: 'COMMENT', value: 'sDescription', width: '15%' },
+        { key: 'TOTAL_PRICE', value: 'nTotalAmount', width: '10%' },
+        { key: 'CREATION_DATE', value: 'dCreatedDate', width: '10%' },
+        { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' },
+        { key: 'REM_AMOUNT', value: 'nGiftcardRemainingAmount', width: '10%' },
+        { key: 'STATUS', value: 'eActivityItemStatus', width: '10%' }
+      ]
+    
     this.dialogService.openModal(ActivityItemExportComponent, {
       cssClass: 'model-lg',
       closeOnEsc: true,
       context: {
+        type:this.type,
         headerList: header,
         businessDetails: this.businessDetails,
         page: 'activityItem',

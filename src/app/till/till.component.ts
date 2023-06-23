@@ -1861,8 +1861,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     /**THIS IS TO ADD ARTICLES AUTOMATICALLY IN THE CASH REGISTER */
     if(!barcode.startsWith("AI") && !barcode.startsWith("T") && !barcode.startsWith("A") && !barcode.startsWith("G")){
-        this.bFromBarcode = true;
-        this.listShopProducts(barcode, false);
+      if(this.eKind != 'regular' && this.eKind != 'order') this.eKind = 'regular';
+      this.bFromBarcode = true;
+      this.listShopProducts(barcode, false);
        // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
     }else{
       const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
