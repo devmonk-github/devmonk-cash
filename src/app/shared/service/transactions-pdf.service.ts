@@ -59,13 +59,19 @@ export class TransactionsPdfService {
     private apiService: ApiService,
     private toastService: ToastService,
     private transalteService: TranslateService) {
-    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
+    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'STATUS', 'REM_AMOUNT','CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
       'CREATE_MIN_DATE', 'CREATE_MAX_DATE', 'ESTIMATE_MIN_DATE', 'ESTIMATE_MAX_DATE', 'REPAIR_STATUS', 'EMPLOYEES', 'LOCATION', 'WORKSTATION', 'ASSIGNEE',
       'BUSINESS_PARTNER', 'E_KIND', 'IMPORT_STATUS'];
     this.transalteService.get(translate).subscribe((res: any) => {
       this.translations = res;
     })
   }
+  getTableWidth(header: number) {
+    let value = 100 / header + '%';
+    let aTableWidth = [];
+    for (let i = 1; i <= header; i++) aTableWidth.push("" + value);
+    return aTableWidth;
+  };
 
   async exportToPdf({ requestParams, customerHeader, page, businessDetail, aWorkstation, aLocation, aAssignee, aBusinessPartner }: any) {
     let aTableBody: Array<any> = [];
@@ -81,7 +87,7 @@ export class TransactionsPdfService {
       tableHeader.push({ text: this.translations[header.key], bold: true });
       headerObj = { ...headerObj, [header.value]: header.key }
     })
-
+    tableWidth = this.getTableWidth(tableWidth.length);
     const result: any = await this.fetchActivityItem(requestParams);
     if (result && result?.data && result?.data?.length) {
       aActivityItem = result.data;
@@ -102,7 +108,9 @@ export class TransactionsPdfService {
         if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dActualFinishDate']) obj['dActualFinishDate'] = activityItem && activityItem.dActualFinishDate ? moment(activityItem.dActualFinishDate).format('DD-MM-yyyy') : '-';
         if (headerObj['sEmployeeName']) obj['sEmployeeName'] = (aEmployeeName && aEmployeeName[0].charAt(0) ? aEmployeeName[0].charAt(0) : '-') + (aEmployeeName && aEmployeeName[1].charAt(0) ? aEmployeeName[1].charAt(0) : '-');
-
+        if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && activityItem.nGiftcardRemainingAmount ? activityItem.nGiftcardRemainingAmount : '0';
+        if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem.eActivityItemStatus ? activityItem.eActivityItemStatus : '-';
+        
         aTableBody.push(obj);
       })
 

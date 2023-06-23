@@ -60,9 +60,12 @@ export class OrderComponent implements OnInit {
   collapsedBtn: Boolean = false;
 
   contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
-  bShowServicePartnerRemark = false
+  bShowServicePartnerRemark = false;
+  bShowColleagueRemark = false;
   sServicePartnerRemark = '';
   sCommentVisibleServicePartner = '';
+  sColleagueRemark = '';
+  sCommentVisibleColleague = '';
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
@@ -148,8 +151,6 @@ export class OrderComponent implements OnInit {
           partnersList: data.partnersList
         }
         this.articleGroupDataChanged.emit(this.oStaticData);
-        console.log(this.articleGroupDataChanged , this.articleGroupDataChanged);
-
       });
   }
   notAllowedCommaAndSemiColon(event: any) {

@@ -70,7 +70,7 @@
 
 .custom-card{
 	padding: 20px !important;
-	height: 240px !important;
+	height: 220px !important;
 
 	&.common-prod{
 		height: 220px !important;
@@ -79,7 +79,7 @@
 	.card-body{
 		padding: 0 !important;
 		display: flex;
-		align-items: center;
+		// align-items: center;
 		height: 100%;
 
 		&.custom-flex{
@@ -125,9 +125,10 @@
 				overflow: hidden;
 				text-overflow: ellipsis;
 				display: -webkit-box;
-				-webkit-line-clamp: 2;
+				-webkit-line-clamp: 3;
 				-webkit-box-orient: vertical;
-				margin: 10px 0 !important;
+				// margin: 10px 0 !important;
+				margin-bottom: 10px !important;
 				text-transform: uppercase;
 			}
 

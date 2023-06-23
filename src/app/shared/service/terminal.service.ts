@@ -16,11 +16,12 @@ export class TerminalService {
     return this.apiService.getNew('cashregistry', `/api/v1/pin-terminal/get-terminals?iBusinessId=${this.iBusinessId}`).pipe(retry(1));
   }
 
-  startTerminalPayment(amount: number): Observable<any> {
+  startTerminalPayment(amount: number, sProvider?:string): Observable<any> {
     const oBody = {
       amount,
       iBusinessId: this.iBusinessId, 
-      iWorkstationId: this.iWorkstationId 
+      iWorkstationId: this.iWorkstationId,
+      sProvider
     }
     return this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/start-payment`, oBody).pipe(retry(1));
   }

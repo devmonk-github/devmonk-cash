@@ -38,6 +38,7 @@ import { faLongArrowAltDown, faLongArrowAltUp } from '@fortawesome/free-solid-sv
 export class CustomersComponent implements OnInit {
 
   customer: any = null;
+  separator:string = ',';
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
   updated_customer: any = null;
@@ -77,7 +78,8 @@ export class CustomersComponent implements OnInit {
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
       'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
     oFilterBy: {
-      aSearchField: []
+      aSearchField: [],
+      aSelectedGroups: []
     },
     customerType: 'all'
   };
@@ -93,6 +95,7 @@ export class CustomersComponent implements OnInit {
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'INSERT', value: 'sPrefix' },
     { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'PHONE', value: 'sMobile' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
@@ -109,6 +112,7 @@ export class CustomersComponent implements OnInit {
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
   PrefixString:any = "INSERT";
+  PhoneString:any ="PHONE";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
   StreetString :any = "STREET";
@@ -125,6 +129,7 @@ export class CustomersComponent implements OnInit {
     { key: 'INVOICE_ADDRESS', selected: false, sort: '' },
     {key:'ACTION' , disabled:true }
   ]
+  customerGroupList :any=[];
  
   constructor(
     private apiService: ApiService,
@@ -149,6 +154,8 @@ export class CustomersComponent implements OnInit {
      });
     })
     this.getCustomers();
+    this.getBusinessSettings();
+    this.getCustomerGroups();
   }
 
   getSettings() {
@@ -163,6 +170,40 @@ export class CustomersComponent implements OnInit {
       console.log(error);
     })
   }
+
+  getCustomerGroups(){
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.data?.length) {
+        this.customerGroupList = res?.data[0]?.result;
+      }
+    }, (error) => {})
+  }
+
+  // Function for reset selected filters
+  resetFilters() {
+    this.aPlaceHolder = ["SEARCH"];
+    this.requestParams.searchValue = '';
+    this.requestParams = {
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '_id',
+      sortOrder: -1,
+      searchValue: '',
+      aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+        'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+        'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
+        'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
+      oFilterBy: {
+        aSearchField: [],
+        aSelectedGroups: []
+      },
+      customerType: 'all'
+    };
+    this.getCustomers();
+    this.getSettings();
+  }
+
   removeItemAll(arr: any, value: any) {
     var i = 0;
     while (i < arr.length) {
@@ -210,9 +251,10 @@ export class CustomersComponent implements OnInit {
       let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
       let prIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPrefix");
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
+      let mIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sMobile");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
-
+      
       if (pIndex == -1) {
         this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.PCodeString));
         this.removeItemAll(this.aInputHint, "0000AB");
@@ -256,6 +298,13 @@ export class CustomersComponent implements OnInit {
       } else {
         this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
         this.aInputHint[lIndex] = "Doe";
+      }
+      if (mIndex == -1) {
+        this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.PhoneString));
+        this.removeItemAll(this.aInputHint, "1234567890");
+      } else {
+        this.aPlaceHolder[mIndex] = this.translateService.instant(this.PhoneString);
+        this.aInputHint[mIndex] = "1234567890";
       }
       if (cIndex == -1) {
         this.aPlaceHolder = this.removeItemAll(this.aPlaceHolder, this.translateService.instant(this.CNameString));
@@ -433,13 +482,38 @@ export class CustomersComponent implements OnInit {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
   }
 
+  async getBusinessSettings() {
+    const result: any = await this.apiService.getNew('core', `/api/v1/business/setting/${this.requestParams.iBusinessId}`).toPromise();
+    if (result && result?.data?.eExportCSVOption) {
+      if(result.data.eExportCSVOption == "comma-and-dot-as-price-decimal")this.separator = ',';
+      else this.separator = ';';
+    }
+  }
+ 
   export() {
     const headerList = [
-      { key: "sSalutation", value: 'Salutation' }, { key: "sFirstName", value: 'First name' }, { key: "sPrefix", value: 'Prefix' }, { key: "sLastName", value: 'Last name' }, { key: "dDateOfBirth", value: 'Date of birth' }, { key: "nClientId", value: 'Client id' }, { key: "sGender", value: 'Gender' }, { key: "bIsEmailVerified", value: 'Email verified' }, { key: "bCounter", value: 'Counter' }, { key: "sEmail", value: 'Email' }, { key: "oPhone.sLandLine", value: 'Landline' },
-      { key: 'oPhone.sMobile', value: 'Mobile' }, { key: 'oShippingAddress.sStreet', value: 'street' }, { key: 'oShippingAddress.sHouseNumber', value: 'House Number' }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code' }, { key: 'oShippingAddress.sCountryCode', value: 'country code' }, { key: "sComment", value: 'Comment' }, { key: "bNewsletter", value: 'Newsletter' }, { key: "sCompanyName", value: 'Company name' }, { key: "oPoints", value: 'Points' }, { key: "oIdentity", value: 'Identity' }, { key: "sVatNumber", value: 'Vat number' },
-      { key: "sCocNumber", value: 'Coc number' }, { key: "nPaymentTermDays", value: 'Payment term days' }, { key: "nDiscount", value: 'Discount' }, { key: "bWhatsApp", value: 'Whatsapp' }, { key: "nMatchingCode", value: 'Matching code' }, { key: "sNote", value: 'Note' }, { key: "bIsMigrated", value: 'Migrated customer' }
+      { name: 'SALUTATION', key: "sSalutation", value: 'Salutation', isSelected: true , width:'10%' },
+      { name: 'FIRST_NAME', key: "sFirstName", value: 'First name', isSelected: true , width:'10%' },
+      { name: 'INSERT', key: "sPrefix", value: 'Prefix', isSelected: true , width:'10%' },
+      { name: 'LAST_NAME', key: "sLastName", value: 'Last name', isSelected: true , width:'10%' },
+      { name: 'DATE_OF_BIRTH', key: "dDateOfBirth", value: 'Date of birth', isSelected: true , width:'10%' },
+      { name: 'GENDER', key: "sGender", value: 'Gender', isSelected: true , width:'10%' },
+      { name: 'EMAIL', key: "sEmail", value: 'Email', isSelected: true , width:'10%' },
+      { name: 'PHONE_LANDLINE', key: "oPhone.sLandLine", value: 'Landline', isSelected: true , width:'10%' },
+      { name: 'PHONE_MOBILE', key: 'oPhone.sMobile', value: 'Mobile', isSelected: true , width:'10%' },
+      { name: 'SHIPPING_ADDRESS', key: 'oShippingAddress', value: 'ShippingAddress', isSelected: true , width:'10%' },
+      { name: 'INVOICE_ADDRESS', key: 'oInvoiceAddress', value: 'InvoiceAddress', isSelected: true , width:'10%' },
+      { name: 'COMPANY_NAME', key: "sCompanyName", value: 'Company name', isSelected: true , width:'10%' },
+      { name: 'VAT_NUMBER', key: "sVatNumber", value: 'Vat number', isSelected: true , width:'10%' },
+      { name: 'COC_NUMBER', key: "sCocNumber", value: 'Coc number', isSelected: true , width:'10%' },
+      { name: 'PAYMENT_TERM_IN_DAYS', key: "nPaymentTermDays", value: 'Payment term days', isSelected: true , width:'10%' },
+      { name: 'MATCHING_CODE', key: "nMatchingCode", value: 'Matching code', isSelected: true , width:'10%' },
+      { name: 'NCLIENTID', key: "nClientId", value: 'Client id', isSelected: true , width:'10%' },
+      { name: 'NOTES', key: "sNote", value: 'Note', isSelected: true , width:'10%' },
+      { name: 'POINTS', key: "oPoints", value: 'Points', isSelected: true , width:'10%' },
+      { name: 'RECEIVE_NEWSLETTER', key: "bNewsletter", value: 'Newsletter', isSelected: true , width:'10%' }
     ];
-    this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: '' } }).instance.close.subscribe(result => {})
+    this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: this.separator } }).instance.close.subscribe(result => {})
   }
 
   openCustomer(customer: any) {

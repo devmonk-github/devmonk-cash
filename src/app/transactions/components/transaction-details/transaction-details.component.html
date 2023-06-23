@@ -22,7 +22,7 @@
     <div class="card-header mt-5">
         <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
         <button type="button" class="btn btn-sm btn-secondary h-50"
-            (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer}})">
+            (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer},sInvoiceNumber:transaction.sInvoiceNumber})">
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
     </div>
@@ -428,7 +428,7 @@
                                             <ng-container *ngIf="from != 'activity-details' && from != 'audit' && !item?.bMigrate">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
-                                                        <button class="btn btn-primary btn-sm"
+                                                        <button class="btn btn-info btn-sm"
                                                             (click)="showActivityItem(item,$event)">
                                                             <i class="fa fa-eye"></i>
                                                         </button>

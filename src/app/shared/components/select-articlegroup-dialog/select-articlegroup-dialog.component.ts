@@ -3,8 +3,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { ApiService } from '../../service/api.service';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
 import { DialogComponent } from "../../service/dialog";
-import { ToastService } from '../toast';
-import { Subscription } from 'rxjs';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-select-articlegroup-dialog',
@@ -29,8 +28,6 @@ export class SelectArticleDialogComponent implements OnInit {
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
   from: any;
-  settings:any;
-  getSettingsSubscription !: Subscription;
   
   @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
   articleGroupLoading = false;
@@ -38,7 +35,7 @@ export class SelectArticleDialogComponent implements OnInit {
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
-    private toastrService: ToastService,
+    private tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -46,23 +43,14 @@ export class SelectArticleDialogComponent implements OnInit {
 
   ngOnInit() {
     this.selectedLanguage = localStorage.getItem('language') || 'nl';
-    this.getSettings();
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
-  }
-
-  getSettings() {
-    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
-      this.settings = result;
-      if(this.from == 'repair'){
-        this.iArticleGroupId = this.settings?.iDefaultArticleGroupForRepair;
-      }
-      if(this.from == 'order'){
-        this.iArticleGroupId = this.settings?.iDefaultArticleGroupForOrder;
-      }
-    }, (error) => {
-      console.log(error);
-    })
+    if(this.from == 'repair'){
+      this.iArticleGroupId = this.tillService.settings?.iDefaultArticleGroupForRepair;
+    }
+    if(this.from == 'order'){
+      this.iArticleGroupId = this.tillService.settings?.iDefaultArticleGroupForOrder;
+    }
   }
 
   getAllArticleGroupList(data: any) {
@@ -106,7 +94,6 @@ export class SelectArticleDialogComponent implements OnInit {
           const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
           this.articlegroup = result?.data;//[0]?.result[0];
           this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
-
         }
       }
     }
@@ -154,20 +141,15 @@ export class SelectArticleDialogComponent implements OnInit {
     if (this.supplier) {
       this.brand = null;
     }
-    this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe(
-      (result: any) => {
-        if (result?.data?.length && result.data[0]?.result?.length) {
-          this.partnersList = result.data[0].result;
-          this.fetchArticleGroups(null);
-          if (aBusinessPartnerId.length > 0) {
-            this.supplier = this.partnersList[0];
-          }
+    this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe((result: any) => {
+      if (result?.data?.length && result.data[0]?.result?.length) {
+        this.partnersList = result.data[0].result;
+        this.fetchArticleGroups(null);
+        if (aBusinessPartnerId.length > 0) {
+          this.supplier = this.partnersList[0];
         }
-      },
-      (error: any) => {
-        this.partnersList = [];
       }
-    );
+    });
   }
 
   changeInArticleGroup() {

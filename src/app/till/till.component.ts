@@ -146,7 +146,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nItemsTotalQuantity = 0;
   nTotalPayment = 0;
 
-  oStaticData: any;
+  oStaticData: any = {};
 
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
@@ -169,24 +169,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     // event.preventDefault();
     let bFound = false;
-    if(event.key.startsWith("F")) {
-      const oButton = this.quickButtons.find((el:any) => el?.oKeyboardShortcut?.sKey1 == event.key)
-      if (oButton){
-        bFound = true;
-        this.onSelectProduct(oButton, 'quick-button', '', oButton)
-      } 
-    } else {
-      const oKeyboardShortcut = {
-        sKey1: '', 
-        sKey2: event.key
+    if (event?.key?.length) {
+      if (event?.key?.startsWith("F")) {
+        const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == event.key)
+        if (oButton) {
+          bFound = true;
+          this.onSelectProduct(oButton, 'quick-button', '', oButton)
+        }
+      } else {
+        const oKeyboardShortcut = {
+          sKey1: '',
+          sKey2: event.key
+        }
+        if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control';
+        if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt';
+        const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
+        if (oButton) {
+          bFound = true;
+          this.onSelectProduct(oButton, 'quick-button', '', oButton)
+        }
       }
-      if (event.ctrlKey) oKeyboardShortcut.sKey1 = 'Control'; 
-      if (event.altKey) oKeyboardShortcut.sKey1 = 'Alt'; 
-      const oButton = this.quickButtons.find((el: any) => el?.oKeyboardShortcut?.sKey1 == oKeyboardShortcut.sKey1 && el.oKeyboardShortcut?.sKey2 == oKeyboardShortcut.sKey2)
-      if (oButton){
-        bFound = true;
-        this.onSelectProduct(oButton, 'quick-button', '', oButton)
-      } 
     }
     if(bFound) event.preventDefault();
   }
@@ -542,8 +544,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.transactionItems = []
           this.clearAll();
         }
-      }
-      )
+      })
     }
     this.resetSearch();
   }
@@ -555,6 +556,24 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'delete':
         // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
+        if(!this.transactionItems?.length && this.sNumber) {
+          const buttons = [
+            { text: 'YES_CLEAR_CASH_REGISTER', value: true, class: 'btn-primary' },
+            { text: 'NO_KEEP_EXISTING_TRANSACTION', value: false, status: 'success', class: 'btn-secondary ml-auto mr-2' },
+          ]
+          this.dialogService.openModal(ConfirmationDialogComponent, {
+            context: {
+              header: 'CLEAR_EXISTING_TRANSACTION',
+              bodyText: 'NO_ITEMS_LEFT_IN_THE_TRANSACTION_YOU_ARE_MODIFYING_WANT_TO_CLEAR_THE_CASH_REGISTER',
+              buttonDetails: buttons
+            },
+            hasBackdrop: true,
+            closeOnBackdropClick: false,
+            closeOnEsc: false
+          }).instance.close.subscribe(result => {
+            if (result) this.clearAll();
+          })
+        }
         this.clearPaymentAmounts();
         break;
       case 'update':
@@ -781,6 +800,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTransaction = null;
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.appliedGiftCards = [];
+    this.nGiftcardAmount = 0;
     this.redeemedLoyaltyPoints = 0;
     this.iActivityId = '';
     this.sNumber = '';
@@ -795,7 +815,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.transactionItems.forEach((item: any) => {
       if (item.type === 'loyalty-points') return;
-      item.paymentAmount = 0;
+      if (item.paymentAmount > 0) item.paymentAmount = 0;
       if (item.type === 'repair' || item.type === 'order') {
         if (item?.prepaymentTouched) {
           item.manualUpdate = false;
@@ -810,8 +830,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
-    this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    if (this.appliedGiftCards?.length) this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+    if (this.transactionItems?.length) this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.updateAmountVariables();
   }
 
@@ -872,6 +892,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async createTransaction() {
+    this.dispatchEvent('stopIdle');
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) return;
     let giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
@@ -950,8 +971,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             {
               cssClass: 'modal-lg',
               hasBackdrop: true,
-              closeOnBackdropClick: true,
-              closeOnEsc: true
+              closeOnBackdropClick: false,
+              closeOnEsc: false
             }).instance;
 
           if (this.bIsFiscallyEnabled) {
@@ -1065,12 +1086,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       businessDetails: this.businessDetails,
       bRegularCondition: bRegularCondition,
     });
+    this.dispatchEvent('startIdle');
 
     oDialogComponent.close.subscribe((result:any) => { 
       if(result){
         this.loadTransaction()
       } else {
         this.clearAll();
+        if (this.tillService.settings.bLockCashRegisterAfterTransaction)
+          this.dispatchEvent('lockScreen')
       } 
 
     });
@@ -1689,22 +1713,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('discount')
-      .subscribe((res: any) => {
-        if (res.data) {
-          this.discountArticleGroup = res.data;
-        } else {
-          this.createArticleGroup();
-        }
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
-  }
+    this.createArticleGroupService.checkArticleGroups('discount').subscribe((res: any) => {
+      if (res.data) this.discountArticleGroup = res.data;
+    });
 
-  async createArticleGroup() {
-    const articleBody = { name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' };
-    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.discountArticleGroup = result.data;
+    const data = {
+      iBusinessId: this.iBusinessId,
+    };
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result:any) => {
+      if(result?.data?.length && result?.data[0]?.result?.length)
+      this.oStaticData.articleGroupsList = result.data[0].result;
+    });
+    
   }
 
   fetchQuickButtons() {
@@ -1830,66 +1850,51 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openModal(barcode: any) {
+    barcode.toUpperCase();
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-    if (barcode.startsWith("AI")) {
-      let oBody: any = {
-        iBusinessId: this.iBusinessId,
-        oFilterBy: {
-          sNumber: barcode
-        }
-      }
-      const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      if (activityItemResult?.data[0]?.result?.length) {
-        const oActivityItem = activityItemResult?.data[0].result[0];
-        this.openTransaction({ _id: oActivityItem.iActivityId, sNumber: oActivityItem.sNumber }, 'activity', [oActivityItem._id], 'AI');
-      }
-    } else if (barcode.startsWith("T")) {
-      const oBody = {
-        iBusinessId: this.iBusinessId,
-        searchValue: barcode
-      }
-      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.data?.records?.length) {
-        this.openTransaction(result?.data?.records[0], 'activity');
-      }
-      //transactions.find({sNumber: barcode})
-    } else if (barcode.startsWith("A")) {
-
-      const oBody = {
-        iBusinessId: this.iBusinessId,
-        searchValue: barcode
-      }
-      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.data?.records?.length) {
-        this.openTransaction(result?.data?.records[0], 'activity');
-      }
-      //activity.find({sNumber: barcode})
-    } else if (barcode.startsWith("G")) {
-      let oBody: any = {
-        iBusinessId: this.iBusinessId,
-        oFilterBy: {
-          sGiftCardNumber: barcode.substring(2)
-        }
-      }
-      let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      if (result?.data[0]?.result?.length) {
-        const oGiftcard = result?.data[0]?.result[0];
-        this.openCardsModal(oGiftcard)
-      }
-      // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
-    } else if (barcode.startsWith("R")) {
-      // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-    } else{
-      //this.toastrService.show({ type: 'success', text: 'Article number: ' + barcode });
+    
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      searchValue: barcode
+    }
+    /**THIS IS TO ADD ARTICLES AUTOMATICALLY IN THE CASH REGISTER */
+    if(!barcode.startsWith("AI") && !barcode.startsWith("T") && !barcode.startsWith("A") && !barcode.startsWith("G")){
+      if(this.eKind != 'regular' && this.eKind != 'order') this.eKind = 'regular';
       this.bFromBarcode = true;
-      this.listShopProducts(barcode, false); 
-    } // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
-
+      this.listShopProducts(barcode, false);
+       // if (/^-?\d+$/.test(barcode) && barcode.length <= 11)
+    }else{
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.data?.records?.length) {
+        if (barcode.startsWith("AI")) {
+          const oActivity = result?.data?.records[0];
+          const oActivityItem = oActivity.aActivityItemMetaData.find((el: any) => el.sActivityItemNumber == barcode)
+          this.openTransaction(oActivity, 'activity', [oActivityItem.iActivityItemId], 'AI');
+        } else if (barcode.startsWith("T") || barcode.startsWith("A")) {
+          this.openTransaction(result?.data?.records[0], 'activity');
+        } else if (barcode.startsWith("G")) {
+          const oBody: any = {
+            iBusinessId: this.iBusinessId,
+            oFilterBy: {
+              sGiftCardNumber: barcode.substring(2)
+            }
+          }
+          const oItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+          if (oItemResult?.data[0]?.result?.length) {
+            const oGiftcard = oItemResult?.data[0]?.result[0];
+            this.openCardsModal(oGiftcard)
+          }
+        } else if (barcode.startsWith("R")) {
+          // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+        } 
+      }
+    }
   }
 
   openTransaction(transaction: any, itemType: any, aSelectedIds?: any, sBarcodeStartString?:string) {
+    // console.log('openTransaction', { transaction, itemType, aSelectedIds, sBarcodeStartString })
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds, sBarcodeStartString }, hasBackdrop: true })
       .instance.close.subscribe(result => {
         if (result?.transaction) {
@@ -1968,5 +1973,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.redeemedLoyaltyPoints = 0;
     this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
     this.changeInPayment();
+  }
+
+  dispatchEvent(event:string) {
+    window.dispatchEvent(new Event(event))    
   }
 }

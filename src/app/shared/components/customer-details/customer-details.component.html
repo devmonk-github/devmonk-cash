@@ -913,7 +913,7 @@
                             [closeOnSelect]="false">
 
                             <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                {{item$.selected}}
+                                <!-- {{item$.selected}} -->
                                 <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
                                     [ngModel]="item$.selected" />
                                 {{item.sName}}

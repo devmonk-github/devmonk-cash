@@ -34,6 +34,7 @@ export class PaymentDistributionService {
       // if (bTesting) console.log(31, i, i.nTotal);
 
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
+      if(nPrice > 0) i.paymentAmount = 0
       i.nTotal = nPrice * i.quantity;
       let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
       nDiscount = +(nDiscount.toFixed(2));
@@ -47,13 +48,14 @@ export class PaymentDistributionService {
         
         if(i?.new) {
           i.amountToBePaid = -(nPrice * i.quantity - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0));
-          if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid)
+          i.paymentAmount = i.amountToBePaid;
+          if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid, 'paymentAmount', i.paymentAmount)
         } else {
           i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
           this.calculateSavingsPoints(i, nSavingsPointRatio);
         }
         if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
-        availableAmount += -i.amountToBePaid;
+        // availableAmount += -i.amountToBePaid;
       } 
       i.nGiftcardDiscount = 0;
       i.nRedeemedLoyaltyPoints = 0;
@@ -62,6 +64,10 @@ export class PaymentDistributionService {
       
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+      if(i.paymentAmount < 0) {
+        if (bTesting) console.log('payment amount is < 0 so addig that to available amount')
+        availableAmount += -i.amountToBePaid;
+      }
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
     
@@ -125,7 +131,7 @@ export class PaymentDistributionService {
         let nAssignedUntillNow = 0;
         aItems.forEach(i => {
           if (bTesting) console.log(107, { tType: i.tType, availableAmount });
-          if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
+          if (i.amountToBePaid > 0 && (!i?.tType || i.tType !== 'refund')) {
             const nCalculatedAmount = i.amountToBePaid * availableAmount / totalAmountToBePaid;
             i.paymentAmount = ((nAssignedUntillNow + nCalculatedAmount) > availableAmount) ? availableAmount - nAssignedUntillNow : nCalculatedAmount;
             i.paymentAmount = +(i.paymentAmount.toFixed(2))

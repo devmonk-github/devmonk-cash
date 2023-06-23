@@ -75,6 +75,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'INSERT', value: 'sPrefix' },
     { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'PHONE', value: 'sMobile' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
@@ -383,7 +384,9 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
       iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder,
-      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair
+      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair,
+      bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
+      bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
