@@ -88,21 +88,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.showLoader = true;
     this.requestParams.searchValue = this.requestParams.searchValue.trim();
     this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
-      
-      /* new approach */
-      // if (result?.data?.records?.length) {
-      //   this.transactions = result.data.records;
-      //   this.totalTransactions = result.data.count;
-      //   this.paginationConfig.totalItems = result.data.count;
-      //   this.activities = result.data.records;
-      //   this.activities.forEach((item: any) =>{
-      //     this.setBagNumber(item);
-      //   });
-      //   this.totalActivities = result.data.count;
-      // }
-
-      // this.transactions = result?.data?.records;
-      // this.totalTransactions = result?.transactions?.count;
       this.paginationConfig.totalItems = result?.data?.count;
       this.activities = result?.data?.records;
       this.activities.forEach((item: any) =>{

@@ -203,6 +203,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   };
   
   bTransactionsLoader: boolean = false;
+  bTransactionItemLoader: boolean = false;
   bActivitiesLoader: boolean = false;
   bActivityItemsLoader: boolean = false;
 
@@ -213,6 +214,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     { key: 'Receipt number', selected: false, sort: '' },
     { key: 'Method', disabled: true },
     { key: 'Total', disabled: true },
+  ];
+  aTransactionItems !: Array<any>;
+  aTransctionItemTableHeaders: Array<any> = [
+    { key: 'Date', disabled: true },
+    { key: 'Product no.', disabled: true},
+    { key: 'Description', disabled: true },
+    { key: 'Selling price', disabled: true }
   ];
 
   aActivities!: Array<any>;
@@ -239,6 +247,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   tabTitles: any = [
     'Purchases',
+    'Transaction Items',
     'Activities',
     'Items per visit',
     'Statistics',
@@ -327,6 +336,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
     //if (this.from === 'customer') {
     this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    this.aTransctionItemTableHeaders.push({ key: 'Action', disabled: true });
     //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
@@ -609,6 +619,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
+    if(tab == 'Transaction Items'){
+      this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
+      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.loadTransactionItems()
+    }
     if(tab == 'activities'){
       this.activitiesPaginationConfig.itemsPerPage = parseInt(pageCount);
       this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (this.activitiesPaginationConfig.currentPage - 1);
@@ -631,6 +647,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
+    }
+    if(tab == 'Transaction Items'){
+      this.purchasePaginationConfig.currentPage = parseInt(page);
+      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
+      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.loadTransactionItems()
     }
     if(tab == 'activities'){
       this.activitiesPaginationConfig.currentPage = parseInt(page);
@@ -835,7 +857,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.sortAndLoadTransactions(sortHeader)
     }
   }
-
   sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
     if (sortHeader.key == 'Date') sortBy = 'dCreatedDate';
@@ -846,6 +867,37 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.requestParams.sortOrder = sortHeader.sort;
     this.loadTransactions();
   }
+
+  //  Function for set sort option on transaction item table
+  setTransactionItemSortOption(sortHeader: any) {
+    if (sortHeader.selected) {
+      sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
+      this.sortAndLoadTransactionItems(sortHeader)
+    } else {
+      this.aTransctionItemTableHeaders = this.aTransctionItemTableHeaders.map((th: any) => {
+        if (sortHeader.key == th.key) {
+          th.selected = true;
+          th.sort = 'asc';
+        } else {
+          th.selected = false;
+        }
+        return th;
+      })
+      this.sortAndLoadTransactionItems(sortHeader)
+    }
+  }
+ 
+  sortAndLoadTransactionItems(sortHeader: any) {
+    let sortBy = 'dCreatedDate';
+    if (sortHeader.key == 'Product no.') sortBy = 'sProductName';
+    if (sortHeader.key == 'Description') sortBy = 'sDescription';
+    if (sortHeader.key == 'Selling price') sortBy = 'nPaymentAmount';
+    this.requestParams.sortBy = sortBy;
+    this.requestParams.sortOrder = sortHeader.sort;
+    this.loadTransactionItems();
+  }
+
+  
 
   getTypes(arr: any) {
     let str = '';
@@ -963,6 +1015,28 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }, (error) => {
   });
   }
+  loadTransactionItems() {
+    if (this.customer.bCounter) return;
+    this.bTransactionItemLoader = true;
+    let data = {
+      iCustomerId: this.customer._id,
+      iTransactionId: 'all',
+      skip: this.purchaseRequestParams.skip,
+      limit: this.purchaseRequestParams.limit,
+      sFrom: 'customer',
+      oFilterBy: {},
+      iBusinessId: this.requestParams.iBusinessId
+    };
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
+      if (result?.data) {
+        this.aTransactionItems = result.data[0].result || [];
+        this.purchasePaginationConfig.totalItems = this.aTransactionItems.length;
+      }
+      this.bTransactionItemLoader = false;
+    }, (error) => {
+      this.bTransactionItemLoader = false;
+    })
+  }
   listEmployee() {
     this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.requestParams.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.length && result.data[0].result?.length) {
@@ -1006,18 +1080,22 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   activeTabsChanged(tab: any) {
+    console.log("activeTabsChanged", tab);
 
     switch (tab) {
       case this.tabTitles[0]:
         if (!this.aTransactions) this.loadTransactions();
         break;
       case this.tabTitles[1]:
-        if (!this.aActivities) this.loadActivities();
+        if (!this.aTransactionItems) this.loadTransactionItems();
         break;
       case this.tabTitles[2]:
-        if (!this.aActivityItems) this.loadActivityItems();
+        if (!this.aActivities) this.loadActivities();
         break;
       case this.tabTitles[3]:
+        if (!this.aActivityItems) this.loadActivityItems();
+        break;
+      case this.tabTitles[4]:
         this.getCoreStatistics();
         this.loadStatisticsTabData();
         break;
@@ -1105,6 +1183,26 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
    
       }
     };
+  }
+
+  async showActivityItem(activityItem: any, event: any) {
+    const oBody = {
+      iBusinessId: this.requestParams.iBusinessId,
+    }
+    activityItem.bFetchingActivityItem = true;
+    event.target.disabled = true;
+    const aActivityItem: any = [];
+    if (this.aActivityItems?.length) {
+      const items = this.aActivityItems.filter((AI: any) => AI._id == activityItem.iActivityItemId);
+      aActivityItem.push(items[0]);
+    } else {
+      const items: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+      aActivityItem.push(items?.data[0].result[0])
+    }
+    activityItem.bFetchingActivityItem = false;
+    event.target.disabled = false;
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, items: true, from: 'transaction-details' } })
+      .instance.close.subscribe((result: any) => { });
   }
 
   // Function for show transaction details

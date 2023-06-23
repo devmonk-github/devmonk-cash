@@ -50,6 +50,7 @@ export class ExportsComponent implements OnInit {
   ]
 
   dialogRef: DialogComponent;
+  customerGroupList: any = [];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -67,6 +68,15 @@ export class ExportsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem('currentBusiness');
     // this.fetchSecondHeaderList();
+    this.getCustomerGroups();
+  }
+  
+  getCustomerGroups(){
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.data?.length) {
+        this.customerGroupList = res?.data[0]?.result;
+      }
+    }, (error) => {})
   }
 
   fetchSecondHeaderList() {
