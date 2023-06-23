@@ -41,11 +41,11 @@
                     </label>
                 </div>
                 <div class="col-4">
-                    <div class="col-3 customers-fields">
+                    <div class="col-12 customers-fields">
                         <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_TYPE' | translate}}
                         </label>
                     </div>
-                    <div class="col-9 customers-fields">
+                    <div class="col-11 customers-fields">
                         <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.customerType"
                             [clearable]="false">
                             <ng-option *ngFor="let customerType of customerTypes"
@@ -55,15 +55,24 @@
                         </ng-select>
                     </div>
                 </div>
+                <div class="col-4">
+                    <div class="col-11 customers-fields">
+                        <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
+                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false" [(ngModel)]="requestParams.oFilterBy.aSelectedGroups">
+                            <ng-option *ngFor="let group of customerGroupList" [value]="group._id">{{group.sName}}</ng-option>
+                        </ng-select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
         <button class="cancel btn btn-primary" style="margin-right: 10px;" (click)="getExportData()">{{"EXPORT_TO_CSV" |
             translate}}</button>
-            <button class="cancel btn btn-secondary" (click)="getExportPDF()">{{"EXPORT_TO_PDF" |
-                translate}}</button>
-                <div *ngIf="isPdfLoading" class="spinner-border mx-4"></div>
+            <button class="cancel btn btn-secondary" (click)="getExportPDF()">
+                <p class="m-0" *ngIf="!isPdfLoading">{{"EXPORT_TO_PDF" | translate}}</p>
+                <div *ngIf="isPdfLoading" class="spinner-border fs-5"></div>
+            </button>
         <!--TODO: EXPORT AS PDF-->
         <!-- <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button> -->
     </div>

@@ -43,6 +43,9 @@ export class TerminalDialogComponent implements OnInit {
   iWorkstationId = localStorage.getItem('currentWorkstation');
   iBusinessId = localStorage.getItem('currentBusiness');
   bEnable : boolean = false;
+  bFetchingPaymentIntegrations: boolean = false;
+  aProviders: any;
+  sSelectedProvider:string;
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -91,23 +94,26 @@ export class TerminalDialogComponent implements OnInit {
         "oWebshop.bUseForWebshop" : false
       }
     }
+    this.bFetchingPaymentIntegrations = true;
     this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).subscribe((result: any) => {
-      if (result.data?.length > 0){
-        let settings = result.data[0];
-       //console.log(settings)
-        if(settings.aPaymentIntegration?.length){
-          settings.aPaymentIntegration?.forEach(((paymentIntegration: any) => {
-            if(paymentIntegration.iWorkstationId == this.iWorkstationId){
-              this.bEnable = true;
-            }else{
-              this.bEnable = false;
-            }
-          }))
-        }
-        
+      this.bFetchingPaymentIntegrations = false;
+      if (result?.data?.length){
+        this.aProviders = result.data;
+        this.sSelectedProvider = this.aProviders[0].eName;
+        this.checkPaymentIntegration();
       }
     })
   }
+  
+  checkPaymentIntegration() {
+    const oProvider = this.aProviders.find((el:any) => el.eName == this.sSelectedProvider)
+    if(oProvider.aPaymentIntegration?.length){
+      this.bEnable = oProvider.aPaymentIntegration?.some((paymentIntegration: any) => paymentIntegration.iWorkstationId == this.iWorkstationId)
+    } else {
+      this.bEnable = false;
+    }
+  }
+
   startProgressBar() {
     this.restartPaymentTimer = 45;
     this.progressValue = 0;
@@ -134,7 +140,7 @@ export class TerminalDialogComponent implements OnInit {
     this.progressClass = '';
     this.startProgressBar();
     this.statusMessage = 'PAYMENT_WAITING_ON_CUSTOMER';
-    this.terminalService.startTerminalPayment(this.amount)
+    this.terminalService.startTerminalPayment(this.amount, this.sSelectedProvider)
       .subscribe((res) => {
         paymentInfo.paymentReference = res.paymentReference;
         if(this.amount == 0.02)
