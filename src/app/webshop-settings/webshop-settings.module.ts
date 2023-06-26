@@ -10,6 +10,8 @@ import { ExtraServiceComponent } from './component/extra-service/extra-service.c
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CouponServiceComponent } from './component/coupon-service/coupon-service.component';
 import { AddEditCouponComponent } from './component/add-edit-coupon/add-edit-coupon.component';
+import { DropshippingServiceComponent } from './component/dropshipping/dropshipping-service.component';
+import { AddEditDropshipperComponent } from './component/add-edit-dropshipper/add-edit-dropshipper.component';
 
 
 
@@ -18,7 +20,9 @@ import { AddEditCouponComponent } from './component/add-edit-coupon/add-edit-cou
     WebshopSettingsComponent,
     ExtraServiceComponent,
     CouponServiceComponent,
-    AddEditCouponComponent
+    AddEditCouponComponent,
+    DropshippingServiceComponent,
+    AddEditDropshipperComponent
   ],
   imports: [
     CommonModule,
