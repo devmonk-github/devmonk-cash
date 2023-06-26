@@ -74,6 +74,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
         this.reset();
         if (Object.values(data).length) {
           DrawerComponent.reinitialization();
+          const iBusinessProductId = data?.isFrom == 'transaction' && data?.iBusinessProductId ? data?.iBusinessProductId : data?._id; 
           if (!data?.oCurrentLocation) data.oCurrentLocation = {};
           this.productData = data;
           await this.getSupplierDetails(data?.iBusinessPartnerId);
@@ -85,7 +86,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
           for (const oTab of this.tabs) {
             if (oTab?.name == 'Comparable' || oTab?.name == 'Most sold' || oTab?.name == '/ purchased') oTab.isDisable = this.bIsSlideTurnOff;
           }
-          await this.getProductData(data?.iBusinessProductId.toString())
+          await this.getProductData(iBusinessProductId?.toString())
 
         }
       },
