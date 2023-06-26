@@ -279,397 +279,401 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
-                            (activeTabChanged)="activeTabsChanged($event)">
-                            <div class="tab-gap"></div>
-                            <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
-                                <table class="table table-hover table-rounded table-striped border gs-7">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <ng-container *ngFor="let th of aTransctionTableHeaders">
-                                                <th scope="col"
+                        <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                            <li class="nav-item cursor-pointer" *ngFor="let tab of tabs">
+                                <button  class="nav-link" [ngClass]="{active:tab.index === currentTab}" style="margin-left: 70px;"
+                                    (click)="onTabChange(tab.index)"><strong>{{tab.name | translate}}</strong></button>
+                                    <div class="tab-gap"></div>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <container-element [ngSwitch]="currentTab">
+                                <div *ngSwitchCase="0" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    <table class="table table-hover table-rounded table-striped border gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <ng-container *ngFor="let th of aTransctionTableHeaders">
+                                                    <th scope="col"
+                                                        [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                        (click)="setSortOption(th)">
+                                                        {{ th.key | translate}}
+                                                    </th>
+                                                    
+                                                </ng-container>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let transaction of aTransactions | paginate: purchasePaginationConfig, let i = index;"
+                                                data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <td>{{transaction.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td>{{transaction.sNumber}}</td>
+                                                <td>{{transaction.sReceiptNumber}}</td>
+                                                <td>{{transaction.eType}}</td>
+                                                <td>{{(transaction.sTotal | currency: tillService.currency) || 0}}</td>
+                                                <ng-container> <!--*ngIf="from === 'customer'"-->
+                                                    <td>
+                                                        <button class="btn btn-secondary"
+                                                            (click)="showTransaction(transaction)">
+                                                            {{ 'VIEW' | translate }}
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                            <tr *ngIf="bTransactionsLoader">
+                                                <td colspan="5" class="text-center">
+                                                    <div class="spinner-border mx-auto"></div>
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="!bTransactionsLoader && !aTransactions?.length">
+                                                <td colspan="5" class="text-center">
+                                                    {{ "NO_DATA_FOUND" | translate}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="dataTables_length" id="kt_purchases_table_length">
+                                                <label>
+                                                    <select name="kt_purchases_table_length"
+                                                        aria-controls="kt_purchases_table"
+                                                        class="form-select form-select-sm form-select-solid"
+                                                        [(ngModel)]="purchaseRequestParams.limit"
+                                                        (change)="changeItemsPerPage(purchaseRequestParams.limit , 'purchases')">
+                                                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                            pageNum }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+    
+                                            <pagination-controls id="purchases_paginate"
+                                                (pageChange)="pageChanged($event ,'purchases')"
+                                                (pageBoundsCorrection)="pageChanged($event , 'purchases')"
+                                                [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
+                                                [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
+                                                [screenReaderPageLabel]="'PAGE' | translate">
+                                            </pagination-controls>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngSwitchCase="1" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    <table class="table table-hover table-rounded table-striped border gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <ng-container *ngFor="let th of aTransctionItemTableHeaders">
+                                                    <th scope="col"
+                                                        [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                        (click)="setTransactionItemSortOption(th)">
+                                                        {{ th.key | translate }}
+                                                    </th>
+                                
+                                                </ng-container>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let transactionitem of aTransactionItems | paginate: transactionItemPaginationConfig, let i = index;"
+                                                data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <td>{{transactionitem.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td>
+                                                    <p class="m-0">
+                                                        {{transactionitem.sProductNumber || '-'}}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="m-0" >
+                                                        {{ transactionitem.sProductName || '-'}} <span *ngIf="transactionitem.sArticleGroupName">- {{ transactionitem.sArticleGroupName}} </span><br>
+                                                        <span *ngIf="transactionitem.sArticleNumber">({{transactionitem.sArticleNumber}})</span>
+                                                    </p>
+                                                </td>
+                                                <td>{{(transactionitem.nPriceIncVat | currency: tillService.currency) || 0}}</td>
+                                                <ng-container> <!--*ngIf="from === 'customer'"-->
+                                                    <td><button class="btn btn-secondary" (click)="showActivityItem(transactionitem,$event)">
+                                                            {{ 'VIEW' | translate }}
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                            <tr *ngIf="bTransactionItemLoader">
+                                                <td colspan="5" class="text-center">
+                                                    <div class="spinner-border mx-auto"></div>
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="!bTransactionItemLoader && !aTransactionItems?.length">
+                                                <td colspan="5" class="text-center">
+                                                    {{ "NO_DATA_FOUND" | translate}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="dataTables_length" id="kt_purchases_table_length">
+                                                <label>
+                                                    <select name="kt_purchases_table_length" aria-controls="kt_purchases_table"
+                                                        class="form-select form-select-sm form-select-solid" [(ngModel)]="transactionItemRequestParams.limit"
+                                                        (change)="changeItemsPerPage(transactionItemRequestParams.limit , 'TransactionItems')">
+                                                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                            pageNum }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+                                
+                                            <pagination-controls id="transaction_item_paginate" (pageChange)="pageChanged($event ,'TransactionItems')"
+                                                (pageBoundsCorrection)="pageChanged($event , 'TransactionItems')" [maxSize]="setPaginateSize"
+                                                [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                                                screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                            </pagination-controls>
+                                
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngSwitchCase="2" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    <table class="table table-hover table-rounded table-striped border gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <th scope="col" *ngFor="let th of aActivityTableHeaders"
                                                     [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                     (click)="setSortOption(th)">
                                                     {{ th.key | translate}}
                                                 </th>
-                                                
-                                            </ng-container>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let transaction of aTransactions | paginate: purchasePaginationConfig, let i = index;"
-                                            data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <td>{{transaction.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td>{{transaction.sNumber}}</td>
-                                            <td>{{transaction.sReceiptNumber}}</td>
-                                            <td>{{transaction.eType}}</td>
-                                            <td>{{(transaction.sTotal | currency: tillService.currency) || 0}}</td>
-                                            <ng-container> <!--*ngIf="from === 'customer'"-->
-                                                <td>
-                                                    <button class="btn btn-secondary"
-                                                        (click)="showTransaction(transaction)">
-                                                        {{ 'VIEW' | translate }}
-                                                    </button>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                *ngFor="let activity of aActivities | paginate: activitiesPaginationConfig , let i = index;">
+                                                <td>{{activity?.sNumber}}</td>
+                                                <td>{{activity?.sBagNumber || '-'}}</td>
+                                                <td>{{getTypes(activity.activityitems)}}</td>
+                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td>{{activity?.eActivityItemStatus || '-'}}</td>
+                                                <td>{{activity?.sBusinessPartnerName || '-'}}</td>
+                                                <ng-container>  <!--*ngIf="from === 'customer'"-->
+                                                    <td>
+                                                        <button class="btn btn-secondary"
+                                                        (click)="openActivities(activity)" >
+                                                            {{ 'VIEW' | translate }}
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                            <tr *ngIf="bActivitiesLoader">
+                                                <td colspan="7" class="text-center">
+                                                    <div class="spinner-border mx-auto"></div>
                                                 </td>
-                                            </ng-container>
-                                        </tr>
-                                        <tr *ngIf="bTransactionsLoader">
-                                            <td colspan="5" class="text-center">
-                                                <div class="spinner-border mx-auto"></div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!bTransactionsLoader && !aTransactions?.length">
-                                            <td colspan="5" class="text-center">
-                                                {{ "NO_DATA_FOUND" | translate}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div
-                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
-                                        <div class="dataTables_length" id="kt_purchases_table_length">
-                                            <label>
-                                                <select name="kt_purchases_table_length"
-                                                    aria-controls="kt_purchases_table"
-                                                    class="form-select form-select-sm form-select-solid"
-                                                    [(ngModel)]="purchaseRequestParams.limit"
-                                                    (change)="changeItemsPerPage(purchaseRequestParams.limit , 'purchases')">
-                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
-                                                        pageNum }}
-                                                    </option>
-                                                </select>
-                                            </label>
+                                            </tr>
+                                            <tr *ngIf="!bActivitiesLoader && !aActivities?.length">
+                                                <td colspan="7" class="text-center">
+                                                    {{ "NO_DATA_FOUND" | translate}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+    
+                                    <div class="row">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="dataTables_length" id="kt_activities_table_length">
+                                                <label>
+                                                    <select name="kt_activities_table_length"
+                                                        aria-controls="kt_activities_table"
+                                                        class="form-select form-select-sm form-select-solid"
+                                                        [(ngModel)]="activitiesRequestParams.limit"
+                                                        (change)="changeItemsPerPage(activitiesRequestParams.limit , 'activities')">
+                                                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                            pageNum }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+                                            <pagination-controls id="activities_paginate"
+                                                (pageChange)="pageChanged($event , 'activities')"
+                                                (pageBoundsCorrection)="pageChanged($event , 'activities')"
+                                                [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
+                                                [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
+                                                [screenReaderPageLabel]="'PAGE' | translate">
+                                            </pagination-controls>
+    
                                         </div>
                                     </div>
-                                    <div
-                                        class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-
-                                        <pagination-controls id="purchases_paginate"
-                                            (pageChange)="pageChanged($event ,'purchases')"
-                                            (pageBoundsCorrection)="pageChanged($event , 'purchases')"
-                                            [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
-                                            [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
-                                            [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls>
-                                        <!-- <pagination-controls (pageChange)="pageChanged($event)"
-                                            (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
-                                            [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
-                                            screenReaderPaginationLabel="Pagination"
-                                            [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls> -->
-                                    </div>
                                 </div>
-                            </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #TransactionItems>
-                                <table class="table table-hover table-rounded table-striped border gs-7">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <ng-container *ngFor="let th of aTransctionItemTableHeaders">
-                                                <th scope="col"
+                                <div *ngSwitchCase="3" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    <table class="table table-hover table-rounded table-striped border gs-7">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                <th scope="col" *ngFor="let th of aActivityItemsTableHeaders"
                                                     [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                                    (click)="setTransactionItemSortOption(th)">
-                                                    {{ th.key | translate }}
+                                                    (click)="setSortOption(th)">
+                                                    {{ th.key | translate}}
                                                 </th>
-                            
-                                            </ng-container>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let transactionitem of aTransactionItems | paginate: transactionItemPaginationConfig, let i = index;"
-                                            data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <td>{{transactionitem.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td>
-                                                <p class="m-0">
-                                                    {{transactionitem.sProductNumber || '-'}}
-                                                </p>
-                                            </td>
-                                            <td>
-                                                <p class="m-0" >
-                                                    {{ transactionitem.sProductName || '-'}} <span *ngIf="transactionitem.sArticleGroupName">- {{ transactionitem.sArticleGroupName}} </span><br>
-                                                    <span *ngIf="transactionitem.sArticleNumber">({{transactionitem.sArticleNumber}})</span>
-                                                </p>
-                                            </td>
-                                            <td>{{(transactionitem.nPriceIncVat | currency: tillService.currency) || 0}}</td>
-                                            <ng-container> <!--*ngIf="from === 'customer'"-->
-                                                <td><button class="btn btn-secondary" (click)="showActivityItem(transactionitem,$event)">
-                                                        {{ 'VIEW' | translate }}
-                                                    </button>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                *ngFor="let activity of aActivityItems | paginate: itemsPaginationConfig , let i = index;">
+                                                <td>{{activity?.sNumber}}</td>
+                                                <td>{{activity?.sBagNumber || '-'}}</td>
+                                                <td>{{activity?.oType?.eTransactionType}}</td>
+                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                                <td>{{activity?.eActivityItemStatus || '-'}}</td>
+                                                <td>{{activity?.sBusinessPartnerName || '-'}}</td>
+                                                <ng-container>  <!--*ngIf="from === 'customer'"-->
+                                                    <td>
+                                                        <button class="btn btn-secondary"
+                                                        (click)="openActivityItems(activity)" >
+                                                            {{ 'VIEW' | translate }}
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                            <tr *ngIf="bActivityItemsLoader">
+                                                <td colspan="7" class="text-center">
+                                                    <div class="spinner-border mx-auto"></div>
                                                 </td>
-                                            </ng-container>
-                                        </tr>
-                                        <tr *ngIf="bTransactionItemLoader">
-                                            <td colspan="5" class="text-center">
-                                                <div class="spinner-border mx-auto"></div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!bTransactionItemLoader && !aTransactionItems?.length">
-                                            <td colspan="5" class="text-center">
-                                                {{ "NO_DATA_FOUND" | translate}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
-                                        <div class="dataTables_length" id="kt_purchases_table_length">
-                                            <label>
-                                                <select name="kt_purchases_table_length" aria-controls="kt_purchases_table"
-                                                    class="form-select form-select-sm form-select-solid" [(ngModel)]="transactionItemRequestParams.limit"
-                                                    (change)="changeItemsPerPage(transactionItemRequestParams.limit , 'TransactionItems')">
-                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
-                                                        pageNum }}
-                                                    </option>
-                                                </select>
-                                            </label>
+                                            </tr>
+                                            <tr *ngIf="!bActivityItemsLoader && !aActivityItems?.length">
+                                                <td colspan="7" class="text-center">
+                                                    {{ "NO_DATA_FOUND" | translate}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                                                <label>
+                                                    <select name="kt_ecommerce_sales_table_length"
+                                                        aria-controls="kt_ecommerce_sales_table"
+                                                        class="form-select form-select-sm form-select-solid"
+                                                        [(ngModel)]="itemsRequestParams.limit"
+                                                        (change)="changeItemsPerPage(itemsRequestParams.limit , 'activityItems')">
+                                                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                            pageNum }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+    
+                                            <pagination-controls id="items_paginate"
+                                                (pageChange)="pageChanged($event , 'activityItems')"
+                                                (pageBoundsCorrection)="pageChanged($event , 'activityItems')"
+                                                [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
+                                                [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
+                                                [screenReaderPageLabel]="'PAGE' | translate">
+                                            </pagination-controls>
+    
                                         </div>
                                     </div>
-                                    <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-                            
-                                        <pagination-controls id="transaction_item_paginate" (pageChange)="pageChanged($event ,'TransactionItems')"
-                                            (pageBoundsCorrection)="pageChanged($event , 'TransactionItems')" [maxSize]="setPaginateSize"
-                                            [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
-                                            screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls>
-                            
-                                    </div>
                                 </div>
-                            </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activities>
-                                <table class="table table-hover table-rounded table-striped border gs-7">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <th scope="col" *ngFor="let th of aActivityTableHeaders"
-                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                                (click)="setSortOption(th)">
-                                                {{ th.key | translate}}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            *ngFor="let activity of aActivities | paginate: activitiesPaginationConfig , let i = index;">
-                                            <td>{{activity?.sNumber}}</td>
-                                            <td>{{activity?.sBagNumber || '-'}}</td>
-                                            <td>{{getTypes(activity.activityitems)}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td>{{activity?.eActivityItemStatus || '-'}}</td>
-                                            <td>{{activity?.sBusinessPartnerName || '-'}}</td>
-                                            <ng-container>  <!--*ngIf="from === 'customer'"-->
-                                                <td>
-                                                    <button class="btn btn-secondary"
-                                                    (click)="openActivities(activity)" >
-                                                        {{ 'VIEW' | translate }}
-                                                    </button>
-                                                </td>
+                                <div *ngSwitchCase="4" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    <div class="row mb-5">
+                                        <div id="statistics-chart" class="col-12">
+                                            <ng-container
+                                                *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
+                                                <apx-chart [series]="statisticsChartOptions.series"
+                                                    [chart]="statisticsChartOptions.chart"
+                                                    [dataLabels]="statisticsChartOptions.dataLabels"
+                                                    [plotOptions]="statisticsChartOptions.plotOptions"
+                                                    [yaxis]="statisticsChartOptions.yaxis"
+                                                    [xaxis]="statisticsChartOptions.xaxis"
+                                                    [colors]="statisticsChartOptions.colors"
+                                                    [tooltip]="statisticsChartOptions.tooltip">
+                                                </apx-chart>
                                             </ng-container>
-                                        </tr>
-                                        <tr *ngIf="bActivitiesLoader">
-                                            <td colspan="7" class="text-center">
-                                                <div class="spinner-border mx-auto"></div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!bActivitiesLoader && !aActivities?.length">
-                                            <td colspan="7" class="text-center">
-                                                {{ "NO_DATA_FOUND" | translate}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <div class="row">
-                                    <div
-                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
-                                        <div class="dataTables_length" id="kt_activities_table_length">
-                                            <label>
-                                                <select name="kt_activities_table_length"
-                                                    aria-controls="kt_activities_table"
-                                                    class="form-select form-select-sm form-select-solid"
-                                                    [(ngModel)]="activitiesRequestParams.limit"
-                                                    (change)="changeItemsPerPage(activitiesRequestParams.limit , 'activities')">
-                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
-                                                        pageNum }}
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-                                        <pagination-controls id="activities_paginate"
-                                            (pageChange)="pageChanged($event , 'activities')"
-                                            (pageBoundsCorrection)="pageChanged($event , 'activities')"
-                                            [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
-                                            [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
-                                            [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls>
-
-                                    </div>
-                                </div>
-                            </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #activityItems>
-                                <table class="table table-hover table-rounded table-striped border gs-7">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <th scope="col" *ngFor="let th of aActivityItemsTableHeaders"
-                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                                (click)="setSortOption(th)">
-                                                {{ th.key | translate}}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            *ngFor="let activity of aActivityItems | paginate: itemsPaginationConfig , let i = index;">
-                                            <td>{{activity?.sNumber}}</td>
-                                            <td>{{activity?.sBagNumber || '-'}}</td>
-                                            <td>{{activity?.oType?.eTransactionType}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                            <td>{{activity?.eActivityItemStatus || '-'}}</td>
-                                            <td>{{activity?.sBusinessPartnerName || '-'}}</td>
-                                            <ng-container>  <!--*ngIf="from === 'customer'"-->
-                                                <td>
-                                                    <button class="btn btn-secondary"
-                                                    (click)="openActivityItems(activity)" >
-                                                        {{ 'VIEW' | translate }}
-                                                    </button>
-                                                </td>
-                                            </ng-container>
-                                        </tr>
-                                        <tr *ngIf="bActivityItemsLoader">
-                                            <td colspan="7" class="text-center">
-                                                <div class="spinner-border mx-auto"></div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!bActivityItemsLoader && !aActivityItems?.length">
-                                            <td colspan="7" class="text-center">
-                                                {{ "NO_DATA_FOUND" | translate}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div
-                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
-                                        <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
-                                            <label>
-                                                <select name="kt_ecommerce_sales_table_length"
-                                                    aria-controls="kt_ecommerce_sales_table"
-                                                    class="form-select form-select-sm form-select-solid"
-                                                    [(ngModel)]="itemsRequestParams.limit"
-                                                    (change)="changeItemsPerPage(itemsRequestParams.limit , 'activityItems')">
-                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
-                                                        pageNum }}
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-
-                                        <pagination-controls id="items_paginate"
-                                            (pageChange)="pageChanged($event , 'activityItems')"
-                                            (pageBoundsCorrection)="pageChanged($event , 'activityItems')"
-                                            [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate"
-                                            [nextLabel]="'NEXT' | translate" screenReaderPaginationLabel="Pagination"
-                                            [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls>
-
-                                    </div>
-                                </div>
-                            </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #statistics>
-                                <div class="row mb-5">
-                                    <div id="statistics-chart" class="col-12">
-                                        <ng-container
-                                            *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
-                                            <apx-chart [series]="statisticsChartOptions.series"
-                                                [chart]="statisticsChartOptions.chart"
-                                                [dataLabels]="statisticsChartOptions.dataLabels"
-                                                [plotOptions]="statisticsChartOptions.plotOptions"
-                                                [yaxis]="statisticsChartOptions.yaxis"
-                                                [xaxis]="statisticsChartOptions.xaxis"
-                                                [colors]="statisticsChartOptions.colors"
-                                                [tooltip]="statisticsChartOptions.tooltip">
-                                            </apx-chart>
-                                        </ng-container>
-                                        <ng-container
-                                            *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
-                                            <div class="d-flex my-20">
-                                                <div class="spinner-border mx-auto"></div>
-                                            </div>
-                                        </ng-container>
-                                        <ng-container
-                                            *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
-                                            <div class="d-flex my-20">
-                                                <div class="mx-auto">{{ "NO_DATA_FOUND" | translate}} </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </div>
-                                <div class="row mb-5">
-                                    <div class="col-4">
-                                        <div class="card panel-card mb-3">
-                                            <div class="card-header">
-                                                <h3 class="card-title"> {{ "ORDER_VALUE" | translate}}</h3>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row mb-7">
-                                                    <label class="col-6">{{ "TOTAL_TURNOVER_INC_VAT"
-                                                        |translate}}</label>
-                                                    <label class="col-6">{{ nTotalTurnOver | currency: 'EUR'}}</label>
+                                            <ng-container
+                                                *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
+                                                <div class="d-flex my-20">
+                                                    <div class="spinner-border mx-auto"></div>
                                                 </div>
-                                                <div class="row mb-7">
-                                                    <label class="col-6">{{ "AVERAGE_ORDER_VALUE_INC_VAT" |translate
-                                                        }}</label>
-                                                    <label class="col-6">{{ nAvgOrderValueIncVat | currency:
-                                                        'EUR'}}</label>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
+                                                <div class="d-flex my-20">
+                                                    <div class="mx-auto">{{ "NO_DATA_FOUND" | translate}} </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-5">
+                                        <div class="col-4">
+                                            <div class="card panel-card mb-3">
+                                                <div class="card-header">
+                                                    <h3 class="card-title"> {{ "ORDER_VALUE" | translate}}</h3>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-7">
+                                                        <label class="col-6">{{ "TOTAL_TURNOVER_INC_VAT"
+                                                            |translate}}</label>
+                                                        <label class="col-6">{{ nTotalTurnOver | currency: 'EUR'}}</label>
+                                                    </div>
+                                                    <div class="row mb-7">
+                                                        <label class="col-6">{{ "AVERAGE_ORDER_VALUE_INC_VAT" |translate
+                                                            }}</label>
+                                                        <label class="col-6">{{ nAvgOrderValueIncVat | currency:
+                                                            'EUR'}}</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-
-
-                                    <div class="col-3">
-                                        <table class="table table-hover table-rounded table-striped border gs-7">
-                                            <thead>
-                                                <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                                    <th>{{ 'EMPLOYEE_NAME' |translate }}</th>
-                                                    <th>{{ 'REVENUE' | translate }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngFor="let oEmployeeStatistic of aEmployeeStatistic">
-                                                    <td>{{oEmployeeStatistic?.sName}}</td>
-                                                    <td>{{oEmployeeStatistic?.nTotalRevenue}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="col-5">
-                                        <div id="paymentMethodsChart" *ngIf="paymentMethodsChartOptions">
-
-                                            <apx-chart [series]="paymentMethodsChartOptions.series"
-                                                [chart]="paymentMethodsChartOptions.chart"
-                                                [labels]="paymentMethodsChartOptions.labels"
-                                                [responsive]="paymentMethodsChartOptions.responsive"
-                                                [legend]="paymentMethodsChartOptions.legend"
-                                                [title]="paymentMethodsChartOptions.title">
-                                            </apx-chart>
-
+    
+    
+                                        <div class="col-3">
+                                            <table class="table table-hover table-rounded table-striped border gs-7">
+                                                <thead>
+                                                    <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                        <th>{{ 'EMPLOYEE_NAME' |translate }}</th>
+                                                        <th>{{ 'REVENUE' | translate }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let oEmployeeStatistic of aEmployeeStatistic">
+                                                        <td>{{oEmployeeStatistic?.sName}}</td>
+                                                        <td>{{oEmployeeStatistic?.nTotalRevenue}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-5">
+                                            <div id="paymentMethodsChart" *ngIf="paymentMethodsChartOptions">
+    
+                                                <apx-chart [series]="paymentMethodsChartOptions.series"
+                                                    [chart]="paymentMethodsChartOptions.chart"
+                                                    [labels]="paymentMethodsChartOptions.labels"
+                                                    [responsive]="paymentMethodsChartOptions.responsive"
+                                                    [legend]="paymentMethodsChartOptions.legend"
+                                                    [title]="paymentMethodsChartOptions.title">
+                                                </apx-chart>
+    
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[5] | translate}}" #general>
-                                {{ "GENERAL" |translate }}
-                            </app-pn-tab>
-                        </app-pn-tabs>
+                                <div *ngSwitchCase="5" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                    {{ "GENERAL" |translate }}
+                                </div>
+                                
+
+                            </container-element>
+                        </div>
                     </div>
                 </div>
+               
 
             </ng-container>
         </ng-container>

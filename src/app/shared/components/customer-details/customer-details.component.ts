@@ -258,7 +258,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     { key: 'SUPPLIER_REPAIRER', disabled: true },
     { key: 'ACTION', disabled: true }
   ];
-
+  currentTab = 0;
+  tabs = [
+    { index: 0, name: 'PURCHASES'},
+    { index: 1, name: 'TRANSACTION_ITEMS'},
+    { index: 2, name: 'ACTIVITIES' },
+    { index: 3, name: 'ITEMS_PER_VISIT'  },
+    { index: 4, name: 'STATISTICS' },
+    { index: 5, name: 'GENERAL'}
+  ];
+ 
   tabTitles: any = [
     'Purchases',
     'Transaction Items',
@@ -345,43 +354,42 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       _id: this.customer._id,
       iCustomerId: this.customer._id
     }
-
-    
-
-    //if (this.from === 'customer') {
-    //this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
-    //this.aTransctionItemTableHeaders.push({ key: 'Action', disabled: true });
-    //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();
-   
-    // this.activitiesChartOptions = {
-    //   series: this.aActivityTitles.map((el: any) => el.value),
-    //   colors: this.aActivityTitles.map((el: any) => el.color),
-    //   chart: {
-    //     width: '75%',
-    //     type: "pie"
-    //   },
-    //   title: {
-    //     text: "Number of Activities",
-    //     style: {
-    //       fontWeight: 'bold',
-    //     },
-    //   },
-    //   legend: {
-    //     position: 'left',
-    //     itemMargin: {
-    //       horizontal: 15,
-    //       vertical: 5
-    //     },
-    //     fontWeight: 600,
-    //   },
-    //   labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
-    // };
-
-    // this.loadStatisticsTabData();
     this.getCustomerGroups();
+    this.loadTransactions();
+  }
+
+  onTabChange(index: any) {
+    if (this.currentTab === index) return;
+    this.currentTab = index;
+    if (index === 0) this.loadTransactions();
+    else if (index === 1) this.loadTransactionItems();
+    else if (index === 2) this.loadActivities();
+    else if (index === 3) this.loadActivityItems();
+    else if (index === 4) this.getCoreStatistics();this.loadStatisticsTabData();
+  }
+
+  activeTabsChanged(tab: any) {
+    switch (tab) {
+      case this.tabTitles[0]:
+        if (!this.aTransactions) this.loadTransactions();
+        break;
+      case this.tabTitles[1]:
+        if (!this.aTransactionItems) this.loadTransactionItems();
+        break;
+      case this.tabTitles[2]:
+        if (!this.aActivities) this.loadActivities();
+        break;
+      case this.tabTitles[3]:
+        if (!this.aActivityItems) this.loadActivityItems();
+        break;
+      case this.tabTitles[4]:
+        this.getCoreStatistics();
+        this.loadStatisticsTabData();
+        break;
+    }
   }
   
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
@@ -1006,7 +1014,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             type: "pie"
           },
           title: {
-            text: `Number of Activities (${this.totalActivities})`,
+            text: this.translateService.instant("NUMBER_OF_ACTIVITIES") +  ` (${this.totalActivities})`,
             style: {
               fontWeight: 'bold',
             },
@@ -1093,26 +1101,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       })
   }
 
-  activeTabsChanged(tab: any) {
-    switch (tab) {
-      case this.tabTitles[0]:
-        if (!this.aTransactions) this.loadTransactions();
-        break;
-      case this.tabTitles[1]:
-        if (!this.aTransactionItems) this.loadTransactionItems();
-        break;
-      case this.tabTitles[2]:
-        if (!this.aActivities) this.loadActivities();
-        break;
-      case this.tabTitles[3]:
-        if (!this.aActivityItems) this.loadActivityItems();
-        break;
-      case this.tabTitles[4]:
-        this.getCoreStatistics();
-        this.loadStatisticsTabData();
-        break;
-    }
-  }
+  
 
   loadStatisticsTabData() {
     if (this.customer.bCounter) return;
