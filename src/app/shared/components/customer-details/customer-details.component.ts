@@ -370,27 +370,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     else if (index === 3) this.loadActivityItems();
     else if (index === 4) this.getCoreStatistics();this.loadStatisticsTabData();
   }
-
-  activeTabsChanged(tab: any) {
-    switch (tab) {
-      case this.tabTitles[0]:
-        if (!this.aTransactions) this.loadTransactions();
-        break;
-      case this.tabTitles[1]:
-        if (!this.aTransactionItems) this.loadTransactionItems();
-        break;
-      case this.tabTitles[2]:
-        if (!this.aActivities) this.loadActivities();
-        break;
-      case this.tabTitles[3]:
-        if (!this.aActivityItems) this.loadActivityItems();
-        break;
-      case this.tabTitles[4]:
-        this.getCoreStatistics();
-        this.loadStatisticsTabData();
-        break;
-    }
-  }
   
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE" } })
