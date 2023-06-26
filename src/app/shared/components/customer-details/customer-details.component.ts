@@ -106,6 +106,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     currentPage: 1,
     totalItems: 0
   };
+  transactionItemPaginationConfig: any = {
+    id: 'transaction_item_paginate',
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
   activitiesPaginationConfig: any = {
     id: 'activities_paginate',
     itemsPerPage: 10,
@@ -119,6 +125,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     totalItems: 0
   };
  purchaseRequestParams:any ={
+  skip:0,
+  limit:10
+ }
+ transactionItemRequestParams:any ={
   skip:0,
   limit:10
  }
@@ -619,10 +629,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
-    if(tab == 'Transaction Items'){
-      this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+    if(tab == 'TransactionItems'){
+      this.transactionItemPaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (this.transactionItemPaginationConfig.currentPage - 1);
+      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
@@ -648,10 +658,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
-    if(tab == 'Transaction Items'){
-      this.purchasePaginationConfig.currentPage = parseInt(page);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+    if(tab == 'TransactionItems'){
+      this.transactionItemPaginationConfig.currentPage = parseInt(page);
+      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (page - 1);
+      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
@@ -1021,8 +1031,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let data = {
       iCustomerId: this.customer._id,
       iTransactionId: 'all',
-      skip: this.purchaseRequestParams.skip,
-      limit: this.purchaseRequestParams.limit,
+      skip: this.transactionItemRequestParams.skip,
+      limit: this.transactionItemRequestParams.limit,
       sFrom: 'customer',
       oFilterBy: {},
       iBusinessId: this.requestParams.iBusinessId
@@ -1030,7 +1040,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
       if (result?.data) {
         this.aTransactionItems = result.data[0].result || [];
-        this.purchasePaginationConfig.totalItems = this.aTransactionItems.length;
+        this.transactionItemPaginationConfig.totalItems = this.aTransactionItems.length;
       }
       this.bTransactionItemLoader = false;
     }, (error) => {

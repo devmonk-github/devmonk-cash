@@ -56,7 +56,7 @@
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
 
                                 <div class="col-3">
-                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'ABOUT' | translate}}</h4>
                                     <div class="d-flex flex-column mb-5">
                                         <div class="d-flex">
                                             <span>{{'RECEIVE_NEWSLETTER' | translate}}</span>
@@ -361,7 +361,7 @@
                                     </div>
                                 </div>
                             </app-pn-tab>
-                            <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #purchases>
+                            <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #TransactionItems>
                                 <table class="table table-hover table-rounded table-striped border gs-7">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -369,14 +369,14 @@
                                                 <th scope="col"
                                                     [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                     (click)="setTransactionItemSortOption(th)">
-                                                    {{ th.key }}
+                                                    {{ th.key | translate }}
                                                 </th>
                             
                                             </ng-container>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let transactionitem of aTransactionItems | paginate: purchasePaginationConfig, let i = index;"
+                                        <tr *ngFor="let transactionitem of aTransactionItems | paginate: transactionItemPaginationConfig, let i = index;"
                                             data-bs-toggle="tooltip" data-bs-placement="top">
                                             <td>{{transactionitem.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                             <td>
@@ -415,8 +415,8 @@
                                         <div class="dataTables_length" id="kt_purchases_table_length">
                                             <label>
                                                 <select name="kt_purchases_table_length" aria-controls="kt_purchases_table"
-                                                    class="form-select form-select-sm form-select-solid" [(ngModel)]="purchaseRequestParams.limit"
-                                                    (change)="changeItemsPerPage(purchaseRequestParams.limit , 'purchases')">
+                                                    class="form-select form-select-sm form-select-solid" [(ngModel)]="transactionItemRequestParams.limit"
+                                                    (change)="changeItemsPerPage(transactionItemRequestParams.limit , 'TransactionItems')">
                                                     <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
                                                         pageNum }}
                                                     </option>
@@ -426,8 +426,8 @@
                                     </div>
                                     <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
                             
-                                        <pagination-controls id="purchases_paginate" (pageChange)="pageChanged($event ,'purchases')"
-                                            (pageBoundsCorrection)="pageChanged($event , 'purchases')" [maxSize]="setPaginateSize"
+                                        <pagination-controls id="transaction_item_paginate" (pageChange)="pageChanged($event ,'TransactionItems')"
+                                            (pageBoundsCorrection)="pageChanged($event , 'TransactionItems')" [maxSize]="setPaginateSize"
                                             [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
                                             screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
                                         </pagination-controls>
