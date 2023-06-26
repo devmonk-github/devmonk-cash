@@ -368,8 +368,8 @@
                                             <p class="m-0" *ngIf="item.sProductName">
                                                 {{ item.sProductName}}
                                             </p>
-                                            <p class="m-0 text-muted">
-                                                ({{item.sArticleNumber || '-'}})
+                                            <p class="m-0 text-muted" *ngIf="item.sArticleNumber">
+                                                ({{item.sArticleNumber}})
                                             </p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
                                             <span *ngIf="item?.bPrepayment">
