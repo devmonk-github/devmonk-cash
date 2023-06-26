@@ -299,14 +299,14 @@
                                     <tbody>
                                         <tr *ngFor="let transaction of aTransactions | paginate: purchasePaginationConfig, let i = index;"
                                             data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <td>{{transaction.dCreatedDate | date: 'medium'}}</td>
+                                            <td>{{transaction.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                             <td>{{transaction.sNumber}}</td>
                                             <td>{{transaction.sReceiptNumber}}</td>
                                             <td>{{transaction.eType}}</td>
                                             <td>{{(transaction.sTotal | currency: tillService.currency) || 0}}</td>
                                             <ng-container> <!--*ngIf="from === 'customer'"-->
                                                 <td>
-                                                    <button class="btn btn-primary"
+                                                    <button class="btn btn-secondary"
                                                         (click)="showTransaction(transaction)">
                                                         {{ 'VIEW' | translate }}
                                                     </button>
@@ -378,24 +378,21 @@
                                     <tbody>
                                         <tr *ngFor="let transactionitem of aTransactionItems | paginate: purchasePaginationConfig, let i = index;"
                                             data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <td>{{transactionitem.dCreatedDate | date: 'medium'}}</td>
+                                            <td>{{transactionitem.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                             <td>
-                                                <div>
-                                                    <p class="m-0" *ngIf="!transactionitem.sProductName">
-                                                        {{ transactionitem.sArticleGroupName }} {{transactionitem.sProductNumber }}
-                                                    </p>
-                                                    <p class="m-0" *ngIf="transactionitem.sProductName">
-                                                        {{ transactionitem.sProductName}}
-                                                    </p>
-                                                    <p class="m-0 text-muted">
-                                                        ({{transactionitem.sArticleNumber || '-'}})
-                                                    </p>
-                                                </div>
+                                                <p class="m-0">
+                                                    {{transactionitem.sProductNumber || '-'}}
+                                                </p>
                                             </td>
-                                            <td>{{transactionitem?.sDescription || '-'}}</td>
+                                            <td>
+                                                <p class="m-0" >
+                                                    {{ transactionitem.sProductName || '-'}} <span *ngIf="transactionitem.sArticleGroupName">- {{ transactionitem.sArticleGroupName}} </span><br>
+                                                    <span *ngIf="transactionitem.sArticleNumber">({{transactionitem.sArticleNumber}})</span>
+                                                </p>
+                                            </td>
                                             <td>{{(transactionitem.nPriceIncVat | currency: tillService.currency) || 0}}</td>
                                             <ng-container> <!--*ngIf="from === 'customer'"-->
-                                                <td><button class="btn btn-primary" (click)="showActivityItem(transactionitem,$event)">
+                                                <td><button class="btn btn-secondary" (click)="showActivityItem(transactionitem,$event)">
                                                         {{ 'VIEW' | translate }}
                                                     </button>
                                                 </td>
@@ -456,13 +453,13 @@
                                             <td class="mw-200">{{activity?.sNumber}}</td>
                                             <td>{{activity?.sBagNumber || '-'}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                             <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                 <td>
-                                                    <button class="btn btn-primary"
+                                                    <button class="btn btn-secondary"
                                                     (click)="openActivities(activity)" >
                                                         {{ 'VIEW' | translate }}
                                                     </button>
@@ -530,13 +527,13 @@
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sBagNumber || '-'}}</td>
                                             <td>{{activity?.oType?.eTransactionType}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                             <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                 <td>
-                                                    <button class="btn btn-primary"
+                                                    <button class="btn btn-secondary"
                                                     (click)="openActivityItems(activity)" >
                                                         {{ 'VIEW' | translate }}
                                                     </button>
