@@ -219,40 +219,44 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   aTransactions !: Array<any>;
   aTransctionTableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'desc' },
-    { key: 'Transaction no.', selected: false, sort: '' },
-    { key: 'Receipt number', selected: false, sort: '' },
-    { key: 'Method', disabled: true },
-    { key: 'Total', disabled: true },
+    { key: 'DATE', selected: true, sort: 'desc' },
+    { key: 'TRANSACTION_NUMBER', selected: false, sort: '' },
+    { key: 'RECEIPT_INVOICE_NUMBER', selected: false, sort: '' },
+    { key: 'METHOD', disabled: true },
+    { key: 'TOTAL', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
   aTransactionItems !: Array<any>;
   aTransctionItemTableHeaders: Array<any> = [
-    { key: 'Date', disabled: true },
-    { key: 'Product no.', disabled: true},
-    { key: 'Description', disabled: true },
-    { key: 'Selling price', disabled: true }
+    { key: 'DATE', disabled: true },
+    { key: 'PRODUCT_NUMBER', disabled: true },
+    { key: 'DESCRIPTION', disabled: true },
+    { key: 'SELLING_PRICE', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
 
   aActivities!: Array<any>;
   aActivityTableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    { key: 'REPAIR_NUMBER', disabled: true },
+    { key: 'TYPE', disabled: true },
+    { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
+    { key: 'END_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
+    { key: 'ACTION', disabled: true }
   ]
 
   aActivityItems!: Array<any>;
   aActivityItemsTableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    { key: 'REPAIR_NUMBER', disabled: true },
+    { key: 'TYPE', disabled: true },
+    { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
+    { key: 'END_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
 
   tabTitles: any = [
@@ -345,8 +349,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     
 
     //if (this.from === 'customer') {
-    this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
-    this.aTransctionItemTableHeaders.push({ key: 'Action', disabled: true });
+    //this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    //this.aTransctionItemTableHeaders.push({ key: 'Action', disabled: true });
     //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
@@ -1090,8 +1094,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   activeTabsChanged(tab: any) {
-    console.log("activeTabsChanged", tab);
-
     switch (tab) {
       case this.tabTitles[0]:
         if (!this.aTransactions) this.loadTransactions();
@@ -1148,7 +1150,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       },
       yaxis: {
         title: {
-          text: "Revenue",
+          text:this.translateService.instant("REVENUE"),
           style: {
             'fontSize': '15px'
           }
@@ -1175,7 +1177,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         type: "pie"
       },
       title: {
-        text: "Payment Methods",
+        text: this.translateService.instant("PAYMENT_METHODS"),
         style: {
           fontWeight: 'bold',
         },

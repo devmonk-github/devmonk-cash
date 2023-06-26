@@ -290,7 +290,7 @@
                                                 <th scope="col"
                                                     [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                     (click)="setSortOption(th)">
-                                                    {{ th.key }}
+                                                    {{ th.key | translate}}
                                                 </th>
                                                 
                                             </ng-container>
@@ -442,15 +442,14 @@
                                             <th scope="col" *ngFor="let th of aActivityTableHeaders"
                                                 [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                 (click)="setSortOption(th)">
-                                                {{ th.key }}
+                                                {{ th.key | translate}}
                                             </th>
-                                            <th>{{ "ACTION" | translate }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr
                                             *ngFor="let activity of aActivities | paginate: activitiesPaginationConfig , let i = index;">
-                                            <td class="mw-200">{{activity?.sNumber}}</td>
+                                            <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sBagNumber || '-'}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
                                             <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
@@ -516,9 +515,8 @@
                                             <th scope="col" *ngFor="let th of aActivityItemsTableHeaders"
                                                 [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                 (click)="setSortOption(th)">
-                                                {{ th.key }}
+                                                {{ th.key | translate}}
                                             </th>
-                                            <th>{{ "ACTION" | translate }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
