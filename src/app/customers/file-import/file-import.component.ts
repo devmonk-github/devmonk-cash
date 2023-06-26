@@ -14,9 +14,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class FileImportComponent implements OnInit, OnDestroy {
 
-  delimiter: string = ';';
+  delimiter: string = '';
   stepperIndex: any = 0;
   importForm: any;
+  bDelimiter:boolean = false;
 
   @Input() parsedCustomerData!: Array<any>;
   @Output() parsedCustomerDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
@@ -48,9 +49,9 @@ export class FileImportComponent implements OnInit, OnDestroy {
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
-       
             this.parsedCustomerData = result;
             this.parsedCustomerDataChange.emit(this.parsedCustomerData);
+            this.bDelimiter = true;
           }, (error: NgxCSVParserError) => {
             this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
             this.parsedCustomerData = [];
@@ -62,7 +63,7 @@ export class FileImportComponent implements OnInit, OnDestroy {
       }  
     });
   }
-
+  
   public ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

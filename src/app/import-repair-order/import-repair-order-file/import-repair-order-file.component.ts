@@ -12,9 +12,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 export class ImportRepairOrderFileComponent implements OnInit {
 
-  delimiter: string = ';';
+  delimiter: string = '';
   stepperIndex: any = 0;
   importForm: any;
+  bDelimiter:boolean = false;
 
   @Input() parsedRepairOrderData!: Array<any>;
   @Output() parsedRepairOrderDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
@@ -49,6 +50,7 @@ export class ImportRepairOrderFileComponent implements OnInit {
               }
             }
             this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
+            this.bDelimiter = true;
           }, (error: NgxCSVParserError) => {
             this.parsedRepairOrderData = [];
             this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
@@ -59,7 +61,6 @@ export class ImportRepairOrderFileComponent implements OnInit {
       }
     });
   }
-
   public ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
