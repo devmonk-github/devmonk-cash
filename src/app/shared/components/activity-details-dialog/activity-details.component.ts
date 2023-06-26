@@ -798,7 +798,7 @@ export class ActivityDetailsComponent implements OnInit {
     const transaction = _oTransaction?.data?.result[0];
     transactionItem.bFetchingTransaction = false;
     event.target.disabled = false;
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--5", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' }, hasBackdrop: true })
       .instance.close.subscribe(
         (res: any) => {
         });
