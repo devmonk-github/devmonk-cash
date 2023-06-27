@@ -328,7 +328,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
@@ -340,8 +340,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     } else {
       this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
     }
-    //console.log("this.customer------");
-    //console.log(this.customer);
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -356,7 +354,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }
     this.fetchLoyaltyPoints();
     this.getListEmployees();
-    this.getMergedCustomerIds();
+    await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
   }
@@ -393,8 +391,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: this.translations[`ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER`], buttonDetails: confirmBtnDetails } })
       .instance.close.subscribe(
         (status: any) => {
-          console.log("status");
-          console.log(status);
           if (status == 'remove') {
             this.apiService.postNew('customer', '/api/v1/customer/delete', { iCustomerId: customer._id, iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
               if (res?.message == 'success') {
@@ -410,21 +406,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   
-
-
-  getMergedCustomerIds() {
-   if(this.customer && this.customer?._id){
-    const oBody = {
-      iBusinessId:this.requestParams.iBusinessId,
-      iCustomerId: this.customer._id
-    }
-    let url = '/api/v1/customer/merged/customer';
-    this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
-      if (result) {
-        this.mergeCustomerIdList = result.aUniqueCustomerId;
+  async getMergedCustomerIds() {
+    if (this.customer && this.customer?._id) {
+      const oBody = {
+        iBusinessId: this.requestParams.iBusinessId,
+        iCustomerId: this.customer._id
       }
-    }, (error) => {});
-  }
+      let url = '/api/v1/customer/merged/customer';
+      const result: any = await this.apiService.postNew('customer', url, oBody).toPromise();
+      this.mergeCustomerIdList = result?.aUniqueCustomerId;
+      return result?.aUniqueCustomerId;
+    }
   }
 
 
@@ -676,7 +668,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.customer[type].sCountry = event.value;
   }
 
-  EditOrCreateCustomer() {
+  async checkAddress(addressBody: any) {
+    const result: any = await this.apiService.postNew('customer', '/api/v1/customer/check-address', addressBody).toPromise();
+    return result;
+  }
+
+  async EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
     if (this.customer?.bIsCompany) {
@@ -705,29 +702,70 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     if (this.customer?.oPhone?.sMobile == "") this.customer.oPhone.sPrefixMobile = "";
     if (this.customer?.oPhone?.sLandLine == "") this.customer.oPhone.sPrefixLandline = "";
     if (this.mode == 'create') {
-      this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
-        (result: any) => {
-          if(result.message == 'success'){
-          this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
-
-            /* Updating current-customer in [A, T, AI] and Not the System customer */
-            if (this.editProfile && this.bIsCurrentCustomer) {
-              this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
-              return;
+      const addressBody = {
+        iBusinessId: this.requestParams.iBusinessId,
+        oInvoiceAddress: this.customer?.oInvoiceAddress,
+        oShippingAddress: this.customer?.oShippingAddress,
+      }
+      const addresses = await this.checkAddress(addressBody);
+      if (addresses?.data?.length) {
+        let confirmBtnDetails = [
+          { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
+          { text: "NO", value: 'close' }
+        ];
+        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST");
+        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: true, })
+          .instance.close.subscribe((status: any) => {
+            if (status == 'success') {
+              this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
+                (result: any) => {
+                  if (result.message == 'success') {
+                    this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
+                    /* Updating current-customer in [A, T, AI] and Not the System customer */
+                    if (this.editProfile && this.bIsCurrentCustomer) {
+                      this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
+                      return;
+                    }
+                    this.close({ action: true, customer: result.data });
+                  } else {
+                    let errorMessage = ""
+                    this.translateService.get(result.message).subscribe(
+                      result => errorMessage = result
+                    )
+                    this.toastService.show({ type: 'warning', text: errorMessage })
+                  }
+                },
+                (error: any) => {
+                  console.log(error.message);
+                });
+            } else {
+              this.toastService.show({ type: 'warning', text: "customer not created" })
             }
-          this.close({ action: true, customer: result.data });
-          }else{
-            let errorMessage = ""
-            this.translateService.get(result.message).subscribe(
-              result=> errorMessage =result
-            )
-            this.toastService.show({type:'warning' , text:errorMessage})
+          })
+      } else {
+        this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
+          (result: any) => {
+            if (result.message == 'success') {
+              this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
+              /* Updating current-customer in [A, T, AI] and Not the System customer */
+              if (this.editProfile && this.bIsCurrentCustomer) {
+                this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
+                return;
+              }
+              this.close({ action: true, customer: result.data });
+            } else {
+              let errorMessage = ""
+              this.translateService.get(result.message).subscribe(
+                result => errorMessage = result
+              )
+              this.toastService.show({ type: 'warning', text: errorMessage })
+            }
+          },
+          (error: any) => {
+            console.log(error.message);
           }
-        },
-        (error: any) => {
-             console.log(error.message);
-        }
-      );
+        );
+      }
     }
     if (this.mode == 'details') {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
@@ -737,12 +775,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.fetchUpdatedDetails();
             this.close({ action: true });
           }
-          else{
-             let errorMessage = "";
-             this.translateService.get(result.message).subscribe((res:any)=>{
+          else {
+            let errorMessage = "";
+            this.translateService.get(result.message).subscribe((res: any) => {
               errorMessage = res;
-             })
-             this.toastService.show({type:'warning' , text:errorMessage});
+            })
+            this.toastService.show({ type: 'warning', text: errorMessage });
           }
         },
         (error: any) => {
@@ -913,31 +951,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     return str;
   }
 
-  loadTransactions() {
+  async loadTransactions() {
     if (this.customer.bCounter) return;
-    const oBody = {
-      iBusinessId:this.requestParams.iBusinessId,
-      iCustomerId: this.customer._id
+    this.requestParams.oFBy = {
+      iCustomerId: this.mergeCustomerIdList
     }
-    let url = '/api/v1/customer/merged/customer';
-    this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
-      if (result) {
-        this.mergeCustomerIdList = result.aUniqueCustomerId;
-        this.requestParams.oFBy = {
-          iCustomerId: result.aUniqueCustomerId
-        }
-      }
-
     this.bTransactionsLoader = true;
     const body = {
       iCustomerId: this.customer._id,
       iBusinessId: this.requestParams.iBusinessId,
-      skip:this.purchaseRequestParams.skip,
-      limit:this.purchaseRequestParams.limit,
-      oFilterBy:this.requestParams.oFBy,
+      skip: this.purchaseRequestParams.skip,
+      limit: this.purchaseRequestParams.limit,
+      oFilterBy: this.requestParams.oFBy,
       bIsDetailRequire: true // to fetch the extra details
     }
-
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
@@ -993,7 +1020,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             type: "pie"
           },
           title: {
-            text: this.translateService.instant("NUMBER_OF_ACTIVITIES") +  ` (${this.totalActivities})`,
+            text: this.translateService.instant("NUMBER_OF_ACTIVITIES") + ` (${this.totalActivities})`,
             style: {
               fontWeight: 'bold',
             },
@@ -1013,8 +1040,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
       this.bTransactionsLoader = false;
     })
-  }, (error) => {
-  });
   }
   loadTransactionItems() {
     if (this.customer.bCounter) return;
