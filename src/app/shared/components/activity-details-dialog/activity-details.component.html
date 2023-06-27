@@ -1070,7 +1070,7 @@
                                                                 <td>{{ oItem.dRedeemedDate | date:'MMM dd, yyyy, HH:mm:ss' }}</td>
                                                                 <td>{{ oItem.nAmount | currency: tillService.currency }}</td>
                                                                 <td class="d-flex align-items-center">
-                                                                    <button class="btn btn-secondary btn-sm" (click)="showTransaction(oItem, $event)">
+                                                                    <button class="btn btn-info btn-sm" (click)="showTransaction(oItem, $event)">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
                                                                 </td>
@@ -1103,7 +1103,7 @@
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
-                                                                        <button class="btn btn-secondary btn-sm" (click)="showTransaction(receipt, $event)">
+                                                                        <button class="btn btn-info btn-sm" (click)="showTransaction(receipt, $event)">
                                                                             <i class="fa fa-eye"></i>
                                                                         </button>
                                                                         <div *ngIf="receipt.bFetchingTransaction"
@@ -1573,7 +1573,7 @@
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
-                                                                        <button class="btn btn-secondary btn-sm"
+                                                                        <button class="btn btn-info btn-sm"
                                                                             (click)="showTransaction(receipt, $event)">
                                                                             <i class="fa fa-eye"></i>
                                                                         </button>

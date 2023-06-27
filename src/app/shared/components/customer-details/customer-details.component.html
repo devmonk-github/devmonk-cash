@@ -80,6 +80,11 @@
                                                             {{selectedGroups}} 
                                                         </span> 
                                                     </p>
+                                                    <p *ngIf="aSelectedGroups.length == 0"> 
+                                                        <span class="badge rounded-pill bg-light text-dark">
+                                                            {{"NO_GROUPS" | translate}}
+                                                        </span>
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -109,31 +114,37 @@
                                 </div>
                                 <div class="col-3">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
-                                    <div class="d-flex flex-column block-buttons">
-                                        <p>
-                                            <a *ngIf="customer.sEmail" href="mailto:{{customer.sEmail}}"
-                                                class="text-gray-800 text-hover-primary btn btn-light">
-                                                <i class="fa fa-envelope"></i>
-                                                {{customer.sEmail}}</a>
+                                    <div *ngIf="!customer.sEmail && !customer.oPhone.sMobile && !customer.oPhone.sLandLine && (!customer.bIsCompany && !(customer.oContactPerson.sFirstName || customer.oContactPerson.sPrefix || customer.oContactPerson.sLastName))">
+                                        <p class="text-gray-800 fw-bolder p-4 bg-light rounded">
+                                            {{"NO_CONTACT_INFORMATION" | translate}}
                                         </p>
-                                        <p>
+                                    </div>
+                                    <div class="d-flex flex-column block-buttons">
+                                        <div>
+                                            <a *ngIf="customer.sEmail" href="mailto:{{customer.sEmail}}"
+                                                class="text-gray-800 text-hover-primary btn btn-light d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-envelope me-3"></i>
+                                                {{customer.sEmail}}
+                                            </a>
+                                        </div>
+                                        <div class="my-3">
                                             <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
                                                 *ngIf="customer.oPhone.bWhatsApp && customer.oPhone.sPrefixMobile" target="_blank"
-                                                class="text-gray-800 text-hover-primary btn btn-light">
-                                                <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>
+                                                class="text-gray-800 text-hover-primary btn btn-light d-flex align-items-center justify-content-center">
+                                                <i class="fab fa-whatsapp me-3" style="color: #1CB39B;"></i>
                                                 {{customer.oPhone.sPrefixMobile}} {{customer.oPhone.sMobile}}
                                             </a>
-                                        </p>
+                                        </div>
                                         <p *ngIf="!(customer.oPhone.bWhatsApp && customer.oPhone.sPrefixMobile) && customer.oPhone.sMobile">
-                                            <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
+                                            <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}}:</span><br>
                                             <span> {{customer.oPhone.sPrefixMobile}} {{ customer.oPhone.sMobile }}</span>
                                         </p>
                                         <p *ngIf="customer.oPhone.sLandLine">
-                                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
+                                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}}:</span><br>
                                             <span>{{ customer.oPhone.sPrefixLandline }} {{ customer.oPhone.sLandLine }}</span>
                                         </p>
-                                        <p *ngIf="customer.bIsCompany">
-                                            <span class="text-muted me-5">{{'CONTACT_PERSON' | translate}} :</span>
+                                        <p *ngIf="customer.bIsCompany && (customer.oContactPerson.sFirstName || customer.oContactPerson.sPrefix || customer.oContactPerson.sLastName)">
+                                            <span class="text-muted me-5">{{'CONTACT_PERSON' | translate}}:</span><br>
                                             <span> {{ customer.oContactPerson.sFirstName }} {{ customer.oContactPerson.sPrefix }} {{ customer.oContactPerson.sLastName }}</span>
                                         </p>
                                     </div>
@@ -141,24 +152,34 @@
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oShippingAddress">
-                                        <p>
-                                            {{ customer.oShippingAddress.sStreet || '-'}}
-                                            {{ customer.oShippingAddress.sHouseNumber || '-'}}<span style="text-transform: uppercase;">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span><br>
-                                            <span style="text-transform: uppercase;">{{ customer.oShippingAddress.sPostalCode || '-'}}</span>,
-                                            {{ customer.oShippingAddress.sCity || '-'}} <br>
-                                            {{ customer.oShippingAddress.sCountry || '-'}}
+                                        <p class="m-0">
+                                            <span *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
+                                                {{ customer.oShippingAddress.sStreet}} {{ customer.oShippingAddress.sHouseNumber}}
+                                                <span style="text-transform: uppercase;">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span>
+                                                <br>
+                                            </span>
+                                            <span *ngIf="customer.oShippingAddress.sPostalCode" style="text-transform: uppercase;">
+                                                {{ customer.oShippingAddress.sPostalCode}},
+                                            </span>
+                                            <span *ngIf="customer.oShippingAddress.sCity">{{ customer.oShippingAddress.sCity}}<br></span>
+                                            {{ customer.oShippingAddress.sCountry}}
                                         </p>
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'INVOICE_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
-                                        <p>
-                                            {{ customer.oInvoiceAddress.sStreet || '-'}}
-                                            {{ customer.oInvoiceAddress.sHouseNumber || '-'}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span> <br>
-                                            <span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sPostalCode || '-'}}</span>,
-                                            {{ customer.oInvoiceAddress.sCity || '-'}} <br>
-                                            {{ customer.oInvoiceAddress.sCountry || '-'}}
+                                        <p class="m-0">
+                                            <span *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
+                                                {{ customer.oInvoiceAddress.sStreet}} {{ customer.oInvoiceAddress.sHouseNumber}}
+                                                <span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span>
+                                                <br>
+                                            </span>
+                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode" style="text-transform: uppercase;">
+                                                {{ customer.oInvoiceAddress.sPostalCode}},
+                                            </span>
+                                            <span *ngIf="customer.oInvoiceAddress.sCity">{{ customer.oInvoiceAddress.sCity}}<br></span>
+                                            {{customer.oInvoiceAddress.sCountry}}
                                         </p>
                                     </div>
                                 </div>
@@ -167,106 +188,80 @@
                     </div>
 
                     
-                    <div *ngIf="!editProfile" class="row my-6">
-                        <div class="col-3">
+                    <div *ngIf="!editProfile && (customer?.dDateOfBirth || customer?.oIdentity?.documentName || customer?.oIdentity?.documentNumber)" class="row my-6">
+                        <div class="col-3" *ngIf="customer?.dDateOfBirth">
                             <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH'  | translate}} </label>                       
-                            <p class="fs-6 mb-2">{{(customer?.dDateOfBirth | date:'yyyy-MM-dd') || '-'}} </p>
+                            <p class="fs-6 mb-2">{{(customer?.dDateOfBirth | date:'yyyy-MM-dd')}} </p>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="customer?.oIdentity?.documentName">
                             <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME'  | translate}} </label>
-                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName || '-'}} </p>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName}}</p>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="customer?.oIdentity?.documentNumber">
                             <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER'  | translate}} </label>
-                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber || '-'}} </p>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber}} </p>
                         </div>
                     </div>
 
-                    <div *ngIf="!editProfile" class="row mb-6">
-                        <div class="col-3">
+                    <div *ngIf="!editProfile && (customer?.sCompanyName || customer?.nPaymentTermDays || customer?.sVatNumber)" class="row mb-6">
+                        <div class="col-3" *ngIf="customer?.sCompanyName">
                             <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME'  | translate}} </label>                       
-                            <p class="fs-6 mb-2">{{customer?.sCompanyName || '-'}} </p>
+                            <p class="fs-6 mb-2">{{customer?.sCompanyName}}</p>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="customer?.nPaymentTermDays">
                             <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS'  | translate}} </label>
-                                <p class="fs-6 mb-2">{{customer?.nPaymentTermDays || '-'}} </p>
+                                <p class="fs-6 mb-2">{{customer?.nPaymentTermDays}}</p>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="customer?.sVatNumber">
                             <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER'  | translate}} </label>
-                                <p class="fs-6 mb-2">{{customer?.sVatNumber || '-'}} </p>
+                                <p class="fs-6 mb-2">{{customer?.sVatNumber}}</p>
                         </div>
                     </div>
                
                     <div *ngIf="!editProfile" class="row mb-6">
-                        <label class="col-lg-12 col-form-label fw-bold fs-6 mb-2">{{'NOTES' | translate}}</label>
-                        <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-lg-12 fv-row">
-                                    <textarea cols="30" rows="3" type="text" #customerNote
-                                        class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                        id="businessEmail" [(ngModel)]="customer.sNote"
-                                        (ngModelChange)="customerNotesChanged($event)" name="businessEmail"
-                                        placeholder="{{'NOTES' | translate}}"></textarea>
+                        <div class="col-9">
+                            <label class="col-lg-12 text-gray-700  fw-bolder fs-6 mb-3 p-0">{{'NOTES' | translate}}</label>
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-12 fv-row">
+                                        <textarea cols="30" rows="8" type="text" #customerNote
+                                            class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                            id="businessEmail" [(ngModel)]="customer.sNote"
+                                            (ngModelChange)="customerNotesChanged($event)" name="businessEmail"
+                                            placeholder="{{'NOTES' | translate}}"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <ng-container *ngIf="!editProfile">
-
-                <div class="row mb-5">
-                    <div class="col-9">
-                        <div *ngIf="bTransactionsLoader" style="text-align: center;">
-                            <div class="spinner-border h-50px w-50px mx-auto"></div>
-                        </div>
-                        <div *ngIf="!bTransactionsLoader && activitiesChartOptions" id="activities-chart">
-                            <apx-chart [series]="activitiesChartOptions?.series" [chart]="activitiesChartOptions?.chart"
-                                [labels]="activitiesChartOptions?.labels"
-                                [responsive]="activitiesChartOptions?.responsive"
-                                [legend]="activitiesChartOptions?.legend" [title]="activitiesChartOptions?.title"
-                                [colors]="activitiesChartOptions?.colors">
-                            </apx-chart>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div>
-
-
-                            <div class="card panel-card">
-                                <div class="card-header">
-                                    <h3 class="card-title"> {{"SAVING_POINTS" | translate}}</h3>
-                                </div>
-                                <div class="card-body" *ngIf="!tillService.oSavingPointSettings.bEnabled">
-                                    {{"LOYALTY_PROGRAM_NOT_ACTIVATED" | translate}}
-                                </div>
-                                <div class="card-body" *ngIf="tillService.oSavingPointSettings.bEnabled">
-                                    <div class="row mb-7">
-                                        <label class="col-7">{{"SAVED_POINTS" | translate}}</label>
-                                        <label class="col-5">{{ customer.nLoyaltyPoints }}</label>
+                       
+                        <div class="col-3">
+                            <div>
+                                <div class="card panel-card">
+                                    <div class="card-header p-3">
+                                        <h3 class="card-title m-0">{{"SAVING_POINTS" | translate}}</h3>
                                     </div>
-                                    <div class="row mb-7">
-                                        <label class="col-7">{{"VALUE_OF_SAVING_POINTS" | translate}}</label>
-                                        <label class="col-5">{{ customer.nLoyaltyPointsValue | currency: 'EUR'}}
-                                            <!-- <span class="mx-3">
-                                                <i class="fa fa-info-circle"></i>
-                                            </span> -->
-                                        </label>
+                                    <div class="card-body" *ngIf="!tillService.oSavingPointSettings?.bEnabled">
+                                        {{"LOYALTY_PROGRAM_NOT_ACTIVATED" | translate}}
                                     </div>
-                                    <div class="row mb-2">
-                                        <label class="col-12">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
-                                        <div class="col-12">
+                                    <div class="card-body p-3 py-5" *ngIf="tillService.oSavingPointSettings?.bEnabled">
+                                        <p class="mb-3">
+                                            <span class="fw-bolder">{{"SAVED_POINTS" | translate}}</span>: {{ customer.nLoyaltyPoints }}
+                                        </p>
+                                        <p class="mb-3">
+                                            <span class="fw-bolder">{{"VALUE_OF_SAVING_POINTS" | translate}}</span>: {{ customer.nLoyaltyPointsValue | currency: tillService.currency}}
+                                        </p>
+                                        <div class="row mb-2">
+                                            <label class="fw-bolder mb-2">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
+                                            
                                             <div class="d-flex">
-                                                <input type="number" [attr.min]="customer.nLoyaltyPoints > 0 ? -customer.nLoyaltyPoints : 0" class="form-control" name="loyalityPoints"
+                                                <input type="number" [attr.min]="customer.nLoyaltyPoints > 0 ? -customer.nLoyaltyPoints : 0" class="form-control w-50" name="loyalityPoints"
                                                     [(ngModel)]="customerLoyalityPoints">
-                                                <button class="btn btn-primary" [disabled]="pointsAdded"
+                                                <button class="ms-3 btn btn-primary" [disabled]="pointsAdded"
                                                     (click)="addLoyalityPoints()">{{"SAVE" | translate}}</button>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row mb-7">
                                         <label
-                                            class="col-12 form-check form-check-sm form-check-custom form-check-solid me-5">
+                                            class="col-12 form-check form-check-sm form-check-custom form-check-solid">
                                             <input class="form-check-input" type="checkbox" value="1" />
                                             <span class="form-check-label">{{"SAVING_POINTS_NEVER_EXPIRED" |
                                                 translate}}</span>
@@ -277,18 +272,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <ng-container *ngIf="!editProfile">
                 <div class="row">
                     <div class="col-12">
-                        <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+                        <ul class="nav nav-tabs nav-line-tabs mb-5 fs-6 justify-content-between">
                             <li class="nav-item cursor-pointer" *ngFor="let tab of tabs">
-                                <button  class="nav-link" [ngClass]="{active:tab.index === currentTab}" style="margin-left: 70px;"
-                                    (click)="onTabChange(tab.index)"><strong>{{tab.name | translate}}</strong></button>
-                                    <div class="tab-gap"></div>
+                                <button  class="nav-link" [ngClass]="{active:tab.index === currentTab}"
+                                    (click)="onTabChange(tab.index)"><strong>{{tab.name | translate}}</strong>
+                                </button>
+                                    <!-- <div class="tab-gap"></div> -->
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <container-element [ngSwitch]="currentTab">
-                                <div *ngSwitchCase="0" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="0" class="tab-pane fade show active overflow-scrol pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     <table class="table table-hover table-rounded table-striped border gs-7">
                                         <thead>
                                             <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -312,20 +310,20 @@
                                                 <td>{{(transaction.sTotal | currency: tillService.currency) || 0}}</td>
                                                 <ng-container> <!--*ngIf="from === 'customer'"-->
                                                     <td>
-                                                        <button class="btn btn-secondary"
+                                                        <button class="btn btn-info"
                                                             (click)="showTransaction(transaction)">
-                                                            {{ 'VIEW' | translate }}
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                     </td>
                                                 </ng-container>
                                             </tr>
                                             <tr *ngIf="bTransactionsLoader">
-                                                <td colspan="5" class="text-center">
+                                                <td colspan="6" class="text-center">
                                                     <div class="spinner-border mx-auto"></div>
                                                 </td>
                                             </tr>
                                             <tr *ngIf="!bTransactionsLoader && !aTransactions?.length">
-                                                <td colspan="5" class="text-center">
+                                                <td colspan="6" class="text-center">
                                                     {{ "NO_DATA_FOUND" | translate}}
                                                 </td>
                                             </tr>
@@ -361,7 +359,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngSwitchCase="1" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="1" class="tab-pane fade show active overflow-scrol pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     <table class="table table-hover table-rounded table-striped border gs-7">
                                         <thead>
                                             <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -392,19 +390,20 @@
                                                 </td>
                                                 <td>{{(transactionitem.nPriceIncVat | currency: tillService.currency) || 0}}</td>
                                                 <ng-container> <!--*ngIf="from === 'customer'"-->
-                                                    <td><button class="btn btn-secondary" (click)="showActivityItem(transactionitem,$event)">
-                                                            {{ 'VIEW' | translate }}
+                                                    <td>
+                                                        <button class="btn btn-info" (click)="showActivityItem(transactionitem,$event)">
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                     </td>
                                                 </ng-container>
                                             </tr>
                                             <tr *ngIf="bTransactionItemLoader">
-                                                <td colspan="5" class="text-center">
+                                                <td colspan="6" class="text-center">
                                                     <div class="spinner-border mx-auto"></div>
                                                 </td>
                                             </tr>
                                             <tr *ngIf="!bTransactionItemLoader && !aTransactionItems?.length">
-                                                <td colspan="5" class="text-center">
+                                                <td colspan="6" class="text-center">
                                                     {{ "NO_DATA_FOUND" | translate}}
                                                 </td>
                                             </tr>
@@ -435,7 +434,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngSwitchCase="2" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="2" class="tab-pane fade show active overflow-scrol pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     <table class="table table-hover table-rounded table-striped border gs-7">
                                         <thead>
                                             <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -458,20 +457,20 @@
                                                 <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                                 <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                     <td>
-                                                        <button class="btn btn-secondary"
+                                                        <button class="btn btn-info"
                                                         (click)="openActivities(activity)" >
-                                                            {{ 'VIEW' | translate }}
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                     </td>
                                                 </ng-container>
                                             </tr>
                                             <tr *ngIf="bActivitiesLoader">
-                                                <td colspan="7" class="text-center">
+                                                <td colspan="8" class="text-center">
                                                     <div class="spinner-border mx-auto"></div>
                                                 </td>
                                             </tr>
                                             <tr *ngIf="!bActivitiesLoader && !aActivities?.length">
-                                                <td colspan="7" class="text-center">
+                                                <td colspan="8" class="text-center">
                                                     {{ "NO_DATA_FOUND" | translate}}
                                                 </td>
                                             </tr>
@@ -508,7 +507,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngSwitchCase="3" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="3" class="tab-pane fade show active overflow-scrol  pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     <table class="table table-hover table-rounded table-striped border gs-7">
                                         <thead>
                                             <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -531,9 +530,9 @@
                                                 <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                                 <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                     <td>
-                                                        <button class="btn btn-secondary"
+                                                        <button class="btn btn-info"
                                                         (click)="openActivityItems(activity)" >
-                                                            {{ 'VIEW' | translate }}
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                     </td>
                                                 </ng-container>
@@ -581,7 +580,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngSwitchCase="4" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="4" class="tab-pane fade show active overflow-scrol pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     <div class="row mb-5">
                                         <div id="statistics-chart" class="col-12">
                                             <ng-container
@@ -664,7 +663,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngSwitchCase="5" class="tab-pane fade show active overflow-scrol" style="height: 60vh;">
+                                <div *ngSwitchCase="5" class="tab-pane fade show active overflow-scrol pb-5 border-bottom" style="height: 60vh; overflow-x: hidden;">
                                     {{ "GENERAL" |translate }}
                                 </div>
                                 
@@ -673,8 +672,23 @@
                         </div>
                     </div>
                 </div>
-               
 
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div *ngIf="bTransactionsLoader" style="text-align: center;">
+                            <div class="spinner-border h-50px w-50px mx-auto"></div>
+                        </div>
+                        <div *ngIf="!bTransactionsLoader && activitiesChartOptions" id="activities-chart">
+                            <apx-chart [series]="activitiesChartOptions?.series" [chart]="activitiesChartOptions?.chart"
+                                [labels]="activitiesChartOptions?.labels"
+                                [responsive]="activitiesChartOptions?.responsive"
+                                [legend]="activitiesChartOptions?.legend" [title]="activitiesChartOptions?.title"
+                                [colors]="activitiesChartOptions?.colors">
+                            </apx-chart>
+                        </div>
+                    </div>
+                   
+                </div>
             </ng-container>
         </ng-container>
         <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
