@@ -313,13 +313,13 @@
                     <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
-                        <div class="card m-1 shadow-sm h-100 custom-card">
-                          <div class="card-body">
+                        <div class="card m-2 shadow-sm h-sm-125px" style="height: 110px;">
+                          <div class="card-body d-flex p-3">
                             <!-- <div class="d-flex"> -->
-                            <div class="r-content">
+                            <div class="image-container">
                               <img
-                                src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                class="">
+                                src="{{product.aImage[0]? product.aImage[0] : '../assets/images/no-photo-available.jpg' }}"
+                                class="rounded">
                             </div>
                             <div class="l-content">
                               <p class="block m-0 mb-2 prod-name">{{ product?.oName['en'] || ('NO_NAME'| translate) }}</p>
@@ -340,32 +340,39 @@
                     <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of commonProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
-                        <div class="card m-1 shadow-sm custom-card common-prod">
-                          <div class="card-body custom-flex">
+                        <div class="card m-2 shadow-sm" style="height: 110px;">
+                          <div class="card-body d-flex p-3">
                             <!-- <div class="d-flex"> -->
-                            <div class="r-content">
+                            <div class="image-container">
                               <img
                                 src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                class="">
+                                class="rounded">
                             </div>
-                            <div class="l-content">
+                            <div class="w-100 mx-4">
                               <!-- <label
                                   class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT"
                                   |
                                   translate}}</label> -->
-                              <span>
+                              <!-- <span>
                                 <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                              </span>
-                              <p class="block m-0 mb-2 prod-name">{{ product.oName['en'] || ('NO_NAME'| translate) }}</p>
-                              <p class="mt-2 text-gray-800">{{ product.sEan || ('NO_EAN' | translate)}}</p>
-                              <p class="mt-2 text-gray-800">{{ product?.sProductNumber || '-'}}</p>
-                              <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
-                            </div>
-                            <!-- </div> -->
-                            <div class="absolute hover-product-option mt-n6 b-content" *ngIf="product['showOption']">
-                              <div class="d-flex justify-content-end">
-                                <button class="btn btn-secondary w-50 mr-2 p-0">{{ "ADD_THIS_ARTICLE" |
-                                  translate}}</button>
+                              </span> -->
+                              <p class="d-block m-0 mb-2 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'| translate) }}</p>
+                              <div class="d-flex align-items-start justify-content-between">
+                                <p class="col-5 m-0 text-gray-800">
+                                  <strong>{{ product?.sProductNumber || '-'}}</strong> <br>
+                                  <span class="text-muted fw-bolder">{{"EAN" | translate}}</span>: {{ product.sEan || ('NO_EAN' | translate)}}
+                                </p>
+                                <div class="relative col-6 ">
+                                  <p class="m-0 text-gray-800">
+                                    <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: {{ product?.sArticleNumber || '-'}}
+                                  </p>
+                                  <!-- <div class="mt-3" *ngIf="product['showOption']">
+                                    <div class="absolute d-flex justify-content-center">
+                                      <button class="btn btn-secondary w-100 mr-2 p-0">{{ "ADD_THIS_ARTICLE" |
+                                        translate}}</button>
+                                    </div>
+                                  </div> -->
+                                </div>
                               </div>
                             </div>
                           </div>
