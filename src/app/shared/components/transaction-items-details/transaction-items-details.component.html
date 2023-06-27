@@ -114,14 +114,14 @@
                                                 x {{ transactionItem.nQuantity }} Q.
                                             </ng-container>
                                         </span>
-                                        <span *ngIf="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
+                                        <span *ngIf="transactionItem.bIsRefunded || transactionItem.oType?.bRefund">
                                         <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="not allowed, item is refunded"> 
-                                        <button class="btn" (click)="bPriceEditMode = true" [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund">
+                                        <button class="btn" (click)="bPriceEditMode = true" [disabled]="transactionItem.bIsRefunded || transactionItem.oType?.bRefund">
                                             <i class="fa fa-edit"></i>
                                         </button>
                                         </i>
                                     </span>
-                                    <span *ngIf="!(transactionItem.bIsRefunded) && !(transactionItem.oType.bRefund)">
+                                    <span *ngIf="!(transactionItem.bIsRefunded) && !(transactionItem.oType?.bRefund)">
                                             <button class="btn" (click)="bPriceEditMode = true">
                                                 <i class="fa fa-edit"></i>
                                             </button>
@@ -148,7 +148,7 @@
                                             <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" type="radio"
                                                 (click)="transactionItem.tType = 'pay'"
                                                 [checked]="transactionItem.tType == 'pay'" 
-                                                [disabled]="transactionItem.bIsRefunded || transactionItem.oType.bRefund" />
+                                                [disabled]="transactionItem.bIsRefunded || transactionItem.oType?.bRefund" />
                             
                                             <label class="form-check-label" for="prep_tr_{{transactionItem.sNumber}}">
                                                 {{ 'RESET_PAYMENT' | translate}}

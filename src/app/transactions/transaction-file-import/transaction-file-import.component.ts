@@ -13,9 +13,10 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 })
 export class TransactionFileImportComponent implements OnInit, OnDestroy {
 
-  delimiter: string = ';';
+  delimiter: string = '';
   stepperIndex: any = 0;
   importForm: any;
+  bDelimiter:boolean = false;
 
   @Input() parsedTransactionData!: Array<any>;
   @Output() parsedTransactionDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
@@ -52,7 +53,8 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
           self.parsedTransactionData = data;
           self.parsedTransactionDataChange.emit(self.parsedTransactionData);
         }
-        reader.readAsText(values[0])
+        reader.readAsText(values[0]);
+        this.bDelimiter = true;
       } else {
         this.parsedTransactionData = [];
         this.parsedTransactionDataChange.emit(this.parsedTransactionData);

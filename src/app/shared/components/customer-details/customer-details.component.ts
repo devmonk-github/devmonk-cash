@@ -106,6 +106,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     currentPage: 1,
     totalItems: 0
   };
+  transactionItemPaginationConfig: any = {
+    id: 'transaction_item_paginate',
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
   activitiesPaginationConfig: any = {
     id: 'activities_paginate',
     itemsPerPage: 10,
@@ -119,6 +125,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     totalItems: 0
   };
  purchaseRequestParams:any ={
+  skip:0,
+  limit:10
+ }
+ transactionItemRequestParams:any ={
   skip:0,
   limit:10
  }
@@ -209,42 +219,55 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   aTransactions !: Array<any>;
   aTransctionTableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'desc' },
-    { key: 'Transaction no.', selected: false, sort: '' },
-    { key: 'Receipt number', selected: false, sort: '' },
-    { key: 'Method', disabled: true },
-    { key: 'Total', disabled: true },
+    { key: 'DATE', selected: true, sort: 'desc' },
+    { key: 'TRANSACTION_NUMBER', selected: false, sort: '' },
+    { key: 'RECEIPT_INVOICE_NUMBER', selected: false, sort: '' },
+    { key: 'METHOD', disabled: true },
+    { key: 'TOTAL', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
   aTransactionItems !: Array<any>;
   aTransctionItemTableHeaders: Array<any> = [
-    { key: 'Date', disabled: true },
-    { key: 'Product no.', disabled: true},
-    { key: 'Description', disabled: true },
-    { key: 'Selling price', disabled: true }
+    { key: 'DATE', disabled: true },
+    { key: 'PRODUCT_NUMBER', disabled: true },
+    { key: 'DESCRIPTION', disabled: true },
+    { key: 'SELLING_PRICE', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
 
   aActivities!: Array<any>;
   aActivityTableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    { key: 'REPAIR_NUMBER', disabled: true },
+    { key: 'TYPE', disabled: true },
+    { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
+    { key: 'END_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
+    { key: 'ACTION', disabled: true }
   ]
 
   aActivityItems!: Array<any>;
   aActivityItemsTableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    { key: 'REPAIR_NUMBER', disabled: true },
+    { key: 'TYPE', disabled: true },
+    { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
+    { key: 'END_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
+    { key: 'ACTION', disabled: true }
   ];
-
+  currentTab = 0;
+  tabs = [
+    { index: 0, name: 'PURCHASES'},
+    { index: 1, name: 'TRANSACTION_ITEMS'},
+    { index: 2, name: 'ACTIVITIES' },
+    { index: 3, name: 'ITEMS_PER_VISIT'  },
+    { index: 4, name: 'STATISTICS' },
+    { index: 5, name: 'GENERAL'}
+  ];
+ 
   tabTitles: any = [
     'Purchases',
     'Transaction Items',
@@ -267,14 +290,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   aStatisticsChartDataLoading = false
   aActivityTitles: any = [
-    { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
-    { type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
-    { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
-    { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
-    { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
-    { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
-    { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
+    { name:"REPAIRS",  type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
+    { name:"SPECIALS",  type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { name:"SHOP_PURCHASE",  type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { name:"QUOTATION",  type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
+    { name:"WEBSHOP",  type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
+    { name:"GIFTCARD",  type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
+    { name:"GOLD_PURCHASE",  type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { name:"PRODUCT_RESERVATION",  type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
   activityTitlesEkind = ['regular', 'reservation', 'giftcard', 'gold-purchase', 'repair' , 'order'];
   aStatisticsChartData: any = [];
@@ -331,43 +354,21 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       _id: this.customer._id,
       iCustomerId: this.customer._id
     }
-
-    
-
-    //if (this.from === 'customer') {
-    this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
-    this.aTransctionItemTableHeaders.push({ key: 'Action', disabled: true });
-    //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();
-   
-    // this.activitiesChartOptions = {
-    //   series: this.aActivityTitles.map((el: any) => el.value),
-    //   colors: this.aActivityTitles.map((el: any) => el.color),
-    //   chart: {
-    //     width: '75%',
-    //     type: "pie"
-    //   },
-    //   title: {
-    //     text: "Number of Activities",
-    //     style: {
-    //       fontWeight: 'bold',
-    //     },
-    //   },
-    //   legend: {
-    //     position: 'left',
-    //     itemMargin: {
-    //       horizontal: 15,
-    //       vertical: 5
-    //     },
-    //     fontWeight: 600,
-    //   },
-    //   labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
-    // };
-
-    // this.loadStatisticsTabData();
     this.getCustomerGroups();
+    this.loadTransactions();
+  }
+
+  onTabChange(index: any) {
+    if (this.currentTab === index) return;
+    this.currentTab = index;
+    if (index === 0) this.loadTransactions();
+    else if (index === 1) this.loadTransactionItems();
+    else if (index === 2) this.loadActivities();
+    else if (index === 3) this.loadActivityItems();
+    else if (index === 4) this.getCoreStatistics();this.loadStatisticsTabData();
   }
   
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
@@ -619,10 +620,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
-    if(tab == 'Transaction Items'){
-      this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+    if(tab == 'TransactionItems'){
+      this.transactionItemPaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (this.transactionItemPaginationConfig.currentPage - 1);
+      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
@@ -648,10 +649,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
-    if(tab == 'Transaction Items'){
-      this.purchasePaginationConfig.currentPage = parseInt(page);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+    if(tab == 'TransactionItems'){
+      this.transactionItemPaginationConfig.currentPage = parseInt(page);
+      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (page - 1);
+      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
@@ -992,7 +993,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             type: "pie"
           },
           title: {
-            text: `Number of Activities (${this.totalActivities})`,
+            text: this.translateService.instant("NUMBER_OF_ACTIVITIES") +  ` (${this.totalActivities})`,
             style: {
               fontWeight: 'bold',
             },
@@ -1005,7 +1006,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             },
             fontWeight: 600,
           },
-          labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+          labels: this.aActivityTitles.map((el: any) => this.translateService.instant(el.name) + " (" + el.value + ") "),
         };
       }
       this.bTransactionsLoader = false;
@@ -1021,8 +1022,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let data = {
       iCustomerId: this.customer._id,
       iTransactionId: 'all',
-      skip: this.purchaseRequestParams.skip,
-      limit: this.purchaseRequestParams.limit,
+      skip: this.transactionItemRequestParams.skip,
+      limit: this.transactionItemRequestParams.limit,
       sFrom: 'customer',
       oFilterBy: {},
       iBusinessId: this.requestParams.iBusinessId
@@ -1030,7 +1031,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
       if (result?.data) {
         this.aTransactionItems = result.data[0].result || [];
-        this.purchasePaginationConfig.totalItems = this.aTransactionItems.length;
+        this.transactionItemPaginationConfig.totalItems = this.aTransactionItems.length;
       }
       this.bTransactionItemLoader = false;
     }, (error) => {
@@ -1079,28 +1080,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       })
   }
 
-  activeTabsChanged(tab: any) {
-    console.log("activeTabsChanged", tab);
-
-    switch (tab) {
-      case this.tabTitles[0]:
-        if (!this.aTransactions) this.loadTransactions();
-        break;
-      case this.tabTitles[1]:
-        if (!this.aTransactionItems) this.loadTransactionItems();
-        break;
-      case this.tabTitles[2]:
-        if (!this.aActivities) this.loadActivities();
-        break;
-      case this.tabTitles[3]:
-        if (!this.aActivityItems) this.loadActivityItems();
-        break;
-      case this.tabTitles[4]:
-        this.getCoreStatistics();
-        this.loadStatisticsTabData();
-        break;
-    }
-  }
+  
 
   loadStatisticsTabData() {
     if (this.customer.bCounter) return;
@@ -1138,7 +1118,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       },
       yaxis: {
         title: {
-          text: "Revenue",
+          text:this.translateService.instant("REVENUE"),
           style: {
             'fontSize': '15px'
           }
@@ -1165,7 +1145,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         type: "pie"
       },
       title: {
-        text: "Payment Methods",
+        text: this.translateService.instant("PAYMENT_METHODS"),
         style: {
           fontWeight: 'bold',
         },

@@ -114,9 +114,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = result.data[0].result;
       // console.log('orignal items', this.transactionItems)
       this.bIsAnyGiftCardDiscount = this.transactionItems.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
-      this.transactionItems = this.transactionItems.filter(o => !this.tillService.aDiscountTypes.includes(o.oType.eKind));
+      this.transactionItems = this.transactionItems.filter(o => !this.tillService.aDiscountTypes.includes(o.oType?.eKind));
       this.transactionItems.forEach(element => {
-        if(!element.bIsRefunded && !element.oType.bRefund){
+        if(!element.bIsRefunded && !element.oType?.bRefund){
           this.bIsDisable = true;
           element.isSelected = true;
         }
@@ -137,7 +137,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // if(!elementDiscount?.length) {
           //in original transaction, we have some with discounts so need to adjust them
           const relatedItem = aRelatedTransactionItem?.data?.find((relatedItem:any)=> 
-            relatedItem.oType.eKind === 'regular' && 
+            relatedItem.oType?.eKind === 'regular' && 
             relatedItem.nDiscount > 0 && 
             relatedItem._id !== element._id &&
             relatedItem.sUniqueIdentifier === element.sUniqueIdentifier);
@@ -182,7 +182,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           // console.log('178 setting to refund - paid amount', item.nPaidAmount, 'total amount', item.nTotalAmount, 'n discount to show', item.nDiscountToShow)
           item.tType = 'refund';
         }
-        if (item.oType.bRefund) {
+        if (item.oType?.bRefund) {
           // console.log('182 bRefund flag true setting item.tType refunded')
           item.tType = 'refunded';
         }

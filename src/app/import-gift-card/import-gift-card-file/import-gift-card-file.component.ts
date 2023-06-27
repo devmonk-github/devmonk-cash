@@ -13,9 +13,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 export class GiftCardFileImportComponent implements OnInit {
 
-  delimiter: string = ';';
+  delimiter: string = '';
   stepperIndex: any = 0;
   importForm: any;
+  bDelimiter:boolean = false;
 
   @Input() parsedGiftCardData!: Array<any>;
   @Output() parsedGiftCardDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
@@ -45,6 +46,7 @@ export class GiftCardFileImportComponent implements OnInit {
           .pipe().subscribe((result: any) => {
             this.parsedGiftCardData = result;
             this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);
+            this.bDelimiter = true;
           }, (error: NgxCSVParserError) => {
             this.parsedGiftCardData = [];
             this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);

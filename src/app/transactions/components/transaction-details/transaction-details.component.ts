@@ -257,6 +257,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   openProductInfo(product: any) {
+    product.isFrom = 'transaction'
     this.dialogRef.triggerEvent.emit({ type: 'open-slider', data: product });
   }
 
@@ -615,7 +616,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     if(!systemCustomer?.bCounter){
       for (const [key, value] of Object.entries(currentCustomerData)) {
         if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
-          console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
+          //console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
           this.showSystemCustomer = true;
         }
       }
