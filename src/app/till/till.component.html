@@ -64,7 +64,7 @@
                       </span>
                     </span>
                   </div>
-                  <span class="d-block text-truncate" [ngClass]="eKind === 'regular' ? 'text-primary' : 'text-gray-800'" class="fw-bold">
+                  <span class="d-block text-truncate fs-7 fw-bolder" [ngClass]="eKind === 'regular' ? 'text-primary' : 'text-gray-800'">
                     {{"STOCK" | translate}}
                   </span>
                 </button>
@@ -78,7 +78,7 @@
                       </span>
                     </span>
                   </div>
-                  <span class="d-block text-truncate" [ngClass]="eKind === 'order' ? 'text-primary' : 'text-gray-800'" class="fw-bold">{{"ORDER" | translate}}</span>
+                  <span class="d-block text-truncate fs-7 fw-bolder" [ngClass]="eKind === 'order' ? 'text-primary' : 'text-gray-800'">{{"ORDER" | translate}}</span>
                 </button>
 
                 <button class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
@@ -91,7 +91,7 @@
                     </span>
                   </div>
 
-                  <span class="d-block text-truncate" [ngClass]="eKind === 'repair' ? 'text-primary' : 'text-gray-800'" class="fw-bold">{{"REPAIR" | translate}}</span>
+                  <span class="d-block text-truncate fs-7 fw-bolder" [ngClass]="eKind === 'repair' ? 'text-primary' : 'text-gray-800'">{{"REPAIR" | translate}}</span>
                 </button>
 
                 <button class="btn btn-white rounded mb-3 me-3 text-hover-primary  w-100px"
@@ -104,7 +104,7 @@
                       </span>
                     </span>
                   </div>
-                  <span class="d-block text-truncate" [ngClass]="eKind === 'giftcard' ? 'text-primary' : 'text-gray-800'" class="fw-bold">
+                  <span class="d-block text-truncate fs-7 fw-bolder" [ngClass]="eKind === 'giftcard' ? 'text-primary' : 'text-gray-800'">
                     {{"GIFTCARD" | translate}}
                   </span>
                 </button>
@@ -118,7 +118,7 @@
                         </span>
                       </span>
                     </div>
-                    <span class="d-block text-truncate" [ngClass]="eKind === 'gold-purchase' ? 'text-primary' : 'text-gray-800'" class="fw-bold">
+                    <span class="d-block text-truncate fs-7 fw-bolder" [ngClass]="eKind === 'gold-purchase' ? 'text-primary' : 'text-gray-800'">
                       {{"GOLD_PURCHASE" |translate}}
                     </span>
                 </button>
@@ -132,7 +132,7 @@
                       </span>
                     </span>
                   </div>
-                  <span class="d-block fw-bold text-gray-800 text-truncate">{{"ADD_EXPENSES" | translate}}</span>
+                  <span class="d-block fw-bolder text-gray-800 fs-7 text-truncate">{{"ADD_EXPENSES" | translate}}</span>
                 </button>
 
                 <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn btn-white rounded p-4 mb-3 me-3 text-hover-primary w-100px"
@@ -145,9 +145,7 @@
                         </span>
                       </span>
                     </div>
-                    <div class="fs-6">
-                      <span class="d-block fw-bold text-gray-800 text-truncate">{{"OPEN_DRAWER" | translate}}</span>
-                    </div>
+                    <span class="d-block fw-bolder text-gray-800 fs-7 text-truncate">{{"OPEN_DRAWER" | translate}}</span>
                   </div>
                 </button>
               </div>
@@ -309,8 +307,8 @@
                     </div>
                   </div>
 
-                  <div class="row bg-light py-5" *ngIf="shopProducts?.length">
-                    <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
+                  <div class="row bg-light py-5" *ngIf="shopProducts && shopProducts.length > 0">
+                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of shopProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
                         <div class="card m-2 shadow-sm h-sm-125px" style="height: 110px;">
@@ -321,23 +319,41 @@
                                 src="{{product.aImage[0]? product.aImage[0] : '../assets/images/no-photo-available.jpg' }}"
                                 class="rounded">
                             </div>
-                            <div class="l-content">
-                              <p class="block m-0 mb-2 prod-name">{{ product?.oName['en'] || ('NO_NAME'| translate) }}</p>
-                              <p class="mt-2 text-gray-800">{{ product.sEan || ('NO_EAN' | translate)}}</p>
-                              <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
-                              <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800' : 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
-                              <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
-                              <p *ngIf="product?.oCurrentLocation?.nStock === 0 && eKind !== 'order'" class="text-break text-danger">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
-                              <p [ngClass]="!bSerialSearchMode? 'bmt-2 text-gray-800' : 'bmt-2 text-muted'" class="text-gray-800">{{"STOCK"| translate}}: {{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}} </p>
+                            <div class="w-100 mx-4">
+                              <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
+                                  "BUSINESS_PRODUCT"| translate}}</label> -->
+                              <!-- <span>
+                                <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                              </span> -->
+                              <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'| translate) }}</p>
+                              <div class="d-flex align-items-start justify-content-between">
+                                <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
+                                  <strong>{{ product.sProductNumber  || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
+                                  <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
+                                  <strong>{{"STOCK"| translate}}</strong>: <span [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger':''">{{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}}</span>
+                                  <span *ngIf="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'" class="text-danger ms-3">
+                                    <i data-bs-toggle="tooltip" data-bs-placement="top" title="{{'WARNING_STOCK_QUANTITY_IS_0'|translate}}" class="fa fa-circle-exclamation"></i>
+                                  </span>
+                                </p>
+                                <p class="col-xl-5 col-sm-4 m-xl-0 mx-sm-2 text-gray-800">
+                                  <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: <br>
+                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber :  (product?.sArticleNumber || '-') }} 
+                                  <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{product.sArticleNumber}}"></i>
+                                  <br>
+                                  <span *ngIf="bSerialSearchMode"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</span>
+                                </p>
+                              </div>
+
                             </div>
+                            <!-- </div> -->
                           </div>
                         </div>
                       </a>
                     </div>
                   </div>
-                  <hr *ngIf="commonProducts?.length">
-                  <div class="row" *ngIf="commonProducts?.length">
-                    <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of commonProducts"
+                  <hr *ngIf="commonProducts && commonProducts.length > 0">
+                  <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
+                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of commonProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
                         <div class="card m-2 shadow-sm" style="height: 110px;">
