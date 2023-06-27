@@ -27,8 +27,6 @@ import { ReceiptService } from '../shared/service/receipt.service';
 import { TerminalService } from '../shared/service/terminal.service';
 import { TillService } from '../shared/service/till.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
-import * as _moment from 'moment';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -69,8 +67,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedTransaction: any = null;
   customer: any;
   searchKeyword: any;
-  shopProducts: any;
-  commonProducts: any;
+  shopProducts: any = [];
+  commonProducts: any = [];
   supplierId!: string;
   iActivityId!: string;
   sNumber: string = '';
@@ -252,7 +250,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
- 
+
 
   async mapFiscallyData() {
     let _fiscallyData: any;
@@ -394,8 +392,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.nFinalAmount = +(Math.abs(this.nItemsTotalToBePaid - this.nTotalPayment).toFixed(2));
     }
 
-    // console.log({ 
-    //   nItemsTotalToBePaid: this.nItemsTotalToBePaid, 
+    // console.log({
+    //   nItemsTotalToBePaid: this.nItemsTotalToBePaid,
     //   nTotalPayment: this.nTotalPayment,
     //   nFinalAmount: this.nFinalAmount,
     //   availableAmount: this.availableAmount,
@@ -768,7 +766,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       return (_.sumBy(this.payMethods, 'amount') || 0);
 
       // not to consider giftcard and loyalty points as a payment
-      // + this.redeemedLoyaltyPoints; //(_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + 
+      // + this.redeemedLoyaltyPoints; //(_.sumBy(this.appliedGiftCards, 'nAmount') || 0) +
     }
     return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
@@ -837,9 +835,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   startTerminalPayment() {
-    this.dialogService.openModal(TerminalDialogComponent, 
-      { 
-        cssClass: 'modal-lg', 
+    this.dialogService.openModal(TerminalDialogComponent,
+      {
+        cssClass: 'modal-lg',
         context: { payments: this.payMethods },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -867,10 +865,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
         this.toastrService.show({
           type: 'danger',
-          text: `You selected '${element.oGoldFor.name}' as a administrative procedure for this gold purchase. 
-        If your administration supports special rules for 'VAT' processing on gold purchases please remove all the other products/items on this purchase. 
-        In case you're following the 'regular' procedure like most retailers (95%): Change the option 'Cash/Bank' to 'Stock/Repair/Giftcard/Order' on the gold purchase item's dropdown. 
-        You can still give cash to your customer or select bank (transfer) as a method. 
+          text: `You selected '${element.oGoldFor.name}' as a administrative procedure for this gold purchase.
+        If your administration supports special rules for 'VAT' processing on gold purchases please remove all the other products/items on this purchase.
+        In case you're following the 'regular' procedure like most retailers (95%): Change the option 'Cash/Bank' to 'Stock/Repair/Giftcard/Order' on the gold purchase item's dropdown.
+        You can still give cash to your customer or select bank (transfer) as a method.
         In that case on paper the governement handles this 'gold purchase' as an exchange to goods (which may be done on a different transaction.`,
           noAutoClose: true
         });
@@ -1088,14 +1086,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.dispatchEvent('startIdle');
 
-    oDialogComponent.close.subscribe((result:any) => { 
+    oDialogComponent.close.subscribe((result:any) => {
       if(result){
         this.loadTransaction()
       } else {
         this.clearAll();
         if (this.tillService.settings.bLockCashRegisterAfterTransaction)
           this.dispatchEvent('lockScreen')
-      } 
+      }
 
     });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
@@ -1296,7 +1294,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.shopProducts = response.result;
-        this.shopProducts.map((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
+        this.shopProducts.forEach((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
+        // console.log('shop products are loaded')
         if(this.bFromBarcode && this.shopProducts.length == 1){
           this.bFromBarcode = false;
           this.onSelectProduct(this.shopProducts[0], 'business', 'shopProducts');
@@ -1328,6 +1327,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.commonProducts = response.result;
+        // console.log('common products loaded', this.commonProducts)
       }
     }, (error) => {
       this.bSearchingProduct = false;
@@ -1385,7 +1385,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
     const sDescription = this.tillService.getDescriptionWithGemDetails(product);
-    
+
     // console.log({product});
     this.transactionItems.push({
       name: name,
@@ -1428,15 +1428,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
-    this.resetSearch();
     this.clearPaymentAmounts();
     if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
+    // console.log('calling reset search now')
+    this.resetSearch();
   }
 
   resetSearch() {
     this.searchKeyword = '';
     this.shopProducts = [];
     this.commonProducts = [];
+    // console.log('reset search called', this.shopProducts, this.commonProducts)
   }
 
   search() {
@@ -1724,7 +1726,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if(result?.data?.length && result?.data[0]?.result?.length)
       this.oStaticData.articleGroupsList = result.data[0].result;
     });
-    
+
   }
 
   fetchQuickButtons() {
@@ -1854,7 +1856,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-    
+
     const oBody = {
       iBusinessId: this.iBusinessId,
       searchValue: barcode
@@ -1888,7 +1890,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         } else if (barcode.startsWith("R")) {
           // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-        } 
+        }
       }
     }
   }
@@ -1976,6 +1978,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   dispatchEvent(event:string) {
-    window.dispatchEvent(new Event(event))    
+    window.dispatchEvent(new Event(event))
   }
 }

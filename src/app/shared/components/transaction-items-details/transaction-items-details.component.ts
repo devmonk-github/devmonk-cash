@@ -37,7 +37,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     bIsMoreTransaction: false,
     sMessage: ''
   }
-  
+
   requestParams: any = {
     iBusinessId: "",
     aProjection: [
@@ -76,7 +76,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
     }
-    
+
   ngOnInit() {
     this.apiService.setToastService(this.toastrService);
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
@@ -103,7 +103,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     } else {
       /* fetching the related transaction-item detail if there is any mutiple pre-payment then need to change the payment-amount */
       aRelatedTransactionItem = await this.getRelatedTransactionItem(this.transaction?._id);
-      
+
       if (aRelatedTransactionItem?.data?.length > 1) {
         // console.log('oShowWarning: ', this.oShowWarning);
         this.oShowWarning.bIsMoreTransaction = true;
@@ -125,28 +125,30 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
         // let nRedeemedLoyaltyPoints = 0;
         // let nDiscountnPaymentAmount  = 0;
-        
+
         // elementDiscount.forEach(dElement => {
         //   // console.log({ dElement })
         //   if (dElement.oType.eKind === 'loyalty-points-discount' || dElement.oType.eKind === "discount" || dElement.oType.eKind === 'giftcard-discount'){
         //     nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
         //     // console.log('increased nDiscountnPaymentAmount', nDiscountnPaymentAmount)
-        //   } 
+        //   }
         // });
         // element.nDiscountnPaymentAmount = nDiscountnPaymentAmount;
         // if(!elementDiscount?.length) {
           //in original transaction, we have some with discounts so need to adjust them
-          const relatedItem = aRelatedTransactionItem?.data?.find((relatedItem:any)=> 
-            relatedItem.oType?.eKind === 'regular' && 
-            relatedItem.nDiscount > 0 && 
-            relatedItem._id !== element._id &&
-            relatedItem.sUniqueIdentifier === element.sUniqueIdentifier);
-          if(relatedItem) {
-            element.nDiscount = -(relatedItem.nDiscount);
-            element.nPaidAmount += element.nDiscount;
-          }
+
+          /* AS WE ARE NOW STORING DISCOUNT ON AN ACTIVITY ITEM ITSELF SO NO NEEDED TO LOOK INTO RELATED ITEMS */
+          // const relatedItem = aRelatedTransactionItem?.data?.find((relatedItem:any)=>
+          //   relatedItem.oType?.eKind === 'regular' &&
+          //   relatedItem.nDiscount > 0 &&
+          //   relatedItem._id !== element._id &&
+          //   relatedItem.sUniqueIdentifier === element.sUniqueIdentifier);
+          // if(relatedItem) {
+          //   element.nDiscount = -(relatedItem.nDiscount);
+          //   element.nPaidAmount += element.nDiscount;
+          // }
         // }
-        // console.log('before', { nQuantity: element.nQuantity, nPaidAmount: element.nPaidAmount, nPriceIncVat: element.nPriceIncVat})
+        // console.log('before', { element, nQuantity: element.nQuantity, nPaidAmount: element.nPaidAmount, nPriceIncVat: element.nPriceIncVat, nDiscount: element.nDiscount})
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         const nDiscountAmount = +((element.bDiscountOnPercentage ? this.tillService.getPercentOf(element.nPriceIncVat, element?.nDiscount || 0) : element.nDiscount).toFixed(2));
         element.nDiscountToShow = (nDiscountAmount * element.nQuantity) + (element.nRedeemedLoyaltyPoints || 0) + (element?.nRedeemedGiftcardAmount || 0);
@@ -166,8 +168,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
         // console.log(168, {item})
-        // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
-        //                         + (item?.nRedeemedLoyaltyPoints || 0) 
+        // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity)
+        //                         + (item?.nRedeemedLoyaltyPoints || 0)
         //                         + (item?.nRedeemedGiftcardAmount || 0);
         // console.log('total amount', item.nTotalAmount, 'priceIncVat', item.nPriceIncVat, 'discount to show', item.nDiscountToShow, 'paid amount', item.nPaidAmount)
         const nTotalAmount = +((item.nPriceIncVat * item.nQuantity).toFixed(2));
@@ -198,7 +200,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     });
   }
 
-  
+
 
   selectAll(event: any) {
     // this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
@@ -211,7 +213,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         if(event.checked) this.bIsDisable = true;
         else this.bIsDisable = false;
       }
-    });    
+    });
   }
 
   checkSelectedItem(index:any){
@@ -239,7 +241,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         }else{
           this.dialogRef.close.emit(data);
         }
-       
+
       }
     }
   }
