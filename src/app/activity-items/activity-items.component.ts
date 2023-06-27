@@ -32,7 +32,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
-  
+
   requestParams: any = {
     create: {
       minDate: new Date('01-01-2015'),
@@ -64,7 +64,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   sSearchValue: string = '';
   showAdvanceSearch = false;
   isDownloadEnable = false;
-  
+
 
   workstations: Array<any> = [];
   employees: Array<any> = [];
@@ -84,7 +84,10 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     { key: 'TO_REPAIR', value: 'to-repair' },
     { key: 'PART_ARE_ORDER', value: 'part-are-order' },
     { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
-    { key: 'DELIVERED', value: 'delivered' }]
+    { key: 'DELIVERED', value: 'delivered' },
+    { key: 'PRODUCT_ORDERED', value: 'product-ordered' },
+    { key: 'ORDER_READY', value: 'order-ready' },
+  ]
 
   aKind: Array<any> = [
     { key: 'RESERVATION', value: 'reservation' },
@@ -168,7 +171,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         minDate: undefined,
         maxDate: undefined
       },
-     
+
       sortBy: 'dCreatedDate',
       sortOrder: 'desc',
       selectedRepairStatuses: [],
@@ -217,13 +220,13 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (error: any) => {
         this.showLoader = false;
       })
-      
+
   }
   async fetchBusinessPartnerName(iBusinessPartnerId: any) {
     let result: any = await this.apiService.getNew('core', `/api/v1/business/partners/${iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).toPromise();
     return result?.data?.sName;
   }
-  
+
   openActivity(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent, {
       cssClass: 'w-fullscreen mt--5',

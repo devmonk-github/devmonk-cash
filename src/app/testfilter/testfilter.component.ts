@@ -19,7 +19,7 @@ import { TillService } from '../shared/service/till.service';
   providers: [BarcodeService]
 })
 export class TestFilterComponent implements OnInit, OnDestroy {
-  
+
   bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
@@ -87,7 +87,10 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     { key: 'TO_REPAIR', value: 'to-repair' },
     { key: 'PART_ARE_ORDER', value: 'part-are-order' },
     { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
-    { key: 'DELIVERED', value: 'delivered' }]
+    { key: 'DELIVERED', value: 'delivered' },
+    { key: 'PRODUCT_ORDERED', value: 'product-ordered' },
+    { key: 'ORDER_READY', value: 'order-ready' },
+  ];
 
   aKind: Array<any> = [
     { key: 'RESERVATION', value: 'reservation' },
@@ -256,7 +259,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       this.openModal(barcode);
     });
   }
-  
+
   convert(str:any) {
     var date = new Date(str),
       mnth = ("0" + (date.getMonth() + 1)).slice(-2),
@@ -374,7 +377,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
         { key: 'REM_AMOUNT', value: 'nGiftcardRemainingAmount', width: '10%' },
         { key: 'STATUS', value: 'eActivityItemStatus', width: '10%' }
       ]
-    
+
     this.dialogService.openModal(ActivityItemExportComponent, {
       cssClass: 'model-lg',
       closeOnEsc: true,
