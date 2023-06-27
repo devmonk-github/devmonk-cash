@@ -107,7 +107,7 @@
                         (click)="openTransaction(activity, 'activity')">
                         <label class="mx-auto"> {{"EXCHANGE" | translate}}</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWebOrder()">
+                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="generatePDF(false)">
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">{{ "DOWNLOAD_PDF" | translate}}</label>
                     </button>

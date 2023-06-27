@@ -43,6 +43,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
     { key: 'COMPLETED', value: 'completed' },
     { key: 'REFUND' , value:'refund'},
     { key: 'REFUNDINCASHREGISTER', value: 'refundInCashRegister' },
+    { key: 'PRODUCT_ORDERED', value: 'product-ordered' },
+    { key: 'ORDER_READY', value: 'order-ready' },
   ]
   requestParams: any = {
     selectedTransactionStatuses: [],
@@ -157,12 +159,12 @@ export class ServicesComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-  ) { 
+  ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.userType = localStorage.getItem('type');
   }
-  
+
   async ngOnInit(): Promise<void> {
     this.apiService.setToastService(this.toastrService);
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -176,12 +178,12 @@ export class ServicesComponent implements OnInit, OnDestroy {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue'] //, 'webshop-reservation'
     }
-    
+
     // this.showLoader = true;
-    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */    
+    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.loadTransaction();
     this.fetchBusinessDetails();
-   
+
     this.getLocations();
     this.getWorkstations();
     this.listEmployee();
@@ -336,7 +338,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
-    
+
     this.requestParams.estimateDate = {
       minDate: this.filterDates.estimate.minDate,
       maxDate: this.filterDates.estimate.maxDate,
@@ -355,7 +357,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
           return item;
         });
 
-      } 
+      }
       if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();

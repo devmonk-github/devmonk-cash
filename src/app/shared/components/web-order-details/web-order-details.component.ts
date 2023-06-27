@@ -52,13 +52,13 @@ export class WebOrderDetailsComponent implements OnInit {
   showDeliverBtn: Boolean = false;
   showDetails: Boolean = true;
   downloading: Boolean = false;
-  iLocationId: string = '';
+  iLocationId: any = localStorage.getItem("currentLocation");
   businessDetails: any;
   computerId: number | undefined;
   printerId: number | undefined;
   from: String = '';
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
-  printActionSettings: any;
+  // printActionSettings: any;
   printSettings: any;
   aTemplates: any;
   requestParams: any = {
@@ -83,6 +83,7 @@ export class WebOrderDetailsComponent implements OnInit {
   };
   selectedLanguage: string;
   bIsSaving: boolean = false;
+  iWorkstationId: any = localStorage.getItem("currentWorkstation");
 
 
   constructor(
@@ -108,7 +109,6 @@ export class WebOrderDetailsComponent implements OnInit {
       const index2 = this.statusesForItems.indexOf('cancelled');
       if (index > -1) this.statusesForItems.splice(index2, 1);
     }
-    this.iLocationId = localStorage.getItem("currentLocation") || '';
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.getPrintSetting();
@@ -116,14 +116,14 @@ export class WebOrderDetailsComponent implements OnInit {
 
     this.fetchTransactionDetails();
 
-    const [_printActionSettings, _printSettings]: any = await Promise.all([
-      this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
-      this.getPdfPrintSetting({ oFilterBy: {} })
-    ]);
-    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
-    this.printSettings = _printSettings?.data[0]?.result;
+    // const [_printSettings]: any = await Promise.all([ //_printActionSettings,
+      // this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
+    this.getPdfPrintSetting()
+    // ]);
+    // this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
+    
 
-    console.log(this.activity)
+    // console.log(this.activity)
   }
 
   deliver(type: string) {
@@ -268,10 +268,6 @@ export class WebOrderDetailsComponent implements OnInit {
       });
   }
 
-  downloadWebOrder() {
-    this.generatePDF(false);
-  }
-
   getTemplate(types: any) {
     const body = {
       iBusinessId: this.business._id,
@@ -283,17 +279,11 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   async generatePDF(print: boolean, sAction?: string) {
-    // const sName = 'Sample'
     const eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
     this.activity.businessDetails = this.businessDetails;
     this.activity.currentLocation = this.businessDetails.currentLocation;
-    // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
-    //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-    //     this.activity.currentLocation = this.businessDetails.aLocation[i];
-    //   }
-    // }
-
+    
     const [_template, _businessLogoUrl]: any = await Promise.all([
       this.getTemplate([eType]).toPromise(),
       this.getBase64FromUrl(this.businessDetails?.sLogoLight).toPromise()
@@ -301,11 +291,6 @@ export class WebOrderDetailsComponent implements OnInit {
 
     this.transactionDetails.sBusinessLogoUrl = _businessLogoUrl.data;
     const template = _template.data[0];
-
-    // this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
-    //   async (result: any) => {
-    // const filename = new Date().getTime().toString()
-
 
     const oDataSource = {
       ...JSON.parse(JSON.stringify(this.transactionDetails)),
@@ -328,12 +313,8 @@ export class WebOrderDetailsComponent implements OnInit {
       }
     }
 
-
     oDataSource.businessDetails = this.businessDetails;
     oDataSource.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
-    // console.log(319, this.businessDetails);
-    // const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == this.iLocationId);
-    // const currentLocation = this.businessDetails.aLocation[locationIndex];
     oDataSource.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + this.businessDetails.currentLocation.oAddress.houseNumber + " " + this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + this.businessDetails.currentLocation.oAddress.postalCode + " " + this.businessDetails.currentLocation.oAddress.city;
     oDataSource.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
 
@@ -374,38 +355,21 @@ export class WebOrderDetailsComponent implements OnInit {
       oDataSource.total += item.nPaidAmount;
       oDataSource.totalAfterDisc += item.nTotalAmount;
     });
-
-    // let dataObject = this.transactionDetails;
-    // dataObject.oBusiness = this.businessDetails;
-    // dataObject.aTransactionItems = this.activityItems;
-
+    const oSettings = this.printSettings?.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf')
     const response = await this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
       templateData: template,
-      printSettings: this.printSettings,
-      printActionSettings: this.printActionSettings,
-      eSituation: 'is_created',
-      sAction: sAction,
+      printSettings: oSettings,
+      // printActionSettings: this.printActionSettings,
+      // eSituation: 'is_created',
+      sAction: (print) ? 'print' : 'download',
       sApiKey: this.businessDetails?.oPrintNode?.sApiKey
     }).toPromise();
 
     if (sAction == 'sentToCustomer') {
       this.sendMailToCustomer(response);
     }
-    // this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.activity?._id)
-    //   .then(() => {
-    //     this.downloading = false;
-    //   })
-    //   .catch((e: any) => {
-    //     this.downloading = false;
-    //     console.error('err', e)
-    //   })
-
-    // }, (error) => {
-    //   this.downloading = false;
-    //   console.log('printing error', error);
-    // })
   }
 
   fetchTransactionItems() {
@@ -576,12 +540,17 @@ export class WebOrderDetailsComponent implements OnInit {
     this.bIsSaving = true;
   }
 
-  getPdfPrintSetting(oFilterBy?: any) {
+  getPdfPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      ...oFilterBy
+      iWorkstationId: this.iWorkstationId
     }
-    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
+      console.log(result)
+      if(result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = result?.data[0]?.result;
+      }
+    });
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {

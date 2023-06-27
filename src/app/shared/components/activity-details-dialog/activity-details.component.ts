@@ -67,7 +67,7 @@ export class ActivityDetailsComponent implements OnInit {
   faDownload = faDownload;
   submitted = false;
   repairStatus = [
-    { key: 'NEW', value: 'new' },
+    { key: 'NEW', value: 'new'},
     { key: 'INFO', value: 'info' },
     { key: 'PROCESSING', value: 'processing' },
     { key: 'CANCELLED', value: 'cancelled' },
@@ -80,7 +80,9 @@ export class ActivityDetailsComponent implements OnInit {
     { key: 'TO_REPAIR', value: 'to-repair' },
     { key: 'PART_ARE_ORDER', value: 'part-are-order' },
     { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
-    { key: 'DELIVERED', value: 'delivered' }
+    { key: 'DELIVERED', value: 'delivered' },
+    { key: 'PRODUCT_ORDERED', value: 'product-ordered' },
+    { key: 'ORDER_READY', value: 'order-ready' },
   ]
 
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
@@ -236,7 +238,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.getListSuppliers()
     this.getBusinessBrands();
     this.getAllArticleGroups();
-      
+
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative', 'giftcard'] } }),
@@ -277,7 +279,7 @@ export class ActivityDetailsComponent implements OnInit {
       if (result?.data) {
         this.customer = result?.data;
         // this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
-      }      
+      }
     })
   }
 
@@ -521,7 +523,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   openTransaction(transaction: any, itemType: any) {
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", 
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl",
       context: { transaction: this.activity, itemType, selectedId: transaction._id },
       hasBackdrop: true,
       closeOnBackdropClick: false,
@@ -564,12 +566,12 @@ export class ActivityDetailsComponent implements OnInit {
       type = (oDataSource?.oType?.eKind === 'regular' || (sType && sType === 'alternative')) ? 'repair_alternative' : 'repair';
     }
     const sEDA = oDataSource.eEstimatedDateAction;
-    
+
     if (sEDA === 'call_on_ready')
       oDataSource.eEstimatedDateAction = this.translationService.instant('CALL_ON_READY');
     else if (sEDA === 'email_on_ready')
       oDataSource.eEstimatedDateAction = this.translationService.instant('EMAIL_ON_READY');
-    else 
+    else
       oDataSource.eEstimatedDateAction = this.translationService.instant('WHATSAPP_ON_READY');
 
     oDataSource.businessDetails = this.tillService.processBusinessDetails(this.businessDetails);
@@ -629,7 +631,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
-    
+
     if (!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
@@ -639,7 +641,7 @@ export class ActivityDetailsComponent implements OnInit {
       (error: any) => {
         console.error(error)
       }
-    );  
+    );
   }
 
   matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
@@ -798,7 +800,7 @@ export class ActivityDetailsComponent implements OnInit {
     const transaction = _oTransaction?.data?.result[0];
     transactionItem.bFetchingTransaction = false;
     event.target.disabled = false;
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--5", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' }, hasBackdrop: true })
       .instance.close.subscribe(
         (res: any) => {
         });
@@ -848,7 +850,7 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
-    
+
     oDataSource.sActivityNumber = oDataSource.sNumber;
     let nTotalPaidAmount = 0;
     oDataSource.activityitems.forEach((item: any) => {
@@ -960,7 +962,7 @@ export class ActivityDetailsComponent implements OnInit {
       }).instance.close.subscribe(result => {
         if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
-        
+
       }, (error) => {
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });

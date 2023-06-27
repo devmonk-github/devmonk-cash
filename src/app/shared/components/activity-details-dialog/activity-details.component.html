@@ -1052,43 +1052,40 @@
                                                 </div>
                                             </div>
 
-                                            <!--TODO: UNCOMMENT THIS-->
-                                            <!-- <div class="col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
+                                            
+                                            <div class="col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
                                                 <p class="fw-bolder m-0 mb-3 text-uppercase">{{"USAGE_HISTORY"| translate}}</p>
-                                                <div class="w-100 bg-gray-100 rounded-top p-3">
-                                                    <div class="w-100 border-bottom border-gray-400 d-flex align-items-center">
-                                                        <p class="m-0 fw-bolder col-4">{{ "RECEIPT_NUMBER" | translate}}</p>
-                                                        <p class="m-0 fw-bolder col-3">{{ "CREATED_DATE" | translate}}</p>
-                                                        <p class="m-0 fw-bolder col-3">{{ "AMOUNT_USED" |translate}}</p>
-                                                        <div class="col-2"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="w-100 bg-gray-100 p-3 pt-1 rounded-bottom" style="max-height: 150px; overflow-y: auto;"> -->
-                                                    <!-- TODO: FETCH USAGE HISTORY OF THE GIFTCARD -->
-                                                    <!-- REPLACE WITH TRUE VALUE -->
-                                                    <!-- <div class="border-bottom border-gray-300"> --> <!--start here for *ngFor='let receipt of activity.receipts' -->
-                                                        <!-- <div class="w-100 d-flex align-items-center my-2">
-                                                            <p class="m-0 col-4">T-NUMBER</p>
-                                                            <p class="m-0 col-3 text-truncate">Jun 21, 2023, 11:10:02</p>
-                                                            <p class="m-0 col-3">€100.00</p>
-                                                            <div class="col-2 d-flex justify-content-end"> -->
-                                                                <!-- <button class="btn btn-info btn-sm">--> <!-- (click)="showTransaction(receipt, $event)" -->
-                                                                    <!--<i class="fa fa-eye"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div> 
-                                                    </div>
-                                                </div> 
-                                            </div>-->
+                                                <table class="table table-sm table-hover table-rounded table-striped gs-7">
+                                                    <thead class="fw-bolder fs-6 text-gray-400 border-gray-200 text-uppercase">
+                                                        <tr>
+                                                            <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                            <th>{{ "CREATED_DATE" | translate}}</th>
+                                                            <th>{{ "AMOUNT_USED" |translate}}</th>
+                                                            <th>{{ "ACTION" | translate }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="align-middle">
+                                                        <tr *ngFor="let oItem of activity.aGiftcardRedeemedTransactionData">
+                                                                <td>{{ oItem.sNumber }}</td>
+                                                                <td>{{ oItem.dRedeemedDate | date:'MMM dd, yyyy, HH:mm:ss' }}</td>
+                                                                <td>{{ oItem.nAmount | currency: tillService.currency }}</td>
+                                                                <td class="d-flex align-items-center">
+                                                                    <button class="btn btn-secondary btn-sm" (click)="showTransaction(oItem, $event)">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </button>
+                                                                </td>
+                                                        </tr>
+                                                    </tbody> 
+                                                </table>
+                                            </div>
 
                                         </div>
                                         <div class="row table-responsive">
                                             <div class="col-xl-7 col-sm-12">
                                                 <table
-                                                    class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                                    <thead>
-                                                        <tr
-                                                            class="text-start text-gray-700 fw-bolder fs-7 text-uppercase gs-0">
+                                                    class="table table-sm table-hover table-rounded table-striped gs-7">
+                                                    <thead class="fw-bolder fs-6 text-gray-400 border-gray-200 text-uppercase">
+                                                        <tr>
                                                             <th>{{ "RECEIPT_NUMBER" | translate}}</th>
                                                             <th>{{ "CREATED_DATE" | translate}}</th>
                                                             <th>{{ "AMOUNT" |translate}}</th>
@@ -1097,7 +1094,7 @@
                                                             </ng-container>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="fw-bolder text-gray-600">
+                                                    <tbody class="align-middle">
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
@@ -1106,9 +1103,8 @@
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
-                                                                        <button class="btn btn-secondary"
-                                                                            (click)="showTransaction(receipt, $event)">
-                                                                            {{ 'VIEW' | translate }}
+                                                                        <button class="btn btn-secondary btn-sm" (click)="showTransaction(receipt, $event)">
+                                                                            <i class="fa fa-eye"></i>
                                                                         </button>
                                                                         <div *ngIf="receipt.bFetchingTransaction"
                                                                             class="spinner-border mx-2"></div>
@@ -1556,7 +1552,7 @@
                                         <div class="row table-responsive">
                                             <div class="col-xl-7 col-sm-12">
                                                 <table
-                                                    class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                                    class="table align-middle table-row-dashed fs-6 ataTable no-footer">
                                                     <thead>
                                                         <tr
                                                             class="text-start text-gray-700 fw-bolder fs-7 text-uppercase gs-0">
@@ -1577,9 +1573,9 @@
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
-                                                                        <button class="btn btn-secondary"
+                                                                        <button class="btn btn-secondary btn-sm"
                                                                             (click)="showTransaction(receipt, $event)">
-                                                                            {{ 'VIEW' | translate }}
+                                                                            <i class="fa fa-eye"></i>
                                                                         </button>
                                                                         <div *ngIf="receipt.bFetchingTransaction"
                                                                             class="spinner-border mx-2"></div>
