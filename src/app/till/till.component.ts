@@ -1301,6 +1301,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.bFromBarcode = false;
           this.onSelectProduct(this.shopProducts[0], 'business', 'shopProducts');
         }
+        this.shopProducts.forEach((product:any) => {
+          if(product?.sArticleNumber){
+            product.sNewArticleNumber = product.sArticleNumber.split('*/*')[0];
+          }
+        });
       }
       this.bSearchingProduct = false;
     }, (error) => {
