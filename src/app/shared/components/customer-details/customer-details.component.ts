@@ -290,14 +290,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   aStatisticsChartDataLoading = false
   aActivityTitles: any = [
-    { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
-    { type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
-    { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
-    { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
-    { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
-    { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
-    { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
+    { name:"REPAIRS",  type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
+    { name:"SPECIALS",  type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { name:"SHOP_PURCHASE",  type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { name:"QUOTATION",  type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
+    { name:"WEBSHOP",  type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
+    { name:"GIFTCARD",  type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
+    { name:"GOLD_PURCHASE",  type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { name:"PRODUCT_RESERVATION",  type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
   activityTitlesEkind = ['regular', 'reservation', 'giftcard', 'gold-purchase', 'repair' , 'order'];
   aStatisticsChartData: any = [];
@@ -1006,7 +1006,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             },
             fontWeight: 600,
           },
-          labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+          labels: this.aActivityTitles.map((el: any) => this.translateService.instant(el.name) + " (" + el.value + ") "),
         };
       }
       this.bTransactionsLoader = false;
