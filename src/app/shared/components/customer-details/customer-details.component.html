@@ -996,19 +996,12 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
-                        <ng-select [multiple]="true" [items]="customerGroupList" [(ngModel)]="this.customer.aGroups"
-                            name="aCustomers" bindValue="_id" bindLabel="sName" placeholder="Select" required
-                            [closeOnSelect]="false">
-
-                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                <!-- {{item$.selected}} -->
-                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                    [ngModel]="item$.selected" />
-                                {{item.sName}}
-                            </ng-template>
-
-                        </ng-select>
+                        <div class="col-12 me-4 customers-fields">
+                            <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
+                            <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false" [(ngModel)]="this.customer.aGroups">
+                                <ng-option *ngFor="let group of customerGroupList" [value]="group._id">{{group.sName}}</ng-option>
+                            </ng-select>
+                        </div>
                     </div>
 
                     <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
