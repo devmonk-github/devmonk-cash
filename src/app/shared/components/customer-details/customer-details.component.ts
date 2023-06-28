@@ -713,7 +713,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
           { text: "NO", value: 'close' }
         ];
-        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST");
+        let bodyText = " ("+addresses?.data?.length+") "+ this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST");
         this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: true, })
           .instance.close.subscribe((status: any) => {
             if (status == 'success') {
