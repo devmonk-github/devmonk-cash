@@ -358,6 +358,15 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   updateSettings() {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    }else{
+      this.settings.aBagNumbers = [ 
+        {
+          iLocationId: this.iLocationId,
+          bAutoIncrementBagNumbers: true,
+          nLastBagNumber: this.settings.currentLocation.nLastBagNumber,
+          sPrefix: this.settings.currentLocation.sPrefix
+        }
+      ]
     }
     if(this.settings?.aCashRegisterPrefill?.length) {
       const oCurrentSettrings = {
