@@ -166,19 +166,15 @@
                       </div>
                       <div class="col-md-8">
                         <div *ngIf="propertyOptions[property.iPropertyId]?.length">
-                          <ng-select class="w-100" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                            [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
-                            bindLabel="sName" placeholder="Select" (click)="onProperties(property.iPropertyId)" required
-                            [closeOnSelect]="false">
-
-                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                              <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                [ngModel]="item$.selected" />
-                              {{item.sName}}
-                            </ng-template>
-
+                          <ng-select class="form-control form-control-solid p-0" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                          [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
+                          bindLabel="sName" (click)="onProperties(property.iPropertyId)" [clearable]="false">
+                          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                            <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                              [ngModel]="item$.selected" />
+                            {{item.sName}}
+                          </ng-template>
                           </ng-select>
-
                         </div>
                       </div>
                     </div>
