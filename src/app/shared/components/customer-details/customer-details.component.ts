@@ -340,7 +340,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     } else {
       this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
     }
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -710,11 +710,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       const addresses = await this.checkAddress(addressBody);
       if (addresses?.data?.length) {
         let confirmBtnDetails = [
-          { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
-          { text: "NO", value: 'close' }
+          { text: "YES", value: 'success', status: 'success', class: 'btn-success me-3' },
+          { text: "NO", value: 'close', class: 'btn-warning'}
         ];
-        let bodyText = " ("+addresses?.data?.length+") "+ this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST");
-        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: true, })
+        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addresses?.data?.length +")";
+        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header:'ADDRESS_ALREADY_EXISTS', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: false })
           .instance.close.subscribe((status: any) => {
             if (status == 'success') {
               this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
@@ -739,7 +739,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                   console.log(error.message);
                 });
             } else {
-              this.toastService.show({ type: 'warning', text: "customer not created" })
+              this.toastService.show({ type: 'warning', text: this.translations[`CUSTOMER_NOT_CREATED`] })
             }
           })
       } else {
