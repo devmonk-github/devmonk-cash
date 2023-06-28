@@ -160,6 +160,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nClientId:any="-";
 
   bFromBarcode: boolean = false;
+  bProductSelected: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -1290,6 +1291,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     this.bSearchingProduct = true;
+    this.bProductSelected = false;
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         const response = result.data[0];
@@ -1331,7 +1333,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bSearchingProduct = false;
       if (result && result.data && result.data.length) {
         const response = result.data[0];
-        this.commonProducts = response.result;
+
+        if(!this.bProductSelected) this.commonProducts = response.result;
         // console.log('common products loaded', this.commonProducts)
       }
     }, (error) => {
@@ -1355,12 +1358,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
     // console.log('onSelectProduct', product);
+    this.bProductSelected = true;
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
       this.onSelectRegular();
       let selectedQuickButton = product;
-      this.bSearchingProduct = true;
       this.bSearchingProduct = false;
       nPriceIncludesVat = selectedQuickButton.nPrice;
     }

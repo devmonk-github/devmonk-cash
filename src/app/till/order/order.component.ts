@@ -88,6 +88,9 @@ export class OrderComponent implements OnInit {
   }
 
  async ngOnInit() {
+   this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+     el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
+   })
     this.checkArticleGroups();
     this.getProperties();
     this.listSuppliers();

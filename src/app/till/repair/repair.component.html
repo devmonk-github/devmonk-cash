@@ -67,7 +67,7 @@
       </div>
 
     </div>
-    
+
     <div class="row">
       <div class="col-6 col-sm-5">
         <div class="form-group mb-4">
@@ -87,7 +87,7 @@
                 [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
             </div>
           </div>
-      
+
           <div class="col-3 ps-0">
             <div class="form-group">
               <!-- <label class="form-control-label mb-3"></label> -->
@@ -99,7 +99,7 @@
               </button>
             </div>
           </div>
-      
+
           <div class="col-12">
             <div class="btn-group w-100">
               <button [ngClass]="{active:item.eActivityItemStatus === 'offer-is-ok'}" type="button" class="btn btn-light-primary fs-6 p-2"
@@ -123,9 +123,9 @@
               </div>
             </div>
           </div>
-      
+
         </div>
-      
+
       </div>
 
       <div class="col-3">
@@ -225,11 +225,11 @@
             </div>
           </div>
         </div>
-        
+
         <div class="my-2">
           <label for="supplier" class="text-muted">{{ "OR" | translate }}</label>
         </div>
-        
+
         <div class="mb-4">
           <label class="form-control-label mb-3">{{ "SUPPLIER" | translate}}</label>
           <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
@@ -275,9 +275,11 @@
           <label class="form-control-label mb-3">{{ "ARTICLE_GROUP" | translate }}</label>
           <ng-select [(ngModel)]="item.iArticleGroupId" class="form-control form-control-solid p-0"
             [clearable]="false">
-            <ng-option *ngFor="let oArticleGroup of oStaticData.articleGroupsList" [value]="oArticleGroup._id">
-              <p class="m-0 text-truncate">{{ oArticleGroup.oName[language] || oArticleGroup.oName['en'] }}</p>
-            </ng-option>
+            <ng-container *ngIf="oStaticData?.articleGroupsList?.length">
+              <ng-option *ngFor="let oArticleGroup of oStaticData.articleGroupsList" [value]="oArticleGroup._id">
+                <p class="m-0 text-truncate">{{ oArticleGroup.sArticleGroupName }}</p>
+              </ng-option>
+            </ng-container>
           </ng-select>
         </div>
       </div>
@@ -303,7 +305,7 @@
                 style="background-image: url(assets/media/avatars/300-1.jpg)">
                 <img src="{{ image }}" width="100px" height="100px" />
               </div>
-        
+
               <div>
                 <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
                   data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removeImage(i)">
@@ -313,12 +315,12 @@
             </div>
           </div>
         </div>
-        
+
         <!-- <div class="form-group mb-8">
           <label class="form-control-label mb-3">{{ "PROPERTIES" | translate}}</label>:
-    
+
           <div class="overflow-scroll py-1 h-200px">
-    
+
             <div *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
               <div class="row align-items-center">
                 <div class="col-md-4">
@@ -330,7 +332,7 @@
                       [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
                       bindLabel="sName" placeholder="Select" (change)="setPropertyOption(property, pIndex)" required
                       [closeOnSelect]="false">
-    
+
                       <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
                         <input id="item-{{index}}" type="checkbox" name="item-{{index}}" [ngModel]="item$.selected"
                           [checked]="item$.selected" />
@@ -343,12 +345,12 @@
               <br>
             </div>
           </div>
-    
+
         </div> -->
       </div>
-      
+
       <div class="col-4 col-sm-3">
-    
+
         <div class="row mb-3">
           <div class="col-12">
             <button class="btn btn-secondary btn-sm w-100" type="button" (click)="collapsedBtn = !collapsedBtn">
@@ -367,7 +369,7 @@
                 [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund">
             </div>
           </div>
-        
+
           <div class="col-6 col-sm-12">
             <div class="form-group mb-1">
               <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>
@@ -375,8 +377,8 @@
                 [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
             </div>
           </div>
-        
-        
+
+
           <div class="col-12">
             <div class="form-group mb-1">
               <label class="form-control-label mb-1">
