@@ -4,6 +4,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { TillService } from 'src/app/shared/service/till.service';
 import { ApiService } from './api.service';
 import { ToastService } from '../components/toast';
 import { TranslateService } from '@ngx-translate/core';
@@ -57,9 +58,10 @@ export class TransactionsPdfService {
 
   constructor(private pdf: PdfService,
     private apiService: ApiService,
+    public tillService: TillService,
     private toastService: ToastService,
     private transalteService: TranslateService) {
-    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'STATUS', 'REM_AMOUNT','CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
+    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'STATUS', 'REM_AMOUNT','GIFTCARD_NUMBER','CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
       'CREATE_MIN_DATE', 'CREATE_MAX_DATE', 'ESTIMATE_MIN_DATE', 'ESTIMATE_MAX_DATE', 'REPAIR_STATUS', 'EMPLOYEES', 'LOCATION', 'WORKSTATION', 'ASSIGNEE',
       'BUSINESS_PARTNER', 'E_KIND', 'IMPORT_STATUS'];
     this.transalteService.get(translate).subscribe((res: any) => {
@@ -103,14 +105,14 @@ export class TransactionsPdfService {
           if(activityItem?.sDescription?.length <= 15) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,14) : '-';
           else obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,11).concat(" ...") : '-';
         } 
-        if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && activityItem?.nTotalAmount ? activityItem?.nTotalAmount : '-';
+        if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && this.tillService.currency + activityItem?.nTotalAmount ? this.tillService.currency + activityItem?.nTotalAmount : '-';
         if (headerObj['dCreatedDate']) obj['dCreatedDate'] = activityItem && activityItem.dCreatedDate ? moment(activityItem.dCreatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dActualFinishDate']) obj['dActualFinishDate'] = activityItem && activityItem.dActualFinishDate ? moment(activityItem.dActualFinishDate).format('DD-MM-yyyy') : '-';
         if (headerObj['sEmployeeName']) obj['sEmployeeName'] = (aEmployeeName && aEmployeeName[0].charAt(0) ? aEmployeeName[0].charAt(0) : '-') + (aEmployeeName && aEmployeeName[1].charAt(0) ? aEmployeeName[1].charAt(0) : '-');
-        if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && activityItem.nGiftcardRemainingAmount ? activityItem.nGiftcardRemainingAmount : '0';
-        if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem.eActivityItemStatus ? activityItem.eActivityItemStatus : '-';
-        
+        if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && this.tillService.currency + activityItem?.nGiftcardRemainingAmount ? this.tillService.currency + activityItem?.nGiftcardRemainingAmount : '0';
+        if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem?.eActivityItemStatus ? activityItem?.eActivityItemStatus : '-';
+        if (headerObj['sGiftCardNumber']) obj['sGiftCardNumber'] = activityItem && activityItem?.sGiftCardNumber ? activityItem?.sGiftCardNumber : '-';
         aTableBody.push(obj);
       })
 

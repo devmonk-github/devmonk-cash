@@ -368,14 +368,15 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' }
     ]
     if(this.type == 'giftcard') header = [
-        { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
+        { key: 'ACTIVITY_NO', value: 'sNumber', width: '20%' },
         { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
-        { key: 'COMMENT', value: 'sDescription', width: '15%' },
+        { key: 'COMMENT', value: 'sDescription', width: '11%' },
         { key: 'TOTAL_PRICE', value: 'nTotalAmount', width: '10%' },
         { key: 'CREATION_DATE', value: 'dCreatedDate', width: '10%' },
         { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' },
         { key: 'REM_AMOUNT', value: 'nGiftcardRemainingAmount', width: '10%' },
-        { key: 'STATUS', value: 'eActivityItemStatus', width: '10%' }
+        { key: 'STATUS', value: 'eActivityItemStatus', width: '10%' },
+        { key: 'GIFTCARD_NUMBER', value: 'sGiftCardNumber', width: '20%' }
       ]
 
     this.dialogService.openModal(ActivityItemExportComponent, {
