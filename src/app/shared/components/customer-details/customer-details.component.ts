@@ -1011,6 +1011,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             }
           })
         });
+        this.purchasePaginationConfig.totalItems = result.data.totalCount;
         this.activitiesChartOptions = {
           series: this.aActivityTitles.map((el: any) => el.value),
           colors: this.aActivityTitles.map((el: any) => el.color),
@@ -1055,7 +1056,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
       if (result?.data) {
         this.aTransactionItems = result.data[0].result || [];
-        this.transactionItemPaginationConfig.totalItems = this.aTransactionItems.length;
+        this.transactionItemPaginationConfig.totalItems = result.data[0].count.totalData;
       }
       this.bTransactionItemLoader = false;
     }, (error) => {
