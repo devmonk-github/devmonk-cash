@@ -307,8 +307,20 @@
                     </div>
                   </div>
 
-                  <div class="row bg-light py-5" *ngIf="shopProducts && shopProducts.length > 0">
-                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of shopProducts"
+                  <ng-container *ngTemplateOutlet="contentPlaceholder;context:{loaderVariable: bSearchingProduct}"></ng-container>
+
+                  <div class="row bg-light py-5" *ngIf="shopProducts?.length">
+                    <pagination-controls
+                      id="paginate_shop_products"
+                      (pageChange)="pageChanged($event, 'shopProducts', searchKeyword)"
+                      (pageBoundsCorrection)="pageChanged($event, 'shopProducts', searchKeyword)"
+                      [previousLabel]="'PREVIOUS' | translate"
+                      [nextLabel]="'NEXT' | translate"
+                      screenReaderPaginationLabel="Pagination"
+                      [screenReaderPageLabel]="'PAGE' | translate">
+                    </pagination-controls>
+
+                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of shopProducts | paginate: oShopProductsPaginationConfig"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
                         <div class="card m-2 shadow-sm h-sm-125px" style="height: 110px;">
@@ -330,14 +342,14 @@
                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
                                   <strong>{{ product.sProductNumber  || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
                                   <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
-                                  <strong>{{"STOCK"| translate}}</strong>: <span [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger':''">{{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}}</span>
+                                  <strong>{{"STOCK"| translate}}</strong>: <span [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger' : ''">{{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}}</span>
                                   <span *ngIf="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'" class="text-danger ms-3">
                                     <i data-bs-toggle="tooltip" data-bs-placement="top" title="{{'WARNING_STOCK_QUANTITY_IS_0'|translate}}" class="fa fa-circle-exclamation"></i>
                                   </span>
                                 </p>
                                 <p class="col-xl-5 col-sm-4 m-xl-0 mx-sm-2 text-gray-800">
                                   <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: <br>
-                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber :  (product?.sArticleNumber || '-') }} 
+                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber :  (product?.sArticleNumber || '-') }}
                                   <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{product.sArticleNumber}}"></i>
                                   <br>
                                   <span *ngIf="bSerialSearchMode"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</span>
@@ -350,10 +362,29 @@
                         </div>
                       </a>
                     </div>
+
+                    <!-- <div class="d-flex mt-2" >
+                      <div class="spinner-border mx-auto"></div>
+                    </div> -->
+
+
+
                   </div>
-                  <hr *ngIf="commonProducts && commonProducts.length > 0">
-                  <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
-                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of commonProducts"
+                  <hr *ngIf="commonProducts?.length">
+                  <ng-container *ngTemplateOutlet="contentPlaceholder;context:{loaderVariable: bSearchingCommonProduct}"></ng-container>
+
+                  <div class="row" *ngIf="commonProducts?.length">
+                    <pagination-controls
+                      id="paginate_common_products"
+                      (pageChange)="pageChanged($event, 'commonProducts', searchKeyword)"
+                      (pageBoundsCorrection)="pageChanged($event, 'commonProducts', searchKeyword)"
+                      [previousLabel]="'PREVIOUS' | translate"
+                      [nextLabel]="'NEXT' | translate"
+                      screenReaderPaginationLabel="Pagination"
+                      [screenReaderPageLabel]="'PAGE' | translate">
+                    </pagination-controls>
+
+                    <div class="col-xl-6 col-sm-12 cursor-pointer p-0" *ngFor="let product of commonProducts | paginate: oCommonProductsPaginationConfig"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
                         <div class="card m-2 shadow-sm" style="height: 110px;">
@@ -397,11 +428,9 @@
                     </div>
                   </div>
 
-                  <ng-container *ngIf="bSearchingProduct || bIsTransactionLoading">
-                    <div class="d-flex mt-2">
-                      <div class="spinner-border mx-auto"></div>
-                    </div>
-                  </ng-container>
+                  <div class="d-flex mt-2" *ngIf="bIsTransactionLoading">
+                    <div class="spinner-border mx-auto"></div>
+                  </div>
 
                   <div class="py-3">
                     <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
@@ -615,3 +644,23 @@
 
   <div class="spinner-border mx-auto overlay" *ngIf="parkedTransactionLoading"></div>
 </div>
+<ng-template #contentPlaceholder let-loaderVariable="loaderVariable">
+  <div class="row skeletonLoader" @fade *ngIf="loaderVariable">
+    <div class="col-4 custom-loader" *ngFor="let row of [].constructor(3)">
+      <div class="card shadow-sm mb-2">
+        <div class="card-body p-1 skeleton skeleton--card">
+          <div class="d-flex skeleton--content">
+            <div class="w-50 p-4 d-flex">
+              <div class="h-100px w-100px custom-loader mx-auto"></div>
+            </div>
+            <div class="w-50 p-4">
+              <div class="skeleton--line1 custom-loader "></div>
+              <div class="skeleton--line1 custom-loader"></div>
+              <div class="skeleton--line1 custom-loader"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
