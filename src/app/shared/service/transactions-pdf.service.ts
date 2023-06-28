@@ -4,6 +4,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { TillService } from 'src/app/shared/service/till.service';
 import { ApiService } from './api.service';
 import { ToastService } from '../components/toast';
 import { TranslateService } from '@ngx-translate/core';
@@ -57,9 +58,10 @@ export class TransactionsPdfService {
 
   constructor(private pdf: PdfService,
     private apiService: ApiService,
+    public tillService: TillService,
     private toastService: ToastService,
     private transalteService: TranslateService) {
-    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'STATUS', 'REM_AMOUNT','CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
+    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'STATUS', 'REM_AMOUNT','GIFTCARD_NUMBER','CITY', 'COMMENT','REPAIR_NUMBER', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
       'CREATE_MIN_DATE', 'CREATE_MAX_DATE', 'ESTIMATE_MIN_DATE', 'ESTIMATE_MAX_DATE', 'REPAIR_STATUS', 'EMPLOYEES', 'LOCATION', 'WORKSTATION', 'ASSIGNEE',
       'BUSINESS_PARTNER', 'E_KIND', 'IMPORT_STATUS'];
     this.transalteService.get(translate).subscribe((res: any) => {
@@ -80,7 +82,10 @@ export class TransactionsPdfService {
 
     let tableWidth: any = [];
     let tableHeader: any = [];
-    let headerObj: any = {}
+    let headerObj: any = {};
+    let totalRemainingAmount: any = 0;
+    let totalAmount :any = 0;
+
 
     customerHeader.forEach((header: any) => {
       tableWidth.push(header.width);
@@ -93,7 +98,9 @@ export class TransactionsPdfService {
       aActivityItem = result.data;
       aActivityItem.forEach((activityItem: any, index: Number) => {
         let obj: any = {};
-        let aEmployeeName: any
+        let aEmployeeName: any;
+        const nTotalPrice = activityItem?.nTotalAmount || 0;
+        const nTotalRemainingPrice = activityItem?.nGiftcardRemainingAmount || 0;
         if (activityItem?.sEmployeeName) aEmployeeName = activityItem?.sEmployeeName.split(' ');
         if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
         if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
@@ -103,14 +110,16 @@ export class TransactionsPdfService {
           if(activityItem?.sDescription?.length <= 15) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,14) : '-';
           else obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,11).concat(" ...") : '-';
         } 
-        if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && activityItem?.nTotalAmount ? activityItem?.nTotalAmount : '-';
+        if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && this.tillService.currency + activityItem?.nTotalAmount ? this.tillService.currency + activityItem?.nTotalAmount : '-';
         if (headerObj['dCreatedDate']) obj['dCreatedDate'] = activityItem && activityItem.dCreatedDate ? moment(activityItem.dCreatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dActualFinishDate']) obj['dActualFinishDate'] = activityItem && activityItem.dActualFinishDate ? moment(activityItem.dActualFinishDate).format('DD-MM-yyyy') : '-';
         if (headerObj['sEmployeeName']) obj['sEmployeeName'] = (aEmployeeName && aEmployeeName[0].charAt(0) ? aEmployeeName[0].charAt(0) : '-') + (aEmployeeName && aEmployeeName[1].charAt(0) ? aEmployeeName[1].charAt(0) : '-');
-        if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && activityItem.nGiftcardRemainingAmount ? activityItem.nGiftcardRemainingAmount : '0';
-        if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem.eActivityItemStatus ? activityItem.eActivityItemStatus : '-';
-        
+        if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && this.tillService.currency + activityItem?.nGiftcardRemainingAmount ? this.tillService.currency + activityItem?.nGiftcardRemainingAmount : '0';
+        if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem?.eActivityItemStatus ? activityItem?.eActivityItemStatus : '-';
+        if (headerObj['sGiftCardNumber']) obj['sGiftCardNumber'] = activityItem && activityItem?.sGiftCardNumber ? activityItem?.sGiftCardNumber : '-';
+        if (headerObj['nTotalAmount']) totalAmount = parseFloat(totalAmount) + parseFloat(nTotalPrice);
+        if (headerObj['nGiftcardRemainingAmount']) totalRemainingAmount = parseFloat(totalRemainingAmount) + parseFloat(nTotalRemainingPrice);
         aTableBody.push(obj);
       })
 
@@ -262,6 +271,25 @@ export class TransactionsPdfService {
           }
         },
         { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLastLine' },
+        {
+          style: 'tableExample2',
+          table: {
+            headerRows: 1,
+            widths: ['20%', '20%', '20%', '20%','20%'],
+            body: [
+              ['','','', 'Total', 'Remaining'],
+              ['','','', this.tillService.currency + totalAmount, this.tillService.currency +totalRemainingAmount.toFixed(2)]
+            ]
+          },
+          layout: {
+            hLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+            vLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+          }
+        }
       ]
 
       this.pdf.getPdfData({ styles: this.styles, content: content, orientation: 'portrait', pageSize: 'A4', pdfTitle: "ActivityItem" + '-' + date })
