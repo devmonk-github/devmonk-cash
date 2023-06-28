@@ -88,6 +88,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   quickButtons: Array<any> = [];
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
+  bSearchingCommonProduct: boolean = false;
   bIsPreviousDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   bDayStateChecking: boolean = false;
@@ -149,6 +150,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+  language:any = localStorage.getItem('language');
 
   /* Check if saving points are enabled */
   // savingPointsSetting: boolean;// = JSON.parse(localStorage.getItem('savingPoints') || '');
@@ -161,6 +163,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   bFromBarcode: boolean = false;
   bProductSelected: boolean = false;
+
+  oShopProductsPaginationConfig: any = {
+    id: 'paginate_shop_products',
+    itemsPerPage: 6,
+    currentPage: 1,
+    totalItems: 0
+  };
+  oCommonProductsPaginationConfig: any = {
+    id: 'paginate_common_products',
+    itemsPerPage: 6,
+    currentPage: 1,
+    totalItems: 0
+  };
+
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -1277,10 +1293,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* Search API for finding the  common-brands products */
   listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+    this.shopProducts = [];
+    this.bSearchingProduct = true;
     let data = {
       iBusinessId: this.iBusinessId,
-      skip: 0,
-      limit: 10,
+      skip: (this.oShopProductsPaginationConfig.currentPage - 1) * this.oShopProductsPaginationConfig.itemsPerPage,
+      limit: this.oShopProductsPaginationConfig.itemsPerPage,
       sortBy: '',
       sortOrder: '',
       searchValue: searchValue,
@@ -1288,14 +1306,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oFilterBy: {
         oStatic: {},
         oDynamic: {}
-      }
+      },
+      language: this.language
     }
-    this.bSearchingProduct = true;
+
     this.bProductSelected = false;
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
+      this.bSearchingProduct = false;
+      if (result?.data?.length) {
         const response = result.data[0];
         this.shopProducts = response.result;
+        this.oShopProductsPaginationConfig.totalItems = response.count.totalData;
         this.shopProducts.forEach((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
         // console.log('shop products are loaded')
         if(this.bFromBarcode && this.shopProducts.length == 1){
@@ -1308,17 +1329,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
       }
-      this.bSearchingProduct = false;
     }, (error) => {
       this.bSearchingProduct = false;
     });
   }
 
   listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+    this.commonProducts = [];
+    this.bSearchingCommonProduct = true;
     let data = {
       iBusinessId: this.iBusinessId,
-      skip: 0,
-      limit: 10,
+      skip: (this.oCommonProductsPaginationConfig.currentPage - 1) * this.oCommonProductsPaginationConfig.itemsPerPage,
+      limit: this.oCommonProductsPaginationConfig.itemsPerPage,
       sortBy: '',
       sortOrder: '',
       searchValue: searchValue,
@@ -1326,19 +1348,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oFilterBy: {
         oStatic: {},
         oDynamic: {}
-      }
+      },
+      language: this.language
     };
-    this.bSearchingProduct = true;
-    this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-      this.bSearchingProduct = false;
-      if (result && result.data && result.data.length) {
-        const response = result.data[0];
 
-        if(!this.bProductSelected) this.commonProducts = response.result;
-        // console.log('common products loaded', this.commonProducts)
+    this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
+      this.bSearchingCommonProduct = false;
+      if (result?.data?.length) {
+        const response = result.data[0];
+        if(!this.bProductSelected){
+          this.commonProducts = response.result;
+          this.oCommonProductsPaginationConfig.totalItems = response.count.totalData;
+        }
       }
     }, (error) => {
-      this.bSearchingProduct = false;
+      this.bSearchingCommonProduct = false;
     });
   }
 
@@ -1987,5 +2011,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   dispatchEvent(event:string) {
     window.dispatchEvent(new Event(event))
+  }
+
+  pageChanged(page: any, isFrom: string = 'shopProducts', searchValue: string) {
+    if (isFrom == 'shopProducts') {
+      this.oShopProductsPaginationConfig.currentPage = page;
+      this.listShopProducts(searchValue, false);
+    } else {
+      this.oCommonProductsPaginationConfig.currentPage = page;
+      this.listCommonBrandProducts(searchValue, false)
+    }
   }
 }
