@@ -1056,7 +1056,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
       if (result?.data) {
         this.aTransactionItems = result.data[0].result || [];
-        this.transactionItemPaginationConfig.totalItems = this.aTransactionItems.length;
+        this.transactionItemPaginationConfig.totalItems = result.data[0].count.totalData;
       }
       this.bTransactionItemLoader = false;
     }, (error) => {
