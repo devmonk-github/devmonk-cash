@@ -82,7 +82,10 @@ export class TransactionsPdfService {
 
     let tableWidth: any = [];
     let tableHeader: any = [];
-    let headerObj: any = {}
+    let headerObj: any = {};
+    let totalRemainingAmount: any = 0;
+    let totalAmount :any = 0;
+
 
     customerHeader.forEach((header: any) => {
       tableWidth.push(header.width);
@@ -95,7 +98,9 @@ export class TransactionsPdfService {
       aActivityItem = result.data;
       aActivityItem.forEach((activityItem: any, index: Number) => {
         let obj: any = {};
-        let aEmployeeName: any
+        let aEmployeeName: any;
+        const nTotalPrice = activityItem?.nTotalAmount || 0;
+        const nTotalRemainingPrice = activityItem?.nGiftcardRemainingAmount || 0;
         if (activityItem?.sEmployeeName) aEmployeeName = activityItem?.sEmployeeName.split(' ');
         if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
         if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
@@ -113,6 +118,8 @@ export class TransactionsPdfService {
         if (headerObj['nGiftcardRemainingAmount']) obj['nGiftcardRemainingAmount'] = activityItem && this.tillService.currency + activityItem?.nGiftcardRemainingAmount ? this.tillService.currency + activityItem?.nGiftcardRemainingAmount : '0';
         if (headerObj['eActivityItemStatus']) obj['eActivityItemStatus'] = activityItem && activityItem?.eActivityItemStatus ? activityItem?.eActivityItemStatus : '-';
         if (headerObj['sGiftCardNumber']) obj['sGiftCardNumber'] = activityItem && activityItem?.sGiftCardNumber ? activityItem?.sGiftCardNumber : '-';
+        if (headerObj['nTotalAmount']) totalAmount = parseFloat(totalAmount) + parseFloat(nTotalPrice);
+        if (headerObj['nGiftcardRemainingAmount']) totalRemainingAmount = parseFloat(totalRemainingAmount) + parseFloat(nTotalRemainingPrice);
         aTableBody.push(obj);
       })
 
@@ -264,6 +271,25 @@ export class TransactionsPdfService {
           }
         },
         { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLastLine' },
+        {
+          style: 'tableExample2',
+          table: {
+            headerRows: 1,
+            widths: ['20%', '20%', '20%', '20%','20%'],
+            body: [
+              ['','','', 'Total', 'Remaining'],
+              ['','','', this.tillService.currency + totalAmount, this.tillService.currency +totalRemainingAmount.toFixed(2)]
+            ]
+          },
+          layout: {
+            hLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+            vLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+          }
+        }
       ]
 
       this.pdf.getPdfData({ styles: this.styles, content: content, orientation: 'portrait', pageSize: 'A4', pdfTitle: "ActivityItem" + '-' + date })
