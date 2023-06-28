@@ -1474,6 +1474,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   search() {
+    this.oShopProductsPaginationConfig.currentPage = 1;
+    this.oCommonProductsPaginationConfig.currentPage = 1;
     this.shopProducts = [];
     this.commonProducts = [];
     if (this.bSerialSearchMode) {
