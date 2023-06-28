@@ -74,8 +74,8 @@ export class RepairComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastrService: ToastService,
-    public tillService: TillService) { 
-    
+    public tillService: TillService) {
+
   }
 
   async ngOnInit() {
@@ -86,7 +86,7 @@ export class RepairComponent implements OnInit {
     this.getProperties();
     if (this.item.new) {
       this.selectArticleGroup();
-      this.item.new = false;
+      // this.item.new = false;
     }
   }
 
@@ -150,7 +150,7 @@ export class RepairComponent implements OnInit {
 
           data.forEach((element: any) => {
             const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => o.sPropertyOptionName === element.sPropertyOptionName);
-            
+
             if (!toReplace) {
               element.selected = false;
             }else{
@@ -169,10 +169,10 @@ export class RepairComponent implements OnInit {
     if (this.settings?.bAutoIncrementBagNumbers) {
       this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
-    this.dialogService.openModal(SelectArticleDialogComponent, 
-      { 
-        cssClass: 'modal-m', 
-        context: { 
+    this.dialogService.openModal(SelectArticleDialogComponent,
+      {
+        cssClass: 'modal-m',
+        context: {
           from: 'repair',
           iBusinessBrandId: this.item.iBusinessBrandId,
           articleGroupsList: this.oStaticData?.articleGroupsList || [],
@@ -181,7 +181,7 @@ export class RepairComponent implements OnInit {
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,
-        closeOnEsc: false 
+        closeOnEsc: false
       }).instance.close.subscribe((data) => {
         if (data.action) {
           if (this.descriptionRef) {
@@ -279,7 +279,7 @@ export class RepairComponent implements OnInit {
     else return true;
   }
 
-  numericOnly(event:any): boolean { 
+  numericOnly(event:any): boolean {
     let patt = /[0-9\,\.\ ]/;
     let result = patt.test(event.key);
     var itemprice = this.item?.price.toString();
@@ -429,7 +429,7 @@ export class RepairComponent implements OnInit {
       }
     }
   }
-  
+
   openImageModal() {
     this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
@@ -447,8 +447,8 @@ export class RepairComponent implements OnInit {
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, 
-      { 
+    this.dialogService.openModal(DiscountDialogComponent,
+      {
         context: { item: JSON.parse(JSON.stringify(this.item)) },
         hasBackdrop: true,
         closeOnBackdropClick: false,

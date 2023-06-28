@@ -79,7 +79,7 @@ export class OrderComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService,
     private toastrService: ToastService,
     public tillService: TillService,
-    private dialogService: DialogService) { 
+    private dialogService: DialogService) {
     // if (!this.oStaticData?.articleGroupsList?.length) {
     //   this.oStaticData = {
     //     articleGroupsList: []
@@ -94,7 +94,7 @@ export class OrderComponent implements OnInit {
     this.getBusinessBrands();
     if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
-      this.item.new = false;
+      // this.item.new = false;
     }
     let data = {
      // iBusinessPartnerId:this.item.iBusinessPartnerId,
@@ -116,13 +116,13 @@ export class OrderComponent implements OnInit {
     if (this.settings?.bAutoIncrementBagNumbers) {
       this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
-    this.dialogService.openModal(SelectArticleDialogComponent, 
-      { 
-        cssClass: 'modal-m', 
+    this.dialogService.openModal(SelectArticleDialogComponent,
+      {
+        cssClass: 'modal-m',
         context: { item: this.item, from: 'order' },
         hasBackdrop: true,
         closeOnBackdropClick: false,
-        closeOnEsc: false 
+        closeOnEsc: false
       }).instance.close.subscribe((data) => {
         if (data.action) {
           const { articlegroup, brand, supplier, nMargin } = data;
@@ -158,9 +158,9 @@ export class OrderComponent implements OnInit {
     if (keyCode == 59 || keyCode == 44) return false; /* 44=comma & 59= semicolon */
     else return true;
   }
- 
-  numericOnly(event:any): boolean { 
-    let patt = /[0-9\,\.\ ]/; 
+
+  numericOnly(event:any): boolean {
+    let patt = /[0-9\,\.\ ]/;
     let result = patt.test(event.key);
     let itemprice = this.item?.price.toString();
     itemprice = itemprice.includes(",");
@@ -169,7 +169,7 @@ export class OrderComponent implements OnInit {
     }
     return result;
   }
-  
+
   settingsChanged(event?:any){
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber = (event) ? event : this.settings?.sPrefix + (this.settings?.nLastBagNumber + 1).toString();
