@@ -1011,7 +1011,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             }
           })
         });
-        this.purchasePaginationConfig.totalItems = result.data.totalCount;
         this.activitiesChartOptions = {
           series: this.aActivityTitles.map((el: any) => el.value),
           colors: this.aActivityTitles.map((el: any) => el.color),
