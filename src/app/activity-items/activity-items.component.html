@@ -158,6 +158,34 @@
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
                   translate}}</label>
                 <div class="overflow-scroll py-1 h-200px">
+                  <div *ngFor="let property of aProperty; let pIndex = index">
+                    <div class="row align-items-center">
+                      <div class="col-md-4">
+                        <div>{{property?.sPropertyName}}</div>
+                      </div>
+                      <div class="col-md-8">
+                        <div *ngIf="propertyOptions[property.iPropertyId]?.length">
+                          <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                            [(ngModel)]="selectedProperties[property.iPropertyId]" (click)="onProperties(property.iPropertyId)"
+                            [clearable]="false">
+                            <ng-option *ngFor="let location of propertyOptions[property.iPropertyId]"
+                              [value]="location.sName">{{location.sName}}</ng-option>
+                          </ng-select>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <!-- <div class="col-lg-5">
+            <ng-container>
+              <div class="col-md-12">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
+                  translate}}</label>
+                <div class="overflow-scroll py-1 h-200px">
 
                   <div *ngFor="let property of aProperty; let pIndex = index">
                     <div class="row align-items-center">
@@ -166,6 +194,7 @@
                       </div>
                       <div class="col-md-8">
                         <div *ngIf="propertyOptions[property.iPropertyId]?.length">
+                         
                           <ng-select class="form-control form-control-solid p-0" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
                           [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
                           bindLabel="sName" (click)="onProperties(property.iPropertyId)" [clearable]="false">
@@ -183,7 +212,7 @@
                 </div>
               </div>
             </ng-container>
-          </div>
+          </div> -->
           <!-- Property Filter -->
 
         </div>
