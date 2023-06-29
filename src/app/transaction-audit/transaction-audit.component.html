@@ -177,19 +177,10 @@
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' |
                                         translate}}</label>
                                     <div class="w-100" *ngIf="aLocation?.length">
-                                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
-                                            name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select"
-                                            required [closeOnSelect]="false" (change)="onChangeLocation()">
-
-                                            <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                                let-index="index">
-                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                    [ngModel]="item$.selected" />
-                                                {{item.sName}}
-                                            </ng-template>
-
+                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="aSelectedLocation" (change)="onChangeLocation()"
+                                            [clearable]="false">
+                                            <ng-option *ngFor="let location of aLocation" [value]="location._id">{{location.sName}}</ng-option>
                                         </ng-select>
-
                                     </div>
                                 </div>
                             </div>
@@ -219,21 +210,11 @@
                                     *ngIf="sDayClosureMethod === 'workstation' || IsDynamicState">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                         translate}}</label>
-
-                                    <ng-select [multiple]="true" [items]="aWorkStation"
-                                        [(ngModel)]="selectedWorkStation" name="selectedWorkStation"
-                                        bindValue="_id" bindLabel="sName" placeholder="Select" required
-                                        [closeOnSelect]="false" (change)="fetchAuditStatistic()">
-
-                                        <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                            let-index="index">
-                                            <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                [ngModel]="item$.selected" />
-                                            {{item.sName}}
-                                        </ng-template>
-
-                                    </ng-select>
-
+                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="selectedWorkStation" (change)="fetchAuditStatistic()"
+                                            [clearable]="false">
+                                            <ng-option *ngFor="let workstation of aWorkStation" [value]="workstation._id">{{workstation.sName}}
+                                            </ng-option>
+                                        </ng-select>
                                 </div>
                                     
                                 
