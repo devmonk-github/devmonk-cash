@@ -9,7 +9,11 @@
                 <div class="col-md-4">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
                     <div class="w-100" *ngIf="aLocation?.length">
-                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation" (ngModelChange)="selectedLocationChanged()"
+                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="aSelectedLocation" (ngModelChange)="selectedLocationChanged()"
+                            [clearable]="false">
+                            <ng-option *ngFor="let location of aLocation" [value]="location._id">{{location.sName}}</ng-option>
+                        </ng-select>
+                        <!-- <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation" (ngModelChange)="selectedLocationChanged()"
                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="{{'SELECT' | translate}}" required
                             [closeOnSelect]="false">
                             <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
@@ -17,12 +21,12 @@
                                     [ngModel]="item$.selected" />
                                 {{item.sName}}
                             </ng-template>
-                        </ng-select>
+                        </ng-select> -->
                     </div>
                 </div>
                 <div class="col-md-4" *ngIf="sDayClosureMethod === 'workstation' ">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' | translate}}</label>
-                    <ng-select class="form-control p-0" [(ngModel)]="oSelectedWorkStation" placeholder="{{'SELECT' | translate}}"
+                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="oSelectedWorkStation" placeholder="{{'SELECT' | translate}}"
                         [clearable]="true">
                         <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                             {{oWorkStation.sName}}
