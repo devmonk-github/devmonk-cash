@@ -150,15 +150,15 @@
                 </button>
               </div>
 
-              <div *ngIf="sNumber && sNumber !== ''" class="col-lg-4 col-sm-5 mb-3 rounded bg-white p-4 d-flex justify-content-between align-items-center">
-                <p class="text-gray-600 m-0 ms-xl-3 ms-sm-5 fs-xl-5 fs-sm-7">
-                  {{"YOU_ARE_MODIFYING_EXISTING_ITEM" | translate}}:
-                  <br>
-                  <span class="fw-bolder"> {{sNumber}} </span>
-                </p>
-                <button class="btn btn-sm btn-link text-danger pe-auto fs-1" (click)="clearAll()">
-                  <fa-icon [icon]="faTimes"></fa-icon>
-                </button>
+              <div *ngIf="sNumber && sNumber !== ''" class="col-lg-4 col-sm-5 mb-3 rounded bg-white p-4">
+                <p class="text-gray-600 mb-2 ms-xl-3 ms-sm-5 fs-xl-5 fs-sm-7">{{"YOU_ARE_MODIFYING_EXISTING_ITEM" | translate}} </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bolder" [innerHTML]="sNumber"></span>
+                  <button class="btn btn-sm btn-secondary pe-auto" (click)="clearAll()">
+                    <fa-icon [icon]="faTimes"></fa-icon>
+                  </button>
+                </div>
+                
               </div>
 
             </div>

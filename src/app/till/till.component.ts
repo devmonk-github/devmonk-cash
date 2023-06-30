@@ -1104,10 +1104,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dispatchEvent('startIdle');
 
     oDialogComponent.close.subscribe((result:any) => {
+      this.clearAll();
       if(result){
         this.loadTransaction()
       } else {
-        this.clearAll();
         if (this.tillService.settings.bLockCashRegisterAfterTransaction)
           this.dispatchEvent('lockScreen')
       }
@@ -1940,11 +1940,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async handleTransactionResponse(data: any) {
     // console.log('handleTransactionResponse', data)
-    this.clearAll();
+    // this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems.push(...transactionItems);
     this.iActivityId = transaction.iActivityId || transaction._id;
-    this.sNumber += transaction?.sNumber + '\n';
+    this.sNumber += transaction?.sNumber + '<br/>';
 
     for (const item of this.transactionItems) {
       if (item?.iBusinessProductId && !item?.oCurrentLocation) {
