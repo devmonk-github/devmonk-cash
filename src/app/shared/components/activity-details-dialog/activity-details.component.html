@@ -1051,21 +1051,21 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             
-                                            <div class="col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
+                                            <div class="table-responsive col-xl-7 col-sm-12 order-xl-2 order-sm-1 mb-xl-0 mb-sm-3">
                                                 <p class="fw-bolder m-0 mb-3 text-uppercase">{{"USAGE_HISTORY"| translate}}</p>
-                                                <table class="table table-sm table-hover table-rounded table-striped gs-7">
-                                                    <thead class="fw-bolder fs-6 text-gray-400 border-gray-200 text-uppercase">
-                                                        <tr>
-                                                            <th>{{ "RECEIPT_NUMBER" | translate}}</th>
-                                                            <th>{{ "CREATED_DATE" | translate}}</th>
-                                                            <th>{{ "AMOUNT_USED" |translate}}</th>
-                                                            <th>{{ "ACTION" | translate }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="align-middle">
-                                                        <tr *ngFor="let oItem of activity.aGiftcardRedeemedTransactionData">
+                                                <div class="overflow-scroll py-1 h-200px">
+                                                    <table class="table table-hover table-rounded table-striped gy-7 gs-7">
+                                                        <thead class="fw-bolder fs-6 text-gray-400 border-gray-200 text-uppercase">
+                                                            <tr>
+                                                                <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                                <th>{{ "CREATED_DATE" | translate}}</th>
+                                                                <th>{{ "AMOUNT_USED" |translate}}</th>
+                                                                <th>{{ "ACTION" | translate }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="align-middle">
+                                                            <tr *ngFor="let oItem of activity.aGiftcardRedeemedTransactionData">
                                                                 <td>{{ oItem.sNumber }}</td>
                                                                 <td>{{ oItem.dRedeemedDate | date:'MMM dd, yyyy, HH:mm:ss' }}</td>
                                                                 <td>{{ oItem.nAmount | currency: tillService.currency }}</td>
@@ -1074,9 +1074,10 @@
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
                                                                 </td>
-                                                        </tr>
-                                                    </tbody> 
-                                                </table>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
 
                                         </div>

@@ -20,11 +20,11 @@
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <label>{{'FIELD' | translate}}</label>
-                <div *ngFor="let obj of headerList">
+                <div class="d-flex my-1" *ngFor="let obj of headerList">
                     <label>
-                        <input type="checkbox" [value]="obj" checked (click)="updateExportField(obj)" />
+                        <input type="checkbox" class="form-check-input me-2" [value]="obj" checked (click)="updateExportField(obj)" />
                         {{obj.key | translate}}
                     </label>
                 </div>&nbsp;

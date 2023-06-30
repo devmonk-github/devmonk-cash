@@ -12,8 +12,8 @@
         {{ bodyText | translate}}
       </p>
     </div>
-    <div class="card-footer">
-      <div class="input-group mb-5">
+    <div class="card-footer py-3">
+      <div class="d-flex align-items-center justify-content-end">
         <button class="btn" [ngClass]="btn.class" (click)="confirmed(btn.value)" *ngFor="let btn of buttonDetails">{{ btn.text | translate}}</button>
       </div>
     </div>

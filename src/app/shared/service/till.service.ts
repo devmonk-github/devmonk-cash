@@ -835,6 +835,7 @@ export class TillService {
     const oBagNumberSettings = {
       iLocationId: this.iLocationId,
       bAutoIncrementBagNumbers: true,
+      sPrefix: "",
       nLastBagNumber: 0,
     };
 
