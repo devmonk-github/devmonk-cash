@@ -3,28 +3,28 @@
         "FILL_IN_CUSTOMER_DETAILS_WITH_CORRESPONDING_COLUMNS_FROM_SELECTED_FIL_IF_FIELD_EMPTY_IT_IS_NOT_USED" |
         translate}}</p>
 
-    <div class="flex">
-        <button class="btn btn-secondary" (click)="gotoStep('previous')">
+    <div class="d-flex mb-3">
+        <button class="btn btn-dark" (click)="gotoStep('previous')">
             {{"BACK" | translate}}
         </button>
-        <button class="btn btn-primary ml-2" (click)="gotoStep('import')" [disabled]="validateCustomerHeaderLink()">
+        <button class="btn btn-primary mx-2" (click)="gotoStep('import')" [disabled]="validateCustomerHeaderLink()">
             {{"NEXT_STEP" | translate}}
         </button>
-        <button class="btn btn-primary ml-auto pull-right" (click)="getDynamicFields(true)">
+        <button class="btn btn-secondary" (click)="getDynamicFields(true)">
             <fa-icon [icon]="faSync"></fa-icon> &nbsp;
             {{ "RELOAD_DEFAULT_ATTRIBUTES" | translate}}
         </button>
     </div>
-    <h4>{{ 'CUSTOMER_DETAILS' | translate}}</h4>
-    <div class="row mb-4">
+    <h4 class="fw-bolder mb-3">{{ 'CUSTOMER_DETAILS' | translate}}</h4>
+    <div class="row mb-3">
         <div class="col-md-2 no-padding-left">
-            <h5>{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
+            <h5 class="text-muted fw-bolder m-0">{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
         </div>
         <div class="col-md-3 no-padding-left">
-            <h5>{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
+            <h5 class="text-muted fw-bolder m-0">{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
         </div>
         <div class="col-md-7 no-padding-right">
-            <h5>{{ "UPDATE_TEMPLATE" | translate}}</h5>
+            <h5 class="text-muted fw-bolder m-0">{{ "UPDATE_TEMPLATE" | translate}}</h5>
         </div>
     </div>
     <div class="row mb-4" *ngFor="let option of headerOptions">
