@@ -573,10 +573,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems.splice(index, 1);
         if(!this.transactionItems?.length && this.sNumber) {
           const buttons = [
-            { text: 'YES_CLEAR_CASH_REGISTER', value: true, class: 'btn-primary' },
+            { text: 'YES_CLEAR_CASH_REGISTER', value: true, class: 'btn-primary mx-2' },
             { text: 'NO_KEEP_EXISTING_TRANSACTION', value: false, status: 'success', class: 'btn-secondary ml-auto mr-2' },
           ]
           this.dialogService.openModal(ConfirmationDialogComponent, {
+            cssClass:"modal-lg",
             context: {
               header: 'CLEAR_EXISTING_TRANSACTION',
               bodyText: 'NO_ITEMS_LEFT_IN_THE_TRANSACTION_YOU_ARE_MODIFYING_WANT_TO_CLEAR_THE_CASH_REGISTER',
