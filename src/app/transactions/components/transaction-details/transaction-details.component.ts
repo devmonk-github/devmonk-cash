@@ -411,7 +411,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, items: true, from: 'transaction-details' } })
-      .instance.close.subscribe((result: any) => { });
+      .instance.close.subscribe((result: any) => {
+        if(result?.action == 'openTransaction'){
+          this.close(true);
+        }
+      });
   }
 
   async getThermalReceipt(type: string) {

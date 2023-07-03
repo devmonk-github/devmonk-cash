@@ -535,7 +535,7 @@ export class ActivityDetailsComponent implements OnInit {
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             if (this.loadCashRegister) {
-              this.close(true);
+              this.close({close: true, action: 'openTransaction'});
               this.routes.navigate(['/business/till']);
             }
           }, 100);
