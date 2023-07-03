@@ -829,7 +829,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: true,
-        iBusinessPartnerId: this.aSelectedBusinessPartnerId
+        iBusinessPartnerId: this.aSelectedBusinessPartnerId,
+        iStatisticId: this.iStatisticId
       },
     };
 
