@@ -81,7 +81,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   filterDates: any = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+    startDate: new Date(),
   }
 
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];

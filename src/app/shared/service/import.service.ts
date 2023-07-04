@@ -23,6 +23,13 @@ export class ImportService {
             oPhone: {
                 sMobile: customer?.['sMobile'] ? customer['sMobile'] : "do-nothing",
                 sLandLine: customer?.['sLandLine'] ? customer['sLandLine'] : "do-nothing",
+    
+                /*Overwrite prefixes only if numbers and country code are passed */
+                sPrefixMobile: customer?.['sMobile'] && customer?.['sCountryCode'] ? "overwrite" : "do-nothing",
+                sPrefixLandline: customer?.['sLandLine'] && customer?.['sCountryCode']? "overwrite" : "do-nothing",
+
+                bWhatsApp: customer?.['bWhatsApp'] ? customer['bWhatsApp'] : "do-nothing",
+                sFax: customer?.['sFax'] ? customer['sFax'] : "do-nothing",
             },
 
             oShippingAddress: {
@@ -56,8 +63,10 @@ export class ImportService {
             },
 
             sComment: customer?.['sComment'] ? customer['sComment'] : "do-nothing",
+            sNote: customer?.['sNote'] ? customer['sNote'] : "do-nothing",
             nMatchingCode: customer?.['nMatchingCode'] ? customer['nMatchingCode'] : "do-nothing",
-            bNewsletter: customer?.['bNewsletter'] ? customer['bNewsletter'] : "do-nothing"
+            bNewsletter: customer?.['bNewsletter'] ? customer['bNewsletter'] : "do-nothing",
+            dDateOfBirth: customer?.['dDateOfBirth'] ? customer['dDateOfBirth'] : "do-nothing"
         }
 
         return processCustomer;

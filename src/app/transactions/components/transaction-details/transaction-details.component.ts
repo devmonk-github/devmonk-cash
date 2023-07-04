@@ -111,7 +111,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
-    this.getEmployee(this.transaction.iEmployeeId)
+    this.getEmployee(this.transaction.iEmployeeId);
     let sIndex = this.transaction.aPayments.findIndex((value: any) => value.sRemarks == "CHANGE_MONEY");
     if (sIndex > -1) {
       this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
@@ -120,7 +120,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.filterdata.forEach((items: any) => {
       this.refundedAmount += Number((items.nRefundAmount));
     })
-    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED', 'WARNING', 'THIS_IS_AN_IMPORTED_OR_MIGRATED_TRANSACTION'];
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
@@ -135,11 +135,19 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.loading = false;
     }
     // console.log(this.transaction)
-    if(this.from != 'audit') this.fetchActivityItem();
+    if(this.from != 'audit'){
+      if(!this.transaction?.bMigrate){
+        this.fetchActivityItem();
+      }else{
+        this.toastService.show({ type: "warning", title:  this.translation['WARNING'] , text: this.translation[`THIS_IS_AN_IMPORTED_OR_MIGRATED_TRANSACTION`] });
+      }
+    }
+
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
     this.fetchLocationName();
+    
   }
 
   ngAfterContentInit(): void {
@@ -147,7 +155,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getEmployee(id: any) {
-    if (id != '') {
+    if (id != '' && id != undefined) {
       this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
         this.employee = result?.data;
       });

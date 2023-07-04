@@ -71,6 +71,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
   // Function for go to next step
   nextStep(step: string){
     this.moveToStep.emit(step);
+    this.delimiter = '';
+    this.bDelimiter = false;
   }
 
   // Function for validate file import
