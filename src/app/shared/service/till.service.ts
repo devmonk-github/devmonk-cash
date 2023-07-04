@@ -646,7 +646,7 @@ export class TillService {
         nGiftcardDiscount: item.nGiftcardDiscount});
 
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
-      item.nTotalDiscountPerItem = (item.bDiscountOnPercentage) ? this.getPercentOf(item.nTotalPriceIncVat, item.nDiscount) : item.nDiscount * item.nQuantity;
+      item.nTotalDiscountPerItem = (item.bDiscountOnPercentage) ? this.getPercentOf(item.nTotalPriceIncVat, item.nDiscount) : (item.nDiscount || 0) * item.nQuantity;
 
       item.nPriceIncVatAfterDiscount = +(((item.nTotalPriceIncVat - item.nTotalDiscountPerItem) / item.nQuantity)) - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
