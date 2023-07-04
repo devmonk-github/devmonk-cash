@@ -206,7 +206,7 @@ export class TerminalDialogComponent implements OnInit {
     paymentsToreturn.push(cashPaymentMethod);
 
     const nDiff = +(this.nItemsTotalToBePaid - this.totalAmount).toFixed(2); /* due to javascript exception */
-    if ((nDiff < 0 && nDiff >= - 0.05) || (nDiff > 0 && nDiff <= 0.05)) { /* no need of zero differences */
+    if ((nDiff < 0 && nDiff >= - 0.01) || (nDiff > 0 && nDiff <= 0.01)) { /* no need of zero differences */
       oCashPaymentMethod.amount = Number(oCashPaymentMethod.amount) + (this.nItemsTotalToBePaid - this.totalAmount);
       oCashPaymentMethod.remark = 'TOTAL_AMOUNT_UPDATED';
     }
