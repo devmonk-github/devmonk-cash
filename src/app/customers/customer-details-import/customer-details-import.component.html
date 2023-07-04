@@ -39,6 +39,7 @@
         </div>
         <div class="col-md-7 no-padding-left flex">
             <select class="form-select w-75" id="customer-update-template" [(ngModel)]="updateTemplateForm[option]">
+                <option value=""></option>
                 <option value="do-nothing">{{ "DO_NOTHING" | translate }}</option>
                 <option value="overwrite">{{ "OVERWRITE" | translate }}</option>
                 <option value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</option>
