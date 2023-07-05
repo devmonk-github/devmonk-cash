@@ -73,12 +73,20 @@ export class ImportGiftCardService {
 
     const sProductName = this.translateService.instant('GIFTCARD');
 
-
-    //TODO: fetch customer if matching code or customer number is passed
-    if(oData?.nMatchingCode || oData?.nClientId){
+    if(parsedGiftCardData[0].nMatchingCode || parsedGiftCardData[0].nClientId){
       let requestParams = {
-        searchValue: oData?.nClientId ? oData?.nClientId : oData?.nMatchingCode,
-        aSearchField:  oData?.nClientId ? ['nClientId']: ['nMatchingCode']
+        iBusinessId: iBusinessId,
+        searchValue:  parsedGiftCardData[0].nClientId ?  parsedGiftCardData[0].nClientId : parsedGiftCardData[0].nMatchingCode,
+        skip:0 , 
+        limit:10,
+        sortBy: '_id',
+        sortOrder: -1,
+        aProjection: ['_id'],
+        oFilterBy: {
+          aSearchField: parsedGiftCardData[0].nClientId ? ['nClientId']: ['nMatchingCode'],
+          aSelectedGroups: []
+        },
+        customerType: 'all'
       }
       _customer = this.getCustomer(requestParams);
     }
@@ -100,13 +108,14 @@ export class ImportGiftCardService {
         /* File */
         nPriceIncVat: oData?.nPriceIncVat,
         nVatRate: oData?.nVatRate,
-        /*No matching code is defined in Transaction Item schema */
+        /*No matching code is defined in TI schema */
         //nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         sGiftCardNumber: oData?.sGiftCardNumber,
         dCreatedDate: finaldate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
+        /*No nPaidAmount in TI schema */
         nPaidAmount: oData?.nRemainingValue,
         nRemainingValue: oData?.nRemainingValue,
         /* calculated */
@@ -146,7 +155,7 @@ export class ImportGiftCardService {
           bPrepayment: false
         },
         nDiscount: 0,
-        sDescription: "",
+        sDescription: "Imported Giftcard",
         sServicePartnerRemark: "",
         eEstimatedDateAction: "call_on_ready",
         eActivityItemStatus: "delivered",

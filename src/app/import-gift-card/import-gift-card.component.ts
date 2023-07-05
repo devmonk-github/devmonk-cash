@@ -87,7 +87,7 @@ export class ImportGiftCardComponent implements OnInit {
         });
       }
     } catch (error) {
-      console.log('Import Gift card');
+      console.log('Import Gift card error');
     }
   }
 
