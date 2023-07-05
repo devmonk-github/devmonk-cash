@@ -57,9 +57,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
       this.headerOptions = Object.keys(this.parsedCustomerData[0]);
       this.customerDetailsForm = {};
       this.updateTemplateForm = {};
-      this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = '');
       this.getDynamicFields(false);
     }
+  }
+
+  onSetAttribute(option:any){
+    this.updateTemplateForm[option] = 'overwrite';
   }
 
   // Function for get dynamic field

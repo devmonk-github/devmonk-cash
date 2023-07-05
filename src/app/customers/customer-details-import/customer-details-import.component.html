@@ -32,7 +32,7 @@
             {{option}}
         </div>
         <div class="col-md-3 no-padding-left">
-            <select class="form-select" id="customer-attributes" [(ngModel)]="customerDetailsForm[option]">
+            <select class="form-select" id="customer-attributes" [(ngModel)]="customerDetailsForm[option]" (change)="onSetAttribute(option)">
                 <option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value | translate}}
                 </option>
             </select>
