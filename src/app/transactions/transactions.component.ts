@@ -78,10 +78,10 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   iLocationId:any = localStorage.getItem('currentLocation');
 
   // Advance search fields 
-
+  
   filterDates: any = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+    startDate: new Date((new Date()).setDate(new Date().getDate() - 7))
   }
 
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
@@ -144,6 +144,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       this.openModal(barcode);
     });
   }
+
+  
 
   // Function for reset selected filters
   resetFilters() {

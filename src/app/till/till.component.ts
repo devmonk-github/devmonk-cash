@@ -1116,37 +1116,24 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
-    // console.log({ bOrderCondition, bRegularCondition, bRepairCondition })
-    // if (bOrderCondition) {
-      // print order receipt
     if(nOrderCount >= 1){
       const orderTemplate = aTemplates.find((template: any) => template.eType === 'order');
       const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
       this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'is_created', 'order');
     }
 
-    // }
     if (bRegularCondition) {
       //print proof of payments receipt
       const template = aTemplates.find((template: any) => template.eType === 'regular');
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'is_created', 'regular');
     }
 
-    // if (bRepairCondition) {
-    //   if (this.bHasIActivityItemId) {
-    //     this.bHasIActivityItemId = false;
-    //     return;
-    //   }
-      //use two column layout
       const template = aTemplates.find((template: any) => template.eType === 'repair');
       this.activityItems.filter((oItem:any) => oItem.oType.eKind == 'repair').forEach((oItem:any) => {
         const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
         this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
       })
-    // }
 
-    // if (bRepairAlternativeCondition) {
-      // use repair_alternative laYout
       const oAlternativeReceiptTemplate = aTemplates.find((template: any) => template.eType === 'repair_alternative');
       const oAlternativeDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oAlternativeDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
@@ -1155,7 +1142,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         data.businessDetails = this.businessDetails;
         this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
       })
-    // }
 
     const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
@@ -1176,18 +1162,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation:string = 'is_created', type: any) {
-    // console.log('sendForReceipt', {oDataSource, template, title, eSituation, type})
-    // oDataSource?.aPayments?.forEach((payment: any) => {
-    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    // })
-    // console.log('before', oDataSource.dCreatedDate)
-    // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    // console.log('after', oDataSource.dCreatedDate)
     const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
-    // console.log({ oPrintActionSettings })
     if (oPrintActionSettings) {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
-      // console.log({ aActionToPerform })
       if (aActionToPerform.includes('PRINT_THERMAL')) {
         await this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
@@ -1242,25 +1219,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const body = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      // oFilterBy: {
-      //   eType: types
-      // }
     }
     return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body).toPromise();
   }
 
   getBusinessDetails() {
     return this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId);
-    // this.businessDetails = result.data;
-    // this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
-    // this.tillService.selectCurrency(this.businessDetails.currentLocation);
-
-    // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
-    //   // console.log(data)
-    // }, (error: any) => {
-    //   this.businessDetails.sLogoLight = "local";
-    // })
-    // });
   }
 
 
@@ -1287,7 +1251,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       (error: any) => {
-        // this.partnersList = [];
         console.log(error);
       }
     );

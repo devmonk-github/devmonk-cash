@@ -32,13 +32,14 @@
             {{option}}
         </div>
         <div class="col-md-3 no-padding-left">
-            <select class="form-select" id="customer-attributes" [(ngModel)]="customerDetailsForm[option]">
+            <select class="form-select" id="customer-attributes" [(ngModel)]="customerDetailsForm[option]" (change)="onSetAttribute(option)">
                 <option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value | translate}}
                 </option>
             </select>
         </div>
         <div class="col-md-7 no-padding-left flex">
             <select class="form-select w-75" id="customer-update-template" [(ngModel)]="updateTemplateForm[option]">
+                <option value=""></option>
                 <option value="do-nothing">{{ "DO_NOTHING" | translate }}</option>
                 <option value="overwrite">{{ "OVERWRITE" | translate }}</option>
                 <option value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</option>
