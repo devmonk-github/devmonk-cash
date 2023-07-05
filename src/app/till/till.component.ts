@@ -1145,6 +1145,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'giftcard').forEach((oItem: any) => {
+      if (!oItem.nGiftcardRemainingAmount) return;
       const oDataSource = this.tillService.prepareDataForGiftcardReceipt(oItem, this.transaction);
       this.sendForReceipt(oDataSource, oGiftcardTemplate, oDataSource.sGiftCardNumber, 'is_created', 'giftcard');
     })

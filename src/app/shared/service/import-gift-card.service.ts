@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class ImportGiftCardService {
 
   constructor(
+    private apiService: ApiService,
     private translateService: TranslateService
   ) { }
 
@@ -22,6 +24,11 @@ export class ImportGiftCardService {
         sColumnHeader: "MATCHING_CODE",
         sDataBaseFieldName: "nMatchingCode",
         sName: "nMatchingCode",
+      },
+      {
+        sColumnHeader: "CUSTOMER_NUMBER",
+        sDataBaseFieldName: "nClientId",
+        sName: "nClientId",
       },
       {
         sColumnHeader: "REMAINING_VALUE",
@@ -42,7 +49,7 @@ export class ImportGiftCardService {
         sColumnHeader: "TAX",
         sDataBaseFieldName: "nVatRate",
         sName: "nVatRate",
-      },
+      }
     ]
 
     return aDefaultAttribute;
@@ -50,7 +57,7 @@ export class ImportGiftCardService {
 
   processTransactionItem(oData: any): any {
     let { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
-
+    let _customer: any;
     /* mapping the file's field with database name */
     parsedGiftCardData = parsedGiftCardData.map((oGiftCard: any) => {
       if (Object.keys(oGiftCard).length) {
@@ -66,13 +73,31 @@ export class ImportGiftCardService {
 
     const sProductName = this.translateService.instant('GIFTCARD');
 
+    if(parsedGiftCardData[0].nMatchingCode || parsedGiftCardData[0].nClientId){
+      let requestParams = {
+        iBusinessId: iBusinessId,
+        searchValue:  parsedGiftCardData[0].nClientId ?  parsedGiftCardData[0].nClientId : parsedGiftCardData[0].nMatchingCode,
+        skip:0 , 
+        limit:10,
+        sortBy: '_id',
+        sortOrder: -1,
+        aProjection: ['_id'],
+        oFilterBy: {
+          aSearchField: parsedGiftCardData[0].nClientId ? ['nClientId']: ['nMatchingCode'],
+          aSelectedGroups: []
+        },
+        customerType: 'all'
+      }
+      _customer = this.getCustomer(requestParams);
+    }
+
     /* processing Transaction-Item */
     const aTransactionItem = [];
     for (const oData of parsedGiftCardData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
       const formatdate = new Date(oData?.dCreatedDate.split('/').reverse().join('/'));
-      const dCreatedDate = new Date(formatdate).setHours(5, 30, 0, 0);
+      const dCreatedDate = new Date(formatdate).setHours(0, 0, 0, 0);
       const finaldate = new Date(dCreatedDate);
 
       const oTransactionItem = {
@@ -83,12 +108,14 @@ export class ImportGiftCardService {
         /* File */
         nPriceIncVat: oData?.nPriceIncVat,
         nVatRate: oData?.nVatRate,
-        nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
+        /*No matching code is defined in TI schema */
+        //nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         sGiftCardNumber: oData?.sGiftCardNumber,
         dCreatedDate: finaldate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
+        /*No nPaidAmount in TI schema */
         nPaidAmount: oData?.nRemainingValue,
         nRemainingValue: oData?.nRemainingValue,
         /* calculated */
@@ -98,8 +125,8 @@ export class ImportGiftCardService {
         iArticleGroupId: '', /* giftcard */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
-        iCustomerId: oData?.nMatchingCode,
-        oCustomer: '',
+        iCustomerId:_customer ? _customer._id : undefined, //oData?.nMatchingCode 
+        //oCustomer: '', //NOT NEEDED IN TRANSACTION ITEM
         /* default */
         sProductName: sProductName,
         eStatus: "y",
@@ -128,7 +155,7 @@ export class ImportGiftCardService {
           bPrepayment: false
         },
         nDiscount: 0,
-        sDescription: "",
+        sDescription: "Imported Giftcard",
         sServicePartnerRemark: "",
         eEstimatedDateAction: "call_on_ready",
         eActivityItemStatus: "delivered",
@@ -204,4 +231,7 @@ export class ImportGiftCardService {
     return aPayment;
   }
 
+  getCustomer(requestParams: any){
+    return this.apiService.postNew('customer', '/api/v1/customer/list', requestParams).toPromise();
+  }
 }
