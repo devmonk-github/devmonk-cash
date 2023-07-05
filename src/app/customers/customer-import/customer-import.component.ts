@@ -52,6 +52,9 @@ export class CustomerImportComponent implements OnInit {
     if (step == 'next') {
       this.stepperInstatnce.goNext();
     } else if (step == 'previous') {
+      this.parsedCustomerData = [];
+      this.updateTemplateForm = {};
+      this.customerDetailsForm = {};
       this.stepperInstatnce.goPrev();
     } else if (step == 'import') {
       this.importCustomer()
@@ -84,7 +87,7 @@ export class CustomerImportComponent implements OnInit {
       iBusinessId: this.businessDetails._id,
       oTemplate: this.importService.processImportCustomer({ customer:updatedTemplate }),
       aCustomer: newParsedCustomer,
-      sDefaultLanguage: localStorage.getItem('language') || 'n;'
+      sDefaultLanguage: localStorage.getItem('language') || 'nl'
     };
 
 
