@@ -55,9 +55,10 @@ export class ImportGiftCardService {
     return aDefaultAttribute;
   }
 
-  processTransactionItem(oData: any): any {
+  async processTransactionItem(oData: any) {
     let { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
     let _customer: any;
+    let iCustomerId :any ;
     /* mapping the file's field with database name */
     parsedGiftCardData = parsedGiftCardData.map((oGiftCard: any) => {
       if (Object.keys(oGiftCard).length) {
@@ -88,7 +89,12 @@ export class ImportGiftCardService {
         },
         customerType: 'all'
       }
-      _customer = this.getCustomer(requestParams);
+      
+      _customer = await this.getCustomer(requestParams);
+      if(_customer.data.length && _customer.data[0].result.length){
+        iCustomerId = _customer.data[0].result[0]._id;
+      }
+
     }
 
     /* processing Transaction-Item */
@@ -125,7 +131,7 @@ export class ImportGiftCardService {
         iArticleGroupId: '', /* giftcard */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
-        iCustomerId:_customer ? _customer._id : undefined, //oData?.nMatchingCode 
+        iCustomerId:iCustomerId ? iCustomerId : '', //oData?.nMatchingCode 
         //oCustomer: '', //NOT NEEDED IN TRANSACTION ITEM
         /* default */
         sProductName: sProductName,
@@ -170,9 +176,9 @@ export class ImportGiftCardService {
     return aTransactionItem;
   }
 
-  mapTheImportGiftCardBody(oData: any) {
+  async mapTheImportGiftCardBody(oData: any) {
     const { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
-    const aTransactionItem = this.processTransactionItem(oData);
+    const aTransactionItem = await this.processTransactionItem(oData);
 
     const oBody: any = {
       iBusinessId: iBusinessId,
@@ -192,9 +198,6 @@ export class ImportGiftCardService {
       sDefaultLanguage: localStorage.getItem('language') || 'nl',
       bImported: true,
     };
-
-    console.log('importGiftCard: ', oBody);
-    console.log('referenceObj: ', referenceObj);
     return { parsedGiftCardData, oBody };
   }
 
@@ -231,7 +234,7 @@ export class ImportGiftCardService {
     return aPayment;
   }
 
-  getCustomer(requestParams: any){
+  async getCustomer(requestParams: any){
     return this.apiService.postNew('customer', '/api/v1/customer/list', requestParams).toPromise();
   }
 }
