@@ -210,7 +210,24 @@
               <td style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
               <td class="otherTab" scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
               <td class="otherTab" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-              <td>{{activity?.eActivityItemStatus}}</td>
+              <td>
+                <div *ngIf="activity.eActivityItemStatus == 'new'">{{'STS_NEW' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'processing'">{{'STS_PROCESSING' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'inspection'">{{'STS_INSPECTION' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'completed'">{{'STS_COMPLETED' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'delivered'">{{'STS_DELIVERED' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'cancelled'">{{'STS_CANCELLED' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'refund'">{{'STS_REFUND' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'refundInCashRegister'">{{'STS_REFUNDINCASHREGISTER' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'offer'">{{'STS_OFFER' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'offer-is-ok'">{{'STS_OFFER_IS_OK' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'offer-is-not-ok'">{{'STS_OFFER_IS_NOT_OK' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'to-repair'">{{'STS_TO_REPAIR' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'part-are-order'">{{'STS_PART_ARE_ORDER	' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'shipped-to-repair'">{{'STS_SHIPPED_TO_REPAIR' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'product-ordered'">{{'STS_PRODUCT_ORDERED' | translate }}</div>
+                <div *ngIf="activity.eActivityItemStatus == 'order-ready'">{{'STS_ORDER_READY' | translate }}</div>
+              </td>
               <td class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
               <td class="custom-overflow">
                 <span *ngIf="!activity?.oCustomer?.bIsCompany">{{activity?.oCustomer?.sFirstName}}
