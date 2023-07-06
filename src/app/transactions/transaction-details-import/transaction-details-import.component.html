@@ -2,17 +2,16 @@
     <p class="mb-4"> {{
         "FILL_IN_TRANSACTIONS_DETAILS_WITH_CORRESPONDING_COLUMNS_FROM_SELECTED_FIL_IF_FIELD_EMPTY_IT_IS_NOT_USED" |
         translate}}</p>
-
-    <div class="flex">
-        <button class="btn btn-secondary" (click)="gotoStep('previous')">
+    <div class="d-flex mb-3">
+        <button class="btn btn-dark" (click)="gotoStep('previous')">
             {{"BACK" | translate}}
         </button>
-        <button class="btn btn-primary ml-2" (click)="gotoStep('import')" [disabled]="validateTransactionHeaderLink()">
+        <button class="btn btn-primary mx-2" (click)="gotoStep('import')" [disabled]="validateTransactionHeaderLink()">
             {{"NEXT_STEP" | translate}}
         </button>
-        <button class="btn btn-primary ml-auto pull-right" (click)="getDynamicFields(true)">
+        <button class="btn btn-secondary" (click)="getDynamicFields(true)">
             <fa-icon [icon]="faSync"></fa-icon> &nbsp;
-            {{ "RELOAD_DEFAULT_ATTRIBUTES"}}
+            {{ "RELOAD_DEFAULT_ATTRIBUTES" | translate}}
         </button>
     </div>
     <h4>{{ 'TRANSACTION_DETAILS' | translate}}</h4>
