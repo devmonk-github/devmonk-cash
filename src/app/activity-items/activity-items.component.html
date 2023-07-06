@@ -210,7 +210,13 @@
               <td style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
               <td class="otherTab" scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
               <td class="otherTab" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-              <td>{{activity?.eActivityItemStatus}}</td>
+              <td>
+                <div *ngFor="let status of repairStatuses">
+                  <div *ngIf="activity.eActivityItemStatus == status.value">
+                    {{status.key | translate}}
+                  </div>
+                </div>
+              </td>
               <td class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
               <td class="custom-overflow">
                 <span *ngIf="!activity?.oCustomer?.bIsCompany">{{activity?.oCustomer?.sFirstName}}
