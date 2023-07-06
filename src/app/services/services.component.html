@@ -193,7 +193,13 @@
             <td>{{getTypes(activity.activityitems)}}</td>
             <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-            <td>{{activity?.eActivityItemStatus || '-'}}</td>
+            <td>
+              <div *ngFor="let status of transactionStatuses">
+                <div *ngIf="activity.eActivityItemStatus == status.value">
+                  {{status.key | translate}}
+                </div>
+              </div>
+            </td>
             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
             <!-- <td>{{'-'}}</td> -->
             <td>
