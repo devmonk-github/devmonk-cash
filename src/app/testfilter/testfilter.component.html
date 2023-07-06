@@ -227,17 +227,26 @@
               <td *ngIf="type == 'repair' || type == 'gold-purchase'" class="custom-overflow">{{activity?.sProductName ||
                 '-'}}</td>
               <td style="width: 130px;" scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-              <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase' && type !== 'order'" style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date:
+              <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase' && type !== 'order'" style="width: 130px;" scope="row">
+                {{activity?.dEstimatedDate | date:
                 'yyyy-MM-dd HH:mm'}}</td>
-                <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase' && type == 'order'" style="width: 130px;" scope="row">{{activity?.dCreatedDate | date:
-                  'yyyy-MM-dd HH:mm'}}</td>
-              <td>{{activity?.eActivityItemStatus}}</td>
-              <td  *ngIf="type == 'gold-purchase'">{{activity?.nTotalAmount}}</td>
+              <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase' && type == 'order'" style="width: 130px;" scope="row">
+                {{activity?.dCreatedDate | date:
+                'yyyy-MM-dd HH:mm'}}</td>
+              <td>
+                <div *ngFor="let status of repairStatuses">
+                  <div *ngIf="activity.eActivityItemStatus == status.value">
+                    {{status.key | translate}}
+                  </div>
+                </div>
+              </td>
+              <td *ngIf="type == 'gold-purchase'">{{activity?.nTotalAmount}}</td>
               <td *ngIf="type == 'giftcard'">{{(activity?.nPriceIncVat || '0') | currency: tillService.currency}}</td>
               <td *ngIf="type == 'giftcard'">
                 {{(activity?.nGiftcardRemainingAmount || '0') | currency: tillService.currency}}
               </td>
-              <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase'" class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
+              <td *ngIf="type !== 'giftcard' && type !== 'gold-purchase'" class="custom-overflow">{{activity?.sBusinessPartnerName
+                || '-'}}</td>
               <td class="custom-overflow">
                 <span *ngIf="!activity?.oCustomer?.bIsCompany">{{activity?.oCustomer?.sFirstName}}
                   {{activity?.oCustomer?.sLastName || '-'}} </span>

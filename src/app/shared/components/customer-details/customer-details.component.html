@@ -453,7 +453,13 @@
                                                 <td>{{getTypes(activity.activityitems)}}</td>
                                                 <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                 <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                                <td>{{activity?.eActivityItemStatus || '-'}}</td>
+                                                <td>
+                                                    <div *ngFor="let status of repairStatuses">
+                                                        <div *ngIf="activity.eActivityItemStatus == status.value">
+                                                            {{status.key | translate}}
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                                 <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                     <td>
@@ -526,7 +532,13 @@
                                                 <td>{{activity?.oType?.eTransactionType}}</td>
                                                 <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
                                                 <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy, HH:mm:ss'}}</td>
-                                                <td>{{activity?.eActivityItemStatus || '-'}}</td>
+                                                <td>
+                                                    <div *ngFor="let status of repairStatuses">
+                                                        <div *ngIf="activity.eActivityItemStatus == status.value">
+                                                            {{status.key | translate}}
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td>{{activity?.sBusinessPartnerName || '-'}}</td>
                                                 <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                     <td>
