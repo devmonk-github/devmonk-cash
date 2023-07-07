@@ -68,7 +68,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     endDate: "",//new Date(new Date().setHours(23, 59, 59)),
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
-  bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
+  bIsSupplierMode: boolean = false; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
   edisplayMethodKeysEnum = eDisplayMethodKeysEnum
   creditAmount = 0;
   debitAmount = 0;
@@ -702,7 +702,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         dEndDate: this.statisticFilter.dToState,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
-        bIsSupplierMode: true,
+        bIsSupplierMode: this.bIsSupplierMode,
       }
     }
 
@@ -828,7 +828,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
-        bIsSupplierMode: true,
+        bIsSupplierMode: this.bIsSupplierMode,
         iBusinessPartnerId: this.aSelectedBusinessPartnerId,
         iStatisticId: this.iStatisticId
       },
@@ -1121,7 +1121,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           // IsDynamicState
           bIsArticleGroupLevel: this.bIsArticleGroupLevel,
           bIsSupplierMode: this.bIsSupplierMode,
-          iArticleGroupOriginalId: item?._id,
+          iArticleGroupId: item?._id,
           iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
           iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
           aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
