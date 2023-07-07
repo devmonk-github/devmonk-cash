@@ -39,18 +39,11 @@
         </div>
         <div class="col-md-7 no-padding-left flex">
             <select class="form-select w-75" id="customer-update-template" [(ngModel)]="updateTemplateForm[option]">
-                <option value=""></option>
                 <option value="do-nothing">{{ "DO_NOTHING" | translate }}</option>
                 <option value="overwrite">{{ "OVERWRITE" | translate }}</option>
                 <option value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</option>
                 <option value="append">{{ "APPEND" | translate }}</option>
             </select>
-            <!-- <nb-radio-group class="flex" [(ngModel)]="updateTemplateForm[option]">
-                <nb-radio class="mr-4" value="do-nothing">{{ "DO_NOTHING" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="overwrite">{{ "OVERWRITE" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="append">{{ "APPEND" | translate }}</nb-radio>
-            </nb-radio-group> -->
         </div>
     </div>
 </div>

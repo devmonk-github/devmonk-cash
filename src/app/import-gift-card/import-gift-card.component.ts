@@ -48,18 +48,18 @@ export class ImportGiftCardComponent implements OnInit {
     }, 200);
   }
 
-  public moveToStep(step: any) {
+  async moveToStep(step: any) {
     if (step == 'next') {
       this.stepperInstance.goNext();
     } else if (step == 'previous') {
       this.stepperInstance.goPrev();
     } else if (step == 'import') {
-      this.importGiftCard()
+      await this.importGiftCard()
       this.stepperInstance.goNext();
     }
   }
 
-  importGiftCard() {
+  async importGiftCard() {
     try {
       this.importInprogress = true;
       const oData = {
@@ -71,7 +71,7 @@ export class ImportGiftCardComponent implements OnInit {
         iEmployeeId: this.iEmployeeId
       }
 
-      const { parsedGiftCardData, oBody } = this.importGiftCardService.mapTheImportGiftCardBody(oData);
+      const { parsedGiftCardData, oBody } =await this.importGiftCardService.mapTheImportGiftCardBody(oData);
       this.parsedGiftCardData = parsedGiftCardData;
       const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
       for (let i = 0; i < aTransactionItem?.length; i++) {
@@ -87,7 +87,7 @@ export class ImportGiftCardComponent implements OnInit {
         });
       }
     } catch (error) {
-      console.log('Import Gift card');
+      console.log('Import Gift card error');
     }
   }
 

@@ -147,7 +147,13 @@
                                             <p class="p-0 m-0 me-3 flex-fill">
                                                 <span class="fw-bolder text-gray-800">{{'STATUS' | translate}}</span>
                                                 <br>
-                                                <span class="text-capitalize d-block text-truncate">{{activity.eActivityItemStatus || '-' }}</span>
+                                                <span class="text-capitalize d-block text-truncate">
+                                                    <div *ngFor="let status of repairStatus">
+                                                        <div *ngIf="activity.eActivityItemStatus == status.value">
+                                                            {{status.key | translate}}
+                                                        </div>
+                                                    </div>
+                                                </span>
                                             </p>
                                             <p class="p-0 m-0 flex-fill">
                                                 <span class="fw-bolder text-gray-800">{{'PRICE' | translate}}</span>

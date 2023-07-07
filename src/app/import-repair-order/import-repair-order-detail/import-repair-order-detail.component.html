@@ -2,16 +2,15 @@
     <p class="mb-4"> {{
         "FILL_IN_REPAIR_ORDER_PROPERTIES_WITH_CORRESPONDING_COLUMNS_FROM_SELECTED_FIL_IF_FIELD_EMPTY_IT_IS_NOT_USED" |
         translate}}</p>
-
-    <div class="flex">
-        <button class="btn btn-secondary" (click)="gotoStep('previous')">
+    <div class="d-flex mb-3">
+        <button class="btn btn-dark" (click)="gotoStep('previous')">
             {{"BACK" | translate}}
         </button>
-        <button class="btn btn-primary ml-2" (click)="gotoStep('import')" [disabled]="validateRepairOrderHeaderLink()">
+        <button class="btn btn-primary mx-2" (click)="gotoStep('import')" [disabled]="validateRepairOrderHeaderLink()">
             {{"NEXT_STEP" | translate}}
         </button>
-        <button class="btn btn-primary ml-auto pull-right" (click)="getDynamicFields(true)">
-            <fa-icon icon="sync"></fa-icon> &nbsp;
+        <button class="btn btn-secondary" (click)="getDynamicFields(true)">
+            <fa-icon [icon]="faSync"></fa-icon> &nbsp;
             {{ "RELOAD_DEFAULT_ATTRIBUTES" | translate}}
         </button>
     </div>

@@ -115,6 +115,13 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
+    if(step == 'previous') 
+    {
+      this.updateTemplateForm = {};
+      this.customerDetailsForm = {};
+      this.parsedCustomerData = [];
+      this.allFields.all = [];
+    }
     if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }

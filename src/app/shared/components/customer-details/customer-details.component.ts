@@ -216,6 +216,25 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   bTransactionItemLoader: boolean = false;
   bActivitiesLoader: boolean = false;
   bActivityItemsLoader: boolean = false;
+  repairStatuses: Array<any> = [
+    { key: 'NEW', value: 'new' },
+    { key: 'INFO', value: 'info' },
+    { key: 'PROCESSING', value: 'processing' },
+    { key: 'CANCELLED', value: 'cancelled' },
+    { key: 'INSPECTION', value: 'inspection' },
+    { key: 'COMPLETED', value: 'completed' },
+    { key: 'REFUND', value: 'refund' },
+    { key: 'REFUNDINCASHREGISTER', value: 'refundInCashRegister' },
+    { key: 'OFFER', value: 'offer' },
+    { key: 'OFFER_IS_OK', value: 'offer-is-ok' },
+    { key: 'OFFER_IS_NOT_OK', value: 'offer-is-not-ok' },
+    { key: 'TO_REPAIR', value: 'to-repair' },
+    { key: 'PART_ARE_ORDER', value: 'part-are-order' },
+    { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
+    { key: 'DELIVERED', value: 'delivered' },
+    { key: 'PRODUCT_ORDERED', value: 'product-ordered' },
+    { key: 'ORDER_READY', value: 'order-ready' },
+  ];
 
   aTransactions !: Array<any>;
   aTransctionTableHeaders: Array<any> = [
