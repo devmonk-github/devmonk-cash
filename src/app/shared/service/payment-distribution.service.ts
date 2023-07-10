@@ -65,7 +65,7 @@ export class PaymentDistributionService {
 
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
-      if(i.paymentAmount < 0) {
+      if (i.paymentAmount < 0 && i.type !== 'gold-purchase') {
         if (bTesting) console.log('payment amount is < 0 so addig that to available amount')
         availableAmount += -i.amountToBePaid;
       }
