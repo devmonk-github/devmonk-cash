@@ -84,6 +84,6 @@ export class FileImportComponent implements OnInit, OnDestroy {
 
   // Function for validate file import
   validateImport() : boolean{
-    return this.bDelimiter == false || this.parsedCustomerData.length == 0;
+    return !this.bDelimiter || !this.parsedCustomerData.length;
   }
 }

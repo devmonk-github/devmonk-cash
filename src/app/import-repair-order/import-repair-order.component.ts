@@ -85,7 +85,9 @@ export class ImportRepairOrderComponent implements OnInit {
         // return;
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
+          this.parsedRepairOrderData = [];
         }, (error) => {
+          this.parsedRepairOrderData = [];
           console.error(error);
         });
         
@@ -94,6 +96,7 @@ export class ImportRepairOrderComponent implements OnInit {
       
 
     } catch (error) {
+      this.parsedRepairOrderData = [];
       console.log('Import Repair Order');
     }
   }
