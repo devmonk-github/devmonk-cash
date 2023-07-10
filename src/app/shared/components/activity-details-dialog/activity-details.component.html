@@ -1063,12 +1063,11 @@
                                                 <div class="overflow-scroll py-1 h-200px">
                                                     <table class="table table-hover table-rounded table-striped gy-3 gs-3">
                                                         <thead class="fw-bolder fs-6 text-gray-400 border-gray-200 text-uppercase">
-                                                            <tr>
-                                                                <th>{{ "RECEIPT_NUMBER" | translate}}</th>
-                                                                <th>{{ "CREATED_DATE" | translate}}</th>
-                                                                <th>{{ "AMOUNT_USED" |translate}}</th>
-                                                                <th></th>
-                                                            </tr>
+                                                            <tr class="fw-bold fs-6 text-gray-400 text-uppercase border-gray-200">
+                                                                <th scope="col" *ngFor="let th of tableUsageHistoryHeaders">
+                                                                  {{ th.key | translate }}
+                                                                </th>
+                                                              </tr>
                                                         </thead>
                                                         <tbody class="align-middle">
                                                             <tr *ngFor="let oItem of activity.aGiftcardRedeemedTransactionData">
