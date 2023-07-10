@@ -59,7 +59,9 @@ export class TransactionImportComponent implements OnInit {
 
     this.apiService.postNew('cashregistry', '/api/v1/transaction/import', data).subscribe((result: any) => {
       this.importInprogress = false;
+      this.parsedTransactionData = [];
     }, (error) => {
+      this.parsedTransactionData = [];
       console.error(error);
     });
   }
