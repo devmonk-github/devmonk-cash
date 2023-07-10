@@ -4,13 +4,13 @@
         <hr>
         <h4>{{ ("STEP_1_DETERMINE_CATEGORY_AND_FILE" | translate) | uppercase }}</h4>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3 my-3">
         <label for="delimiter"> {{ "SEPARATOR" | translate}} ( {{ "SEPARATOR_HINT" | translate}} ) </label>
         <br>
         <input id="delimiter" type="text" placeholder="{{ 'SEPARATOR' | translate}}" [disabled]="bDelimiter" [(ngModel)]="delimiter"
             class="form-control w-100">
     </div>
-    <div class="col-md-6" *ngIf="delimiter != ''">
+    <div class="col-md-9" *ngIf="delimiter != ''">
         <file-upload [control]="control" accept=".csv" class="business-logo-uploader cursor-pointer"
             id="productCSVUploader">
             <ng-template let-isFileDragDropAvailable="isFileDragDropAvailable" #placeholder>
@@ -42,8 +42,8 @@
             <li>{{ "MAX_THOUSAND_ITEM_PER_FILE" | translate}}</li>
         </ul>
     </div>
-    <div class="col-md-12">
-        <button class="mt-2" class="btn btn-primary" (click)="nextStep('next')" [disabled]="validateImport()">
+    <div class="col-md-12 mt-3 d-flex justify-content-end p-0">
+        <button class="m-0" class="btn btn-primary" (click)="nextStep('next')" [disabled]="validateImport()">
             {{"NEXT_STEP" | translate}}
         </button>
     </div>

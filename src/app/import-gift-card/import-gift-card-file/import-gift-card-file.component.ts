@@ -45,8 +45,10 @@ export class GiftCardFileImportComponent implements OnInit {
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter })
           .pipe().subscribe((result: any) => {
             this.parsedGiftCardData = result;
-            this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);
-            this.bDelimiter = true;
+            if (result.length) {
+              this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);
+              this.bDelimiter = true;
+            }
           }, (error: NgxCSVParserError) => {
             this.parsedGiftCardData = [];
             this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);
@@ -63,12 +65,18 @@ export class GiftCardFileImportComponent implements OnInit {
   }
 
   // Function for go to next step
-  nextStep(step: string) {
+  nextStep(step: string){
+    const tempData = JSON.parse(JSON.stringify(this.parsedGiftCardData));
+    this.control.setValue([]);
+    this.delimiter = '';
+    this.bDelimiter = false;
     this.moveToStep.emit(step);
+    this.parsedGiftCardData = tempData;
+    this.parsedGiftCardDataChange.emit(this.parsedGiftCardData);
   }
 
   // Function for validate file import
   validateImport(): boolean {
-    return !this.delimiter.trim() || !this.parsedGiftCardData.length;
+    return !this.bDelimiter || !this.parsedGiftCardData.length;
   }
 }
