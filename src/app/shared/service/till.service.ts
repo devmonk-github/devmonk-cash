@@ -572,7 +572,6 @@ export class TillService {
       dataObject.businessDetails?.currentLocation?.oAddress?.city) || '';
     dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
 
-    dataObject.sQRCodeData = (dataObject?.oFiskalyData?.sQRCodeData) || '';
 
     dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
 

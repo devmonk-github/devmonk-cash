@@ -995,10 +995,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             const result: any = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, _.clone(body.payments), 'FINISHED');
             if (result) {
               localStorage.removeItem('fiskalyTransaction');
-              body.oTransaction.oFiskalyData = {
-                sFiskalyTxId: result._id,
-                sQRCodeData: result?.qr_code_data
-              }
+              body.oTransaction.sFiskalyTxId = result._id;
             }
           }
 

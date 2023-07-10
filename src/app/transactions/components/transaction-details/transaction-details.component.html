@@ -219,7 +219,7 @@
                             <label class="mx-auto cursor-pointer">{{ "PRINT_INVOICE" | translate }}</label>
                         </button>
                         <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
-                            [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id || loading"
+                            [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id"
                             (click)="downloadWithVAT()">
                             <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                             <span *ngIf="downloadWithVATLoading">
