@@ -88,7 +88,8 @@ export class ActivityDetailsComponent implements OnInit {
   tableUsageHistoryHeaders: Array<any> = [
     { key: 'CREATED_DATE', disabled: true},
     { key: 'RECEIPT_NUMBER', disabled: true },
-    { key: 'AMOUNT_USED', disabled: true }
+    { key: 'AMOUNT_USED', disabled: true },
+    { key: '', disabled: true }
   ]
 
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
