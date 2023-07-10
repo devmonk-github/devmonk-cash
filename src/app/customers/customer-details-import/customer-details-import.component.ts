@@ -54,6 +54,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
+      this.allFields.all = [];
       this.headerOptions = Object.keys(this.parsedCustomerData[0]);
       this.customerDetailsForm = {};
       this.updateTemplateForm = {};

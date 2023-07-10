@@ -52,9 +52,6 @@ export class CustomerImportComponent implements OnInit {
     if (step == 'next') {
       this.stepperInstatnce.goNext();
     } else if (step == 'previous') {
-      this.parsedCustomerData = [];
-      this.updateTemplateForm = {};
-      this.customerDetailsForm = {};
       this.stepperInstatnce.goPrev();
     } else if (step == 'import') {
       this.importCustomer()
@@ -94,10 +91,12 @@ export class CustomerImportComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
       if(result?.message == 'success'){
+        this.parsedCustomerData = [];
         this.toastService.show({type:'success' , text:this.translate['SUCCESSFULLY_IMPORTED']})
       }
     }, (error) => {
       console.log(error);
+      this.parsedCustomerData = [];
       this.toastService.show({type:'warning' , text:error.message});
     });
   }
