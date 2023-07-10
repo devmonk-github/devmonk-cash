@@ -449,8 +449,20 @@ export class ReceiptService {
             } else if (el?.type === 'barcode') {
                 let img = this.addBarcode(el);
                 this.content.push(img);
+            } else if(el?.qr) {
+                const sQRString = this.pdfService.replaceVariables(el.qr, this.oOriginalDataSource);
+                this.content.push(this.addQR(sQRString, el?.options, el?.styles));
             }
         });
+    }
+
+    addQR(data: any, options?: any, styles?:any){
+        // console.log('qr', {options, data})
+        return {
+            qr: data,
+            ...options,
+            ...styles
+        }
     }
 
     processColumns(row: any, styles?: any) {
@@ -791,6 +803,8 @@ export class ReceiptService {
         return new Observable(subscriber => {
             oDataSource = JSON.parse(JSON.stringify(oDataSource));
             // console.log({oDataSource})
+            oDataSource.sQRCodeData = (oDataSource?.oFiskalyData?.sQRCodeData) || '';
+            
             if (oDataSource?.aPayments?.length) {
                 // console.log(oDataSource?.aPayments);
                 // oDataSource?.aPayments?.forEach((payment: any) => {
