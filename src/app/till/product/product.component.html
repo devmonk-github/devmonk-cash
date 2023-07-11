@@ -1,9 +1,9 @@
 <div class="accordion-header">
-  <button class="accordion-button fs-4 fw-bold pe-0 ps-4" type="button" data-bs-toggle="collapse"
+  <button class="accordion-button fs-4 fw-bold p-3" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="false" aria-controls="kt_accordion_1_body_1">
     <section class="row product-row align-items-center w-100">
       <div class="col-12">
-        <div class="row">
+        <div class="row fs-5">
           <div class="col-1">
             <svg width="15" height="15" class="m-1">
               <rect width="15" height="15" [ngStyle]="{fill: (item.oType.bRefund) ? '#f7422e' : (item.eTransactionItemType==='broken') ? '#f0e959' : '#4ab69c' }"
@@ -12,7 +12,7 @@
             </svg>
             {{item.quantity}}
           </div>
-          <div class="col-4 text-truncate">{{item.name}}</div>
+          <div class="col-4 fs-6">{{item.name}}</div>
           <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator }}</div>
           <div class="col">
             <span *ngIf="item.bDiscountOnPercentage">{{item.nDiscount}}%</span>
