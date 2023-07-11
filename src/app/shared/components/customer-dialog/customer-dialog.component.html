@@ -2,9 +2,9 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{"FIND_CUSTOMER" | translate}}</h4>
         <div>
-            <button type="button" class="btn btn-sm btn-light" (click)="close({ action: false })">
-                <fa-icon [icon]="faTimes"></fa-icon>
-            </button>
+            <a class="cancel my-auto" (click)="close(false)">
+                <i class="fa fa-times"></i>
+            </a>
         </div>
     </div>
     <div class="card-body">
