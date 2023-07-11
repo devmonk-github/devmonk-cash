@@ -21,11 +21,10 @@
 <div class="card shadow-sm">
     <div class="card-header mt-5">
         <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
-        <div>
-            <a class="cancel my-auto" (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer},sInvoiceNumber:transaction.sInvoiceNumber})">
-                <i class="fa fa-times"></i>
-            </a>
-        </div>
+        <a class="cancel my-auto"
+            (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer},sInvoiceNumber:transaction.sInvoiceNumber})">
+            <i class="fa fa-times fabutton"></i>
+        </a>
     </div>
     <div class="card-body main m-0">
         <div class="row">
