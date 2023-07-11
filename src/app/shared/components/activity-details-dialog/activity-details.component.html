@@ -1,11 +1,10 @@
 <div class="card shadow-sm">
     <div class="card-header align-items-center py-6">
         <h3 class="m-0 fw-bolder">{{ 'ACTIVITY_DETAILS' | translate}}</h3>
-        <div mat-dialog-actions>
-            <button type="button" class="btn btn-sm btn-light"
-                (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
-                <fa-icon [icon]="faTimes"></fa-icon>
-            </button>
+        <div>
+            <a class="cancel my-auto" (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
+                <i class="fa fa-times"></i>
+            </a>
         </div>
     </div>
     <div class="card-body bg-light-gray">

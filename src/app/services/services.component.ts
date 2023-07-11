@@ -54,7 +54,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     iEmployeeId: '',
     iAssigneeId: '',
     searchValue: '',
-    sortBy: { key: '_id', selected: true, sort: 'asc' },
+    sortBy:'dCreatedDate',
     sortOrder: 'asc'
   };
   showLoader = false;
@@ -105,7 +105,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
       iEmployeeId: '',
       iAssigneeId: '',
       searchValue: '',
-      sortBy: { key: '_id', selected: true, sort: 'asc' },
+      sortBy:'dCreatedDate',
       sortOrder: 'asc'
     };
     this.selectedWorkstations = [];

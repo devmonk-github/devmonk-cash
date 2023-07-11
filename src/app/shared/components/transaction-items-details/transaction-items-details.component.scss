@@ -6,7 +6,10 @@
     flex-direction: row;
     column-gap: 15px;
 }
-
+a.cancel{
+    cursor: pointer;
+    color:#a63b55;
+}
 .custom-overflow{
     max-width: 120px;
     overflow: hidden;
