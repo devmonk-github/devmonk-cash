@@ -43,7 +43,14 @@ export class PdfService {
 
   private data: any = {};
   private css: string = "";
-  private currency: string = "€";
+  
+  oCurrencies:any = {
+    pound: "£",
+    swiss: "₣",
+    euro: "€"
+  }
+  currency: string = "euro";
+
   private defaultElement: string = "span";
   private fontSize: string = "10pt";
   private layout: any[] = [];
@@ -183,9 +190,10 @@ export class PdfService {
 
     switch (type) {
       case 'money':
-        return this.convertStringToMoney(val);
-      case 'moneyplus':
-        return this.currency + ' ' + this.convertStringToMoney(val);
+        const nValue = parseFloat(this.convertStringToMoney(val));
+        return (nValue >= 0) ? 
+          this.oCurrencies[this.currency] + nValue :
+          '-' + this.oCurrencies[this.currency] + Math.abs(nValue);
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
@@ -543,9 +551,9 @@ export class PdfService {
     if (template.css) {
       this.css = template.css
     }
-    if (template.currency) {
-      this.currency = template.currency
-    }
+    // if (template.currency) {
+    //   this.currency = template.currency
+    // }
     if (template.defaultElement) {
       this.defaultElement = template.defaultElement
     }

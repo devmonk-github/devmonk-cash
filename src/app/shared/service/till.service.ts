@@ -572,22 +572,9 @@ export class TillService {
       dataObject.businessDetails?.currentLocation?.oAddress?.city) || '';
     dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
 
-    dataObject.sQRCodeData = (dataObject?.oFiskalyData?.sQRCodeData) || '';
+    if (dataObject?.oFiskalyData?.sQRCodeData) dataObject.sQRCodeData = (dataObject?.oFiskalyData?.sQRCodeData);
 
     dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
-
-    dataObject.nPaymentMethodTotal = 0;
-
-    dataObject.aPayments.forEach((obj: any) => {
-      obj.bIgnore = false;
-      obj.nNewAmount = obj?.nAmount || 0;
-      dataObject.nPaymentMethodTotal += obj.nAmount;
-      if(!obj?.sRemarks) obj.sRemarks = "";
-      else if (obj?.sRemarks === 'CHANGE_MONEY') obj.bIgnore = true;
-
-      // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
-    });
-    dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
 
     const aDiscountRecords = transaction.aTransactionItems.filter((item: any) => this.aDiscountTypes.includes(item.oType?.eKind));
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => ![...this.aDiscountTypes, 'loyalty-points'].includes(item.oType?.eKind));
@@ -668,7 +655,7 @@ export class TillService {
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
-      totalVat += vat * item.nQuantity;
+      totalVat += (vat * item.nQuantity);
       total += item.totalPaymentAmount;// + (item?.nRedeemedLoyaltyPoints || 0) +(item?.nGiftcardDiscount || 0);
 
       if (item.oType.bRefund) {
@@ -799,6 +786,24 @@ export class TillService {
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
       })
     }
+
+    dataObject.nPaymentMethodTotal = 0;
+
+    dataObject.aPayments.forEach((oPayment: any) => {
+      oPayment.bIgnore = false;
+      oPayment.nNewAmount = oPayment?.nAmount || 0;
+      dataObject.nPaymentMethodTotal += oPayment.nAmount;
+      if (!oPayment?.sRemarks) oPayment.sRemarks = "";
+      else if (oPayment?.sRemarks === 'CHANGE_MONEY') oPayment.bIgnore = true;
+
+      if (oPayment.sMethod == 'bankpayment') {
+        oPayment.sMethod = (oPayment?.bConfirmed) ? this.translateService.instant('BANKPAYMENT_CONFIRMED') : this.translateService.instant('BANKPAYMENT_OUTSTANDING')
+      } else oPayment.sMethod = this.translateService.instant(oPayment.sMethod.toUpperCase());
+      // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
+    });
+    dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
+
+
     transaction = dataObject;
     transaction.bCompletedProcessing = true;
     // console.log('processTransactionForPdfReceipt after processing', transaction);

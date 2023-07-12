@@ -120,6 +120,7 @@ export class ReceiptService {
     exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
         return new Observable<any>((observer:any) => {
         this.oOriginalDataSource = oDataSource;
+        this.pdfService.currency = oDataSource.currentLocation.eCurrency;
         // console.log({oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey});
 
         this.commonService.pdfTitle = pdfTitle;
@@ -451,7 +452,7 @@ export class ReceiptService {
                 this.content.push(img);
             } else if(el?.qr) {
                 const sQRString = this.pdfService.replaceVariables(el.qr, this.oOriginalDataSource);
-                this.content.push(this.addQR(sQRString, el?.options, el?.styles));
+                if (sQRString) this.content.push(this.addQR(sQRString, el?.options, el?.styles));
             }
         });
     }
@@ -803,7 +804,7 @@ export class ReceiptService {
         return new Observable(subscriber => {
             oDataSource = JSON.parse(JSON.stringify(oDataSource));
             // console.log({oDataSource})
-            oDataSource.sQRCodeData = (oDataSource?.oFiskalyData?.sQRCodeData) || '';
+            if (oDataSource?.oFiskalyData?.sQRCodeData) oDataSource.sQRCodeData = oDataSource?.oFiskalyData?.sQRCodeData;
             
             if (oDataSource?.aPayments?.length) {
                 // console.log(oDataSource?.aPayments);

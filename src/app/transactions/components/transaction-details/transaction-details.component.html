@@ -493,7 +493,7 @@
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
                                     <td>
-                                        {{item.sMethod}} <br />
+                                        {{ item.sMethod | translate}} <br />
                                         ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
