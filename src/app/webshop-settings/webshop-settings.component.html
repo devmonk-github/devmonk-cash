@@ -230,7 +230,7 @@
                         <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" | translate}}</label>
                         <div class="form-check form-check-solid form-switch fv-row lh-xxl">
                             <input name="useForWebshop" id="forWebshop" type="checkbox" class="form-check-input w-45px h-30px"
-                                formControlName='useForWebshop' />
+                                formControlName='useForWebshop' [class.pe-none]="paymentMethodFormGroup.controls.provider.value === 'paynl'"/>
                         </div>
                     </div>
                     <div *ngIf="paymentMethodFormGroup.controls.provider.value === 'mollie'" class="col-md-4 mt-2">
@@ -258,6 +258,27 @@
                         <span class="small text-danger mt-2" *ngIf="showPaymentMethodError && paymentMethodFormGroup.controls.stripeSign?.errors?.required">
                             {{'STRIPE_SIGN_REQUIRED' | translate}}!
                         </span>
+                    </div>
+                </div>
+                <div *ngIf="paymentMethodFormGroup.controls.provider.value === 'paynl'" class="row mt-2">
+                    <div class="col-md-4">
+                        <label for="label22" name="label22" class="form-label">{{"ENTER_SERVICE_ID" | translate}}</label>
+                        <input name="sServiceId" formControlName="sServiceId" type="text" class="form-control" readonly
+                            placeholder='{{ "ENTER_SERVICE_ID" |translate}}'>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="label22" name="label22" class="form-label">{{"API_TOKEN" | translate}}</label>
+                        <input name="sApiToken" formControlName="sApiToken" type="text" class="form-control" readonly
+                            placeholder='{{ "API_TOKEN" |translate}}'>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="label22" name="label22" class="form-label">{{"API_CODE" | translate}}</label>
+                        <input name="sApiCode" formControlName="sApiCode" type="text" class="form-control" readonly
+                            placeholder='{{ "API_CODE" |translate}}'>
+                    </div>
+                    <div class="col-md-4 d-flex mt-2">
+                        <label for="label25" name="label25" class="form-label my-auto ms-2">{{"EDIT_PAYNL_SETTINGS" |translate}}</label>
+                        <button class="btn btn-primary ms-auto" routerLink="../payment-account-management"> {{ "CLICK" | translate}}</button>
                     </div>
                 </div>
             </form>
