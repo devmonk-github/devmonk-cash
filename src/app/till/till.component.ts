@@ -1264,15 +1264,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iBusinessId: this.iBusinessId,
       skip: (this.oShopProductsPaginationConfig.currentPage - 1) * this.oShopProductsPaginationConfig.itemsPerPage,
       limit: this.oShopProductsPaginationConfig.itemsPerPage,
-      sortBy: '',
-      sortOrder: '',
+      sortBy: `oName.${this.language}`,
+      sortOrder: 'asc',
       searchValue: searchValue,
       aProjection: this.aProjection,
       oFilterBy: {
         oStatic: {},
         oDynamic: {}
       },
-      language: this.language
     }
 
     this.bProductSelected = false;
@@ -1336,7 +1335,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getBusinessProductList(aBusinessProductId: any): Observable<any> {
-    const oBody = { iBusinessId: this.iBusinessId, aBusinessProductId: aBusinessProductId };
+    const oBody = { iBusinessId: this.iBusinessId, aBusinessProductId: aBusinessProductId, sortBy: `oName.${this.language}`, sortOrder: 'asc' };
     return this.apiService.postNew('core', `/api/v1/business/products/list`, oBody);
   }
 
