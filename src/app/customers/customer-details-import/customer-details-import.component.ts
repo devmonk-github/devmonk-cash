@@ -25,7 +25,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   overwriteForFields: Array<string> = [];
   ifUndefinedForFields: Array<string> = [];
   appendForFields: Array<string> = [];
-
+  iBusinessId: any = localStorage.getItem('currentBusiness');
 
   allFields: any = {
     first: [],
@@ -54,6 +54,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
+      this.allFields.all = [];
       this.headerOptions = Object.keys(this.parsedCustomerData[0]);
       this.customerDetailsForm = {};
       this.updateTemplateForm = {};
@@ -68,6 +69,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
+      iBusinessId: this.iBusinessId,
       oFilterBy: {
         "sName": "IMPORT_CUSTOMER_DETAILS"
       }

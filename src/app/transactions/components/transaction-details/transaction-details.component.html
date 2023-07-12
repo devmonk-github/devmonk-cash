@@ -18,20 +18,20 @@
 
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-header mt-5">
-        <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
-        <button type="button" class="btn btn-sm btn-secondary h-50"
+<div class="card shadow-sm mt-3">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="m-0 fw-bolder">{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
+        <a class="cancel my-auto"
             (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer},sInvoiceNumber:transaction.sInvoiceNumber})">
-            <fa-icon [icon]="faTimes"></fa-icon>
-        </button>
+            <i class="fa fa-times fabutton"></i>
+        </a>
     </div>
     <div class="card-body main m-0">
         <div class="row">
             <div class="col-4">
 
                 <!-- CURRENT_CUSTOMER Start -->
-                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer && !(transaction.bMigrate || transaction.bImported)">
+                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
                     <p>{{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}</p>
                     <div class="d-flex">
                         <button class="btn btn-info btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter" (click)="openCustomer(transaction.oSystemCustomer)">
@@ -219,7 +219,7 @@
                             <label class="mx-auto cursor-pointer">{{ "PRINT_INVOICE" | translate }}</label>
                         </button>
                         <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
-                            [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id"
+                            [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id || loading"
                             (click)="downloadWithVAT()">
                             <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                             <span *ngIf="downloadWithVATLoading">
@@ -425,11 +425,11 @@
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>{{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
-                                            <ng-container *ngIf="from != 'activity-details' && from != 'audit' && !item?.bMigrate">
+                                            <ng-container *ngIf="from != 'activity-details' && from != 'audit'">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-info btn-sm"
-                                                            (click)="showActivityItem(item,$event)">
+                                                            (click)="showActivityItem(item,$event)" [disabled]="item?.eKind == 'regular' && item?.bMigrate">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
                                                         <div *ngIf="item.bFetchingActivityItem"

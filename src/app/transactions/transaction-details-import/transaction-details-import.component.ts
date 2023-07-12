@@ -59,6 +59,7 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedTransactionData && this.parsedTransactionData.length > 0) {
+      this.allFields.all = [];
       this.headerOptions = Object.keys(this.parsedTransactionData[0]);
       this.transactionDetailsForm = {};
       this.updateTemplateForm = {};
@@ -119,6 +120,13 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
+    if(step == 'previous') 
+    {
+      this.updateTemplateForm = {};
+      this.transactionDetailsForm = {};
+      this.parsedTransactionData = [];
+      this.allFields.all = [];
+    }
     if (Object.keys(this.transactionDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }

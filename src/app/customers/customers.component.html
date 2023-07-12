@@ -24,23 +24,9 @@
                                     </button>
                                 </div>
                             </div>
-
                             <div class="col-4 card-toolbar flex-row-fluid justify-content-end">
                                 <button class="btn btn-primary me-3" (click)="createCustomer()">{{"NEW" | translate}}</button>
-                                <div class="m-0">                
-                                    <button class="btn btn-secondary px-4 ml-0.5" data-kt-menu-trigger="hover"
-                                        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
-                                        data-kt-menu-flip="bottom">
-                                        <i class="bi bi-three-dots fs-3 p-0"></i>
-                                    </button>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
-                                        data-kt-menu="true">
-                                        <div class="menu-item px-3" *ngFor="let option of options">
-                                            <div class="menu-link px-3" (click)="clickMenuOptions(option.key)">{{ option.key | translate}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button class="btn btn-light-primary mx-2" (click)="export()">{{'DOWNLOAD' | translate}}</button>
                             </div>
                         </div>
                         <div class="col-lg-12 d-flex align-items-end flex-wrap px-2" *ngIf="showAdvanceSearch">
@@ -73,6 +59,13 @@
                                         translate}}
                                     </ng-option>
                                 </ng-select>
+                            </div>
+                            <div class="col-4 mt-5">
+                                <label class="w-100 form-check form-switch form-check-custom form-check-solid">
+                                    <span class="form-check-label fw-bold m-0 me-2">{{ "SHOW_DELETED_CUSTOMERS" | translate }}</span>
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="requestParams.bShowRemovedCustomers"
+                                        (change)="getCustomers()" />
+                                </label>
                             </div>
                         </div>
                     </div>

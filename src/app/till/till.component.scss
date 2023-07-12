@@ -4,7 +4,13 @@
 	border-left: 0 !important;
 	border-right: 0 !important;
 }
-
+a.cancel{
+    cursor: pointer;
+    color:#a63b55;
+}
+.fabutton {
+    font-size: 30px;
+}
 .container {
 	display: grid;
 }

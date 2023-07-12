@@ -50,8 +50,10 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
         let self = this;
         reader.onload = function(){
           data = JSON.parse(reader.result);
-          self.parsedTransactionData = data;
-          self.parsedTransactionDataChange.emit(self.parsedTransactionData);
+          if (data.length) {
+            self.parsedTransactionData = data;
+            self.parsedTransactionDataChange.emit(self.parsedTransactionData);
+          }
         }
         reader.readAsText(values[0]);
         this.bDelimiter = true;
@@ -68,11 +70,17 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
 
   // Function for go to next step
   nextStep(step: string){
+    const tempData = JSON.parse(JSON.stringify(this.parsedTransactionData));
+    this.control.setValue([]);
+    this.delimiter = '';
+    this.bDelimiter = false;
     this.moveToStep.emit(step);
+    this.parsedTransactionData = tempData;
+    this.parsedTransactionDataChange.emit(this.parsedTransactionData);
   }
 
   // Function for validate file import
   validateImport() : boolean{
-    return this.delimiter.trim() == '' || this.parsedTransactionData.length == 0;
+    return !this.bDelimiter || !this.parsedTransactionData.length;
   }
 }
