@@ -1,13 +1,13 @@
 <div class="card shadow-sm">
-    <div class="card-header" style="margin-top: 20px;">
-        <h4>{{(itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS") | translate}}</h4>
-        <div>
-            <a class="cancel my-auto" (click)="close(false,'close')">
+    <div class="card-header d-flex align-items-center p-5">
+        <h4 class="m-0">{{(itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS") | translate}}</h4>
+        <div> 
+            <a class="cancel my-auto fs-4" (click)="close(false,'close')">
                 <i class="fa fa-times fabutton"></i>
             </a>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body p-5">
         <div class="dataTables_wrapper dt-bootstrap4 no-footer" *ngIf="transactionItems.length">
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
@@ -44,7 +44,7 @@
                                         [disabled]="transactionItem.bIsRefunded || transactionItem?.oType?.bRefund" />
                                 </label>
                             </td>
-                            <td class="custom-overflow">{{transactionItem.sProductName}}</td>
+                            <td class="w-200px fs-6">{{transactionItem.sProductName}}</td>
                             <td class="">{{transactionItem.nTotalAmount | currency: tillService.currency}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
                             <td class="">{{transactionItem.nPaidAmount | currency: tillService.currency}}</td>
@@ -104,9 +104,9 @@
                                         <!-- <span class="form-check-label" for="kt_roles_select_all">Select all</span> -->
                                     </label>
                                 </td>
-                                <td class="">{{transactionItem.sNumber}}</td>
-                                <td class="custom-overflow">{{transactionItem.sProductName}}</td>
-                                <td class="">{{transactionItem?.sBagNumber || ''}}</td>
+                                <td class="w-125px">{{transactionItem.sNumber}}</td>
+                                <td class="w-200px fs-6">{{transactionItem.sProductName}}</td>
+                                <td class="">{{transactionItem?.sBagNumber || '-'}}</td>
                                 <td class="">
                                     <div *ngIf="!bPriceEditMode" class="d-flex align-items-center justify-content-center">
                                         <span class="me-2">{{transactionItem.nPriceIncVat | currency: tillService.currency}} 
@@ -122,7 +122,7 @@
                                         </i>
                                     </span>
                                     <span *ngIf="!(transactionItem.bIsRefunded) && !(transactionItem.oType?.bRefund)">
-                                            <button class="btn" (click)="bPriceEditMode = true">
+                                            <button class="btn p-1" (click)="bPriceEditMode = true">
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                     </span>
@@ -130,7 +130,7 @@
                                     <div *ngIf="bPriceEditMode" class="d-flex align-items-center">
                                         <input class="form-control w-50 me-2" [(ngModel)]="transactionItem.nPriceIncVat">
                                         <div class="d-flex">
-                                            <button class="btn me-2 p-1" (click)="saveEditedPrice(transactionItem)">
+                                            <button class="btn me-1 p-1" (click)="saveEditedPrice(transactionItem)">
                                                 <i class="fa fa-save fa-lg"></i>
                                             </button>
                                             <button class="btn p-1" (click)="bPriceEditMode = false">
@@ -143,8 +143,8 @@
                                 <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :'NO') | translate }}</td>
                                 <td class="">{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
                                 <td> 
-                                    <div class="form-check-custom" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
-                                        <div class="form-check form-check-solid">
+                                    <div class="form-check-custom d-flex flex-column" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
+                                        <div class="form-check form-check-solid mb-2">
                                             <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" type="radio"
                                                 (click)="transactionItem.tType = 'pay'"
                                                 [checked]="transactionItem.tType == 'pay'" 
@@ -216,7 +216,7 @@
         </div>
     </div>
 
-    <div class="card-footer">
+    <div class="card-footer p-3">
         <button type="button" [disabled]="!bIsDisable" (click)="close({action:true, transactionItems: transactionItems, transaction: transaction})"
             class="btn btn-primary float-end"> {{ "OPEN" |translate }}</button>
     </div>
