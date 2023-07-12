@@ -3,7 +3,7 @@
         <h4>{{(itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS") | translate}}</h4>
         <div>
             <a class="cancel my-auto" (click)="close(false,'close')">
-                <i class="fa fa-times"></i>
+                <i class="fa fa-times fabutton"></i>
             </a>
         </div>
     </div>
@@ -45,9 +45,9 @@
                                 </label>
                             </td>
                             <td class="custom-overflow">{{transactionItem.sProductName}}</td>
-                            <td class="">{{transactionItem.nTotalAmount}}</td>
+                            <td class="">{{transactionItem.nTotalAmount | currency: tillService.currency}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
-                            <td class="">{{transactionItem.nPaidAmount}}</td>
+                            <td class="">{{transactionItem.nPaidAmount | currency: tillService.currency}}</td>
                             <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
                                 'NO') | translate }}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
@@ -109,7 +109,7 @@
                                 <td class="">{{transactionItem?.sBagNumber || ''}}</td>
                                 <td class="">
                                     <div *ngIf="!bPriceEditMode" class="d-flex align-items-center justify-content-center">
-                                        <span class="me-2">{{transactionItem.nPriceIncVat}} 
+                                        <span class="me-2">{{transactionItem.nPriceIncVat | currency: tillService.currency}} 
                                             <ng-container *ngIf="transactionItem.nQuantity > 1">
                                                 x {{ transactionItem.nQuantity }} Q.
                                             </ng-container>
@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="">{{transactionItem.nPaidAmount}}</td>
+                                <td class="">{{transactionItem.nPaidAmount | currency: tillService.currency}}</td>
                                 <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :'NO') | translate }}</td>
                                 <td class="">{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
                                 <td> 
