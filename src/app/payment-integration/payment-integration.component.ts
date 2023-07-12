@@ -71,6 +71,8 @@ export class PaymentIntegrationComponent implements OnInit {
   }
   bTerminalsLoading: boolean = false;
   bSavingSettings: boolean = false;
+  bPaynlUseForWebshop: boolean = false;
+  bCcvUseForWebshop: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -114,7 +116,7 @@ export class PaymentIntegrationComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       oFilterBy: {
         eName: ['paynl', 'ccv'],
-        "oWebshop.bUseForWebshop" : false
+        // "oWebshop.bUseForWebshop" : false
       }
     }
     return this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).toPromise();
@@ -132,6 +134,7 @@ export class PaymentIntegrationComponent implements OnInit {
           sApiCode: oPaynlData?.oPayNL.sApiCode || '',
           aPaymentIntegration: oPaynlData?.aPaymentIntegration || []
         }
+        this.bPaynlUseForWebshop = oPaynlData?.oWebshop?.bUseForWebshop || false;
       }
       const oCcvData = _result?.data.find((item: any) => item.eName === 'ccv');
       if (oCcvData) {
@@ -141,6 +144,7 @@ export class PaymentIntegrationComponent implements OnInit {
           sManagementId: oCcvData?.oCCV.sManagementId || '',
           aPaymentIntegration: oCcvData?.aPaymentIntegration || []
         };
+        this.bCcvUseForWebshop = oCcvData?.oWebshop?.bUseForWebshop || false;
       }
     }
     this.mapWorkstations();
@@ -285,7 +289,8 @@ export class PaymentIntegrationComponent implements OnInit {
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      eName : sType
+      eName : sType,
+      oWebshop: { bUseForWebshop: false }
     };
     
     let id = '';
@@ -297,12 +302,14 @@ export class PaymentIntegrationComponent implements OnInit {
         sApiToken: this.oPaynl.sApiToken,
         sApiCode: this.oPaynl.sApiCode,
       }
+      oBody.oWebshop.bUseForWebshop = this.bPaynlUseForWebshop;
     } else {
       id = this.oCCV?.iPaymentServiceProviderId;
       oBody.oCCV = {
         sApiCode: this.oCCV.sApiCode,
         sManagementId: this.oCCV.sManagementId
       }
+      oBody.oWebshop.bUseForWebshop = this.bCcvUseForWebshop;
     }
 
     if(id) { ///update

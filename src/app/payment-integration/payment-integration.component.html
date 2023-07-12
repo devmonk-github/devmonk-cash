@@ -70,6 +70,13 @@
                             <input class="form-control" placeholder="{{ 'API_CODE' | translate }}" [(ngModel)]="oPaynl.sApiCode">
                         </div>
                     </div>
+                    <div class="col-6">
+                        <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" | translate}}</label>
+                        <div class="form-check form-check-solid form-switch fv-row lh-xxl">
+                            <input name="useForWebshop" id="forWebshop" type="checkbox" class="form-check-input w-45px h-30px"
+                                [(ngModel)]="bPaynlUseForWebshop"/>
+                        </div>
+                    </div>
                 </div>
                 
             </div>
@@ -85,6 +92,13 @@
                         <div class="form-group">
                             <label>{{ 'MANAGEMENT_ID' | translate }}</label>
                             <input class="form-control" placeholder="{{ 'MANAGEMENT_ID' | translate }}" [(ngModel)]="oCCV.sManagementId">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" | translate}}</label>
+                        <div class="form-check form-check-solid form-switch fv-row lh-xxl">
+                            <input name="useForWebshop" id="forWebshop" type="checkbox" class="form-check-input w-45px h-30px"
+                                [(ngModel)]="bCcvUseForWebshop"/>
                         </div>
                     </div>
                 </div>
