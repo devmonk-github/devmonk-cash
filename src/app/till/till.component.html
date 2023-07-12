@@ -508,7 +508,7 @@
                     <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} <br></span>
                   </p>
                   <p class="mt-5 mb-0 text-gray-800" *ngIf="!customer.bCounter">
-                    <span>{{"NCLIENTID" | translate}}: {{nClientId}} <i *ngIf="nClientId !== '-'" class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{customer.nClientId}}"></i><br></span>
+                    <span>{{"NCLIENTID" | translate}}: {{nClientId || '-'}} <i *ngIf="nClientId !== '-' && nClientId !== ''" class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{customer.nClientId}}"></i><br></span>
                     <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} <br></span>
                     <span *ngIf="customer.sCompanyName"> {{customer.sCompanyName}} <br> </span>
                     <span *ngIf="customer.bIsCompany"> {{customer.oContactPerson.sFirstName}} {{customer.oContactPerson.sLastName}}<br></span>
