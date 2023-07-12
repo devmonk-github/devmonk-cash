@@ -128,7 +128,7 @@
                                     </span>
                                     </div>
                                     <div *ngIf="bPriceEditMode" class="d-flex align-items-center">
-                                        <input class="form-control w-50 me-2" [(ngModel)]="transactionItem.nPriceIncVat">
+                                        <input class="form-control w-90px p-1 me-2" [(ngModel)]="transactionItem.nPriceIncVat">
                                         <div class="d-flex">
                                             <button class="btn me-1 p-1" (click)="saveEditedPrice(transactionItem)">
                                                 <i class="fa fa-save fa-lg"></i>
@@ -144,7 +144,7 @@
                                 <td class="">{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
                                 <td> 
                                     <div class="form-check-custom d-flex flex-column" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
-                                        <div class="form-check form-check-solid mb-2">
+                                        <div class="form-check form-check-solid mb-4">
                                             <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" type="radio"
                                                 (click)="transactionItem.tType = 'pay'"
                                                 [checked]="transactionItem.tType == 'pay'" 
