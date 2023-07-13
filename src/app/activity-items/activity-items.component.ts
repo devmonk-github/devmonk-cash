@@ -18,7 +18,6 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
   providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit, OnDestroy {
-  bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
@@ -187,11 +186,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.loadTransaction();
   }
 
- async loadTransaction() {
-    if(this.bIsSearch){
-      this.requestParams.skip = 0;
-    }
+ async loadTransaction(bIsSearch?: boolean) {
     this.activityItems = [];
+    if(bIsSearch)this.requestParams.skip = 0;
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     if (this.requestParams?.selectedKind?.length) this.requestParams.selectedKind = this.requestParams.selectedKind
@@ -222,13 +219,21 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
   
   fetchBusinessPartnerName() {
-    this.activityItems.forEach((activity: any) => {
-      this.apiService.getNew('core', `/api/v1/business/partners/${activity?.iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-        if (result?.data) {
-            activity.sBusinessPartnerName = result?.data?.sName;
-        }
-      })
-    });
+    var body = {
+      iBusinessId: this.iBusinessId
+    };
+    this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe((result: any) => {
+      if (result?.data?.length && result.data[0]?.result?.length) {
+        let partnersList = result.data[0].result;
+        partnersList.forEach((partner: any) => {
+          this.activityItems.forEach((activity: any) => {
+            if (partner._id == activity.iBusinessPartnerId) {
+              activity.sBusinessPartnerName = partner?.sName;
+            }
+          });
+        })
+      }
+    })
   }
 
   openActivity(activity: any, openActivityId?: any) {
@@ -344,16 +349,18 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   // Function for update item's per page
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
+  changeItemsPerPage() {
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
     this.loadTransaction();
   }
-
-  // Function for trigger event after page changes
+  // Function for handle page change
   pageChanged(page: any) {
-    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
-    this.loadTransaction();
     this.paginationConfig.currentPage = page;
+    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+    this.loadTransaction()
   }
 
   sortAndLoadTransactions(sortHeader: any) {
