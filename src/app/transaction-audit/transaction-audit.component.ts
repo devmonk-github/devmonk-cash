@@ -1150,7 +1150,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
         this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup'
       ) {
-        data.oFilterBy.iBusinessPartnerId = iBusinessPartnerId;
+        if (iBusinessPartnerId) data.oFilterBy.iBusinessPartnerId = iBusinessPartnerId;
       }
 
       if (this.sDisplayMethod.toString() === 'revenuePerProperty') {
