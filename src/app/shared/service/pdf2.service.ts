@@ -160,7 +160,7 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, sAction: any, sApiKey: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
+      // console.log('processPrintAction', { printSettings, printActionSettings, eType, sAction })
       if (!printActionSettings && !sAction) {
         this.download(pdfObject, pdfTitle, printSettings?.nRotation);
         resolve(true);

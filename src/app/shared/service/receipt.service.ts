@@ -835,8 +835,8 @@ export class ReceiptService {
                     }
                     oDataSource.oCustomer = {
                         ...oDataSource.oCustomer,
-                        ...oDataSource.oCustomer.oPhone,
-                        ...oDataSource.oCustomer.oInvoiceAddress
+                        ...oDataSource.oCustomer?.oPhone,
+                        ...oDataSource.oCustomer?.oInvoiceAddress
                     };
                     if (oDataSource.sBusinessPartnerName) oDataSource.sRepairByName = oDataSource.sBusinessPartnerName;
 
