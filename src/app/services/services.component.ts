@@ -292,10 +292,16 @@ export class ServicesComponent implements OnInit, OnDestroy {
   openActivities(activity: any, openActivityId?: any) {
     if (this.webOrders) {
       let isFrom = this.router.url.includes('/business/webshop-orders') ? 'web-orders' : 'web-reservations';
-      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, businessDetails: this.businessDetails, from: isFrom } })
-        .instance.close.subscribe(result => {
-          if (this.webOrders && result) this.router.navigate(['business/till']);
-        });
+      this.dialogService.openModal(WebOrderDetailsComponent, { 
+        cssClass: 'w-fullscreen', 
+        context: { 
+          activity, 
+          businessDetails: this.businessDetails, 
+          from: isFrom 
+        } 
+      }).instance.close.subscribe(result => {
+        if (this.webOrders && result) this.router.navigate(['business/till']);
+      });
     } else {
       this.dialogService.openModal(ActivityDetailsComponent, {
         cssClass: 'w-fullscreen mt--5',

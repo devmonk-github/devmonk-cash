@@ -38,7 +38,8 @@ export class PrintWorkstationComponent implements OnInit {
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: true },
         { name: 'GIFTCARD_RECEIPT', key: 'giftcard', enabled: true },
         { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: true },
-        { name: 'CERTIFICATE', key: 'certificate', enabled: true }
+        { name: 'CERTIFICATE', key: 'certificate', enabled: true },
+        { name: 'WEBSHOP', key: 'webshop-revenue', enabled: true }
       ]
     },
     {
@@ -167,8 +168,9 @@ export class PrintWorkstationComponent implements OnInit {
     let ids = this.getSelectedValue(details);
     return ids;
   }
-  // Function for edit template
+  
   openEditSetting(format: any) {
+    console.log('openEditSetting', {format})
     this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format }, hasBackdrop: true })
       .instance.close.subscribe(result => {
 

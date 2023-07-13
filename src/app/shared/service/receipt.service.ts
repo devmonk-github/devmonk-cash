@@ -117,37 +117,38 @@ export class ReceiptService {
         // this.pn2escposService = new Pn2escposService(Object);
     }
 
-    exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
-        return new Observable<any>((observer:any) => {
-        this.oOriginalDataSource = oDataSource;
-        // console.log({oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey});
+    exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, sAction, sApiKey }: any): Observable<any> {
+        return new Observable<any>((observer: any) => {
+            // console.log({ oDataSource, templateData, printSettings, printActionSettings, sAction, sApiKey });
+            this.oOriginalDataSource = oDataSource;
+            const oCurrentLocation = oDataSource?.currentLocation || oDataSource?.businessDetails?.currentLocation;
+            if (oCurrentLocation?.eCurrency) this.pdfService.currency = oCurrentLocation.eCurrency;
+            if (oCurrentLocation?.eCurrencySeparator) this.pdfService.separator = oCurrentLocation.eCurrencySeparator;
 
-        this.commonService.pdfTitle = pdfTitle;
-        this.commonService.mapCommonParams(templateData.aSettings);
-        this.content = [];
-        this.processTemplate(templateData.layout);
-        // console.log(this.content)
-        this.pdfServiceNew.getPdfData({
-            styles: this.styles,
-            content: this.content,
-            orientation: this.commonService.oCommonParameters.orientation,
-            pageSize: this.commonService.oCommonParameters.pageSize,
-            pdfTitle: this.commonService.pdfTitle,
-            footer: this.commonService.footer,
-            pageMargins: this.commonService.oCommonParameters.pageMargins,
-            defaultStyle: this.commonService.oCommonParameters.defaultStyle,
-            printSettings,
-            printActionSettings,
-            eType: templateData.eType,
-            eSituation,
-            sAction: sAction,
-            sApiKey: sApiKey
-        }).then((response) => {
-            observer.complete();
-            if (sAction == 'sentToCustomer') return response;
+            this.commonService.pdfTitle = pdfTitle;
+            this.commonService.mapCommonParams(templateData.aSettings);
+            this.content = [];
+            this.processTemplate(templateData.layout);
+            // console.log(this.content)
+            this.pdfServiceNew.getPdfData({
+                styles: this.styles,
+                content: this.content,
+                orientation: this.commonService.oCommonParameters.orientation,
+                pageSize: this.commonService.oCommonParameters.pageSize,
+                pdfTitle: this.commonService.pdfTitle,
+                footer: this.commonService.footer,
+                pageMargins: this.commonService.oCommonParameters.pageMargins,
+                defaultStyle: this.commonService.oCommonParameters.defaultStyle,
+                printSettings,
+                printActionSettings,
+                eType: templateData.eType,
+                sAction: sAction,
+                sApiKey: sApiKey
+            }).then((response) => {
+                observer.complete();
+                if (sAction == 'sentToCustomer') return response;
+            });
         });
-    });
-        // this.cleanUp();
     }
 
     processTemplate(layout: any) {
@@ -451,7 +452,7 @@ export class ReceiptService {
                 this.content.push(img);
             } else if(el?.qr) {
                 const sQRString = this.pdfService.replaceVariables(el.qr, this.oOriginalDataSource);
-                this.content.push(this.addQR(sQRString, el?.options, el?.styles));
+                if (sQRString) this.content.push(this.addQR(sQRString, el?.options, el?.styles));
             }
         });
     }
@@ -803,7 +804,7 @@ export class ReceiptService {
         return new Observable(subscriber => {
             oDataSource = JSON.parse(JSON.stringify(oDataSource));
             // console.log({oDataSource})
-            oDataSource.sQRCodeData = (oDataSource?.oFiskalyData?.sQRCodeData) || '';
+            if (oDataSource?.oFiskalyData?.sQRCodeData) oDataSource.sQRCodeData = oDataSource?.oFiskalyData?.sQRCodeData;
             
             if (oDataSource?.aPayments?.length) {
                 // console.log(oDataSource?.aPayments);
@@ -834,8 +835,8 @@ export class ReceiptService {
                     }
                     oDataSource.oCustomer = {
                         ...oDataSource.oCustomer,
-                        ...oDataSource.oCustomer.oPhone,
-                        ...oDataSource.oCustomer.oInvoiceAddress
+                        ...oDataSource.oCustomer?.oPhone,
+                        ...oDataSource.oCustomer?.oInvoiceAddress
                     };
                     if (oDataSource.sBusinessPartnerName) oDataSource.sRepairByName = oDataSource.sBusinessPartnerName;
 
@@ -848,6 +849,7 @@ export class ReceiptService {
 
                         command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
                         // console.log(command);
+                        // console.log({command});
                         //  return;
                     } catch (e) {
                         this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });

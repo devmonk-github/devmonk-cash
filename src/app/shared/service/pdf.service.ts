@@ -43,7 +43,19 @@ export class PdfService {
 
   private data: any = {};
   private css: string = "";
-  private currency: string = "€";
+  
+  oCurrencies:any = {
+    pound: "£",
+    swiss: "₣",
+    euro: "€"
+  }
+  currency: string = "euro";
+  separator: string = "dot";
+  oSeparator:any = {
+    dot: '.',
+    comma: ','  
+  }
+
   private defaultElement: string = "span";
   private fontSize: string = "10pt";
   private layout: any[] = [];
@@ -183,9 +195,11 @@ export class PdfService {
 
     switch (type) {
       case 'money':
-        return this.convertStringToMoney(val);
-      case 'moneyplus':
-        return this.currency + ' ' + this.convertStringToMoney(val);
+        const nValue = parseFloat(this.convertStringToMoney(val));
+        // console.log({nValue, val})
+        return (nValue >= 0) ? 
+          this.oCurrencies[this.currency] + nValue.toFixed(2) :
+          '-' + this.oCurrencies[this.currency] + (Math.abs(nValue)).toFixed(2);
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
@@ -211,16 +225,24 @@ export class PdfService {
 
   private convertStringToMoney(val: any): any {
     if (val % 1 === 0) {
+      // console.log('convertStringToMoney if')
       //no decimals
-      return (val) ? String(val + ',00') : '0,00';
+      return (val) ? String(val + this.separator + '00') : '0' + this.separator + '00';
     } else {
+      // console.log('convertStringToMoney else')
       val = String(val);
+      // console.log(230, {val})
       let parts = val.split('.');
+      // console.log(232, {parts})
 
       if (parts[1].length === 1) {
+        // console.log(235)
         val = val + '0';
+        // console.log(237, {val})
       }
-      return val.replace('.', ',')
+      const n = val.replace('.', this.oSeparator[this.separator])
+      // console.log('final', n)
+      return n;
     }
   }
 
@@ -543,9 +565,9 @@ export class PdfService {
     if (template.css) {
       this.css = template.css
     }
-    if (template.currency) {
-      this.currency = template.currency
-    }
+    // if (template.currency) {
+    //   this.currency = template.currency
+    // }
     if (template.defaultElement) {
       this.defaultElement = template.defaultElement
     }

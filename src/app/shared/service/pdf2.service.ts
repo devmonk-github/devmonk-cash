@@ -123,7 +123,7 @@ export class PdfService {
   }
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
-    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey, addPageBreakBefore }: any):Promise<any> {
+    printSettings, printActionSettings, eType, sAction, sApiKey, addPageBreakBefore }: any):Promise<any> {
     return new Promise(async (resolve, reject) => {
       // console.log('getPdfData', {
       //   styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
@@ -133,7 +133,7 @@ export class PdfService {
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
       } else if (((printSettings && printActionSettings) || sAction == 'print') && sAction != 'download') {
-        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey).then(() => {
+        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, sAction, sApiKey).then(() => {
           resolve(true);
         });
       } else {
@@ -158,9 +158,9 @@ export class PdfService {
     }
   }
 
-  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey: any): Promise<any> {
+  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, sAction: any, sApiKey: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
+      // console.log('processPrintAction', { printSettings, printActionSettings, eType, sAction })
       if (!printActionSettings && !sAction) {
         this.download(pdfObject, pdfTitle, printSettings?.nRotation);
         resolve(true);
