@@ -119,10 +119,11 @@ export class ReceiptService {
 
     exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
         return new Observable<any>((observer: any) => {
-            this.oOriginalDataSource = oDataSource;
-            this.pdfService.currency = oDataSource.currentLocation.eCurrency;
-            this.pdfService.separator = oDataSource.currentLocation?.eCurrencySeparator || 'dot';
             // console.log({ oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey });
+            this.oOriginalDataSource = oDataSource;
+            const oCurrentLocation = oDataSource?.currentLocation || oDataSource?.businessDetails?.currentLocation;
+            if (oCurrentLocation?.eCurrency) this.pdfService.currency = oCurrentLocation.eCurrency;
+            if (oCurrentLocation?.eCurrencySeparator) this.pdfService.separator = oCurrentLocation.eCurrencySeparator;
 
             this.commonService.pdfTitle = pdfTitle;
             this.commonService.mapCommonParams(templateData.aSettings);
