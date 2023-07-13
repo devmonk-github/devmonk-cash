@@ -21,6 +21,12 @@ export class ImportRepairOrderDetailComponent implements OnInit {
   @Input() allFields: any;
   faTimes = faTimes;
   faSync = faSync;
+  aActionHeaders: Array<any> = [
+    { key: 'DO_NOTHING', value: 'do-nothing' },
+    { key: 'OVERWRITE', value: 'overwrite' },
+    { key: 'ADD_IF_UNDEFINED', value: 'add-if-undefined' },
+    { key: 'APPEND', value: 'append' }
+  ]
   headerOptions: Array<any> = [];
   doNothingForFields: Array<string> = [];
   overwriteForFields: Array<string> = [];

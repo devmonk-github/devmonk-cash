@@ -5,12 +5,12 @@ import { ImportRepairOrderFileComponent } from './import-repair-order-file/impor
 import { ImportRepairOrderComponent } from './import-repair-order.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from 'primeng/api';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FileUploadModule } from '@iplab/ngx-file-upload';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ImportRepairOrderRoutingModule } from './import-repair-order-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [

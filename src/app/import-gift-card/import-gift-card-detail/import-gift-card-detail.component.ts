@@ -30,7 +30,12 @@ export class ImportGiftCardDetailComponent implements OnInit {
   language: string = 'nl';
   iBusinessId !: string | null;
   aDefaultAttribute: any = [];
-
+  aActionHeaders: Array<any> = [
+    { key: 'DO_NOTHING', value: 'do-nothing' },
+    { key: 'OVERWRITE', value: 'overwrite' },
+    { key: 'ADD_IF_UNDEFINED', value: 'add-if-undefined' },
+    { key: 'APPEND', value: 'append' }
+  ]
   constructor(
     private translateService: TranslateService,
     private importGiftCardService: ImportGiftCardService
