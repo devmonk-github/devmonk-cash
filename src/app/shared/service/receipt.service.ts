@@ -117,9 +117,9 @@ export class ReceiptService {
         // this.pn2escposService = new Pn2escposService(Object);
     }
 
-    exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
+    exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, sAction, sApiKey }: any): Observable<any> {
         return new Observable<any>((observer: any) => {
-            // console.log({ oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey });
+            // console.log({ oDataSource, templateData, printSettings, printActionSettings, sAction, sApiKey });
             this.oOriginalDataSource = oDataSource;
             const oCurrentLocation = oDataSource?.currentLocation || oDataSource?.businessDetails?.currentLocation;
             if (oCurrentLocation?.eCurrency) this.pdfService.currency = oCurrentLocation.eCurrency;
@@ -142,7 +142,6 @@ export class ReceiptService {
                 printSettings,
                 printActionSettings,
                 eType: templateData.eType,
-                eSituation,
                 sAction: sAction,
                 sApiKey: sApiKey
             }).then((response) => {

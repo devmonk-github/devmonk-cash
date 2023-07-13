@@ -1165,9 +1165,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation:string = 'is_created', type: any) {
+    // console.log('sendForReceipt', this.printActionSettings)
     const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
+    // console.log({oPrintActionSettings});
     if (oPrintActionSettings) {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
+      // console.log({ aActionToPerform });
       if (aActionToPerform.includes('PRINT_THERMAL')) {
         await this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
@@ -1187,7 +1190,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           templateData: template,
           printSettings: settings,
           printActionSettings: oPrintActionSettings,
-          eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
         }).toPromise();
       }
