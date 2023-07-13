@@ -163,8 +163,8 @@
                                     <select name="kt_ecommerce_sales_table_length"
                                         aria-controls="kt_ecommerce_sales_table"
                                         class="form-select form-select-sm form-select-solid"
-                                        [(ngModel)]="requestParams.limit"
-                                        (change)="changeItemsPerPage(requestParams.limit)">
+                                        [(ngModel)]="paginationConfig.itemsPerPage"
+                                        (change)="changeItemsPerPage()">
                                         <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}
                                         </option>
                                     </select>

@@ -406,10 +406,17 @@ export class CustomersComponent implements OnInit {
     });
   }
 
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (this.paginationConfig.currentPage - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
+  changeItemsPerPage() {
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+    this.getCustomers();
+  }
+  // Function for handle page change
+  pageChanged(page: any) {
+    this.paginationConfig.currentPage = page;
+    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
     this.getCustomers()
   }
 
@@ -497,12 +504,6 @@ export class CustomersComponent implements OnInit {
       result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
 
-  // Function for handle page change
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (page - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
-    this.getCustomers()
-  }
+  
   
 }
