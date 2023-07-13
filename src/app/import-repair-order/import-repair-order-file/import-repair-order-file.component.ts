@@ -44,13 +44,15 @@ export class ImportRepairOrderFileComponent implements OnInit {
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter })
           .pipe().subscribe((result: any) => {
             this.parsedRepairOrderData = result;
-            for (const oData of this.parsedRepairOrderData) {
-              if(oData.extraComment != "" && oData.extraComment != undefined){
-                oData.extraComment = oData.extraComment.replace(/\\"/g, '');
+            if (result.length) {
+              for (const oData of this.parsedRepairOrderData) {
+                if (oData.extraComment != "" && oData.extraComment != undefined) {
+                  oData.extraComment = oData.extraComment.replace(/\\"/g, '');
+                }
               }
+              this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
+              this.bDelimiter = true;
             }
-            this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
-            this.bDelimiter = true;
           }, (error: NgxCSVParserError) => {
             this.parsedRepairOrderData = [];
             this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
@@ -66,13 +68,20 @@ export class ImportRepairOrderFileComponent implements OnInit {
   }
 
   // Function for go to next step
-  nextStep(step: string) {
+  
+  nextStep(step: string){
+    const tempData = JSON.parse(JSON.stringify(this.parsedRepairOrderData));
+    this.control.setValue([]);
+    this.delimiter = '';
+    this.bDelimiter = false;
     this.moveToStep.emit(step);
+    this.parsedRepairOrderData = tempData;
+    this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
   }
 
   // Function for validate file import
   validateImport(): boolean {
-    return !this.delimiter.trim() || !this.parsedRepairOrderData.length;
+    return !this.bDelimiter || !this.parsedRepairOrderData.length;
   }
 
 }

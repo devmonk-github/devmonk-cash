@@ -3,9 +3,11 @@
         <div class="card-title">
             <span>{{ 'WORKSTATION' | translate}}</span>
         </div>
-        <button type="button" class="btn btn-sm btn-light float-end" (click)="close(false)">
-            <fa-icon [icon]="faTimes"></fa-icon>
-        </button>
+        <div>
+            <a class="cancel my-auto" (click)="close(false)">
+                <i class="fa fa-times fabutton"></i>
+            </a>
+        </div>
     </div>
     <div class="card-body p-9">
         <div class="row">

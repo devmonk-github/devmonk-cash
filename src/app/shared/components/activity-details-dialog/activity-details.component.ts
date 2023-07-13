@@ -85,6 +85,13 @@ export class ActivityDetailsComponent implements OnInit {
     { key: 'ORDER_READY', value: 'order-ready' },
   ]
 
+  tableUsageHistoryHeaders: Array<any> = [
+    { key: 'CREATED_DATE', disabled: true},
+    { key: 'RECEIPT_NUMBER', disabled: true },
+    { key: 'AMOUNT_USED', disabled: true },
+    { key: '', disabled: true }
+  ]
+
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
@@ -741,6 +748,8 @@ export class ActivityDetailsComponent implements OnInit {
       this.loading = false;
       if(result?.data?.length && result?.data[0]?.result?.length){
         this.activityItems = result?.data[0]?.result;
+        /* sorting by dRedeemedDate for aGiftcardRedeemedTransactionData */
+        if(this.activityItems[0]?.aGiftcardRedeemedTransactionData?.length) this.activityItems[0]?.aGiftcardRedeemedTransactionData.sort((a:any, b:any) => (a.dRedeemedDate < b.dRedeemedDate) ? 1: -1);
         this.aDiscountRecords = this.activityItems.filter((el: any) => this.tillService.aDiscountTypes.includes(el.oType.eKind));
       }
         this.processTransactionItems()

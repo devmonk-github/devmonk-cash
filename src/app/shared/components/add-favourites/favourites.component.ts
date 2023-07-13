@@ -53,6 +53,7 @@ export class AddFavouritesComponent implements OnInit {
   iBusinessId:any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
   currentLanguage = localStorage.getItem('language') || 'en';
+  
   button?:any;
   bValid:boolean = false;
   limit: number = 20;
@@ -105,6 +106,8 @@ export class AddFavouritesComponent implements OnInit {
       limit: 10,
       searchValue: this.searchKeyword,
       aProjection: this.aProjection,
+      sortBy: `oName.${this.currentLanguage}`,
+      sortOrder: 'asc',
       oFilterBy: {
         oStatic: {},
         oDynamic: {}

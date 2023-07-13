@@ -45,6 +45,7 @@ export class ImportRepairOrderDetailComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedRepairOrderData?.length) {
+      this.allFields.all = [];
       this.headerOptions = [...Object.keys(this.parsedRepairOrderData[0])];
       this.headerOptions = this.headerOptions.sort();
       this.repairOrderDetailsForm = {};
@@ -126,7 +127,13 @@ export class ImportRepairOrderDetailComponent implements OnInit {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
-    console.log('gotoStep: ', step);
+    if(step == 'previous') 
+    {
+      this.updateTemplateForm = {};
+      this.repairOrderDetailsForm = {};
+      this.parsedRepairOrderData = [];
+      this.allFields.all = [];
+    }
     if (Object.keys(this.repairOrderDetailsForm).length != this.headerOptions.length) {
       // this.toasterService.show({ type: 'warning', text: this.translations['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE'] });
     }

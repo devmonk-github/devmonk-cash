@@ -40,7 +40,10 @@ export class WebshopSettingsComponent implements OnInit {
       mollieAPIKey: [''],
       stripeSecretKey: [''],
       stripeSign: [''],
-      useForWebshop: [ false ]
+      useForWebshop: [ false ],
+      sApiCode: [''],
+      sApiToken: [''],
+      sServiceId: ['']
     });
     this.paymentMethodFormGroup.valueChanges.subscribe((value : any) => {
       for (const key in this.paymentMethodFormGroup.controls) {
@@ -165,6 +168,9 @@ export class WebshopSettingsComponent implements OnInit {
           this.paymentMethodFormGroup.controls.useForWebshop.setValue(result.data[0].oWebshop.bUseForWebshop);
           switch(result.data[0].eName){
             case 'paynl':
+              this.paymentMethodFormGroup.controls.sApiCode.setValue(result.data[0].oPayNL.sApiCode);
+              this.paymentMethodFormGroup.controls.sApiToken.setValue(result.data[0].oPayNL.sApiToken);
+              this.paymentMethodFormGroup.controls.sServiceId.setValue(result.data[0].oPayNL.sServiceId);
               break;
             case 'mollie':
               this.paymentMethodFormGroup.controls.mollieAPIKey.setValue(result.data[0].oMollie.sApiToken);

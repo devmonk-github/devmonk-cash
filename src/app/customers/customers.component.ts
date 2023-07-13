@@ -395,25 +395,6 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  // Function for menu options
-  clickMenuOptions(key: string) {
-    switch (key) {
-      case "SHOW_DELETED_CUSTOMERS":
-        this.options[0].key = "HIDE_DELETED_CUSTOMERS";
-        this.bIsShowDeletedCustomer = true;
-        this.getCustomers();
-        break;
-      case "HIDE_DELETED_CUSTOMERS":
-        this.options[0].key = "SHOW_DELETED_CUSTOMERS";
-        this.bIsShowDeletedCustomer = false;
-        this.getCustomers();
-        break;
-      case "EXPORT":
-        this.export();
-        break;
-    }
-  }
-
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
     })
@@ -436,11 +417,6 @@ export class CustomersComponent implements OnInit {
   getCustomers(bIsSearch?: boolean) {
     this.showLoader = true;
     if (bIsSearch) this.requestParams.skip = 0;
-    if (this.bIsShowDeletedCustomer) {
-      this.requestParams.bShowRemovedCustomers = true;
-    } else {
-      this.requestParams.bShowRemovedCustomers = false;
-    }
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {

@@ -45,6 +45,7 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedGiftCardData?.length) {
+      this.allFields.all = [];
       this.headerOptions = [...Object.keys(this.parsedGiftCardData[0])];
       this.headerOptions = this.headerOptions.sort();
       this.giftCardDetailsForm = {};
@@ -70,8 +71,6 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
-    console.log('getDynamicFields: ', isResetAttributes)
-
     this.allFields['all'] = this.aDefaultAttribute;
     if (isResetAttributes) {
       this.giftCardDetailsForm = {};
@@ -127,7 +126,13 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
-    console.log('gotoStep: ', step);
+    if(step == 'previous') 
+    {
+      this.updateTemplateForm = {};
+      this.giftCardDetailsForm = {};
+      this.parsedGiftCardData = [];
+      this.allFields.all = [];
+    }
     if (Object.keys(this.giftCardDetailsForm).length != this.headerOptions.length) {
       // this.toasterService.show({ type: 'warning', text: this.translations['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE'] });
     }

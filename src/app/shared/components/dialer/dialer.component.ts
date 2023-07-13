@@ -56,5 +56,6 @@ export class DialerComponent implements OnChanges, OnInit {
   }
 
   change(oldValue: any, newValue: any): void {
+    this.quantityChange.emit(this.qty)
   }
 }

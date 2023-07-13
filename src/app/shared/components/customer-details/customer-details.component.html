@@ -24,7 +24,7 @@
                 translate}}
             </button>
             <a class="cancel my-auto" (click)="close(false)"> <!--*ngIf="editProfile"-->
-                <i class="fa fa-times"></i>
+                <i class="fa fa-times fabutton"></i>
             </a>
         </div>
         <div *ngIf="mode === 'create'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
@@ -32,7 +32,7 @@
             <button class="btn btn-primary" (click)="EditOrCreateCustomer()">{{"CREATE" |
                 translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
-                <i class="fa fa-times"></i>
+                <i class="fa fa-times fabutton"></i>
             </a>
             <!-- <button type="button" class="btn btn-sm" (click)="close(false)">
                 <fa-icon [icon]="faTimes"></fa-icon>

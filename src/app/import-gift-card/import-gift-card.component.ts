@@ -82,11 +82,14 @@ export class ImportGiftCardComponent implements OnInit {
         oBody.payments = this.importGiftCardService.mapPayment(aTransactionItem[i]);
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
+          this.parsedGiftCardData = [];
         }, (error) => {
+          this.parsedGiftCardData = [];
           console.error(error);
         });
       }
     } catch (error) {
+      this.parsedGiftCardData = [];
       console.log('Import Gift card error');
     }
   }

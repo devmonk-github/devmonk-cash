@@ -62,7 +62,7 @@
                             <td>{{oDayClosure?.nPaymentMethodTotal}}</td>
                             <td>{{oDayClosure?.nTotalRevenue}}</td>
                             <td>{{oDayClosure?.oCountings?.nCashAtStart}}</td>
-                            <td>{{oDayClosure?.oCountings?.nCashCounted}}</td>
+                            <td>{{(oDayClosure?.oCountings?.nCashCounted).toFixed(2) || 0}}</td>
                             <td>{{oDayClosure?.oCountings?.nSkim}}</td>
                             <td>{{oDayClosure?.oCountings?.nCashRemain}}</td>
 

@@ -70,7 +70,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private toastrService: ToastService,
-    private tillService: TillService
+    public tillService: TillService
     ) {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -172,6 +172,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         //                         + (item?.nRedeemedLoyaltyPoints || 0)
         //                         + (item?.nRedeemedGiftcardAmount || 0);
         // console.log('total amount', item.nTotalAmount, 'priceIncVat', item.nPriceIncVat, 'discount to show', item.nDiscountToShow, 'paid amount', item.nPaidAmount)
+        item.sNumber = item.sNumber?.split('-')[0];
         const nTotalAmount = +((item.nPriceIncVat * item.nQuantity).toFixed(2));
         // console.log(174, {nTotalAmount})
         if (nTotalAmount == 0){
