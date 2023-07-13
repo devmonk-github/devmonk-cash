@@ -118,37 +118,37 @@ export class ReceiptService {
     }
 
     exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any): Observable<any> {
-        return new Observable<any>((observer:any) => {
-        this.oOriginalDataSource = oDataSource;
-        this.pdfService.currency = oDataSource.currentLocation.eCurrency;
-        // console.log({oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey});
+        return new Observable<any>((observer: any) => {
+            this.oOriginalDataSource = oDataSource;
+            this.pdfService.currency = oDataSource.currentLocation.eCurrency;
+            this.pdfService.separator = oDataSource.currentLocation?.eCurrencySeparator || 'dot';
+            // console.log({ oDataSource, templateData, printSettings, printActionSettings, eSituation, sAction, sApiKey });
 
-        this.commonService.pdfTitle = pdfTitle;
-        this.commonService.mapCommonParams(templateData.aSettings);
-        this.content = [];
-        this.processTemplate(templateData.layout);
-        // console.log(this.content)
-        this.pdfServiceNew.getPdfData({
-            styles: this.styles,
-            content: this.content,
-            orientation: this.commonService.oCommonParameters.orientation,
-            pageSize: this.commonService.oCommonParameters.pageSize,
-            pdfTitle: this.commonService.pdfTitle,
-            footer: this.commonService.footer,
-            pageMargins: this.commonService.oCommonParameters.pageMargins,
-            defaultStyle: this.commonService.oCommonParameters.defaultStyle,
-            printSettings,
-            printActionSettings,
-            eType: templateData.eType,
-            eSituation,
-            sAction: sAction,
-            sApiKey: sApiKey
-        }).then((response) => {
-            observer.complete();
-            if (sAction == 'sentToCustomer') return response;
+            this.commonService.pdfTitle = pdfTitle;
+            this.commonService.mapCommonParams(templateData.aSettings);
+            this.content = [];
+            this.processTemplate(templateData.layout);
+            // console.log(this.content)
+            this.pdfServiceNew.getPdfData({
+                styles: this.styles,
+                content: this.content,
+                orientation: this.commonService.oCommonParameters.orientation,
+                pageSize: this.commonService.oCommonParameters.pageSize,
+                pdfTitle: this.commonService.pdfTitle,
+                footer: this.commonService.footer,
+                pageMargins: this.commonService.oCommonParameters.pageMargins,
+                defaultStyle: this.commonService.oCommonParameters.defaultStyle,
+                printSettings,
+                printActionSettings,
+                eType: templateData.eType,
+                eSituation,
+                sAction: sAction,
+                sApiKey: sApiKey
+            }).then((response) => {
+                observer.complete();
+                if (sAction == 'sentToCustomer') return response;
+            });
         });
-    });
-        // this.cleanUp();
     }
 
     processTemplate(layout: any) {
