@@ -206,11 +206,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (result: any) => {
         this.isDownloadEnable = true;
         this.activityItems = result.data;
-        this.activityItems.forEach(async (oActivityItem) => {
-          if(!oActivityItem.sBusinessPartnerName && oActivityItem?.iBusinessPartnerId) oActivityItem.sBusinessPartnerName = await this.fetchBusinessPartnerName(oActivityItem?.iBusinessPartnerId);
-        });
         this.paginationConfig.totalItems = result.count;
         this.fetchLocationName();
+        this.fetchBusinessPartnerName();
         this.showLoader = false;
         setTimeout(() => {
           MenuComponent.bootstrap();
@@ -222,9 +220,15 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       })
 
   }
-  async fetchBusinessPartnerName(iBusinessPartnerId: any) {
-    let result: any = await this.apiService.getNew('core', `/api/v1/business/partners/${iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).toPromise();
-    return result?.data?.sName;
+  
+  fetchBusinessPartnerName() {
+    this.activityItems.forEach((activity: any) => {
+      this.apiService.getNew('core', `/api/v1/business/partners/${activity?.iBusinessPartnerId}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
+        if (result?.data) {
+            activity.sBusinessPartnerName = result?.data?.sName;
+        }
+      })
+    });
   }
 
   openActivity(activity: any, openActivityId?: any) {
