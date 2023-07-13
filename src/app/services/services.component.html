@@ -5,10 +5,10 @@
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
         <input type="text" class="form-control form-control-solid ps-10" [(ngModel)]="requestParams.searchValue"
-          (keyup.enter)="bIsSearch = true; loadTransaction();" name="search" value="" placeholder="{{ 'SEARCH' | translate }}" />
+          (keyup.enter)="loadTransaction();" name="search" value="" placeholder="{{ 'SEARCH' | translate }}" />
       </div>
       <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-primary me-5" (click)="bIsSearch = true; loadTransaction();">{{ 'SEARCH' | translate
+        <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction();">{{ 'SEARCH' | translate
           }}</button>
           <div class="d-flex align-items-center">
             <button class="btn btn-secondary" (click)="resetFilters()">
@@ -250,8 +250,8 @@
       <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
         <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
           <label>
-            <select class="form-select form-select-sm form-select-solid" [(ngModel)]="pageCount"
-              (change)="changeItemsPerPage(pageCount)">
+            <select class="form-select form-select-sm form-select-solid" [(ngModel)]="paginationConfig.itemsPerPage"
+            (change)="changeItemsPerPage()">
               <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}</option>
             </select>
           </label>

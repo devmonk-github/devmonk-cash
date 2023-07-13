@@ -56,10 +56,8 @@ export class CustomersGroupComponent implements OnInit {
     this.getCustomersGroupList();
   }
 
-  getCustomersGroupList() {
-    if(this.bIsSearch){
-      this.requestParams.skip = 0;
-    }
+  getCustomersGroupList(isPageChanged?: boolean) {
+    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
     this.showLoader = true;
     this.groupList = [];
     this.requestParams.iBusinessId = this.iBusinessId;
@@ -74,18 +72,23 @@ export class CustomersGroupComponent implements OnInit {
       }
     })
   }
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (this.paginationConfig.currentPage - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
-    this.getCustomersGroupList()
+  
+
+  resetThePagination() {
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
   }
 
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (page - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
-    this.getCustomersGroupList()
+  changeItemsPerPage() {
+    this.resetThePagination();
+    this.getCustomersGroupList();
+  }
+
+  pageChanged(selctedPage: any) {
+    this.requestParams.skip = (selctedPage - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.paginationConfig.currentPage = selctedPage;
+    this.getCustomersGroupList(true);
   }
 
   editCustomersGroup(group: any) {
