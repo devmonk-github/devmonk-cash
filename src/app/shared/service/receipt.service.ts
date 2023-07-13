@@ -849,6 +849,7 @@ export class ReceiptService {
 
                         command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
                         // console.log(command);
+                        // console.log({command});
                         //  return;
                     } catch (e) {
                         this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });

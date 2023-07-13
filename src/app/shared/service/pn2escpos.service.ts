@@ -271,30 +271,34 @@ export class Pn2escposService {
   }
 
   addQrCode(value: any) {
-
+    // console.log('add qr value =', value)
     var qr = value;
     qr = this.replaceVariables(qr);
-    var dots = '\x09';
-
+    // qr = 'this is some text';
+    // console.log({qr})
+    var dots = '\x33';
+    // console.log({dots})
     // Some proprietary size calculation
     var qrLength = qr.length + 3;
-    var size1 = String.fromCharCode(qrLength % 256);
-    var size0 = String.fromCharCode(Math.floor(qrLength / 256));
+    // console.log({ qrLength }, qrLength % 256, Math.floor(qrLength / 256))
 
+    var pL = String.fromCharCode(qrLength % 256);
+    var pH = String.fromCharCode(Math.floor(qrLength / 256));
+    // console.log({pL, pH})
     var data = [
       // Some text and a few line feeds to make sure the initiation and first line are coming through
       //'\x1B' + 
       // <!-- BEGIN QR DATA -->
-      '\x1D' + '\x28' + '\x6B' + '\x04' + '\x00' + '\x31' + '\x41' + '\x32' + '\x00' + // <Function 165> select the model (model 2 is widely supported)
-      '\x1D' + '\x28' + '\x6B' + '\x03' + '\x00' + '\x31' + '\x43' + dots + // <Function 167> set the size of the module
-      '\x1D' + '\x28' + '\x6B' + '\x03' + '\x00' + '\x31' + '\x45' + '\x30' +  // <Function 169> select level of error correction (48,49,50,51) printer-dependent
-      '\x1D' + '\x28' + '\x6B' + size1 + size0 + '\x31' + '\x50' + '\x30' + qr +// <Function 080> send your data (testing 123) to the image storage area in the printer
-      '\x1D' + '\x28' + '\x6B' + '\x03' + '\x00' + '\x31' + '\x51' + '\x30' + // <Function 081> print the symbol data in the symbol storage area
-      '\x1D' + '\x28' + '\x6B' + '\x03' + '\x00' + '\x31' + '\x52' + '\x30'// <Function 082> Transmit the size information of the symbol data in the symbol storage area
+      '\x1D\x28\x6B\x04\x00\x31\x41\x32\x00' +                // <Function 165> select the model (model 2 is widely supported)
+      '\x1D\x28\x6B\x03\x00\x31\x43' + dots +                 // <Function 167> set the size of the module
+      '\x1D\x28\x6B\x03\x00\x31\x45\x31' +                    // <Function 169> select level of error correction (48,49,50,51) printer-dependent
+      '\x1D\x28\x6B' + pL + pH + '\x31\x50\x30' + qr +  // <Function 080> send your data (testing 123) to the image storage area in the printer
+      '\x1D\x28\x6B\x03\x00\x31\x51\x30' +                    // <Function 081> print the symbol data in the symbol storage area
+      '\x1D\x28\x6B\x03\x00\x31\x52\x30'                      // <Function 082> Transmit the size information of the symbol data in the symbol storage area
       // <!-- END QR DATA -->
       //+ '\x0A' + '\x0A'
-    ];
-
+  ];
+    // console.log({data})
     return data;
   }
 
