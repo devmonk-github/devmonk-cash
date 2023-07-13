@@ -41,6 +41,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
     { name: 'FRENCH', key: 'fr' },
     { name: 'SPANISH', key: 'es' }
   ]
+  aActionHeaders: Array<any> = [
+    { key: 'DO_NOTHING', value: 'do-nothing' },
+    { key: 'OVERWRITE', value: 'overwrite' },
+    { key: 'ADD_IF_UNDEFINED', value: 'add-if-undefined' },
+    { key: 'APPEND', value: 'append' }
+  ]
 
   constructor(
     private apiService: ApiService,

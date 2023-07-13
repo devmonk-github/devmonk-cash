@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ImportGiftCardComponent } from './import-gift-card.component';
 import { ImportGiftCardRoutingModule } from './import-gift-card-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from 'primeng/api';
+import { SharedModule } from '../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { GiftCardFileImportComponent } from './import-gift-card-file/import-gift-card-file.component';
 import { NgxPaginationModule } from 'ngx-pagination';

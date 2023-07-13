@@ -14,38 +14,40 @@
             {{ "RELOAD_DEFAULT_ATTRIBUTES" | translate}}
         </button>
     </div>
-    <h4>{{ 'REPAIR_ORDER_DETAILS' | translate}}</h4>
-    <div class="row mb-4">
-        <div class="col-md-2 no-padding-left">
-            <h5>{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
+
+    <div style="background-color:#FFF" class="mt-3">
+        <h4 class="fw-bolder mb-3 mt-3 text-uppercase">{{ 'REPAIR_ORDER_DETAILS' | translate}}</h4>
+        <div class="row mb-4">
+            <div class="col-md-2 no-padding-left">
+                <h5>{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
+            </div>
+            <div class="col-md-3 no-padding-left">
+                <h5>{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
+            </div>
+            <div class="col-md-7 no-padding-right">
+                <h5>{{ "UPDATE_TEMPLATE" | translate}} </h5>
+            </div>
         </div>
-        <div class="col-md-3 no-padding-left">
-            <h5>{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
-        </div>
-        <div class="col-md-7 no-padding-right">
-            <h5>{{ "UPDATE_TEMPLATE" | translate}} </h5>
+        <div class="row mb-4" *ngFor="let option of headerOptions">
+            <div class="col-md-2 no-padding-left">
+                {{option}} <span
+                    *ngIf="option === 'Contact when ready' || option === 'Creation date' || option === 'Creator' || option === 'Remaining to pay' || option === 'Repairer' || option === 'Total price' || option === 'Type' || option === 'bagNumber' || option === 'customerId' || option === 'eActivityItemStatus' || option === 'vatRate' || option === 'Estimated price'"
+                    style="color: red;">*</span>
+    
+            </div>
+            <div class="col-md-3 no-padding-left" *ngIf="allFields?.all?.length">
+                <ng-select class="form-control form-control-solid p-0" [clearable]="false" id="repair-order-attributes"
+                    [(ngModel)]="repairOrderDetailsForm[option]" (change)="setTemplate(option, repairOrderDetailsForm[option])">
+                    <ng-option *ngFor="let obj of allFields.all" [value]="obj.sColumnHeader">{{ obj.sColumnHeader | translate}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-md-5 no-padding-left flex">
+                <ng-select class="form-control form-control-solid p-0" [clearable]="false" id="repair-order-update-template"
+                    [(ngModel)]="updateTemplateForm[repairOrderDetailsForm[option]]">
+                    <ng-option *ngFor="let oActionHeader of aActionHeaders" [value]="oActionHeader.value">{{oActionHeader.key | translate}}</ng-option>
+                </ng-select>
+            </div>
         </div>
     </div>
-    <div class="row mb-4" *ngFor="let option of headerOptions">
-        <div class="col-md-2 no-padding-left">
-            {{option}} <span *ngIf="option === 'Contact when ready' || option === 'Creation date' || option === 'Creator' || option === 'Remaining to pay' || option === 'Repairer' || option === 'Total price' || option === 'Type' || option === 'bagNumber' || option === 'customerId' || option === 'eActivityItemStatus' || option === 'vatRate' || option === 'Estimated price'" style="color: red;">*</span>
-            
-        </div>
-        <div class="col-md-3 no-padding-left" *ngIf="allFields?.all?.length">
-            <select class="form-select" id="repair-order-attributes" [(ngModel)]="repairOrderDetailsForm[option]"
-                (change)="setTemplate(option, repairOrderDetailsForm[option])">
-                <option *ngFor="let obj of allFields.all" [value]="obj.sColumnHeader">{{ obj.sColumnHeader | translate}}
-                </option>
-            </select>
-        </div>
-        <div class="col-md-7 no-padding-left flex">
-            <select class="form-select w-75" id="repair-order-update-template"
-                [(ngModel)]="updateTemplateForm[repairOrderDetailsForm[option]]">
-                <option value="do-nothing">{{ "DO_NOTHING" | translate }}</option>
-                <option value="overwrite">{{ "OVERWRITE" | translate }}</option>
-                <option value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</option>
-                <option value="append">{{ "APPEND" | translate }}</option>
-            </select>
-        </div>
-    </div>
+
 </div>
