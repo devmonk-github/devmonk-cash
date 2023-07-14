@@ -327,50 +327,44 @@
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
                         <div class="card m-2 shadow-sm" style="height: 145px !important;">
                           <div class="card-body d-flex align-items-center p-3">
-                            <!-- <div class="d-flex"> -->
                             <div class="image-container">
-                              <img
-                                src="{{product.aImage[0]? product.aImage[0] : '../assets/images/no-photo-available.jpg' }}"
-                                class="rounded">
+                              <img src="{{product.aImage[0]? product.aImage[0] : '../assets/images/no-photo-available.jpg' }}" class="rounded">
                             </div>
                             <div class="w-100 mx-4">
-                              <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
-                                  "BUSINESS_PRODUCT"| translate}}</label> -->
-                              <!-- <span>
-                                <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                              </span> -->
-                              <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'| translate) }}</p>
+                              <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'|
+                                translate) }}</p>
                               <div class="d-flex align-items-start justify-content-between">
                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
-                                  <strong>{{ product.sProductNumber  || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
+                                  <strong>{{ product.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
                                   <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
-                                  <strong>{{"STOCK"| translate}}</strong>: <span [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger' : ''">{{ (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}}</span>
+                                  <strong>{{"STOCK"| translate}}</strong>: <span
+                                    [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger' : ''">{{
+                                    (bSerialSearchMode? '1' : (product?.oCurrentLocation?.nStock || "0"))}}</span>
                                   <span *ngIf="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'" class="text-danger ms-3">
-                                    <i data-bs-toggle="tooltip" data-bs-placement="top" title="{{'WARNING_STOCK_QUANTITY_IS_0'|translate}}" class="fa fa-circle-exclamation"></i>
+                                    <i data-bs-toggle="tooltip" data-bs-placement="top" title="{{'WARNING_STOCK_QUANTITY_IS_0'|translate}}"
+                                      class="fa fa-circle-exclamation"></i>
                                   </span>
                                 </p>
                                 <p class="col-xl-5 col-sm-4 m-xl-0 mx-sm-2 text-gray-800">
                                   <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: <br>
-                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber :  (product?.sArticleNumber || '-') }}
-                                  <i  class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{product.sArticleNumber}}"></i>
+                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber : (product?.sArticleNumber || '-') }}
+                                  <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="{{product.sArticleNumber}}"></i>
                                   <br>
-                                  <span *ngIf="bSerialSearchMode"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</span>
+                                  <span *ngIf="bSerialSearchMode"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber ||
+                                    "-" }}</span>
                                 </p>
+                        
                               </div>
-
+                              <p><span *ngIf="product?.oCurrentLocation?.nStock == 0 && !product.bHasStock"
+                                  class="text-warning">{{"PRODUCT_WITHOUT_STOCK_WARNING" | translate}}</span><br>
+                              </p>
+                        
                             </div>
-                            <!-- </div> -->
                           </div>
                         </div>
                       </a>
                     </div>
-
-                    <!-- <div class="d-flex mt-2" >
-                      <div class="spinner-border mx-auto"></div>
-                    </div> -->
-
-
-
                   </div>
                   <hr *ngIf="commonProducts?.length">
                   <ng-container *ngTemplateOutlet="contentPlaceholder;context:{loaderVariable: bSearchingCommonProduct}"></ng-container>
