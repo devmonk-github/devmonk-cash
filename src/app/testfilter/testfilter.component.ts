@@ -300,9 +300,9 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     this.loadTransaction();
   }
 
-  loadTransaction(bIsSearch?: boolean) {
+  loadTransaction(isPageChanged?: boolean) {
     this.activityItems = [];
-    if(bIsSearch)this.requestParams.skip = 0;
+    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     if (this.requestParams?.selectedKind?.length) this.requestParams.selectedKind = this.requestParams.selectedKind
@@ -438,19 +438,23 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Function for update item's per page
-  changeItemsPerPage() {
+  resetThePagination() {
     this.requestParams.skip = 0;
     this.paginationConfig.currentPage = 1; 
     this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+  }
+  
+  // Function for update item's per page
+  changeItemsPerPage() {
+    this.resetThePagination();
     this.loadTransaction();
   }
+
   // Function for handle page change
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
-    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
-    this.loadTransaction()
+  pageChanged(selctedPage: any) {
+    this.requestParams.skip = (selctedPage - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.paginationConfig.currentPage = selctedPage;
+    this.loadTransaction(true);
   }
 
   sortAndLoadTransactions(sortHeader: any) {

@@ -13,7 +13,7 @@ import { CustomerGroupDetailComponent } from '../shared/components/customer-grou
 })
 export class CustomersGroupComponent implements OnInit {
 
-  bIsSearch:boolean = false;
+ 
   faSearch = faSearch;
   faTrash = faTrash;
   faEdit = faEdit;

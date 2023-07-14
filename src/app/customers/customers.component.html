@@ -11,10 +11,10 @@
                                         <i class="fas fa-xs fa-search"></i>
                                     </span>
                                     <input type="text" class="form-control form-control-solid w-100 ps-14" 
-                                       [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers(true)" (keyup)="customerEventHandler($event)" name="search"
+                                       [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers()" (keyup)="customerEventHandler($event)" name="search"
                                         placeholder="{{(aPlaceHolder).join(',')}}">
                                 </div>
-                                <button class="btn btn-primary me-2" (click)="getCustomers(true)">{{'SEARCH' | translate}} </button>
+                                <button class="btn btn-primary me-2" (click)="getCustomers()">{{'SEARCH' | translate}} </button>
                                 <div class="d-flex align-items-center ads_search">
                                     <button class="btn btn-secondary me-2" (click)="resetFilters()">
                                         <i class="fa fa-sync"></i>

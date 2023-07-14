@@ -215,8 +215,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.routes.navigate(['/business/till']);
   }
 
-  loadTransaction(bIsSearch?: boolean) {
-    if (bIsSearch) this.requestParams.skip = 0;
+  loadTransaction(isPageChanged?: boolean) {
+    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
@@ -368,20 +368,25 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.loadTransaction();
   }
 
-  // Function for update item's per page
-  changeItemsPerPage() {
+  resetThePagination() {
     this.requestParams.skip = 0;
     this.paginationConfig.currentPage = 1; 
     this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+  }
+
+  changeItemsPerPage() {
+    this.resetThePagination();
     this.loadTransaction();
   }
+
   // Function for handle page change
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
-    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
-    this.loadTransaction()
+  pageChanged(selctedPage: any) {
+    this.requestParams.skip = (selctedPage - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.paginationConfig.currentPage = selctedPage;
+    this.loadTransaction(true);
   }
+
+  
 
 
   // Function for show transaction details
