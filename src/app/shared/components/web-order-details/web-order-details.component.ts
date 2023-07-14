@@ -261,7 +261,7 @@ export class WebOrderDetailsComponent implements OnInit {
       });
   }
 
-  getTemplate(types: any) {
+  getTemplates(types: any) {
     const body = {
       iBusinessId: this.business._id,
       oFilterBy: {
@@ -271,6 +271,10 @@ export class WebOrderDetailsComponent implements OnInit {
     return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body);
   }
 
+  getTemplate(type: string): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
+  }
+
   async generatePDF(print: boolean, sAction?: string) {
     const eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
@@ -278,12 +282,12 @@ export class WebOrderDetailsComponent implements OnInit {
     this.activity.currentLocation = this.businessDetails.currentLocation;
     
     const [_template, _businessLogoUrl]: any = await Promise.all([
-      this.getTemplate([eType]).toPromise(),
+      this.getTemplate(eType).toPromise(),
       this.getBase64FromUrl(this.businessDetails?.sLogoLight).toPromise()
     ]);
 
     this.transaction.sBusinessLogoUrl = _businessLogoUrl.data;
-    const template = _template.data[0];
+    const template = _template.data;
 
     const oDataSource = {
       ...JSON.parse(JSON.stringify(this.transaction)),
@@ -423,6 +427,7 @@ export class WebOrderDetailsComponent implements OnInit {
           this.transaction = result.data[0];
           this.transaction.businessDetails = this.businessDetails;
           this.transaction.currentLocation = this.businessDetails.currentLocation;
+          // console.log(this.transaction)
           // this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
           // console.log(427, this.transaction)
         }
