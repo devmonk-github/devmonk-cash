@@ -23,7 +23,6 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
 export class TransactionsComponent implements OnInit, OnDestroy {
   dialogRef: DialogComponent
   option: boolean = true;
-  bIsSearch:boolean = false;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
@@ -216,8 +215,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.routes.navigate(['/business/till']);
   }
 
-  loadTransaction() {
-    if (this.bIsSearch) this.requestParams.skip = 0;
+  loadTransaction(bIsSearch?: boolean) {
+    if (bIsSearch) this.requestParams.skip = 0;
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
@@ -370,18 +369,20 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   // Function for update item's per page
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
+  changeItemsPerPage() {
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
     this.loadTransaction();
+  }
+  // Function for handle page change
+  pageChanged(page: any) {
+    this.paginationConfig.currentPage = page;
+    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+    this.loadTransaction()
   }
 
-  // Function for trigger event after page changes
-  pageChanged(page: any) {
-    this.bIsSearch = false;
-    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
-    this.loadTransaction();
-    this.paginationConfig.currentPage = page;
-  }
 
   // Function for show transaction details
   showTransaction(transaction: any) {

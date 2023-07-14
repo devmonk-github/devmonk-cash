@@ -19,7 +19,6 @@ import { MenuComponent } from '../shared/_layout/components/common';
 export class ServicesComponent implements OnInit, OnDestroy {
 
   option: boolean = true;
-  bIsSearch:boolean = false;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
@@ -55,19 +54,24 @@ export class ServicesComponent implements OnInit, OnDestroy {
     iAssigneeId: '',
     searchValue: '',
     sortBy:'dCreatedDate',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
+    skip: 0,
+    limit: 25
   };
-  showLoader = false;
-  widgetLog: string[] = [];
-  pageCounts: Array<number> = [10, 25, 50, 100]
-  pageCount: number = 10;
-  pageNumber: number = 1;
-  setPaginateSize: number = 10;
+
+  /* pagination */
+  pageCounts: Array<number> = [10, 25, 50, 100];
+  setPaginateSize = 10; /* how many page number should be shown in pagintaion-control */
   paginationConfig: any = {
-    itemsPerPage: '10',
+    itemsPerPage: 25, 
     currentPage: 1,
     totalItems: 0
   };
+  /* pagination */
+
+  showLoader = false;
+  widgetLog: string[] = [];
+  
   showAdvanceSearch = false;
   transactionMenu = [
     { key: 'REST_PAYMENT' },
@@ -237,19 +241,26 @@ export class ServicesComponent implements OnInit, OnDestroy {
       }
     });
   }
+  resetThePagination() {
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
+    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+  }
 
-  // Function for update item's per page
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
+  changeItemsPerPage() {
+    this.resetThePagination();
     this.loadTransaction();
   }
 
-  // Function for trigger event after page changes
-  pageChanged(page: any) {
-    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
-    this.loadTransaction();
-    this.paginationConfig.currentPage = page;
+  
+  // Function for handle page change
+  pageChanged(selctedPage: any) {
+    this.requestParams.skip = (selctedPage - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.paginationConfig.currentPage = selctedPage;
+    this.loadTransaction(true);
   }
+
+  
 
 
   //  Function for set sort option on transaction table
@@ -323,7 +334,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadTransaction() {
+  loadTransaction(isPageChanged?: boolean) {
     if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue']
@@ -335,13 +346,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
       if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId
     }
     this.activities = [];
-    if(this.bIsSearch){
-      this.requestParams.skip = 0;
-    }else{
-      this.requestParams.skip = this.requestParams.skip || 0;
-    }
+    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
     this.requestParams.iBusinessId = this.iBusinessId;
-    this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
 
