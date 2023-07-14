@@ -88,18 +88,20 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
         console.error(error)
       }
   }
+  
   changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
+    this.requestParams.skip = 0;
+    this.paginationConfig.currentPage = 1; 
     this.fetchDayClosureList();
   }
+
   pageChanged(page: any) {
     this.requestParams.skip = (page - 1) * this.requestParams.limit;
-    // this.requestParams.limit = page * this.requestParams.limit;
-
     this.fetchDayClosureList();
-
     this.paginationConfig.currentPage = page;
   }
+
   fetchDayClosureList() {
     this.aDayClosure = [];
     this.showLoader = true;

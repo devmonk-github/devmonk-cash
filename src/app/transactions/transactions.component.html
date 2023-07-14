@@ -11,13 +11,13 @@
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
         <input type="text" class="form-control form-control-solid ps-10"
-          (keyup.enter)="loadTransaction(true);" [(ngModel)]="requestParams.searchValue" name="search"
+          (keyup.enter)="loadTransaction();" [(ngModel)]="requestParams.searchValue" name="search"
           value="" placeholder="{{'SEARCH' | translate}}" />
       </div>
       <!--end::Input group-->
       <!--begin:Action-->
       <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction(true);">{{ 'SEARCH' |
+        <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction();">{{ 'SEARCH' |
           translate
           }}
         </button>

@@ -406,24 +406,30 @@ export class CustomersComponent implements OnInit {
     });
   }
 
-  changeItemsPerPage() {
+
+  resetThePagination() {
     this.requestParams.skip = 0;
     this.paginationConfig.currentPage = 1; 
     this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
+  }
+  
+  // Function for update item's per page
+  changeItemsPerPage() {
+    this.resetThePagination();
     this.getCustomers();
   }
+
   // Function for handle page change
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = parseInt(this.paginationConfig.itemsPerPage) * (page - 1);
-    this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
-    this.getCustomers()
+  pageChanged(selctedPage: any) {
+    this.requestParams.skip = (selctedPage - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.paginationConfig.currentPage = selctedPage;
+    this.getCustomers(true);
   }
 
 
-  getCustomers(bIsSearch?: boolean) {
+  getCustomers(isPageChanged?: boolean) {
     this.showLoader = true;
-    if (bIsSearch) this.requestParams.skip = 0;
+    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
