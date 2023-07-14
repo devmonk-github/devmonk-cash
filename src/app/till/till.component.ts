@@ -1350,89 +1350,94 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-    // console.log('onSelectProduct', product);
-    this.bProductSelected = true;
-    let nPriceIncludesVat = 0, nVatRate = 0;
-    if (isFrom === 'quick-button') {
-      source.loading = true;
-      this.onSelectRegular();
-      let selectedQuickButton = product;
-      this.bSearchingProduct = false;
-      nPriceIncludesVat = selectedQuickButton.nPrice;
-    }
-    let currentLocation;
-    if (isFor == 'commonProducts') {
-      const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
-      product = _oBaseProductDetail.data;
-    } else {
-      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
-      if (_oBusinessProductDetail?.data) _oBusinessProductDetail.data.sSerialNumber = product?.sSerialNumber;
-      product = _oBusinessProductDetail.data;
-      if (product?.aLocation?.length) {
-        product.aLocation = product.aLocation.filter((oProdLoc: any) => {
-          const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-          if (oFound) {
-            oProdLoc.sName = oFound?.sName;
-            return oProdLoc;
-          }
 
-        })
-        currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
-        if (currentLocation) {
-          if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
-          nVatRate = currentLocation?.nVatRate || 0;
+    if (product?.oCurrentLocation?.nStock == 0 && !product.bHasStock) {
+      this.toastrService.show({ type: 'warning', text: this.translateService.instant('PRODUCT_WITHOUT_STOCK_WARNING') });
+    } else {
+      // console.log('onSelectProduct', product);
+      this.bProductSelected = true;
+      let nPriceIncludesVat = 0, nVatRate = 0;
+      if (isFrom === 'quick-button') {
+        source.loading = true;
+        this.onSelectRegular();
+        let selectedQuickButton = product;
+        this.bSearchingProduct = false;
+        nPriceIncludesVat = selectedQuickButton.nPrice;
+      }
+      let currentLocation;
+      if (isFor == 'commonProducts') {
+        const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
+        product = _oBaseProductDetail.data;
+      } else {
+        const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+        if (_oBusinessProductDetail?.data) _oBusinessProductDetail.data.sSerialNumber = product?.sSerialNumber;
+        product = _oBusinessProductDetail.data;
+        if (product?.aLocation?.length) {
+          product.aLocation = product.aLocation.filter((oProdLoc: any) => {
+            const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+            if (oFound) {
+              oProdLoc.sName = oFound?.sName;
+              return oProdLoc;
+            }
+
+          })
+          currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
+          if (currentLocation) {
+            if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+            nVatRate = currentLocation?.nVatRate || 0;
+          }
         }
       }
-    }
-    const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
-    const sDescription = this.tillService.getDescriptionWithGemDetails(product);
+      const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
+      const sDescription = this.tillService.getDescriptionWithGemDetails(product);
 
-    // console.log({product});
-    this.transactionItems.push({
-      name: name,
-      eTransactionItemType: 'regular',
-      type: this.eKind,
-      quantity: 1,
-      price: (isFor == 'commonProducts') ? product.nSuggestedRetailPrice : nPriceIncludesVat,
-      nMargin: 1,
-      nPurchasePrice: product.nPurchasePrice,
-      paymentAmount: 0,
-      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
-      nDiscount: product.nDiscount || 0,
-      bDiscountOnPercentage: product.bDiscountOnPercentage || false,
-      tax: nVatRate,
-      sProductNumber: product.sProductNumber,
-      sArticleNumber: product.sArticleNumber,
-      description: sDescription,//product.sLabelDescription,
-      iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
-      iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
-      iBusinessProductId: isFor == 'commonProducts' ? undefined : product._id,
-      iProductId: isFor == 'commonProducts' ? product._id : undefined,
-      iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
-      sBusinessPartnerName: product.sBusinessPartnerName, //'6274d2fd8f38164d68186410',
-      iSupplierId: product.iBusinessPartnerId,
-      aImage: product.aImage,
-      isExclude: false,
-      // manualUpdate: false,
-      open: true,
-      new: true,
-      isFor,
-      oBusinessProductMetaData: this.tillService.createProductMetadata(product),
-      eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered',
-      oCurrentLocation: currentLocation,
-      aLocation: product?.aLocation,
-      bProductLoaded: true,
-      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
-      bQuickButton: isFrom === 'quick-button' ? true : false,
-      bHasStock: product?.bHasStock
-    });
-    // console.log('this.transactionItems', this.transactionItems);
-    if (isFrom === 'quick-button') { source.loading = false }
-    this.clearPaymentAmounts();
-    if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
-    // console.log('calling reset search now')
-    this.resetSearch();
+      // console.log({product});
+      this.transactionItems.push({
+        name: name,
+        eTransactionItemType: 'regular',
+        type: this.eKind,
+        quantity: 1,
+        price: (isFor == 'commonProducts') ? product.nSuggestedRetailPrice : nPriceIncludesVat,
+        nMargin: 1,
+        nPurchasePrice: product.nPurchasePrice,
+        paymentAmount: 0,
+        oType: { bRefund: false, bDiscount: false, bPrepayment: false },
+        nDiscount: product.nDiscount || 0,
+        bDiscountOnPercentage: product.bDiscountOnPercentage || false,
+        tax: nVatRate,
+        sProductNumber: product.sProductNumber,
+        sArticleNumber: product.sArticleNumber,
+        description: sDescription,//product.sLabelDescription,
+        iArticleGroupId: product.iArticleGroupId,
+        oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
+        iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
+        iBusinessProductId: isFor == 'commonProducts' ? undefined : product._id,
+        iProductId: isFor == 'commonProducts' ? product._id : undefined,
+        iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
+        sBusinessPartnerName: product.sBusinessPartnerName, //'6274d2fd8f38164d68186410',
+        iSupplierId: product.iBusinessPartnerId,
+        aImage: product.aImage,
+        isExclude: false,
+        // manualUpdate: false,
+        open: true,
+        new: true,
+        isFor,
+        oBusinessProductMetaData: this.tillService.createProductMetadata(product),
+        eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered',
+        oCurrentLocation: currentLocation,
+        aLocation: product?.aLocation,
+        bProductLoaded: true,
+        sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
+        bQuickButton: isFrom === 'quick-button' ? true : false,
+        bHasStock: product?.bHasStock
+      });
+      // console.log('this.transactionItems', this.transactionItems);
+      if (isFrom === 'quick-button') { source.loading = false }
+      this.clearPaymentAmounts();
+      if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
+      // console.log('calling reset search now')
+      this.resetSearch();
+    }
   }
 
   resetSearch() {
