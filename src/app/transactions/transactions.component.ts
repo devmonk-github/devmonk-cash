@@ -79,8 +79,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   // Advance search fields 
   
   filterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date((new Date()).setDate(new Date().getDate() - 7))
+    endDate: '',//new Date(new Date().setHours(23, 59, 59)),
+    startDate: '',//new Date((new Date()).setDate(new Date().getDate() - 7))
   }
 
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
@@ -132,11 +132,11 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
     // this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
-    this.loadTransaction();
+    // this.loadTransaction();
   
     this.listEmployee();
     this.getWorkstations();
-    this.getLocations();
+    // this.getLocations();
     this.getPaymentMethods();
 
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -174,6 +174,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   fetchBusinessDetails() {
     this.apiService.getNew('core', `/api/v1/business/${this.iBusinessId}`).subscribe((result: any) => {
       this.businessDetails = result.data;
+      this.locations = this.businessDetails.aLocation;
+      this.loadTransaction();
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);
       this.businessDetailsLoaded = true;
@@ -238,10 +240,11 @@ export class TransactionsComponent implements OnInit, OnDestroy {
           transaction.sMethods = aTemp.map((m:any) => m.sMethod).join(',');
           transaction.nTotal = 0;
           aTemp.forEach((m: any) => transaction.nTotal += m.nAmount)
+          const oLocation = this.businessDetails.aLocation.find((el: any) => el._id == transaction.iLocationId);
+          if(oLocation)  transaction.sLocationName = oLocation?.sName;
         })
         this.paginationConfig.totalItems = result.data.totalCount;
       }
-      this.fetchLocationName();
       this.showLoader = false;
       setTimeout(() => {
         MenuComponent.bootstrap();
@@ -251,13 +254,13 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     })
   }
 
-  getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result: any) => {      
-        if (result.message == 'success') {
-          this.locations = result.data.aLocation;
-        }
-      })
-  }
+  // getLocations() {
+  //   this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result: any) => {      
+  //       if (result.message == 'success') {
+  //         this.locations = result.data.aLocation;
+  //       }
+  //     })
+  // }
 
   getWorkstations() {
     this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
@@ -449,21 +452,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
 
-  }
-
-  fetchLocationName(){
-      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
-        if (result?.data?.aLocation?.length) {
-          let aLocation = result.data.aLocation;
-          this.transactions.forEach((transaction: any)=>{
-            aLocation.forEach((oLocation: any) => {
-              if (oLocation._id == transaction.iLocationId) {
-                transaction.sLocationName = oLocation?.sName;
-              }
-            });
-          });
-        }
-      });
   }
 
   ngOnDestroy(): void {
