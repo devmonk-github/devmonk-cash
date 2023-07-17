@@ -141,6 +141,10 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
       let data7 = params['assignee'];
+
+      if(data3 == undefined){
+        data3 = 'repair';
+      }
       this.type = data3;
       console.log("this.type", this.type);
       var fromdate = new Date();
@@ -162,7 +166,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       if (data3 == 'repair') {
         queryParams.type = "repair";
         const tree = routes.createUrlTree([], { queryParams });
-        console.log(serializer.serialize(tree));
+        //console.log(serializer.serialize(tree));
         this.routes.navigate(
           ['/business/testfilter'],
           { queryParams: queryParams }
@@ -171,7 +175,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       if (data3 == 'gold-purchase') {
         queryParams.type = "gold-purchase";
         const tree = routes.createUrlTree([], { queryParams });
-        console.log(serializer.serialize(tree));
         this.routes.navigate(
           ['/business/testfilter'],
           { queryParams: queryParams }
@@ -181,7 +184,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       if (data3 == 'order') {
         queryParams.type = "order";
         const tree = routes.createUrlTree([], { queryParams });
-        console.log(serializer.serialize(tree));
         this.routes.navigate(
           ['/business/testfilter'],
           { queryParams: queryParams }
@@ -190,7 +192,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       if (data3 == 'giftcard') {
         queryParams.type = "giftcard";
         const tree = routes.createUrlTree([], { queryParams });
-        console.log(serializer.serialize(tree));
         this.routes.navigate(
           ['/business/testfilter'],
           { queryParams: queryParams }
@@ -238,7 +239,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     this.iBusinessId = localStorage.getItem('currentBusiness') || "";
     this.iLocationId = localStorage.getItem('currentLocation') || "";
     this.type = this.type;
-    console.log("this.type"+ this.type);
     this.fetchBusinessDetails();
     this.loadTransaction();
 
@@ -624,7 +624,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('ondestroy activity items')
     if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
     MenuComponent.clearEverything();
   }
