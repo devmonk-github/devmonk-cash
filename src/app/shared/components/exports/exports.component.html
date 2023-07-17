@@ -67,13 +67,13 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
-        <button class="cancel btn btn-primary" style="margin-right: 10px;" (click)="getExportData()">{{"EXPORT_TO_CSV" |
-            translate}}</button>
-            <button class="cancel btn btn-secondary" (click)="getExportPDF()">
-                <p class="m-0" *ngIf="!isPdfLoading">{{"EXPORT_TO_PDF" | translate}}</p>
-                <div *ngIf="isPdfLoading" class="spinner-border fs-5"></div>
-            </button>
-        <!--TODO: EXPORT AS PDF-->
-        <!-- <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button> -->
+        <button class="cancel btn btn-primary" style="margin-right: 10px;" (click)="getExportData()">
+            {{"EXPORT_TO_CSV" | translate}}
+            <div *ngIf="isCsvLoading" class="spinner-border fs-5"></div>
+        </button>
+        <button class="cancel btn btn-secondary" (click)="getExportPDF()">
+            {{"EXPORT_TO_PDF" | translate}}
+            <div *ngIf="isPdfLoading" class="spinner-border fs-5"></div>
+        </button>
     </div>
 </div>
