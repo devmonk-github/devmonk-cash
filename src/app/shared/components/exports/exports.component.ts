@@ -38,6 +38,7 @@ export class ExportsComponent implements OnInit {
   iBusinessId: any;
   bAllSelected = true;
   isPdfLoading: boolean = false;
+  isCsvLoading: boolean = false;
 
   fieldsToAdd: Array<any> = [];
   dataForCSV: Array<any> = [];
@@ -260,7 +261,7 @@ export class ExportsComponent implements OnInit {
   }
 
   getExportData() {
-    this.isPdfLoading = true;
+    this.isCsvLoading = true;
     //this.separator = separator;
     for (let index in this.secondAProjection) {
       if (this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
@@ -312,14 +313,14 @@ export class ExportsComponent implements OnInit {
       },
       (error: any) => {
         this.dataForCSV = [];
-        this.isPdfLoading = false;
+        this.isCsvLoading = false;
       }
     );
   }
   download() {
     var data = { from: 'Customers-export' };
     this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Customers', this.separator, data)
-    this.isPdfLoading = false;
+    this.isCsvLoading = false;
     this.dialogRef.close.emit({ action: false });
   }
   removeFields(obj: any, event: any) {
