@@ -187,19 +187,10 @@ export class PdfService {
   }
 
   private formatContent(val: any, type: string): any {
-
-    //1. make a 'global' array of translations used in the receipts.
-    //2. translate all the keywords in the language that the user has selected.
-    //3. make sure the array is available in this function
-    //4. add an option below to replace the keyword with the translation
-
+    // console.log('formatContent', {val, type})
     switch (type) {
       case 'money':
-        const nValue = parseFloat(this.convertStringToMoney(val));
-        // console.log({nValue, val})
-        return (nValue >= 0) ? 
-          this.oCurrencies[this.currency] + nValue.toFixed(2) :
-          '-' + this.oCurrencies[this.currency] + (Math.abs(nValue)).toFixed(2);
+        return this.convertStringToMoney(val);
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
@@ -227,7 +218,7 @@ export class PdfService {
     if (val % 1 === 0) {
       // console.log('convertStringToMoney if')
       //no decimals
-      return (val) ? String(val + this.separator + '00') : '0' + this.separator + '00';
+      return (val) ? String(val + this.oSeparator[this.separator] + '00') : '0' + this.oSeparator[this.separator] + '00';
     } else {
       // console.log('convertStringToMoney else')
       val = String(val);
@@ -240,6 +231,12 @@ export class PdfService {
         val = val + '0';
         // console.log(237, {val})
       }
+      // console.log(239, 'val', val)
+      val = (val >= 0) ?
+        this.oCurrencies[this.currency] + val:
+        '-' + this.oCurrencies[this.currency] + Math.abs(val);
+
+      // console.log(243, 'val', val)
       const n = val.replace('.', this.oSeparator[this.separator])
       // console.log('final', n)
       return n;
