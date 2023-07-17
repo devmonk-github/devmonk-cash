@@ -333,7 +333,7 @@
                             <div class="w-100 mx-4">
                               <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'|
                                 translate) }}</p>
-                              <div class="d-flex align-items-start justify-content-between">
+                              <div class="d-flex align-items-start justify-content-between flex-wrap">
                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
                                   <strong>{{ product.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
                                   <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
@@ -354,12 +354,10 @@
                                   <span *ngIf="bSerialSearchMode"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber ||
                                     "-" }}</span>
                                 </p>
-                        
                               </div>
-                              <p><span *ngIf="product?.oCurrentLocation?.nStock == 0 && !product.bHasStock"
-                                  class="text-warning">{{"PRODUCT_WITHOUT_STOCK_WARNING" | translate}}</span><br>
+                              <p *ngIf="product?.oCurrentLocation?.nStock == 0 && !product.bHasStock" class="m-0 mt-2 text-warning col-xl-12 col-sm-12">
+                                {{"PRODUCT_WITHOUT_STOCK_WARNING" | translate}}
                               </p>
-                        
                             </div>
                           </div>
                         </div>
