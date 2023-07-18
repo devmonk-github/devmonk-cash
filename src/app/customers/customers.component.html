@@ -102,11 +102,14 @@
                                         <td class="col-2">
                                             <p class="m-0">{{customer.name}}</p>
                                             <div>
+                                                <ng-container *ngIf="customer?.eStatus == 'd'">
+                                                    <span class="badge badge-danger">{{"DELETED" | translate}}</span>
+                                                </ng-container>
                                                 <ng-container *ngIf="customer?.isUpdated">
-                                                    <span class="badge badge-primary">Updated</span>
+                                                    <span class="badge badge-primary">{{"UPDATED" | translate}}</span>
                                                 </ng-container>
                                                 <ng-container *ngIf="customer?.isMerged">
-                                                    <span class="badge badge-danger"> Merged</span>
+                                                    <span class="badge badge-danger"> {{"MERGED" | translate}}</span>
                                                 </ng-container>
                                             </div>
                                         </td>
