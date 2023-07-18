@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                        <button type="button" class="btn btn-info" data-kt-roles-modal-action="submit"
                             (click)="fetchDayClosureList()">
                             <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
                         </button>
@@ -67,7 +67,7 @@
                             <td>{{oDayClosure?.oCountings?.nCashRemain}}</td>
 
                             <td>
-                                <button class="btn btn-primary" (click)="goToView(oDayClosure)">
+                                <button class="btn btn-secondary" (click)="goToView(oDayClosure)">
                                     {{"VIEW" | translate}}
                                 </button>
                             </td>
