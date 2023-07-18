@@ -351,16 +351,16 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer w-90px">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
-                                    <td>
+                                    <td class="w-110px">
                                         <span class="badge badge-info" style="text-transform: capitalize;">
                                             {{item.eKind}}
                                         </span>
                                     </td>
-                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer w-650px">
                                         <div>
                                             <p class="m-0" *ngIf="!item.sProductName">
                                                 {{ item.sArticleGroupName }} {{item.sProductNumber }}
@@ -371,7 +371,10 @@
                                             <p class="m-0 text-muted" *ngIf="item.sArticleNumber">
                                                 ({{item.sArticleNumber}})
                                             </p>
-                                            <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
+                                            <span *ngIf="item.sDescription" class="custom-truncate">
+                                                {{ item.sDescription}}
+                                            </span>
+                                            <br>
                                             <span *ngIf="item?.bPrepayment">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount}}
                                                 <br />
