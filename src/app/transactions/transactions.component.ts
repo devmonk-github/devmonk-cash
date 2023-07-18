@@ -236,6 +236,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
           const bankPaymentIndex = transaction.aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');
           if(bankPaymentIndex != -1){
             transaction.bConfirmed = transaction.aPayments[bankPaymentIndex].bConfirmed;
+            transaction.paymentType = 'bankpayment';
           }
           transaction.sMethods = aTemp.map((m:any) => m.sMethod).join(',');
           transaction.nTotal = 0;
