@@ -2,9 +2,10 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
+import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -87,6 +88,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   showStatistics: boolean = false;
   //savingPointsSetting: boolean = false;
   faTimes = faTimes;
+  faUpload = faUpload;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
   translations:any;
@@ -332,6 +334,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   businessDetails:any={};
   nClientId:any="-";
   oS:any;
+  showDeleteBtn: boolean = false;
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -378,6 +381,22 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.loadTransactions();
   }
 
+  removePicture() {
+    this.customer.sImage = '';
+  }
+  openImageModal() {
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+      .instance.close.subscribe(result => {
+        console.log("result", result);
+        if (result.url)
+        this.customer.sImage = result.url;
+      });
+  }
+  openImage(image:any){
+    const url =image;
+    window.open(url , "_blank");
+  }
+  
   onTabChange(index: any) {
     if (this.currentTab === index) return;
     this.currentTab = index;
