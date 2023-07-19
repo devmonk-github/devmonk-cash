@@ -1016,13 +1016,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
+                    <div class="mb-3">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
                         <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
                             <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
                         </ng-select>
                     </div>
-                    <div class="mb-6" *ngIf="customer?.oIdentity?.documentNumber">
+                    <div class="mb-6">
                         <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
                             [(ngModel)]="customer.oIdentity.documentNumber" />
                     </div>
