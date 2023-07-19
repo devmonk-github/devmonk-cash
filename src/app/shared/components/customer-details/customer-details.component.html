@@ -994,18 +994,12 @@
                 </div>
 
                 <div class="col-4">
-                    
-                      
-                      <div class="d-flex justify-content-between flex-wrap">
-                        <div class="px-1 py-2"  (mouseover)="showDeleteBtn = true"
-                        (mouseout)="showDeleteBtn = false">
-                          <div class="image-input" data-kt-image-input="true"
-                            style="background-image: url('assets/images/no-photo-available.jpg')">
-                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(customer.sImage)"
-                              style="background-image: url(assets/images/no-photo-available.jpg)">
+                    <div class="col-12 d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="px-1 py-2"  (mouseover)="showDeleteBtn = true" (mouseout)="showDeleteBtn = false">
+                          <div class="image-input" data-kt-image-input="true"> <!-- style="background-image: url('assets/images/no-photo-available.jpg')"-->
+                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(customer.sImage)">
                               <img src="{{ customer.sImage }}" width="100px" height="100px" />
                             </div>
-              
                             <div>
                               <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
                                 data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removePicture()">
@@ -1014,16 +1008,12 @@
                             </div>
                           </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12">
-                              <button class="btn btn-info w-100 mt-5 mx-7" (click)="openImageModal()"> {{ "UPLOAD_PICTURE" | translate}}
-                                <fa-icon [icon]="faUpload"></fa-icon>
-                              </button>
-                            </div>
-                          </div>
-                        
+                        <button class="btn btn-info btn-sm w-50 h-50" (click)="openImageModal()"> 
+                            {{ "UPLOAD_PICTURE" | translate}}
+                            <fa-icon [icon]="faUpload"></fa-icon>
+                        </button>
                       </div>
-                    <div class="mb-3">
+                    <div class="my-3">
                         <label for="note">{{'NOTES' | translate}}</label>
                         <textarea name="note" id="note" cols="30" rows="6" class="form-control"
                             [(ngModel)]="customer.sNote"></textarea>
