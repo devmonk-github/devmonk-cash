@@ -1001,7 +1001,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             }
           }
-
+          body.oTransaction.eSource = 'cash-registry';
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
             this.saveInProgress = false;
