@@ -624,30 +624,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
+  resetThePagination(paginationConfig:any) {
+    this.requestParams.skip = 0;
+    paginationConfig.currentPage = 1;
+  }
+
   changeItemsPerPage(pageCount: any , tab:any) {
     if(tab == 'purchases'){
       this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.resetThePagination(this.purchasePaginationConfig);
       this.loadTransactions()
     }
     if(tab == 'TransactionItems'){
       this.transactionItemPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (this.transactionItemPaginationConfig.currentPage - 1);
-      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
+      this.resetThePagination(this.transactionItemPaginationConfig);
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
       this.activitiesPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (this.activitiesPaginationConfig.currentPage - 1);
-      this.activitiesRequestParams.limit = this.activitiesPaginationConfig.itemsPerPage;
+      this.resetThePagination(this.activitiesPaginationConfig);
       this.loadActivities()
     }
 
     if(tab == 'activityItems'){
       this.itemsPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.itemsRequestParams.skip = this.itemsPaginationConfig.itemsPerPage * (this.itemsPaginationConfig.currentPage - 1);
-      this.itemsRequestParams.limit = this.itemsPaginationConfig.itemsPerPage;
+      this.resetThePagination(this.itemsPaginationConfig);
       this.loadActivityItems()
     }
     
