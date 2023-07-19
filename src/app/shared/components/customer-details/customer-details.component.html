@@ -1018,7 +1018,7 @@
 
                     <div class="mb-3">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
-                        <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
+                        <ng-select id="documentName" class="form-control form-control-solid p-0" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
                             <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
                         </ng-select>
                     </div>
