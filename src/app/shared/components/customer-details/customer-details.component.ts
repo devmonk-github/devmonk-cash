@@ -749,13 +749,29 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         oInvoiceAddress: this.customer?.oInvoiceAddress,
         oShippingAddress: this.customer?.oShippingAddress,
       }
-      const addresses = await this.checkAddress(addressBody);
-      if (addresses?.data?.length) {
+      let bInvoiceAddressBlank = false;
+      let bShippingAddressBlank = false;
+      
+      if(!this.customer.oInvoiceAddress?.sStreet && !this.customer.oInvoiceAddress?.sHouseNumberSuffix && !this.customer.oInvoiceAddress?.sPostalCode && !this.customer.oInvoiceAddress?.sHouseNumber)
+      bInvoiceAddressBlank = true;
+
+      if(!this.customer.oShippingAddress?.sStreet && !this.customer.oShippingAddress?.sHouseNumberSuffix && !this.customer.oShippingAddress?.sPostalCode && !this.customer.oShippingAddress?.sHouseNumber)
+      bShippingAddressBlank = true;
+
+      let addressesLength = 0;
+      if(bInvoiceAddressBlank && bShippingAddressBlank){
+        addressesLength = 0;
+      }else{
+        const addresses = await this.checkAddress(addressBody);
+        addressesLength = addresses?.data?.length;
+      }
+      
+      if (addressesLength) {
         let confirmBtnDetails = [
           { text: "YES", value: 'success', status: 'success', class: 'btn-success me-3' },
           { text: "NO", value: 'close', class: 'btn-warning'}
         ];
-        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addresses?.data?.length +")";
+        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addressesLength +")";
         this.dialogService.openModal(ConfirmationDialogComponent, { context: { header:'ADDRESS_ALREADY_EXISTS', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: false })
           .instance.close.subscribe((status: any) => {
             if (status == 'success') {
