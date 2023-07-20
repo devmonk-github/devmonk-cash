@@ -1298,6 +1298,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       });
     } else this.onCloseDayState();
+    localStorage.setItem('transactionAuditPdfService.aAmount', '');
   }
 
   async onCloseDayState() {
