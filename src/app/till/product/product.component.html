@@ -29,8 +29,7 @@
     </section>
   </button>
 </div>
-
-<div id="kt_accordion_1_body_1" class="accordion-collapse collapse rounded-0" data-bs-parent="#till-items-accordion">
+<div id="kt_accordion_1_body_1" class="accordion-collapse collapse rounded-0" [ngClass]="{'show' : tillService.settings?.bShowForm}"   data-bs-parent="#till-items-accordion">
   <div class="accordion-body px-3 py-4">
     
     <div class="row">

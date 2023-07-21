@@ -77,6 +77,7 @@ export class ImportGiftCardComponent implements OnInit {
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
         oBody.oTransaction.iCustomerId = aTransactionItem[i].iCustomerId;
+        oBody.oTransaction.eSource = 'import-csv';
         oBody.oTransaction.dCreatedDate = aTransactionItem[i].dCreatedDate;
         oBody.bImportGiftCard = true;
         oBody.payments = this.importGiftCardService.mapPayment(aTransactionItem[i]);

@@ -207,18 +207,17 @@
                     <!--end::Svg Icon-->
                   </div>
                   <!--begin::Menu-->
-                  <div
-                    class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
+                  <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
                     data-kt-menu="true">
                     <!--begin::Menu item-->
                     <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
-                      <div *ngIf="tMenu.key == 'MARK_CONFIRMED'">
-                        <div class="menu-link px-3" [ngClass]="{'disabled':transaction.bConfirmed}"
+                      <div *ngIf="tMenu.key == 'MARK_CONFIRMED' && transaction?.paymentType == 'bankpayment'">
+                        <div class="menu-link px-3" [ngClass]="{'show':transaction.bConfirmed}"
                           (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
                           translate}}</div>
                       </div>
                       <div *ngIf="tMenu.key != 'MARK_CONFIRMED'">
-                        <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
+                        <div class="menu-link px-3"  (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
                           translate}}</div>
                       </div>
                     </div>

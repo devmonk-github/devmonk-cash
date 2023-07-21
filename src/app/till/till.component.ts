@@ -1001,7 +1001,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             }
           }
-
+          body.oTransaction.eSource = 'cash-registry';
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
             this.saveInProgress = false;
@@ -1351,7 +1351,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
 
-    if (product?.oCurrentLocation?.nStock == 0 && !product.bHasStock) {
+    if (product?.oCurrentLocation?.nStock == 0 && !product.bHasStock && this.eKind == 'regular') {
       this.toastrService.show({ type: 'warning', text: this.translateService.instant('PRODUCT_WITHOUT_STOCK_WARNING') });
     } else {
       // console.log('onSelectProduct', product);

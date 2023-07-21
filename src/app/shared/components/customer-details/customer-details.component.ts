@@ -2,9 +2,10 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
+import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -87,6 +88,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   showStatistics: boolean = false;
   //savingPointsSetting: boolean = false;
   faTimes = faTimes;
+  faUpload = faUpload;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
   translations:any;
@@ -208,7 +210,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eActivityItemStatus' ,'sBusinessPartnerName',
-    'bIsMerged','eStatus','bIsImported'],
+    'bIsMerged','eStatus','bIsImported','sImage'],
 
   };
   
@@ -332,6 +334,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   businessDetails:any={};
   nClientId:any="-";
   oS:any;
+  showDeleteBtn: boolean = false;
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -378,6 +381,22 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.loadTransactions();
   }
 
+  removePicture() {
+    this.customer.sImage = '';
+  }
+  openImageModal() {
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+      .instance.close.subscribe(result => {
+        console.log("result", result);
+        if (result.url)
+        this.customer.sImage = result.url;
+      });
+  }
+  openImage(image:any){
+    const url =image;
+    window.open(url , "_blank");
+  }
+  
   onTabChange(index: any) {
     if (this.currentTab === index) return;
     this.currentTab = index;
@@ -627,27 +646,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   changeItemsPerPage(pageCount: any , tab:any) {
     if(tab == 'purchases'){
       this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
-      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.purchaseRequestParams.skip = 0;
+      this.purchasePaginationConfig.currentPage = 1;
+      this.purchaseRequestParams.limit = parseInt(this.purchasePaginationConfig.itemsPerPage);
       this.loadTransactions()
     }
     if(tab == 'TransactionItems'){
       this.transactionItemPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (this.transactionItemPaginationConfig.currentPage - 1);
-      this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
+      this.purchaseRequestParams.skip = 0;
+      this.transactionItemPaginationConfig.currentPage = 1;
+      this.transactionItemRequestParams.limit = parseInt(this.transactionItemPaginationConfig.itemsPerPage);
       this.loadTransactionItems()
     }
     if(tab == 'activities'){
       this.activitiesPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (this.activitiesPaginationConfig.currentPage - 1);
-      this.activitiesRequestParams.limit = this.activitiesPaginationConfig.itemsPerPage;
+      this.purchaseRequestParams.skip = 0;
+      this.activitiesPaginationConfig.currentPage = 1;
+      this.activitiesRequestParams.limit = parseInt(this.activitiesPaginationConfig.itemsPerPage);
       this.loadActivities()
     }
 
     if(tab == 'activityItems'){
       this.itemsPaginationConfig.itemsPerPage = parseInt(pageCount);
-      this.itemsRequestParams.skip = this.itemsPaginationConfig.itemsPerPage * (this.itemsPaginationConfig.currentPage - 1);
-      this.itemsRequestParams.limit = this.itemsPaginationConfig.itemsPerPage;
+      this.purchaseRequestParams.skip = 0;
+      this.itemsPaginationConfig.currentPage = 1;
+      this.itemsRequestParams.limit = parseInt(this.itemsPaginationConfig.itemsPerPage);
       this.loadActivityItems()
     }
     
@@ -726,13 +749,29 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         oInvoiceAddress: this.customer?.oInvoiceAddress,
         oShippingAddress: this.customer?.oShippingAddress,
       }
-      const addresses = await this.checkAddress(addressBody);
-      if (addresses?.data?.length) {
+      let bInvoiceAddressBlank = false;
+      let bShippingAddressBlank = false;
+      
+      if(!this.customer.oInvoiceAddress?.sStreet && !this.customer.oInvoiceAddress?.sHouseNumberSuffix && !this.customer.oInvoiceAddress?.sPostalCode && !this.customer.oInvoiceAddress?.sHouseNumber)
+      bInvoiceAddressBlank = true;
+
+      if(!this.customer.oShippingAddress?.sStreet && !this.customer.oShippingAddress?.sHouseNumberSuffix && !this.customer.oShippingAddress?.sPostalCode && !this.customer.oShippingAddress?.sHouseNumber)
+      bShippingAddressBlank = true;
+
+      let addressesLength = 0;
+      if(bInvoiceAddressBlank && bShippingAddressBlank){
+        addressesLength = 0;
+      }else{
+        const addresses = await this.checkAddress(addressBody);
+        addressesLength = addresses?.data?.length;
+      }
+      
+      if (addressesLength) {
         let confirmBtnDetails = [
           { text: "YES", value: 'success', status: 'success', class: 'btn-success me-3' },
           { text: "NO", value: 'close', class: 'btn-warning'}
         ];
-        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addresses?.data?.length +")";
+        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addressesLength +")";
         this.dialogService.openModal(ConfirmationDialogComponent, { context: { header:'ADDRESS_ALREADY_EXISTS', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: false })
           .instance.close.subscribe((status: any) => {
             if (status == 'success') {

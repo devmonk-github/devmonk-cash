@@ -17,6 +17,10 @@
             <button class="btn btn-secondary" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
             </button>
+            <div *ngIf="!editProfile" class="d-flex align-items-center">
+                <button class="cancel btn btn-danger me-5" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
+                <button class="cancel btn btn-warning" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
+            </div>
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )|
                 translate}}
             </button>
@@ -54,8 +58,24 @@
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
-
-                                <div class="col-3">
+                                <div class="col-2">
+                                    <div class="d-flex flex-column mb-3">
+                                        <div>
+                                            <h4 class="text-gray-700 fw-bolder mb-2">{{'PICTURE' | translate}}</h4>
+                                            <div class="d-flex flex-column mb-5">
+                                                <div class="d-flex">
+                                                    <div class="image-input" data-kt-image-input="true">
+                                                        <div class="image-input-wrapper w-100px h-100px">
+                                                            <img src="{{ customer.sImage? customer.sImage : '../assets/images/no-photo-available.jpg'  }}"
+                                                                width="100px" height="100px" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'ABOUT' | translate}}</h4>
                                     <div class="d-flex flex-column mb-5">
                                         <div class="d-flex">
@@ -994,7 +1014,26 @@
                 </div>
 
                 <div class="col-4">
-                    <div class="mb-3">
+                    <div class="col-12 d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="px-1 py-2"  (mouseover)="showDeleteBtn = true" (mouseout)="showDeleteBtn = false">
+                          <div class="image-input" data-kt-image-input="true"> <!-- style="background-image: url('assets/images/no-photo-available.jpg')"-->
+                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(customer.sImage)">
+                              <img src="{{ customer.sImage }}" width="100px" height="100px" />
+                            </div>
+                            <div>
+                              <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
+                                data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removePicture()">
+                                <i class="bi bi-x fs-2" (click)="removePicture()"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <button class="btn btn-info btn-sm w-50 h-50" (click)="openImageModal()"> 
+                            {{ "UPLOAD_PICTURE" | translate}}
+                            <fa-icon [icon]="faUpload"></fa-icon>
+                        </button>
+                      </div>
+                    <div class="my-3">
                         <label for="note">{{'NOTES' | translate}}</label>
                         <textarea name="note" id="note" cols="30" rows="6" class="form-control"
                             [(ngModel)]="customer.sNote"></textarea>
@@ -1016,13 +1055,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
+                    <div class="mb-3">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
-                        <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
+                        <ng-select id="documentName" class="form-control form-control-solid p-0" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
                             <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
                         </ng-select>
                     </div>
-                    <div class="mb-6" *ngIf="customer?.oIdentity?.documentNumber">
+                    <div class="mb-6">
                         <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
                             [(ngModel)]="customer.oIdentity.documentNumber" />
                     </div>
@@ -1071,9 +1110,4 @@
             </div>
         </ng-container>
     </div>
-    <div *ngIf="mode != 'create'" class="card-footer d-flex justify-content-end align-items-center">
-        <button class="cancel btn btn-danger me-3" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
-        <button class="cancel btn btn-warning" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
-    </div>
-    
 </div>

@@ -54,6 +54,15 @@
                 <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bEnableCashRegisterForGeneral">
               </label>
             </div>
+
+            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                {{ 'OPEN_FORM_WHEN_SELECTING_PRODUCT' | translate}}
+              </label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowForm">
+              </label>
+            </div>
             <!-- <div class="col-3 mb-5">
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bOpenCashDrawer">

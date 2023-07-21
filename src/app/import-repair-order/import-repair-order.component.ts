@@ -78,6 +78,7 @@ export class ImportRepairOrderComponent implements OnInit {
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
         oBody.oTransaction.iCustomerId = aTransactionItem[i].iCustomerId;
+        oBody.oTransaction.eSource = 'import-csv';
         oBody.oTransaction.oCustomer = aTransactionItem[i].oCustomer;
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);

@@ -206,6 +206,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     // this.fetchBusinessLocation();
     this.getProperties();
     this.getPaymentMethods();
+    const transactionAudits = localStorage.getItem('transactionAuditPdfService.aAmount');
+    let transactionAuditArray = [];
+    if (transactionAudits) {
+      transactionAuditArray = JSON.parse(transactionAudits);
+    }
+   if(transactionAuditArray?.length) this.transactionAuditPdfService.aAmount = transactionAuditArray;
 
     setTimeout(() => {
       MenuComponent.bootstrap();
@@ -1100,6 +1106,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
+    localStorage.setItem('transactionAuditPdfService.aAmount', JSON.stringify(this.transactionAuditPdfService.aAmount));
   }
 
   async expandItem(item: any, iBusinessPartnerId: any = undefined, from: string = 'articlegroup') {
@@ -1291,6 +1298,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       });
     } else this.onCloseDayState();
+    localStorage.setItem('transactionAuditPdfService.aAmount', '');
   }
 
   async onCloseDayState() {
