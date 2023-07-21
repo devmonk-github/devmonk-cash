@@ -1,9 +1,9 @@
 import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faAt, faClipboard, faDownload, faEnvelope, faFileInvoice, faPrint, faReceipt, faSync, faTimes, faTrashAlt, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
+import * as JsBarcode from 'jsbarcode';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
-import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
@@ -12,12 +12,11 @@ import { CustomerSyncDialogComponent } from 'src/app/shared/components/customer-
 import { ToastService } from 'src/app/shared/components/toast';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
-import { TransactionsPdfService } from 'src/app/shared/service/transactions-pdf.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
-import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({

@@ -351,7 +351,7 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer" id="kt_supplier_stock_product_toggle">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
@@ -360,7 +360,7 @@
                                             {{item.eKind}}
                                         </span>
                                     </td>
-                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer" id="kt_supplier_stock_product_toggle">
                                         <div>
                                             <p class="m-0" *ngIf="!item.sProductName">
                                                 {{ item.sArticleGroupName }} {{item.sProductNumber }}

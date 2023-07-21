@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@angular-architects/module-federation": "^12.5.2",
+    "@angular-architects/module-federation-tools": "^0.0.1",
     "@angular/animations": "~12.0.4",
     "@angular/cdk": "^11.0.0",
     "@angular/common": "~12.0.4",

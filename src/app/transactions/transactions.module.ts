@@ -12,7 +12,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from '../shared/shared.module';
-import { SupplierProductSliderModule } from '../sliders/supplier-stock-product-slider/supplier-product-slider.module';
 
 @NgModule({
   declarations: [

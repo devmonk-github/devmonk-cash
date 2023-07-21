@@ -26,7 +26,7 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
-
+  webpackUrl: `${ORGANIZATION_URL}/api/v1/webpack`,
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,

@@ -60,7 +60,6 @@ import { ActivityItemExportComponent } from './components/activity-item-export/a
 import { TransactionsPdfService } from "./service/transactions-pdf.service";
 //import { DateTranslatePipe } from './pipes/date-translate.pipe';
 import { SelectPrintPaperDialogComponent } from "./components/select-print-paper-dialog/select-print-paper-dialog.component";
-import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-slider/supplier-product-slider.module";
 import { CustomerActivitiesDialogComponent } from "./components/customer-activities-dialog/customer-activities.component";
 import { BankConfirmationDialogComponent } from './components/bank-confirmation-dialog/bank-confirmation-dialog.component';
 import { ClosingDaystateDialogComponent } from "./components/closing-daystate-dialog/closing-daystate-dialog.component";
@@ -125,8 +124,7 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     FileSaverModule,
     NgApexchartsModule,
     NgxPaginationModule,
-    JsonEditorModule,
-    SupplierProductSliderModule
+    JsonEditorModule
   ],
   exports: [
     DialerComponent,
@@ -154,7 +152,6 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     CurrencyFormatPipe,
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
-    SupplierProductSliderModule,
     ClosingDaystateDialogComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ViewContainerRef,QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef,QueryList, ViewChildren, ViewChild, Compiler, Injector, NgModuleRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
@@ -13,7 +13,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
-
+import { SupplierProductSliderModule } from 'supplierProductSlider/SupplierProductSliderModule';
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
@@ -106,20 +106,20 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   @ViewChildren('transactionItems') things: QueryList<any>;
   businessDetailsLoaded: boolean = false;
   SupplierStockProductSliderData = new BehaviorSubject<any>({});
+  @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
+  componentRef: any;
 
   constructor(
-    private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
     public tillService: TillService,
-    private http: HttpClient
+    private compiler: Compiler,
+    private injector: Injector
     
-  ) {
-    const _injector = this.viewContainer.injector
-    this.dialogRef = _injector.get<DialogComponent>(DialogComponent);  }
+  ) {}
   
 
   async ngOnInit() {
@@ -142,6 +142,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
+    this.initSlider();
   }
 
   
@@ -312,10 +313,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       });
   }
   
-  close(data: any): void {
-    this.dialogRef.close.emit(data)
-  }
-
   bankConfirmation(transactionId: any) {
     const transactionIndex = this.transactions.findIndex((transaction: any) => transaction._id == transactionId);
     // console.log("transaction index" , this.transactions[transactionIndex]._id)
@@ -438,6 +435,19 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         this.SupplierStockProductSliderData.next(res.data);
       }
     })
+  }
+
+  initSlider() {
+    try {
+        this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
+          const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
+          const componentFactory = moduleRef.instance.resolveComponent();
+          this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
+          this.componentRef.instance.$data = this.SupplierStockProductSliderData.asObservable();
+        });
+    } catch (error) {
+      console.log('error while initializing slider', error);
+    }
   }
 
   async openModal(barcode: any) {

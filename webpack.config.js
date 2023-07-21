@@ -24,7 +24,11 @@ module.exports = {
     publicPath: "auto"
   },
   optimization: {
-    runtimeChunk: false
+    runtimeChunk: false,
+    splitChunks: {
+      chunks: 'async'
+    },
+    emitOnErrors: true,
   },
   resolve: {
     alias: {
@@ -234,13 +238,19 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
-      name: "SupplierProductSliderModule",
-      filename: "supplier-product-slider.js",
-      exposes: {
-        "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
+      remotes: {
+        "supplierProductSlider": "supplierProductSlider@http://localhost:3001/api/v1/webpack/directive/supplier-product-slider.js",
       },
       shared: share(sharedLibrary)
     }),
+    // new ModuleFederationPlugin({
+    //   name: "SupplierProductSliderModule",
+    //   filename: "supplier-product-slider.js",
+    //   exposes: {
+    //     "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
+    //   },
+    //   shared: share(sharedLibrary)
+    // }),
     new ModuleFederationPlugin({
       name: "ImportGiftCardModule",
       filename: "import-gift-card.js",
