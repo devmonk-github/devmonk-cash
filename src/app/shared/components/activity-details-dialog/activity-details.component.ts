@@ -1066,6 +1066,8 @@ export class ActivityDetailsComponent implements OnInit {
       }
     }
     oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
+    const vat = (oActivity.nVatRate * oActivity.nPriceIncVatAfterDiscount / (100 + parseFloat(oActivity.nVatRate)));
+    oActivity.vat = (oActivity.nVatRate > 0) ? +(vat.toFixed(2)) : 0;
     await this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,
       oDataSource: JSON.parse(JSON.stringify(oActivity)),
