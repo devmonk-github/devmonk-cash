@@ -816,7 +816,7 @@ export class ReceiptService {
             if (printSettings?.length > 0) {
                 thermalPrintSettings = printSettings.find((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType);
             }
-            // console.log({printSettings, sType, thermalPrintSettings })
+            // console.log({ printSettings, sType, thermalPrintSettings, sTemplateType })
             if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
                 const sText = this.translateService.instant('THERMAL_PRINT_SETTINGS_NOT_CONFIGURED_FOR') + sType
                 this.toastService.show({ type: 'danger', text: sText });

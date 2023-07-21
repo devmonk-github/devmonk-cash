@@ -1053,8 +1053,10 @@ export class ActivityDetailsComponent implements OnInit {
     this.processDiscounts([oActivity]);
   }
 
-  async printThermalReceipt(oActivity:any, type:string = 'repair') {
+  async printThermalReceipt(oActivity:any, type?:string) {
+    // console.log('printThermalReceipt', {type})
     oActivity.businessDetails = this.businessDetails;
+    if(!type) type = oActivity.oType.eKind;
     // console.log({oActivity, type}, this.businessDetails);
     const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
     if(type == 'giftcard') {

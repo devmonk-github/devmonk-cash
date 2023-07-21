@@ -46,6 +46,7 @@ export class PrintWorkstationComponent implements OnInit {
       name: 'THERMAL',
       typeList: [
         { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: false },
+        { name: 'ORDER_RECEIPT', key: 'order', enabled: false },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: false },
         { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: false },
         { name: 'WARRANTY_RECEIPT', key: 'warranty-receipt', enabled: false },
