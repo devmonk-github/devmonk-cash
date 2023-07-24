@@ -266,11 +266,15 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     return [date.getFullYear(), mnth, day].join("-");
   }
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
-      this.businessDetails = result.data;
-      this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    })
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+      .subscribe(
+        (result: any) => {
+          this.businessDetails = result.data;
+          this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+          this.tillService.selectCurrency(this.businessDetails.currentLocation);
+        })
   }
+  
 
   // Function for reset selected filters
   resetFilters() {
