@@ -3,7 +3,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/shared/service/api.service';
-
+import { ToastService } from 'src/app/shared/components/toast';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'extra-service',
   templateUrl: './extra-service.component.html',
@@ -13,7 +14,9 @@ export class ExtraServiceComponent implements OnInit {
 
   constructor(
     private domSanitizer : DomSanitizer,
-    private apiService : ApiService
+    private apiService : ApiService,
+    private toastService: ToastService,
+    private translateService: TranslateService
   ) { }
 
   service : any = {
@@ -144,16 +147,20 @@ export class ExtraServiceComponent implements OnInit {
       iLocationId : this.webLocation
     }
     this.apiService.postNew('cashregistry', '/api/v1/extra-services', details).subscribe(
-      (result : any) =>{
-      }
-    );
+      (result : any) => {
+        this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
+      }, (error) => {
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
+      });
   }
 
   updateExtraService(){
     this.apiService.putNew('cashregistry', '/api/v1/extra-services/'+this.service._id, this.service).subscribe(
-      (result : any) =>{
-      }
-    );
+      (result : any) => {
+        this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
+      }, (error) => {
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
+      });
   }
 
   addEngravingType(){

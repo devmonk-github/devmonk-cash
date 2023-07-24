@@ -5,7 +5,7 @@ import { WebshopSettingsRoutingModule } from './webshop-settings-routing.module'
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { SharedModule } from 'primeng/api';
+import { SharedModule } from '../shared/shared.module';
 import { ExtraServiceComponent } from './component/extra-service/extra-service.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CouponServiceComponent } from './component/coupon-service/coupon-service.component';
