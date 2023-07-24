@@ -720,4 +720,5 @@ export interface TemplateJSONElement {
   charwidth?: number;
   charheight?: number;
   euro_prefix?: boolean;
+  pound_prefix?: boolean;
 }
