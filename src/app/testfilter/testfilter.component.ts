@@ -266,11 +266,15 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     return [date.getFullYear(), mnth, day].join("-");
   }
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
-      this.businessDetails = result.data;
-      this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    })
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+      .subscribe(
+        (result: any) => {
+          this.businessDetails = result.data;
+          this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+          this.tillService.selectCurrency(this.businessDetails.currentLocation);
+        })
   }
+  
 
   // Function for reset selected filters
   resetFilters() {
@@ -364,8 +368,24 @@ export class TestFilterComponent implements OnInit, OnDestroy {
         }
       }).instance.close.subscribe((result) => {
         if (result?.oData?.oCurrentCustomer) {
-          if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
-          if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
+          activity.oCustomer._id = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : activity.oCustomer._id;
+          activity.iCustomerId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : activity.iCustomerId;
+          activity.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany:false;
+          activity.oCustomer.sFirstName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sFirstName ? result.oData.oCurrentCustomer.sFirstName:"";
+          activity.oCustomer.sLastName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sLastName ? result.oData.oCurrentCustomer.sLastName:"";
+          activity.oCustomer.sSalutation = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sSalutation ? result.oData.oCurrentCustomer.sSalutation:"";
+          activity.oCustomer.sPrefix = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sPrefix ? result.oData.oCurrentCustomer.sPrefix:"";
+          activity.oCustomer.sEmail = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sEmail ? result.oData.oCurrentCustomer.sEmail:"";
+          activity.oCustomer.sGender = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sGender ? result.oData.oCurrentCustomer.sGender:"";
+          activity.oCustomer.sVatNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sVatNumber ? result.oData.oCurrentCustomer.sVatNumber:"";
+          activity.oCustomer.sCocNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCocNumber ? result.oData.oCurrentCustomer.sCocNumber:"";
+          activity.oCustomer.nClientId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.nClientId ? result.oData.oCurrentCustomer.nClientId:"";
+          activity.oCustomer.oContactPerson = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oContactPerson ? result.oData.oCurrentCustomer.oContactPerson:"";
+          activity.oCustomer.sCompanyName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCompanyName ? result.oData.oCurrentCustomer.sCompanyName:"";
+          activity.oCustomer.oShippingAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oShippingAddress ? result.oData.oCurrentCustomer.oShippingAddress:"";
+          activity.oCustomer.oInvoiceAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oInvoiceAddress ? result.oData.oCurrentCustomer.oInvoiceAddress:"";
+          activity.oCustomer.oPhone = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oPhone ? result.oData.oCurrentCustomer.oPhone:"";
+          activity.oCustomer.bCounter = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bCounter ? result.oData.oCurrentCustomer.bCounter:false;
         }
       }, (error) => {
         console.log('Error here');
