@@ -1350,11 +1350,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-
-    if (product?.oCurrentLocation?.nStock == 0 && !product.bHasStock) {
-      this.toastrService.show({ type: 'warning', text: this.translateService.instant('PRODUCT_WITHOUT_STOCK_WARNING') });
-      return;
-    }
     // console.log('onSelectProduct', product);
     this.bProductSelected = true;
     let nPriceIncludesVat = 0, nVatRate = 0;
@@ -1380,7 +1375,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             oProdLoc.sName = oFound?.sName;
             return oProdLoc;
           }
-
         })
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
@@ -1391,7 +1385,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
     const sDescription = this.tillService.getDescriptionWithGemDetails(product);
-
     // console.log({product});
     this.transactionItems.push({
       name: name,
