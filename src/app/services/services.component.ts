@@ -145,6 +145,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   tableHeaders: Array<any> = [
     { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    {key: 'TRANSACTION_NUMBERS' , disabled: true},
     { key: 'REPAIR_NUMBER', disabled: true },
     { key: 'TYPE', disabled: true },
     { key: 'INTAKE_DATE', selected: false, sort: 'asc' },

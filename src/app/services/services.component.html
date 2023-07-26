@@ -189,6 +189,18 @@
         <tbody class="fw-bold text-gray-600">
           <tr *ngFor="let activity of activities | paginate: paginationConfig, let i = index;">
             <td>{{activity?.sNumber}}</td>
+            <td>
+              <ng-container *ngIf="activity?.aTransactionMetaData?.length ; then aTransactionMetaData ; else metaDataNotFound">
+              </ng-container>
+              <ng-template #aTransactionMetaData>
+                <span *ngFor="let oTransaction of activity?.aTransactionMetaData">
+                  <span *ngIf="oTransaction?.sNumber"> {{oTransaction?.sNumber}} </span> <br>
+                </span>
+              </ng-template>
+              <ng-template #metaDataNotFound>
+                <span>-</span>
+              </ng-template>
+            </td>
             <td>{{activity.sBagNumbers}}</td>
             <td>{{getTypes(activity.activityitems)}}</td>
             <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
