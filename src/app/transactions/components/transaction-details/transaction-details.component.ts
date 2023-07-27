@@ -17,6 +17,7 @@ import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
+import { FiskalyService } from 'src/app/shared/service/fiskaly.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -91,6 +92,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bGenerateInvoice: boolean = false;
   savingPointsSetting: boolean = false;
   employee: any;
+  bIsFiscallyEnabled: boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -103,6 +105,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private translateService: TranslateService,
     private cdr: ChangeDetectorRef,
     private taxService: TaxService,
+    private fiskalyService: FiskalyService,
     private createArticleGroupService: CreateArticleGroupService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -141,12 +144,94 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.toastService.show({ type: "warning", title:  this.translation['WARNING'] , text: this.translation[`THIS_IS_AN_IMPORTED_OR_MIGRATED_TRANSACTION`] });
       }
     }
-
+   
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
     this.fetchLocationName();
     
+   
+  }
+  // loadTransaction() {
+  //     this.handleTransactionResponse();
+  // }
+
+  async startFiskalyTransaction() {
+    if (!this.bIsFiscallyEnabled) return;
+    try {
+      const res = await this.fiskalyService.startTransaction();
+      localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
+    } catch (error: any) {
+      if (error.error.code === 'E_UNAUTHORIZED') {
+        localStorage.removeItem('fiskalyAuth');
+        await this.startFiskalyTransaction();
+      }
+    }
+  }
+
+  async updateFiskalyTransaction(state: string, payments: []) {
+    if (!this.bIsFiscallyEnabled) return;
+    const pay = _.clone(payments);
+    try {
+      if (!localStorage.getItem('fiskalyTransaction')) {
+        await this.startFiskalyTransaction();
+      }
+      const result = await this.fiskalyService.updateFiskalyTransaction(this.transaction.aPayments, pay, state);
+     
+      if (state === 'FINISHED') {
+        localStorage.removeItem('fiskalyTransaction');
+      } else {
+        localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
+      }
+    } catch (error: any) {
+      if (error?.error?.code === 'E_UNAUTHORIZED') {
+        await this.updateFiskalyTransaction(state, payments);
+      }
+    }
+  }
+
+  async handleTransactionResponse() {
+    await this.reCalculateTotal();
+  }
+
+  async mapFiscallyData() {
+    let _fiscallyData: any;
+    try {
+      _fiscallyData = await this.fiskalyService.getTSSList();
+    } catch (err) {
+       console.log('error while executing fiskaly service', err)
+    }
+    
+    if (_fiscallyData) {
+      this.businessDetails.aLocation.forEach((location: any) => {
+        const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
+        if (oMatch) {
+          location.tssInfo = oMatch.tssInfo;
+          location.bIsFiskalyEnabled = oMatch.bEnabled;
+        }
+      });
+      if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+        this.bIsFiscallyEnabled = true;
+        this.cancelFiskalyTransaction();
+        this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
+      }
+    }
+    this.handleTransactionResponse();
+    //this.loadTransaction();
+  }
+
+  async cancelFiskalyTransaction() {
+    if (!this.bIsFiscallyEnabled) return;
+    try {
+      if (localStorage.getItem('fiskalyTransaction')) {
+        await this.fiskalyService.updateFiskalyTransaction(this.transaction.aPayments, [], 'CANCELLED');
+        localStorage.removeItem('fiskalyTransaction');
+      }
+      // this.fiskalyService.clearAll();
+    } catch (error) {
+      localStorage.removeItem('fiskalyTransaction');
+      this.fiskalyService.clearAll();
+    }
   }
 
   ngAfterContentInit(): void {
@@ -446,6 +531,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   async toggleEditPaymentMode() {
     this.paymentEditMode = !this.paymentEditMode;
+    if(this.paymentEditMode) this.mapFiscallyData();
     if (!this.bIsDayStateOpened) {
       const oBody = {
         iBusinessId: this.iBusinessId,
@@ -483,17 +569,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     })
   }
 
-  reCalculateTotal() {
+  async reCalculateTotal() {
     this.transaction.nNewPaymentMethodTotal = 0;
     this.transaction.nNewPaymentMethodTotal = _.sumBy(this.transaction.aPayments, 'nNewAmount') + _.sumBy(this.aNewSelectedPaymentMethods, 'nAmount');
     this.transaction.nNewPaymentMethodTotal = +(this.transaction.nNewPaymentMethodTotal.toFixed(2));
-    // this.transaction.aPayments.forEach((item: any) => {
-    //   if (item.nNewAmount) this.transaction.nNewPaymentMethodTotal += +(item.nNewAmount.toFixed(2));
-    // });
-    
-    // this.aNewSelectedPaymentMethods.forEach((item: any) => {
-    //   if (item.nAmount) this.transaction.nNewPaymentMethodTotal += +(item.nAmount.toFixed(2));
-    // });
+    await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   filterDuplicatePaymentMethods() {
@@ -569,6 +649,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     this.close({ action: false });
+
+    if (this.bIsFiscallyEnabled) {
+      const result: any = await this.fiskalyService.updateFiskalyTransaction(this.aNewSelectedPaymentMethods,this.aNewSelectedPaymentMethods, 'FINISHED');
+      if (result) {
+        localStorage.removeItem('fiskalyTransaction');
+      }
+    }
   }
 
   addExpenses(data: any) {

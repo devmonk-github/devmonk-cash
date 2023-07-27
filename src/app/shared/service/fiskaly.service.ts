@@ -62,10 +62,14 @@ export class FiskalyService {
   transactionItemObject(transactionItems: any) {
     const amounts_per_vat_rate: any = [];
     transactionItems.forEach((element: any) => {
-      const amount = (element.priceInclVat || element.price) - ((element.priceInclVat || element.price) / (1 + (element.tax / 100))) * element.quantity;
+      let vat_amount = '0.00';
+      let amount = (element.priceInclVat || element.price) - ((element.priceInclVat || element.price) / (1 + (element.tax / 100))) * element.quantity;
+      if(amount){
+        vat_amount = String(this.roundToXDigits(amount));
+      } 
       amounts_per_vat_rate.push({
         vat_rate: 'NORMAL',
-        amount: String(this.roundToXDigits(amount)),
+        amount: vat_amount,
       });
     });
     return amounts_per_vat_rate;
@@ -110,6 +114,7 @@ export class FiskalyService {
   
   async updateFiskalyTransaction(transactionItems: any, payments: any, state: string) {
     if (!this.fiskalyAuth) await this.loginToFiskaly();
+
     
     if (!this.tssId) this.fetchTSS();
 
