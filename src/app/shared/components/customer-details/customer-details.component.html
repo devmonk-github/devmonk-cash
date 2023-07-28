@@ -394,7 +394,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="row">
+                                    <div class="row" *ngIf="aTransactions?.length">
                                         <div
                                             class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_purchases_table_length">
@@ -484,9 +484,8 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                    <div class="row" *ngIf="aTransactionItems?.length">
+                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_purchases_table_length">
                                                 <label>
                                                     <select name="kt_purchases_table_length"
@@ -569,9 +568,8 @@
                                         </tbody>
                                     </table>
 
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                    <div class="row" *ngIf="aActivities?.length">
+                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_activities_table_length">
                                                 <label>
                                                     <select name="kt_activities_table_length"
@@ -653,9 +651,8 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                    <div class="row" *ngIf="aActivityItems?.length">
+                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
                                                 <label>
                                                     <select name="kt_ecommerce_sales_table_length"
