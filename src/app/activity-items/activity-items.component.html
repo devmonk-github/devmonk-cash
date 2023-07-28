@@ -244,7 +244,7 @@
       </h5>
       <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
     </div>
-    <div class="row">
+    <div class="row" *ngIf='activityItems?.length'>
       <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
         <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
           <label>
