@@ -110,6 +110,7 @@ export class ExtraServiceComponent implements OnInit {
       .subscribe((result : any) => {
         if(result?.data?._id){
           this.service = result.data;
+          if (!this.service?.sTermForEngraving) this.service.sTermForEngraving = 'engraving';
           this.selectedType = this.service.aEngravingDetails[0];
         }
         if(!this.selectedType){

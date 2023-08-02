@@ -54,6 +54,20 @@
     </div>
     <div class="col-md-6">
         <div class="row mt-2" *ngIf="service.bEngraving">
+            <div class="col-12 d-flex justify-content-between mb-3">
+                <label>{{'TERM_TO_USE_ON_WEBSHOP' | translate }}</label>
+                <div>
+                    <label for="engrave" class="cursor-pointer me-3">
+                        <input type="radio" name="engrave_term" class="form-check-input me-2 cursor-pointer" id="engrave" value="engrave" checked="checked" [(ngModel)]="service.sTermForEngraving"/>
+                        <span>{{ 'ENGRAVING' | translate }}</span>
+                    </label>
+                    <label for="embroidery" class="cursor-pointer">
+                        <input type="radio" name="engrave_term" class="form-check-input me-2 cursor-pointer" id="embroidery" value="embroidery" [(ngModel)]="service.sTermForEngraving"/>
+                        <span>{{ 'EMBROIDERY' | translate }}</span>
+                    </label>
+                </div>
+            </div>
+
             <ng-container *ngIf="!isAddNewType">
                 <div class="col-md-5">
                     <button class="btn btn-sm btn-primary w-100" (click)="isAddNewType = true;">
