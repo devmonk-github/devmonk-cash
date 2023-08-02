@@ -161,7 +161,9 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item?.receipts[0]?.sProductNumber || getName(item)}}
+                                            {{item?.receipts[0]?.sProductNumber || getName(item)}}<br />
+                                            <span *ngIf="item.oType.eKind == 'regular' ">{{ item.sArticleNumber }}</span><br />
+                                            <span class="badge badge-info" style="text-transform: capitalize;">{{item.oType.eKind}}</span>
                                         </div>
                                         <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">

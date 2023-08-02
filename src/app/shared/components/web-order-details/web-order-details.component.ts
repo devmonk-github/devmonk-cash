@@ -323,32 +323,38 @@ export class WebOrderDetailsComponent implements OnInit {
       sLandLine: this.customer?.oPhone?.sLandLine || '',
     };
 
-    oDataSource.aTransactionItems = this.activityItems;
+    oDataSource.aTransactionItems = this.activityItems.filter((item:any) => !this.tillService.aDiscountTypes.includes(item.oType.eKind));
     oDataSource.sActivityNumber = this.activity.sNumber;
     oDataSource.aTransactionItems.forEach((item: any) => {
+      // console.log({item})
       item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
-      item.sArticleGroupName = item.oArticleGroupMetaData.oName[this.selectedLanguage] || '';
+      item.sArticleGroupName = '';
+      const aLang = Object.keys(item?.oArticleGroupMetaData?.oName || {});
+      // console.log(aLang, 'selectedLanguage',this.selectedLanguage)
+      if (aLang?.length && aLang.includes(this.selectedLanguage)) item.sArticleGroupName = item.oArticleGroupMetaData?.oName[this.selectedLanguage];
 
-      const vat = parseFloat(item.nVatRate) * parseFloat(item.nPaidAmount) / (100 + parseFloat(item.nVatRate));
-      item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
-      // item.vat = ((parseFloat(item.nPaidAmount) / 100) * parseFloat(item.nVatRate)).toFixed(2);
-
+      item.vat = 0;
+      if (item.nVatRate) {
+        const vat = parseFloat(item.nVatRate) * parseFloat(item.nPaidAmount) / (100 + parseFloat(item.nVatRate));
+        item.vat = parseFloat(vat.toFixed(2));
+      }
       item.sActivityItemNumber = item.sNumber;
       item.nSavingsPoints = this.getSavingPoint(item);
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-      item.nDiscountPrice = item.nDiscount > 0 ?
+      item.nDiscountToShow = item.nDiscount > 0 ?
         (item.bDiscountOnPercentage ?
           (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
           : item.nDiscount)
         : 0
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountPrice));
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
       oDataSource.totalVat += parseFloat(item.vat);
-      oDataSource.totalDiscount += item.nDiscountPrice;
+      oDataSource.totalDiscount += item.nDiscountToShow;
       oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
       oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
       oDataSource.total += item.nPaidAmount;
-      oDataSource.totalAfterDisc += item.nTotalAmount;
+      oDataSource.totalAfterDisc += item.nPriceIncVatAfterDiscount;
     });
+    oDataSource.totalVat = +(oDataSource.totalVat.toFixed(2))
     const oSettings = this.printSettings?.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf')
     // console.log(363, {oDataSource})
     oDataSource?.aPayments?.forEach((oPayment:any)=>{
