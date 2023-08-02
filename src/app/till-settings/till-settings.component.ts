@@ -32,9 +32,22 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   iLocationId: any = localStorage.getItem('currentLocation');
   
   settings: any = {
+    sDayClosurePeriod:  'day',
+    sDayClosureMethod: 'workstation',
+    bShowOrder: true,
+    bShowGoldPurchase:  true,
+    bShowOpenDrawer: true,
+    aBagNumbers: [],
+    aCashRegisterPrefill: [],
+    iDefaultArticleGroupForOrder: null,
+    iDefaultArticleGroupForRepair: null ,
+    bLockCashRegisterAfterTransaction:  true,
+    bEnableCashRegisterForGeneral:  true,
+    bShowForm:  true,
     nLastReceiptNumber: 0,
     nLastInvoiceNumber: 0,
     nLastClientID:0,
+    bOpenCashDrawer:true,
     id: null
   };
   overviewColumns = [
@@ -97,11 +110,11 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.selectedLanguage = localStorage.getItem('language');
-    this.getPaymentMethods();
-    this.getBookkeepingSetting();
     this.getSettings();
     this.fetchQuickButtons();
     this.getArticleGroups();
+    this.getPaymentMethods();
+    this.getBookkeepingSetting();
   }
 
   getArticleGroups() {
@@ -153,48 +166,53 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         }
       )
   }
+  getCustomerSettings() {
+    this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((customersettingresult: any) => {
+      this.settings.nLastClientID = customersettingresult?.nLastClientID;
+      this.oldNlastnClientID = customersettingresult?.nLastClientID;
+      this.settings.aCustomerSearch = customersettingresult?.aCustomerSearch;
+      this.settings.sMessage = customersettingresult?.sMessage;
+    }, (error) => {
+      console.log(error);
+    });
+  }
 
   getSettings() {
-      this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
-      this.settings = result;
-      this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
-        this.settings.nLastClientID = result?.nLastClientID;
-        this.oldNlastnClientID = result?.nLastClientID;
-        this.settings.aCustomerSearch = result?.aCustomerSearch;
-        this.settings.sMessage = result?.sMessage;
-      }, (error) => {
-        console.log(error);
-      });
-      const oBagNumberSettings = {
-        iLocationId: this.iLocationId,
-        bAutoIncrementBagNumbers: true,
-        nLastBagNumber: 0,
-        sPrefix:""
-      };
-      
-      const oPrefillSettings = {
-        iLocationId: this.iLocationId,
-        bArticleGroup: true,
-        bProductNumber: true,
-        bProductName: true,
-        bLabelDescription:true,
-        bDiamondDetails:true,
-      }
-      let oMergedSettings:any = {};
-      if (!this.settings?.aBagNumbers?.length) {
-        oMergedSettings = {...oBagNumberSettings};
-      } else {
-        oMergedSettings = {...(this.settings.aBagNumbers.find((el:any) => el.iLocationId === this.iLocationId) || oBagNumberSettings) };
-      }
-      
-      if (!this.settings?.aCashRegisterPrefill?.length) {
-        oMergedSettings = { ...oMergedSettings, ...oPrefillSettings };
-        this.settings.aCashRegisterPrefill = [{...oPrefillSettings}];
-      } else {
-        oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
-      }
+    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      if (result) {
+        this.settings = result;
+        const oBagNumberSettings = {
+          iLocationId: this.iLocationId,
+          bAutoIncrementBagNumbers: true,
+          nLastBagNumber: 0,
+          sPrefix: ""
+        };
 
-      this.settings.currentLocation = oMergedSettings;
+        const oPrefillSettings = {
+          iLocationId: this.iLocationId,
+          bArticleGroup: true,
+          bProductNumber: true,
+          bProductName: true,
+          bLabelDescription: true,
+          bDiamondDetails: true,
+        }
+        let oMergedSettings: any = {};
+        if (!this.settings?.aBagNumbers?.length) {
+          oMergedSettings = { ...oBagNumberSettings };
+        } else {
+          oMergedSettings = { ...(this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oBagNumberSettings) };
+        }
+
+        if (!this.settings?.aCashRegisterPrefill?.length) {
+          oMergedSettings = { ...oMergedSettings, ...oPrefillSettings };
+          this.settings.aCashRegisterPrefill = [{ ...oPrefillSettings }];
+        } else {
+          oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
+        }
+
+        this.settings.currentLocation = oMergedSettings;
+      }
+      this.getCustomerSettings();
     }, (error) => {
       console.log(error);
     })
@@ -355,7 +373,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       })
   }
 
-  updateSettings() {
+  nupdateSettings() {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     }else{
@@ -363,8 +381,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         {
           iLocationId: this.iLocationId,
           bAutoIncrementBagNumbers: true,
-          nLastBagNumber: this.settings.currentLocation.nLastBagNumber,
-          sPrefix: this.settings.currentLocation.sPrefix
+          nLastBagNumber: this.settings?.currentLocation?.nLastBagNumber,
+          sPrefix: this.settings?.currentLocation?.sPrefix
         }
       ]
     }
@@ -378,25 +396,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         bDiamondDetails: this.settings.currentLocation.bDiamondDetails,
       } 
       this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];
-      // console.log(this.settings.aCashRegisterPrefill);
     }
 
     const body = {
-      nLastInvoiceNumber: this.settings?.nLastInvoiceNumber,
-      nLastReceiptNumber: this.settings?.nLastReceiptNumber,
-      sDayClosurePeriod: this.settings?.sDayClosurePeriod,
-      sDayClosureMethod: this.settings?.sDayClosureMethod,
-      bOpenCashDrawer: this.settings?.bOpenCashDrawer,
-      bShowOrder: this.settings?.bShowOrder,
-      bShowGoldPurchase: this.settings?.bShowGoldPurchase,
-      bShowOpenDrawer: this.settings?.bShowOpenDrawer,
-      aBagNumbers: this.settings?.aBagNumbers,
-      aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
-      iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder,
-      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair,
+      nLastInvoiceNumber: this.settings?.nLastInvoiceNumber || 0,
+      nLastReceiptNumber: this.settings?.nLastReceiptNumber || 0 ,
+      sDayClosurePeriod: this.settings?.sDayClosurePeriod || 'day',
+      sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
+      bOpenCashDrawer: this.settings?.bOpenCashDrawer || true,
+      bShowOrder: this.settings?.bShowOrder || true,
+      bShowGoldPurchase: this.settings?.bShowGoldPurchase || true,
+      bShowOpenDrawer: this.settings?.bShowOpenDrawer || true,
+      aBagNumbers: this.settings?.aBagNumbers || [],
+      aCashRegisterPrefill: this.settings?.aCashRegisterPrefill || [],
+      iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder || null,
+      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair || null ,
       bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
       bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
-      bShowForm: this.settings?.bShowForm || false
+      bShowForm: this.settings?.bShowForm || true
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
@@ -478,7 +495,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   editQuickButton(button:any) {
-    // console.log(button)
     this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'edit', button:button}, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
       if (result.action)
         this.fetchQuickButtons();

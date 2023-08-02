@@ -1548,7 +1548,6 @@
                             </div>
                         </div>
                         <div class="card-body">
-
                             <div class="earnings-section">
                                 <div>
                                     <label>{{ "CASH_LEFTOVER" | translate}}</label>
@@ -1610,6 +1609,19 @@
                                 </div>
 
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-start" *ngIf="bDayStateClosed">
+                            <button type="button" class="btn btn-secondary" data-kt-roles-modal-action="submit"
+                                [disabled]="bStatisticLoading || bReCalculateLoading" (click)="reCalculateDayClosure()">
+                                <span class="indicator-label">{{ "RE_CALCULATE_DAY_CLOSURE" | translate}}</span>
+                            </button>
+                            <div *ngIf="bReCalculateLoading" class="spinner-border mx-5"></div>
                         </div>
                     </div>
                 </div>

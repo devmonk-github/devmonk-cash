@@ -349,7 +349,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   openProductInfo(product: any) {
-    product.isFrom = 'transaction'
+    product.isFrom = 'transaction';
+    product.bCanRightSliderTurnOnRetailer = this.businessDetails?.bCanRightSliderTurnOn;
     this.dialogRef.triggerEvent.emit({ type: 'open-slider', data: product });
   }
 

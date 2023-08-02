@@ -47,7 +47,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   aDayClosure: any = [];
   oStockPerLocation: any = [];
   isShowStockLocation: boolean = false;
-
   object = Object
   
   closingDayState: boolean = false;
@@ -117,6 +116,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   aBusinessPartners: any;
   aSelectedBusinessPartnerId: any;
   aArticleGroupDetails: any;
+  bReCalculateLoading: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -1638,6 +1638,24 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           closeOnBackdropClick: false,
           closeOnEsc: false
         }).instance;
+  }
+
+  reCalculateDayClosure() {
+    console.log('reCalculateDayClosure called');
+    this.bReCalculateLoading = true;
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
+      iStatisticId: this.iStatisticId
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/re-calculate`, oBody).subscribe((result: any) => {
+      this.bReCalculateLoading = false;
+    }, (error: any) => {
+      this.bReCalculateLoading = false;
+      console.log('error here: ', error);
+      this.toastService.show({ type: 'warning', text: `Something went wrong` });
+    })
   }
 
   ngOnDestroy(): void {
