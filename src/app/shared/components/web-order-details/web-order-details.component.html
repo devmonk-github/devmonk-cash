@@ -62,7 +62,7 @@
                         <ng-select name="status" id="status" [(ngModel)]="activity.eActivityItemStatus"
                             placeholder="{{'ORDER_STATUS' | translate}}"
                             (ngModelChange)="changeStatusForAll(activity.eActivityItemStatus)">
-                            <ng-option *ngFor="let status of statuses" [value]="status.value">{{status.key | translate}}
+                            <ng-option *ngFor="let status of statuses" [disabled]="status.disabled" [value]="status.value">{{status.key | translate}} {{status.text | translate}}
                             </ng-option>
                         </ng-select>
                     </div>
@@ -125,6 +125,14 @@
                         class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
                         <label class="mx-auto"> {{"DELIVER" | translate}}</label>
                     </button>
+                </div>
+
+                <div *ngIf="loading">
+                    <div>
+                        <div class="spinner-box" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
+                            <div class="three-quarter-spinner"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -380,7 +388,7 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end align-items-center">
-        <div *ngIf="bIsSaving" class="me-2 spinner-border mx-auto"></div>
-        <button class="btn btn-primary" (click)="submit($event)">{{"SUBMIT" | translate}}</button>
+        <!-- <div *ngIf="bIsSaving" class="me-2 spinner-border mx-auto"></div>
+        <button class="btn btn-primary" (click)="submit($event)">{{"SUBMIT" | translate}}</button> -->
     </div>
 </div>
