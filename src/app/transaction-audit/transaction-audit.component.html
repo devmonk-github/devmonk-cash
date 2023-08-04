@@ -65,6 +65,10 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
                                                 translate}}</label>
+                                            <div class="w-100" *ngIf="!aDayClosure?.length">
+                                                    <div class="spinner-border mx-auto"></div>
+                                            </div>
+                                            <div class="w-100" *ngIf="aDayClosure?.length">
                                             <ng-select class="form-control form-control-solid p-0"
                                                 [(ngModel)]="statisticFilter.dToState" [clearable]="false"
                                                 (change)="onStateChange($event, false)">
@@ -76,6 +80,7 @@
                                                         {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
                                             </ng-select>
+                                            </div>
                                         </div>
 
                                     </div>
