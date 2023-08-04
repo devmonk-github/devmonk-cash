@@ -506,6 +506,7 @@ export class CustomersComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
+    console.log("gggggggggggggg");
       this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', from: 'customer' } }).instance.close.subscribe(
       result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
