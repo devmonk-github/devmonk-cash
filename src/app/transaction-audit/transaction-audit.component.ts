@@ -1645,12 +1645,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.bReCalculateLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
-      iLocationId: this.iLocationId,
-      iWorkstationId: this.iWorkstationId,
+      // iLocationId: this.iLocationId,
+      // iWorkstationId: this.iWorkstationId,
       iStatisticId: this.iStatisticId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/re-calculate`, oBody).subscribe((result: any) => {
       this.bReCalculateLoading = false;
+      this.toastService.show({ type: 'success', text: `Day-closure re-calculated successfully` });
     }, (error: any) => {
       this.bReCalculateLoading = false;
       console.log('error here: ', error);

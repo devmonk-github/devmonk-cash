@@ -160,7 +160,4 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     if (this.workstationListSubscription) this.workstationListSubscription.unsubscribe();
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
-
-  // viewStatistics(oDayClosure: any) {
-  // }
 }
