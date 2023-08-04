@@ -79,8 +79,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   // Advance search fields 
   
   filterDates: any = {
-    endDate: '',//new Date(new Date().setHours(23, 59, 59)),
-    startDate: '',//new Date((new Date()).setDate(new Date().getDate() - 7))
+    startDate: '',//new Date((new Date()).setDate(new Date().getDate() - 7)),
+    endDate: ''//new Date(new Date().setHours(23, 59, 59)),
   }
 
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
