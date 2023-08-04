@@ -661,6 +661,12 @@ export class ReceiptService {
                     } else {
                         return dataSource[condition.field1] === dataSource[condition.field2];
                     }
+                case '==':
+                    if (condition?.value) {
+                        return dataSource[condition.field] == condition.value;
+                    } else {
+                        return dataSource[condition.field1] == dataSource[condition.field2];
+                    }
                 default:
                     return false;
             }
@@ -670,11 +676,13 @@ export class ReceiptService {
     addRow(dataRow: any, row: any, dataSource: any, tableWidths: any) {
         // console.log({dataRow, row, dataSource})
         if (row?.html || row?.conditionalHtml) {
+            // console.log('row?.conditionalHtml', {dataRow, row, dataSource})
             let html = row.html;
             let bCheck;
             if (row?.conditionalHtml) {
                 bCheck = this.checkCondition(row.conditions, dataSource);
                 html = (bCheck) ? row.htmlIf : row.htmlElse
+                // console.log('after check conditions', bCheck, html)
             }
 
             let text = this.pdfService.replaceVariables(html, dataSource) || html;

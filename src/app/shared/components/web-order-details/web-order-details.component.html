@@ -1,6 +1,6 @@
-<div class="card shadow-sm">
-    <div class="card-header" style="margin-top: 20px;">
-        <h4>{{ (from == 'web-orders' ? 'WEB_ORDER_DETAILS' : 'WEB_RESERVATION_DETAILS') | translate}}</h4>
+<div class="card">
+    <div class="card-header mt-5">
+        <div class="card-title">{{ (from == 'web-orders' ? 'WEB_ORDER_DETAILS' : 'WEB_RESERVATION_DETAILS') | translate}}</div>
         <div>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times fabutton"></i>
@@ -146,45 +146,41 @@
                 <div class="flex-equal me-5">
                     <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
                         <thead>
-                            <tr class="fw-bold fs-6 text-gray-400">
-                                <td class="text-muted">{{'IMAGE' | translate}}</td>
-                                <td class="text-muted">{{'PRODUCT' | translate}}</td>
-                                <td class="text-muted">{{'STATUS' | translate}}</td>
-                                <td class="text-muted">{{'CUSTOMER' | translate}}</td>
-                                <td class="text-muted">{{'PRICE' | translate}}</td>
-                                <td class="text-muted">{{'QUANTITY' | translate}}</td>
-                                <td class="text-muted">{{'DATE' | translate}}</td>
-                                <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
-                                <td class="text-muted">{{'TAX' | translate}}</td>
-                                <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
-                                <!-- date -->
+                            <tr class="fw-bold fs-6 text-gray-400 text-muted">
+                                <td>{{'IMAGE' | translate}}</td>
+                                <td>{{'PRODUCT' | translate}}</td>
+                                <td>{{'STATUS' | translate}}</td>
+                                <td>{{'PRICE' | translate}}</td>
+                                <td>{{'QUANTITY' | translate}}</td>
+                                <!-- <td>{{'DATE' | translate}}</td> -->
+                                <td>{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                <td>{{'GIFTCARD_DISCOUNT' | translate}}</td>
+                                <td>{{'COUPON_DISCOUNT' | translate}}</td>
+                                <td>{{'TAX' | translate}}</td>
+                                <td>{{'PAID_AMOUNT' | translate}}</td>
                             </tr>
                         </thead>
                         <tbody>
                             <ng-container *ngFor="let item of activityItems; let i = index">
                                 <tr>
                                     <td>
-                                        <img src="{{ item?.aImage?.length > 0 ? item.aImage[0] : imagePlaceHolder}}"
+                                        <img src="{{ item?.aImage?.length && item.bRegular ? item.aImage[0] : imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
                                     <td>
-                                        <div>
-                                            {{item?.receipts[0]?.sProductNumber || getName(item)}}<br />
-                                            <span *ngIf="item.oType.eKind == 'regular' ">{{ item.sArticleNumber }}</span><br />
-                                            <span class="badge badge-info" style="text-transform: capitalize;">{{item.oType.eKind}}</span>
-                                        </div>
+                                        <span class="badge badge-info">{{item.eKindName | translate }}</span><br />
+                                        <span> {{ (item?.sProductName || '') + ' ' + (item?.receipts[0]?.sProductNumber || '')  }}</span><br />
+                                        <!-- <span>{{ item.sArticleGroupName }}<br></span> -->
+                                        <span *ngIf="item.bRegular">{{ item.sArticleNumber }}</span>
                                         <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
                                             <div *ngFor="let variant of item?.aProductVariant" class="d-flex">
-                                                <div class="w-25">
-                                                    {{ variant.sVariantBase }}
-                                                </div> :
+                                                <div class="w-25">{{ variant.sVariantBase }}</div> :
                                                 <div class="w-50 px-2">
-                                                    <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}
+                                                    <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}</span>
+                                                    <span *ngIf="variant.sVariantBase === 'color'" [style.background]="variant.value"
+                                                        class="px-2 border border-gray-600">
                                                     </span>
-                                                    <span *ngIf="variant.sVariantBase === 'color'"
-                                                        [style.background]="variant.value"
-                                                        class="px-2 border border-gray-600"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -197,26 +193,23 @@
                                             </option>
                                         </select>
                                         <input
-                                            *ngIf="item.eActivityItemStatus == 'refundInCashRegister' || item.eActivityItemStatus == 'refund'"
+                                            *ngIf="['refundInCashRegister', 'refund'].includes(item.eActivityItemStatus)"
                                             type="text" [disabled]="true" [(ngModel)]="item.eActivityItemStatus"
                                             class="form-control">
                                     </td>
                                     <td *ngIf="item?.bRefund"></td>
-                                    <td>{{item?.customer?.sFirstName}} {{item?.customer?.sLastName}}</td>
-                                    <td>{{item?.nPriceIncVat}}</td>
+                                    <td>{{item?.nPriceIncVat | currency: tillService.currency}}</td>
                                     <td>
                                         <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                             {{item?.nQuantity}}
                                         </div>
                                         <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
-                                            *ngIf="showDetails && userDetail && item?.iBusinessProductId">
+                                            *ngIf="showDetails && userDetail && item?.iBusinessProductId && item.bRegular">
                                             <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700"
                                                 data-kt-menu-trigger="hover" data-kt-menu-attach="parent"
                                                 data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">
-                                                <label class="fs-5 form-label fw-bolder text-dark">{{"LOCATION" |
-                                                    translate}} : </label>
-                                                <span *ngIf="item?.receipts[0]">( {{item?.receipts[0]?.locationName ||
-                                                    'Unknown'}} )</span>
+                                                <label class="fs-5 form-label fw-bolder text-dark">{{"LOCATION" |translate}} : </label>
+                                                <span *ngIf="item?.receipts[0]">( {{item?.receipts[0]?.locationName || 'Unknown'}} )</span>
                                             </div>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px"
                                                 data-kt-menu="true">
@@ -237,11 +230,19 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{item.dCreatedDate | date: 'short'}}</td>
-                                    <td>{{item?.nDiscount || 0}} {{ item?.bDiscountOnPercentage ? '%' : ''}}</td>
-                                    <td>{{item?.nVatRate || 0}}</td>
+                                    <!-- <td>{{item.dCreatedDate | date: 'short'}}</td> -->
                                     <td>
-                                        <div>{{item?.nPaymentAmount || 0}}</div>
+                                        <div *ngIf="item.bRegular">
+                                            <span *ngIf="!item?.bDiscountOnPercentage">{{ item.nDiscountToShow | currency: tillService.currency}}</span>
+                                            <span *ngIf="item?.bDiscountOnPercentage">{{ item.nDiscount }}% ({{item.nDiscountToShow | currency:tillService.currency}})</span>
+                                        </div>
+                                        <div *ngIf="!item.bRegular" class="text-center">-</div>
+                                    </td>
+                                    <td>{{item?.nRedeemedGiftcardAmount | currency: tillService.currency }}</td>
+                                    <td>{{item?.nCouponDiscount | currency: tillService.currency }}</td>
+                                    <td>{{item?.nVatRate || 0}}% ({{item.vat || 0 | currency: tillService.currency }})</td>
+                                    <td>
+                                        <div>{{(item?.nPaymentAmount || 0) | currency: tillService.currency}}</div>
                                         <div *ngIf="item.receipts.length > 1"
                                             class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200 text-muted">
                                             <button class="btn btn-primary-sm" (click)="item.showMore = !item.showMore">
@@ -322,10 +323,8 @@
                                                                     data-kt-menu-placement="bottom-start"
                                                                     data-kt-menu-flip="bottom">
                                                                     <label
-                                                                        class="fs-5 form-label fw-bolder text-dark">{{"LOCATION"
-                                                                        | translate}} : </label>
-                                                                    <span *ngIf="receipt">( {{receipt?.locationName ||
-                                                                        'Unknown'}} )</span>
+                                                                        class="fs-5 form-label fw-bolder text-dark">{{"LOCATION"| translate}} : </label>
+                                                                    <span *ngIf="receipt">( {{receipt?.locationName || 'Unknown'}} )</span>
                                                                 </div>
                                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px"
                                                                     data-kt-menu="true">
@@ -362,33 +361,30 @@
                                         </table>
                                     </td>
                                 </tr>
-                                <tr *ngIf='i == (activityItems.length - 1)'>
-                                    <td>{{'TOTAL' | translate}}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{quantity}}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{totalPrice}}</td>
-                                </tr>
                             </ng-container>
+                            <tr>
+                                <td>{{'TOTAL' | translate}}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>{{quantity}}</td>
+                                <td>{{ nTotalDiscount | currency: tillService.currency }}</td>
+                                <td>{{ nTotalGiftcardDiscount | currency: tillService.currency }}</td>
+                                <td>{{ nTotalCouponDiscount | currency: tillService.currency }}</td>
+                                <td>{{ nTotalVat | currency: tillService.currency}}</td>
+                                <td>{{ nTotalPaidAmount | currency: tillService.currency}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="d-flex">
-                <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate
-                    }}
-                </h5>
-                <div *ngIf="loading" class="spinner-border mx-auto"></div>
+                <h5 *ngIf='!activityItems?.length && !loading' class="text-center">{{'NO_DATA_FOUND' | translate }}</h5>
             </div>
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-end align-items-center">
+    <!-- <div class="card-footer d-flex justify-content-end align-items-center"> -->
         <!-- <div *ngIf="bIsSaving" class="me-2 spinner-border mx-auto"></div>
         <button class="btn btn-primary" (click)="submit($event)">{{"SUBMIT" | translate}}</button> -->
-    </div>
+    <!-- </div> -->
 </div>
