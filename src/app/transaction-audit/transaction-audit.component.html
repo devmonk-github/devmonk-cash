@@ -176,6 +176,9 @@
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' |
                                         translate}}</label>
+                                    <div class="w-100" *ngIf="!aLocation?.length">
+                                            <div class="spinner-border mx-auto"></div>
+                                    </div>
                                     <div class="w-100" *ngIf="aLocation?.length">
                                         <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="aSelectedLocation" (change)="onChangeDropdown()"
                                             [clearable]="false">
@@ -183,6 +186,7 @@
                                         </ng-select>
                                     </div>
                                 </div>
+                                
                             </div>
 
                             <div class="row mb-5">
@@ -216,8 +220,6 @@
                                             </ng-option>
                                         </ng-select>
                                 </div>
-                                    
-                                
                             </div>
 
                             <div class="row mb-5">
