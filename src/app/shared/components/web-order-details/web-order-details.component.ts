@@ -21,13 +21,13 @@ export class WebOrderDetailsComponent implements OnInit {
   activityItems: Array<any> = [];
   business: any;
   statuses = [
-    { key: 'NEW', value: 'new' },
-    { key: 'PROCESSING', value: 'processing' },
-    { key: 'CANCELLED', value: 'cancelled' },
-    { key: 'COMPLETED', value: 'completed' },
-    { key: 'REFUND', value: 'refund' },
-    { key: 'REFUND_IN_CASH_REGISTER', value: 'refundInCashRegister' },
-    { key: 'PAY_IN_CASH_REGISTER', value: 'payInCashRegister' }
+    { key: 'NEW', value: 'new' ,disabled: false,text:""},
+    { key: 'PROCESSING', value: 'processing' ,disabled: false,text:""},
+    { key: 'CANCELLED', value: 'cancelled' ,disabled: false,text:""},
+    { key: 'COMPLETED', value: 'completed' ,disabled: false,text:""},
+    { key: 'REFUND', value: 'refund' ,disabled: true,text:" (REFUND_NOT_POSSIBLE_YET_USE_REFUND_IN_STORE_INSTEAD)"},
+    { key: 'REFUND_IN_CASH_REGISTER', value: 'refundInCashRegister',disabled: false ,text:""},
+    { key: 'PAY_IN_CASH_REGISTER', value: 'payInCashRegister',disabled: false,text:"" }
   ]
 
   // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
@@ -82,8 +82,9 @@ export class WebOrderDetailsComponent implements OnInit {
       'iActivityItemId']
   };
   selectedLanguage: string;
-  bIsSaving: boolean = false;
+  //bIsSaving: boolean = false;
   iWorkstationId: any = localStorage.getItem("currentWorkstation");
+  translate: any = [];
 
 
   constructor(
@@ -94,6 +95,7 @@ export class WebOrderDetailsComponent implements OnInit {
     private translateService: TranslateService,
     private toastService: ToastService,
     public tillService: TillService,
+    private translationService: TranslateService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -101,6 +103,10 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    const translate = ['UPDATED_SUCCESSFULLY', 'SET_TRACKING_NUMBER_AND_CARRIER','MAIL_SEND_TO_CUSTOMER','SOMETHING_WENT_WRONG']
+    this.translationService.get(translate).subscribe((res) => {
+      this.translate = res;
+    })
     // this.activity = this.dialogRef.context.activity;
     this.selectedLanguage = localStorage.getItem('language')?.toString() || navigator.language.substring(0, 2);
     if (this.from == 'web-orders' || this.from == 'web-reservations') {
@@ -126,7 +132,7 @@ export class WebOrderDetailsComponent implements OnInit {
     }
     if (type == 'sentToCustomer') {
       if (!this.activity.sTrackingNumber || this.activity.sTrackingNumber == '' || !this.activity.eCarrier || this.activity.eCarrier == '') {
-        this.toastService.show({ type: 'warning', text: 'Set tracking number and carrier.' });
+        this.toastService.show({ type: 'warning', text: this.translate['SET_TRACKING_NUMBER_AND_CARRIER'] });
         return;
       }
       this.generatePDF(false, 'sentToCustomer');
@@ -530,19 +536,31 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   updateActivityItem(item: any) {
+    this.loading = true;
     item.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId, item)
       .subscribe((result: any) => {
+        this.loading = false;
+        this.toastService.show({ type: 'success', text: this.translate['UPDATED_SUCCESSFULLY'] });
       },
         (error) => {
+          this.loading = false;
+          this.toastService.show({ type: 'warning', text: this.translate['SOMETHING_WENT_WRONG'] });
         })
   }
 
   updateActivity() {
+    this.loading = true;
     this.apiService.putNew('cashregistry', '/api/v1/activities/' + this.activity?._id, this.activity)
       .subscribe(
-        (result: any) => { },
-        (error) => { }
+        (result: any) => {
+          this.loading = false;
+          this.toastService.show({ type: 'success', text: this.translate['UPDATED_SUCCESSFULLY'] });
+        },
+        (error) => {
+          this.loading = false;
+          this.toastService.show({ type: 'warning', text: this.translate['SOMETHING_WENT_WRONG'] });
+        }
       )
   }
 
@@ -550,10 +568,10 @@ export class WebOrderDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit(event: any) {
-    event.target.disabled = true;
-    this.bIsSaving = true;
-  }
+  // submit(event: any) {
+  //   event.target.disabled = true;
+  //   this.bIsSaving = true;
+  // }
 
   getPdfPrintSetting() {
     const oBody = {
@@ -621,7 +639,7 @@ export class WebOrderDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
       (result: any) => {
         if (result) {
-          this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+          this.toastService.show({ type: 'success', text: this.translate['MAIL_SEND_TO_CUSTOMER'] });
         }
       }, (error: any) => {
 
