@@ -698,10 +698,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
-      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oFilter: {
+        sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
         aLocationId: aLocation,
-        // iWorkstationId: iWorkstationId,
+        iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.statisticFilter.dFromState,
@@ -1499,7 +1499,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchStatistics();
   }
 
-  onChangeLocation() {
+  onChangeDropdown() {
     this.statisticFilter.dFromState = '';
     this.statisticFilter.dToState = '';
     this.aDayClosure = [];

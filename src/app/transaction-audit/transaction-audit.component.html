@@ -176,13 +176,17 @@
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' |
                                         translate}}</label>
+                                    <div class="w-100" *ngIf="!aLocation?.length">
+                                            <div class="spinner-border mx-auto"></div>
+                                    </div>
                                     <div class="w-100" *ngIf="aLocation?.length">
-                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="aSelectedLocation" (change)="onChangeLocation()"
+                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="aSelectedLocation" (change)="onChangeDropdown()"
                                             [clearable]="false">
                                             <ng-option *ngFor="let location of aLocation" [value]="location._id">{{location.sName}}</ng-option>
                                         </ng-select>
                                     </div>
                                 </div>
+                                
                             </div>
 
                             <div class="row mb-5">
@@ -209,15 +213,13 @@
                                 <div class="col-3"
                                     *ngIf="sDayClosureMethod === 'workstation' || IsDynamicState">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
-                                        translate}}</label>
-                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="selectedWorkStation" (change)="fetchAuditStatistic()"
+                                        translate}} </label>
+                                        <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="selectedWorkStation" (change)="onChangeDropdown()"
                                             [clearable]="false">
                                             <ng-option *ngFor="let workstation of aWorkStation" [value]="workstation._id">{{workstation.sName}}
                                             </ng-option>
                                         </ng-select>
                                 </div>
-                                    
-                                
                             </div>
 
                             <div class="row mb-5">
