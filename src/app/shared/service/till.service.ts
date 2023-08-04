@@ -563,14 +563,7 @@ export class TillService {
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
 
-    dataObject.businessDetails.sMobile = dataObject.businessDetails?.oPhone?.sMobile || '';
-    dataObject.businessDetails.sLandLine = dataObject.businessDetails?.oPhone?.sLandLine;
-    dataObject.businessDetails.sAddressline1 = (dataObject.businessDetails?.currentLocation?.oAddress?.street + " " +
-      dataObject.businessDetails?.currentLocation?.oAddress?.houseNumber + " " +
-      dataObject.businessDetails?.currentLocation?.oAddress?.houseNumberSuffix + " ,  " +
-      dataObject.businessDetails?.currentLocation?.oAddress?.postalCode + " " +
-      dataObject.businessDetails?.currentLocation?.oAddress?.city) || '';
-    dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
+    this.processBusinessDetails(dataObject.businessDetails, 'pdf');
 
     if (dataObject?.oFiskalyData?.sQRCodeData) dataObject.sQRCodeData = (dataObject?.oFiskalyData?.sQRCodeData);
 
@@ -619,12 +612,7 @@ export class TillService {
       item.nRedeemedPointsPerQty = +((item?.nRedeemedLoyaltyPoints / item.nQuantity).toFixed(2));
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
 
-      let disc = +(item?.nDiscount) || 0;
-      // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
-      if (item.bDiscountOnPercentage) {
-        disc = this.getPercentOf(item.nPriceIncVat, disc)
-        item.nDiscountToShow = +(disc.toFixed(2));
-      } else { item.nDiscountToShow = +(disc.toFixed(2)); }
+      this.calculateDiscount(item);
 
       if(bTesting) console.log({
         nDiscountToShow: item.nDiscountToShow,
@@ -634,7 +622,7 @@ export class TillService {
         nGiftcardDiscount: item.nGiftcardDiscount});
 
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
-      item.nTotalDiscountPerItem = (item.bDiscountOnPercentage) ? this.getPercentOf(item.nTotalPriceIncVat, item.nDiscount) : (item.nDiscount || 0) * item.nQuantity;
+      item.nTotalDiscountPerItem = item.nDiscountToShow * item.nQuantity;
 
       item.nPriceIncVatAfterDiscount = +(((item.nTotalPriceIncVat - item.nTotalDiscountPerItem) / item.nQuantity)) - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
@@ -649,14 +637,13 @@ export class TillService {
       if (bTesting) console.log(648, { nRevenueAmount: item.nRevenueAmount, nTotalDiscountPerItem: item.nTotalDiscountPerItem });
 
       item.totalPaymentAmount = +(((item.nRevenueAmount * item.nQuantity) - item.nTotalDiscountPerItem - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0)).toFixed(2));
+      total += item.totalPaymentAmount;
 
       if (bTesting) console.log('item.totalPaymentAmount', item.totalPaymentAmount)
-      // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
-      item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
-      totalVat += (vat * item.nQuantity);
-      total += item.totalPaymentAmount;// + (item?.nRedeemedLoyaltyPoints || 0) +(item?.nGiftcardDiscount || 0);
+      
+      this.calculateVat(item);
+      totalVat += (item.vat * item.nQuantity);
 
       if (item.oType.bRefund) {
         totalAfterDisc += item.totalPaymentAmount;
@@ -810,8 +797,18 @@ export class TillService {
     return transaction;
   }
 
+  calculateDiscount(item: any){    
+    item.nDiscountToShow = +((item?.nDiscount || 0).toFixed(2));
+    if (item?.nDiscount && item.bDiscountOnPercentage) {
+      item.nDiscountToShow = +(this.getPercentOf(item.nPriceIncVat, item.nDiscount).toFixed(2));
+    }
+  }
+  calculateVat(item:any) {
+    const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
+    item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
+  }
+
   processCustomerDetails(customer:any) {
-    // console.log('processCustomerDetails',customer);
     return {
       ...customer,
       ...customer?.oPhone,
@@ -961,10 +958,20 @@ export class TillService {
     return oDS;
   }
 
-  processBusinessDetails(businessDetails:any) {
-    const oLocation = businessDetails.aLocation.find((l:any) => l._id === this.iLocationId);
-    businessDetails.sBusinessAddress = (oLocation.oAddress?.street || '') + ' ' + (oLocation.oAddress?.houseNumber || '') + ' ' +
-      (oLocation.oAddress?.postalCode || '') + ' ' + (oLocation.oAddress?.city || '');
+  processBusinessDetails(businessDetails: any, isFor: string = 'activity') {
+    if (isFor == 'activity') {
+      const oLocation = businessDetails.aLocation.find((l: any) => l._id === this.iLocationId);
+      businessDetails.sBusinessAddress = (oLocation.oAddress?.street || '') + ' ' + (oLocation.oAddress?.houseNumber || '') + ' ' +
+        (oLocation.oAddress?.postalCode || '') + ' ' + (oLocation.oAddress?.city || '');
+    } else if (isFor == 'pdf') {
+      businessDetails = {
+        ...businessDetails,
+        ...businessDetails?.oPhone
+      }
+      const oAddress = businessDetails?.currentLocation?.oAddress;
+      businessDetails.sAddressline1 = (`${oAddress?.street || ''} ${oAddress?.houseNumber || ''} ${oAddress?.houseNumberSuffix || ''} ${oAddress?.postalCode || ''} ${oAddress?.city || ''}`).trim();
+      businessDetails.sAddressline2 = oAddress?.country || '';
+    }
     return businessDetails;
   }
 

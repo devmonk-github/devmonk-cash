@@ -215,32 +215,28 @@ export class PdfService {
   }
 
   private convertStringToMoney(val: any): any {
-    if (val % 1 === 0) {
-      // console.log('convertStringToMoney if')
-      //no decimals
-      return (val) ? String(val + this.oSeparator[this.separator] + '00') : '0' + this.oSeparator[this.separator] + '00';
-    } else {
-      // console.log('convertStringToMoney else')
-      val = String(val);
-      // console.log(230, {val})
-      let parts = val.split('.');
-      // console.log(232, {parts})
-
-      if (parts[1].length === 1) {
-        // console.log(235)
-        val = val + '0';
-        // console.log(237, {val})
+    const sCurrency = this.oCurrencies[this.currency];
+    const sSeparator = this.oSeparator[this.separator];
+    if (val % 1 === 0) { //no decimals
+      if (val) {
+        val = (val >= 0) ?
+          sCurrency + val :
+          '-' + sCurrency + Math.abs(val);
+        val = String(val + sSeparator + '00');
+      } else {
+        val = sCurrency + '0' + sSeparator + '00';
       }
-      // console.log(239, 'val', val)
-      val = (val >= 0) ?
-        this.oCurrencies[this.currency] + val:
-        '-' + this.oCurrencies[this.currency] + Math.abs(val);
-
-      // console.log(243, 'val', val)
-      const n = val.replace('.', this.oSeparator[this.separator])
-      // console.log('final', n)
-      return n;
+    } else { // has decimals
+      val = String(val);
+      const parts = val.split('.');
+      if (parts[1].length === 1) val = val + '0';
+      if (val >= 0) {
+        val = sCurrency + val
+      } else {
+        val = '-' + sCurrency + Math.abs(val)
+      }
     }
+    return val.replace('.', sSeparator);
   }
 
   private convertValueToBarcode(val: string): any {

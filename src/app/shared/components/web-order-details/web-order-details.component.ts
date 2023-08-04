@@ -20,6 +20,12 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
+  
+  iBusinessId = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem("currentLocation");
+  webLocation: any = localStorage.getItem("webLocation") || this.iLocationId;
+  iWorkstationId: any = localStorage.getItem("currentWorkstation");
+
   statuses = [
     { key: 'NEW', value: 'new' ,disabled: false,text:""},
     { key: 'PROCESSING', value: 'processing' ,disabled: false,text:""},
@@ -44,15 +50,18 @@ export class WebOrderDetailsComponent implements OnInit {
   activity: any;
   transaction: any;
   loading: Boolean = false;
-  iBusinessId = localStorage.getItem('currentBusiness');
+  
   transactions: Array<any> = [];
-  totalPrice: number = 0;
+  nTotalPaidAmount: number = 0;
+  nTotalGiftcardDiscount: number = 0;
+  nTotalCouponDiscount:number = 0;
+  nTotalDiscount: number = 0;
+
   quantity: number = 0;
   userDetail: any;
   showDeliverBtn: Boolean = false;
   showDetails: Boolean = true;
   downloading: Boolean = false;
-  iLocationId: any = localStorage.getItem("currentLocation");
   businessDetails: any;
   computerId: number | undefined;
   printerId: number | undefined;
@@ -83,17 +92,18 @@ export class WebOrderDetailsComponent implements OnInit {
   };
   selectedLanguage: string;
   //bIsSaving: boolean = false;
-  iWorkstationId: any = localStorage.getItem("currentWorkstation");
+  oExtraServicesData: any;
+  nTotalVat: number = 0;
   translate: any = [];
-
-
-  constructor(
-    private viewContainerRef: ViewContainerRef,
-    private apiService: ApiService,
-    private receiptService: ReceiptService,
-    private dialogService: DialogService,
-    private translateService: TranslateService,
-    private toastService: ToastService,
+  
+    
+    constructor(
+      private viewContainerRef: ViewContainerRef,
+      private apiService: ApiService,
+      private receiptService: ReceiptService,
+      private dialogService: DialogService,
+      private translateService: TranslateService,
+      private toastService: ToastService,
     public tillService: TillService,
     private translationService: TranslateService
   ) {
@@ -246,25 +256,20 @@ export class WebOrderDetailsComponent implements OnInit {
       });
   }
 
-  getBusinessLocations() {
-    this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
-      .subscribe((result: any) => {
-        if (result.message == "success" && result?.data) {
-          this.userDetail = result.data;
-          if (this.userDetail.aBusiness) {
-            this.userDetail.aBusiness.map((business: any) => {
-              if (business._id == this.iBusinessId) {
-                this.business = business;
-
-                this.fetchTransactionItems();
-              }
-            })
-          }
-        }
-
-      }, (error) => {
-        console.log('error: ', error);
-      });
+  async getBusinessLocations() {
+    const [oLocationResult, oExtraServicesResult]: any = await Promise.all([
+      this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list').toPromise(),
+      this.apiService.getNew('cashregistry', `/api/v1/extra-services/${this.webLocation}?iBusinessId=${this.iBusinessId}`).toPromise()
+    ]);
+    this.oExtraServicesData = oExtraServicesResult.data;
+    if (oLocationResult?.data) {
+      this.userDetail = oLocationResult.data;
+      if (this.userDetail?.aBusiness?.length) {
+        // const oBusiness = this.userDetail.aBusiness.find((el: any) => el._id == this.iBusinessId);
+        // if (oBusiness) this.business = oBusiness;
+        this.fetchTransactionItems();
+      }
+    }
   }
 
   getTemplates(types: any) {
@@ -297,70 +302,44 @@ export class WebOrderDetailsComponent implements OnInit {
 
     const oDataSource = {
       ...JSON.parse(JSON.stringify(this.transaction)),
-      sAdvisedEmpFirstName: '',
-      totalVat: 0,
-      totalDiscount: 0,
-      totalRedeemedLoyaltyPoints: 0,
-      totalSavingPoints: 0,
-      total: 0,
-      totalAfterDisc: 0
+      nTotalVat: +(this.nTotalVat.toFixed(2)),
+      nTotalDiscount: +(this.nTotalDiscount.toFixed(2)),
+      nTotalRedeemedLoyaltyPoints: 0,
+      nTotalSavingPoints: 0,
+      nTotalPaidAmount: +(this.nTotalPaidAmount.toFixed(2)),
+      nTotalGiftcardDiscount: this.nTotalGiftcardDiscount,
+      nTotalCouponDiscount: this.nTotalCouponDiscount,
+
     };
 
-    // let printData;
-    // if (print) {
-    //   printData = {
-    //     computerId: this.computerId,
-    //     printerId: this.printerId,
-    //     title: oDataSource.sNumber,
-    //     quantity: 1
-    //   }
-    // }
+    oDataSource.businessDetails = this.tillService.processBusinessDetails(this.businessDetails, 'pdf');
+    oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    // {
+    //   sFirstName: this.customer?.sFirstName || '',
+    //   sLastName: this.customer?.sLastName || '',
+    //   sEmail: this.customer?.sEmail || '',
+    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
+    // };
 
-    oDataSource.businessDetails = this.businessDetails;
-    oDataSource.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
-    oDataSource.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + this.businessDetails.currentLocation.oAddress.houseNumber + " " + this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + this.businessDetails.currentLocation.oAddress.postalCode + " " + this.businessDetails.currentLocation.oAddress.city;
-    oDataSource.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
-
-    oDataSource.oCustomer = {
-      sFirstName: this.customer?.sFirstName || '',
-      sLastName: this.customer?.sLastName || '',
-      sEmail: this.customer?.sEmail || '',
-      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-      sLandLine: this.customer?.oPhone?.sLandLine || '',
-    };
-
-    oDataSource.aTransactionItems = this.activityItems.filter((item:any) => !this.tillService.aDiscountTypes.includes(item.oType.eKind));
+    oDataSource.aTransactionItems = this.activityItems;//.filter((item:any) => !this.tillService.aDiscountTypes.includes(item.oType.eKind));
     oDataSource.sActivityNumber = this.activity.sNumber;
     oDataSource.aTransactionItems.forEach((item: any) => {
       // console.log({item})
-      item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
-      item.sArticleGroupName = '';
-      const aLang = Object.keys(item?.oArticleGroupMetaData?.oName || {});
+      // item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
+      // item.sArticleGroupName = '';
+      // const aLang = Object.keys(item?.oArticleGroupMetaData?.oName || {});
       // console.log(aLang, 'selectedLanguage',this.selectedLanguage)
-      if (aLang?.length && aLang.includes(this.selectedLanguage)) item.sArticleGroupName = item.oArticleGroupMetaData?.oName[this.selectedLanguage];
-
-      item.vat = 0;
-      if (item.nVatRate) {
-        const vat = parseFloat(item.nVatRate) * parseFloat(item.nPaidAmount) / (100 + parseFloat(item.nVatRate));
-        item.vat = parseFloat(vat.toFixed(2));
-      }
+      // if (aLang?.length && aLang.includes(this.selectedLanguage)) item.sArticleGroupName = item.oArticleGroupMetaData?.oName[this.selectedLanguage];
+      
       item.sActivityItemNumber = item.sNumber;
-      item.nSavingsPoints = this.getSavingPoint(item);
-      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-      item.nDiscountToShow = item.nDiscount > 0 ?
-        (item.bDiscountOnPercentage ?
-          (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
-          : item.nDiscount)
-        : 0
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
-      oDataSource.totalVat += parseFloat(item.vat);
-      oDataSource.totalDiscount += item.nDiscountToShow;
-      oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
-      oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
-      oDataSource.total += item.nPaidAmount;
-      oDataSource.totalAfterDisc += item.nPriceIncVatAfterDiscount;
+      // item.nSavingsPoints = this.getSavingPoint(item);
+      // item.sOrderDescription = item.sProductName + '\n' + item?.sDescription || '';
+      
+      // oDataSource.totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
+      // oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
     });
-    oDataSource.totalVat = +(oDataSource.totalVat.toFixed(2))
+    // oDataSource.totalVat = +(oDataSource.totalVat.toFixed(2))
     const oSettings = this.printSettings?.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf')
     // console.log(363, {oDataSource})
     oDataSource?.aPayments?.forEach((oPayment:any)=>{
@@ -383,53 +362,102 @@ export class WebOrderDetailsComponent implements OnInit {
     }
   }
 
-  fetchTransactionItems() {
-    let url = `/api/v1/activities/items/${this.activity._id}`;
+  async fetchTransactionItems() {
     this.loading = true;
-    this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.activityItems = result.data[0].result.sort((item1: any, item2: any) => !item1?.iBusinessProductId ? -1 : (!item2?.iBusinessProductId ? -1 : (item2.iBusinessProductId - item1.iBusinessProductId)));
-      this.loading = false;
-      // console.log(this.activityItems);
-      let completed = 0, refunded = 0;
-      // this.transactions = [];
-      for (let i = 0; i < this.activityItems.length; i++) {
-        // for(const item of obj.receipts){
-        const obj = this.activityItems[i];
-        if (obj.eActivityItemStatus == 'completed' || obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') completed += 1;
-        if (obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') refunded += 1;
-        // if (obj?.iCustomerId) this.fetchCustomer(obj.iCustomerId, i);
-        for (let j = 0; j < obj.receipts.length; j++) {
-          // this.transactions.push({ ...item, ...obj });
-          const item = obj.receipts[j];
-          if (!item.iStockLocationId && item.iLocationId) item.iStockLocationId = item.iLocationId;
-          this.totalPrice += item.nPaymentAmount * item.nQuantity;
-          this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
-          if (item.iStockLocationId) {
-            const oLocation = this.businessDetails.aLocation.find((el:any) => el._id == item.iStockLocationId);
-            if (oLocation) item.locationName = oLocation.sName;
-            // this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
-          }
-        }
+    const result:any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.activity._id}`, this.requestParams).toPromise();
+    if (result.data?.length && result.data[0].result?.length) this.processWebItems(result.data[0].result);
+    this.loading = false;
+    
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
+
+  }
+
+  processWebItems(aItems: any) {
+    // console.log(aItems);
+    let completed = 0, refunded = 0;
+    const aDiscountTypes = ['discount', 'giftcard-discount', 'coupon-discount'];
+    // aItems.sort((item1: any, item2: any) => !item1?.iBusinessProductId ? -1 : (!item2?.iBusinessProductId ? -1 : (item2.iBusinessProductId - item1.iBusinessProductId)))
+    // const aDiscountItems = aItems.filter((el: any) => aDiscountTypes.includes(el.oType.eKind));
+    // console.log({ aDiscountItems });
+    this.activityItems = this.reOrderItems(aItems.filter((el: any) => !aDiscountTypes.includes(el.oType.eKind)));
+    console.log(this.activityItems);
+    this.activityItems.forEach((oItem: any) => {
+      oItem.bRegular = oItem.oType.eKind == 'regular';
+      if (oItem.bRegular) this.tillService.calculateDiscount(oItem);
+      if (!oItem?.nDiscountToShow) oItem.nDiscountToShow = 0;
+      if (!oItem?.nCouponDiscount) oItem.nCouponDiscount = 0;
+      if (!oItem?.nRedeemedGiftcardAmount) oItem.nRedeemedGiftcardAmount = 0;
+
+      this.nTotalDiscount += (oItem.nDiscountToShow * oItem.nQuantity);
+      this.nTotalCouponDiscount += oItem.nCouponDiscount;
+      this.nTotalGiftcardDiscount += oItem.nRedeemedGiftcardAmount;
+      
+      oItem.nPriceIncVatAfterDiscount = (oItem.nPriceIncVat - oItem.nDiscountToShow) * oItem.nQuantity - oItem?.nCouponDiscount - oItem?.nRedeemedGiftcardAmount;
+      oItem.nPaymentAmount -= (oItem?.nCouponDiscount + oItem?.nRedeemedGiftcardAmount)
+      
+      this.tillService.calculateVat(oItem);
+      this.nTotalVat += oItem.vat;
+      // console.log({ 
+      //   nTotalDiscount: this.nTotalDiscount, 
+      //   nTotalCouponDiscount: this.nTotalCouponDiscount, 
+      //   nTotalGiftcardDiscount: this.nTotalGiftcardDiscount, 
+      //   nTotalVat: this.nTotalVat})
+      
+      if (oItem.bRegular) {
+        oItem.sProductName = oItem.oBusinessProductMetaData?.oName[this.selectedLanguage] || oItem.oBusinessProductMetaData?.oName['en'];
+        oItem.nPaymentAmount -= oItem.nDiscountToShow;
       }
-      if (completed == this.activityItems.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems.length})` }
-      else if (completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems.length})` }
-      else this.FeStatus = 'New';
-      // for(let i = 0; i < this.transactions.length; i++){
-      //   const obj = this.transactions[i];
-      //   this.totalPrice += obj.nPaymentAmount;
-      //   this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
-      //   if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-      //   this.fetchCustomer(obj.iCustomerId, i);
-      // }
-      this.loading = false;
-      setTimeout(() => {
-        MenuComponent.reinitialization();
-      }, 200);
-    }, (error) => {
-      this.loading = false;
-      alert(error.error.message);
-      this.dialogRef.close.emit('data');
+      oItem.sArticleGroupName = '';
+      if (oItem.oArticleGroupMetaData?.oName && Object.keys(oItem.oArticleGroupMetaData?.oName)?.length){
+        oItem.sArticleGroupName = oItem.oArticleGroupMetaData?.oName[this.selectedLanguage] || oItem.oArticleGroupMeta?.oName['en'] || '';
+      }
+
+      if (oItem.oType.eKind == 'engraving') {
+        oItem.sArticleGroupName = this.translateService.instant(this.oExtraServicesData.sTermForEngraving.toUpperCase());
+        oItem.eKindName = oItem.sArticleGroupName;
+      } else {
+        oItem.eKindName = oItem.oType.eKind.replace('-', '_').toUpperCase();
+      }
+
+      if (['completed', 'refund', 'refundInCashRegister'].includes(oItem.eActivityItemStatus)) completed += 1;
+      if (['refund', 'refundInCashRegister'].includes(oItem.eActivityItemStatus)) refunded += 1;
+
+
+      oItem.receipts?.forEach((oReceipt: any) => {
+        if (!oReceipt?.iStockLocationId && oReceipt?.iLocationId) {
+          oReceipt.iStockLocationId = oReceipt.iLocationId;
+        }
+
+        if (oReceipt?.iStockLocationId) {
+          const oLocation = this.businessDetails.aLocation.find((el: any) => el._id == oReceipt.iStockLocationId);
+          if (oLocation) oReceipt.locationName = oLocation.sName;
+          // this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
+        }
+
+        this.nTotalPaidAmount += oItem.nPaymentAmount * oReceipt.nQuantity;
+        this.quantity += oReceipt.bRefund ? (- oReceipt.nQuantity) : oReceipt.nQuantity
+      });
+
     });
+    if (completed == this.activityItems?.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems?.length})` }
+    else if (completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems?.length})` }
+    else this.FeStatus = 'New';
+  }
+
+  reOrderItems(aItems:any){
+    const aOrderedItems:any = [];
+    const aRegularItems = aItems.filter((el: any) => el.oType.eKind == 'regular');
+    aRegularItems.forEach((oRegular: any) => {
+      const aRelatedItems = aItems.filter((oRelated: any) => oRelated.sUniqueIdentifier == oRegular.sUniqueIdentifier && oRelated.oType.eKind != 'regular');
+      aOrderedItems.push(oRegular, ...aRelatedItems);
+    });
+    const oShippingCostItem = aItems.find((el: any) => el.oType.eKind == 'shipping-cost');
+    if (oShippingCostItem) {
+      aOrderedItems.push(oShippingCostItem);
+    }
+    return aOrderedItems;
   }
 
   //  Function for fetch transaction details for print receipt
