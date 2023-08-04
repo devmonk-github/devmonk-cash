@@ -698,8 +698,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
-      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oFilter: {
+        sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
         aLocationId: aLocation,
         iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
