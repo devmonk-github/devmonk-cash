@@ -701,7 +701,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oFilter: {
         aLocationId: aLocation,
-        // iWorkstationId: iWorkstationId,
+        iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.statisticFilter.dFromState,
@@ -1499,7 +1499,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchStatistics();
   }
 
-  onChangeLocation() {
+  onChangeDropdown() {
     this.statisticFilter.dFromState = '';
     this.statisticFilter.dToState = '';
     this.aDayClosure = [];
