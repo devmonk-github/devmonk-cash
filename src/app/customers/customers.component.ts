@@ -395,13 +395,22 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
-    })
+  openCustomerDialog(customer: any, Id: any, iSearchedCustomerId: any, key: any): void {
+    this.dialogService.openModal(CustomerDialogComponent, {
+      cssClass: 'modal-xl',
+      context: {
+        allcustomer: this.customers,
+        customer: customer,
+        iChosenCustomerId: Id,
+        iSearchedCustomerId: null,
+        key: "MERGE"
+      },
+      hasBackdrop: true
+    }).instance.close.subscribe((data: any) => {})
   }
 
   createCustomer() {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => {
       if (result && result.action && result.action == true) this.getCustomers()
     });
   }
@@ -506,8 +515,15 @@ export class CustomersComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
-      this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', from: 'customer' } }).instance.close.subscribe(
-      result => { if (result && result.action && result.action == true) this.getCustomers(); });
+    this.dialogService.openModal(CustomerDetailsComponent, {
+      cssClass: "modal-xl position-fixed start-0 end-0",
+      context: {
+        customerData: customer,
+        mode: 'details',
+        from: 'customer'
+      },
+      hasBackdrop:true
+    }).instance.close.subscribe(result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
 
   
