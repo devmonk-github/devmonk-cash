@@ -36,10 +36,22 @@ export class WebOrderDetailsComponent implements OnInit {
     { key: 'PAY_IN_CASH_REGISTER', value: 'payInCashRegister',disabled: false,text:"" }
   ]
 
+  statusesForItems = [
+    { key: 'NEW', value: 'new' },
+    { key: 'PROCESSING', value: 'processing'},
+    { key: 'CANCELLED', value: 'cancelled' },
+    { key: 'COMPLETED', value: 'completed'},
+   
+  ]
+
   // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
-  statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
+  //statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
-  carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
+  
+  carriers = ['PostNL', 'DHL', 'DPD', 'bpost','UPS','GLS','Amazon Logistics','DPD Local','Royal Mail','Parcelforce Woldwide',
+  'CollectPlus',
+  'Fedex',
+  'APC Overnight', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
   faReceipt = faReceipt;
@@ -122,9 +134,8 @@ export class WebOrderDetailsComponent implements OnInit {
     if (this.from == 'web-orders' || this.from == 'web-reservations') {
       const index = this.statuses.findIndex((status: any) => status.value == 'cancelled');
       if (index > -1) this.statuses.splice(index, 1);
-
-      const index2 = this.statusesForItems.indexOf('cancelled');
-      if (index > -1) this.statusesForItems.splice(index2, 1);
+      const index2 = this.statusesForItems.findIndex((status: any) => status.value == 'cancelled');
+      if (index2 > -1) this.statusesForItems.splice(index2, 1);
     }
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
@@ -382,7 +393,7 @@ export class WebOrderDetailsComponent implements OnInit {
     // const aDiscountItems = aItems.filter((el: any) => aDiscountTypes.includes(el.oType.eKind));
     // console.log({ aDiscountItems });
     this.activityItems = this.reOrderItems(aItems.filter((el: any) => !aDiscountTypes.includes(el.oType.eKind)));
-    console.log(this.activityItems);
+    //console.log(this.activityItems);
     this.activityItems.forEach((oItem: any) => {
       oItem.bRegular = oItem.oType.eKind == 'regular';
       if (oItem.bRegular) this.tillService.calculateDiscount(oItem);
@@ -404,9 +415,11 @@ export class WebOrderDetailsComponent implements OnInit {
       //   nTotalCouponDiscount: this.nTotalCouponDiscount, 
       //   nTotalGiftcardDiscount: this.nTotalGiftcardDiscount, 
       //   nTotalVat: this.nTotalVat})
-      
+      oItem.sProductName = '';
       if (oItem.bRegular) {
-        oItem.sProductName = oItem.oBusinessProductMetaData?.oName[this.selectedLanguage] || oItem.oBusinessProductMetaData?.oName['en'];
+        if (oItem.oBusinessProductMetaData?.oName && Object.keys(oItem.oBusinessProductMetaData?.oName)?.length) {
+          oItem.sProductName = oItem.oBusinessProductMetaData?.oName[this.selectedLanguage] || oItem.oBusinessProductMetaData?.oName['en'];
+        }
         oItem.nPaymentAmount -= oItem.nDiscountToShow;
       }
       oItem.sArticleGroupName = '';
@@ -514,13 +527,17 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   updateTransaction(transaction: any) {
+    this.loading = true;
     transaction.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id, transaction)
-      .subscribe((result: any) => {
-      },
-        (error) => {
-
-        })
+    .subscribe((result: any) => {
+      this.loading = false;
+      this.toastService.show({ type: 'success', text: this.translate['UPDATED_SUCCESSFULLY'] });
+    },
+      (error) => {
+        this.loading = false;
+        this.toastService.show({ type: 'warning', text: this.translate['SOMETHING_WENT_WRONG'] });
+      })
   }
 
 
@@ -670,6 +687,7 @@ export class WebOrderDetailsComponent implements OnInit {
           this.toastService.show({ type: 'success', text: this.translate['MAIL_SEND_TO_CUSTOMER'] });
         }
       }, (error: any) => {
+        this.toastService.show({ type: 'warning', text: this.translate['SOMETHING_WENT_WRONG'] });
 
       }
     )

@@ -47,9 +47,15 @@
                         <span>{{ "CURRENT_CUSTOMER" | translate }}</span>
                     </h3>
                     <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
-                        <button class="btn btn-primary cstm-btn" (click)="openCurrentCustomer(transaction.oCustomer)">
+                        <button class="btn btn-primary cstm-btn" [disabled]="!transaction.iActivityId" (click)="openCurrentCustomer(transaction.oCustomer)">
                             {{'UPDATE_CURRENT_CUSTOMER'|translate}}
                         </button>
+                        
+                        <span class="mx-2"><i *ngIf="!transaction.iActivityId" class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="{{'YOU_CAN_NOT_CHANGE_CUSTOMER_FROM_A_MIGRATED_TRANSACTION' | translate}}">
+                            </i>
+                        </span>
+                    
                     </ng-container>
                 </div>
                 <div class="row fw-bold gy-1 mb-5">
