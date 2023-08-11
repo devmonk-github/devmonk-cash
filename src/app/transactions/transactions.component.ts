@@ -13,7 +13,6 @@ import { MenuComponent } from '../shared/_layout/components/common';
 import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
-import { SupplierProductSliderModule } from 'supplierProductSlider/SupplierProductSliderModule';
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
@@ -440,12 +439,16 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   initSlider() {
     try {
+      import('supplierProductSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
         this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
           const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
           const componentFactory = moduleRef.instance.resolveComponent();
           this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
           this.componentRef.instance.$data = this.SupplierStockProductSliderData.asObservable();
         });
+      }).catch(e => {
+        console.warn('error in importing supplier product slider module');
+      });
     } catch (error) {
       console.log('error while initializing slider', error);
     }
