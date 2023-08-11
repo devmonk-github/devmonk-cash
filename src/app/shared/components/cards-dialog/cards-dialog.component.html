@@ -107,8 +107,9 @@
                         <div class="col-6">
                             <input name="" class="form-control" type="number"
                                 [disabled]="!oExternalGiftcard?.balance || 1 > oExternalGiftcard?.balance"
-                                [(ngModel)]="nExternalAmount">
-                            <span *ngIf="nExternalAmount > oExternalGiftcard?.balance"
+                                [(ngModel)]="oExternalGiftcard.nAmount"
+                                #externalGiftcardAmountToUse>
+                            <span *ngIf="oExternalGiftcard.nAmount > oExternalGiftcard?.balance"
                                 class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
                                 translate}}.</span>
                         </div>

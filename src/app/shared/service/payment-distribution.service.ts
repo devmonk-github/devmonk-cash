@@ -23,9 +23,10 @@ export class PaymentDistributionService {
     this.toastService = toastService;
   }
 
-  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0, payMethods:any = []): any[] {
+  distributeAmount(oData: any) {
+    let { transactionItems, availableAmount, nGiftcardAmount = 0, nRedeemedLoyaltyPoints = 0, payMethods }:any = oData;
     const bTesting = false;
-    if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
+    if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems))})
 
     const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
 
@@ -72,8 +73,8 @@ export class PaymentDistributionService {
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
 
-    const arrToUpdate = transactionItems.filter(item => !item?.manualUpdate && !item?.isExclude);
-    const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);
+    const arrToUpdate = transactionItems.filter((item:any) => !item?.manualUpdate && !item?.isExclude);
+    const arrNotToUpdate = transactionItems.filter((item:any) => item?.manualUpdate || item?.isExclude);
 
     const aEligibleForSavingPoints = payMethods.filter((p: any) => p.amount > 0 && p.bAssignSavingPoints);
     if (bTesting) console.log({ aEligibleForSavingPoints }, this.tillService.oSavingPointSettings)
@@ -89,7 +90,7 @@ export class PaymentDistributionService {
     if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
 
     if (arrToUpdate?.length) {
-      let totalAmountToBePaid = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2)); // + assignedAmountToManual
+      let totalAmountToBePaid = +(_.sumBy(arrToUpdate.filter((el:any) => el.amountToBePaid > 0), 'amountToBePaid').toFixed(2));
       if(nEligibleAmount > totalAmountToBePaid) nEligibleAmount = totalAmountToBePaid;
       if (bTesting) console.log({totalAmountToBePaid})
 
@@ -115,22 +116,23 @@ export class PaymentDistributionService {
         if (bTesting) console.log('now we have available', { availableAmount, totalAmountToBePaid, nRedeemedLoyaltyPoints })
       }
 
-      if (totalAmountToBePaid > 0 && nGiftcardAmount > 0){
+      if (totalAmountToBePaid && nGiftcardAmount){
         this.handleGiftcardDiscount(totalAmountToBePaid, aItems, nGiftcardAmount, bTesting);
-        totalAmountToBePaid = +(aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2));
+        totalAmountToBePaid = +(_.sumBy(aItems, 'amountToBePaid').toFixed(2));
         if (bTesting) console.log('processed giftcard discount, new totalAmountToBePaid', totalAmountToBePaid)
       }
 
-      if (totalAmountToBePaid > 0 && nRedeemedLoyaltyPoints > 0) {
+      if (totalAmountToBePaid && nRedeemedLoyaltyPoints) {
         this.handleLoyaltyPointsDiscount(aItems, totalAmountToBePaid, nRedeemedLoyaltyPoints, bTesting);
-        totalAmountToBePaid = aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+        totalAmountToBePaid = _.sumBy(aItems, 'amountToBePaid');
       }
 
       if (bTesting) console.log('still yet to pay',{ totalAmountToBePaid, availableAmount })
       if (totalAmountToBePaid !== 0) {
         if(availableAmount > totalAmountToBePaid) availableAmount = totalAmountToBePaid;
         let nAssignedUntillNow = 0;
-        aItems.forEach(i => {
+
+        aItems.forEach((i:any) => {
           if (bTesting) console.log(107, { tType: i.tType, availableAmount });
           if (i.amountToBePaid > 0 && (!i?.tType || i.tType !== 'refund')) {
             const nCalculatedAmount = i.amountToBePaid * availableAmount / totalAmountToBePaid;
@@ -143,11 +145,11 @@ export class PaymentDistributionService {
           }
         });
       }
-      const nDistributedAmount = +(aItems.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2))
+      const nDistributedAmount = +(_.sumBy(aItems.filter((el:any) => el.amountToBePaid > 0), 'paymentAmount').toFixed(2))
       availableAmount -= nDistributedAmount;
       if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
 
-      let assignedAmount = +(aItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2));
+      let assignedAmount = +(_.sumBy(aItems, 'paymentAmount').toFixed(2));
       if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
 
       if(availableAmount > 0 && assignedAmount != 0) {
@@ -159,7 +161,7 @@ export class PaymentDistributionService {
         } else {
           if (bTesting) console.log('assignedAmount < 0', assignedAmount)
           assignedAmount = -assignedAmount;
-          arrToUpdate.map(i => {
+          arrToUpdate.forEach((i:any) => {
             if (i.type !== 'giftcard' && i.tType !== 'refund') {
               const a = +((i.amountToBePaid * availableAmount / assignedAmount).toFixed(2));
               if (bTesting) console.log('125 set to payment', a)
@@ -170,10 +172,10 @@ export class PaymentDistributionService {
       }
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
-    const bShowGiftcardDiscountField = arrToUpdate.some(el => el.nGiftcardDiscount);
-    const bShowLoyaltyPointsDiscountField = arrToUpdate.some(el => el.nRedeemedLoyaltyPoints);
+    const bShowGiftcardDiscountField = arrToUpdate.some((el:any) => el.nGiftcardDiscount);
+    const bShowLoyaltyPointsDiscountField = arrToUpdate.some((el:any) => el.nRedeemedLoyaltyPoints);
     if (bTesting) console.log({ bShowGiftcardDiscountField, bShowLoyaltyPointsDiscountField })
-    arrToUpdate.forEach(i => {
+    arrToUpdate.forEach((i:any) => {
       i.bShowGiftcardDiscountField = bShowGiftcardDiscountField;
       i.bShowLoyaltyPointsDiscountField = bShowLoyaltyPointsDiscountField;
 

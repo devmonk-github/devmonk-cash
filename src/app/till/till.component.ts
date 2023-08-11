@@ -485,15 +485,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bDisableCheckout = true;
     this.bShowOverassignedWarning = false;
     if (this.transactionItems?.length) {
-      if (this.transactionItems.filter((item: any) => item?.isExclude)?.length == this.transactionItems?.length) this.bDisableCheckout = false
-      if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
-      if (this.nTotalPayment > this.availableAmount) {
+      const bAllItemsAreExcluded = this.transactionItems.filter((item: any) => item?.isExclude)?.length == this.transactionItems?.length;
+      // if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
+      if (bAllItemsAreExcluded || (this.availableAmount && this.nTotalPayment)) { 
+        this.bDisableCheckout = false;
+      } else if (this.nTotalPayment > this.availableAmount) {
         this.bShowOverassignedWarning = true;
         this.bDisableCheckout = true;
       }
-    }
-    // console.log(this.transactionItems.filter((item: any) => item?.isExclude)?.length, this.transactionItems?.length,
-    //   { amountDefined: this.amountDefined, bAllGiftcardPaid: this.bAllGiftcardPaid, nTotalPayment: this.nTotalPayment, availableAmount: this.availableAmount})
+      // console.log(bAllItemsAreExcluded,
+      //   { bAllGiftcardPaid: this.bAllGiftcardPaid, nTotalPayment: this.nTotalPayment, availableAmount: this.availableAmount})
+      }
 
   }
   async addItem(type: string) {
@@ -596,9 +598,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'prepaymentChange':
-        this.availableAmount = this.getUsedPayMethods(true);
-        this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+        this.distributeAmount();
+        
         this.updateAmountVariables();
         break;
       case 'duplicate':
@@ -790,20 +791,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeInPayment() {
-    this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
-    this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    this.distributeAmount();
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
-    this.payMethods.map(o => o.isDisabled = true);
+    
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
+    if (paidAmount === 0) {
+      this.payMethods.forEach(o => o.isDisabled = false);
+    } else {
+      this.payMethods.forEach(o => o.isDisabled = true);
+    }
 
     const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
     this.bAllGiftcardPaid = aGiftcard.filter((el: any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
-    if (paidAmount === 0) {
-      this.payMethods.forEach(o => o.isDisabled = false);
-    }
-    // console.log('change in payment in cash ', this.transactionItems)
     this.transactionItems = [...this.transactionItems]
     this.updateAmountVariables();
   }
@@ -844,10 +844,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     })
 
-    this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
-    this.availableAmount = this.getUsedPayMethods(true);
-    if (this.appliedGiftCards?.length) this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    if (this.transactionItems?.length) this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    this.payMethods.forEach(o => { o.amount = null, o.isDisabled = false });
+    if (this.transactionItems?.length) this.distributeAmount();
     this.updateAmountVariables();
   }
 
@@ -915,13 +913,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!giftCardPayment) {
       const oBody = {
         sName: 'Giftcards',
-        bIsDefaultPaymentMethod: false,
         iBusinessId: this.iBusinessId,
         bStockReduction: false,
         bInvoice: false,
         bAssignSavingPoints: false,
         bAssignSavingPointsLastPayment: true,
-        sLedgerNumber: '',
         bShowInCashRegister: false
       }
       const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', oBody).toPromise();
@@ -968,19 +964,29 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-          this.availableAmount = this.getUsedPayMethods(true);
-          this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+          this.distributeAmount();
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          if (giftCardPayment && this.appliedGiftCards.length > 0) body.giftCards = this.appliedGiftCards;
+          const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
+          const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
+          
+          if (aExternalGiftcards?.length) { // we have some cards by external providers -> we will generate a revenue from it -> so need to process them as payment
+            aExternalGiftcards.forEach((oCard:any) => {
+              body.payments.push({
+                ...giftCardPayment,
+                sGiftCardNumber: oCard.sGiftCardNumber,
+                amount: oCard.nAmount
+              })
+            })
+          }
+          if(this.appliedGiftCards?.length) body.giftCards = this.appliedGiftCards;
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
-          if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          if (aInternalGiftcards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
           // console.log(body);
           // return;
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
@@ -1601,20 +1607,24 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       context: { customer: this.customer, oGiftcard: oPassedGiftcard, mode: mode, appliedGiftCards: this.appliedGiftCards }
     }).instance.close.subscribe(result => {
       if (result) {
-        // console.log(this.appliedGiftCards)
         // console.log({result, oGiftcard, mode})
-        if (result.oGiftCard.nAmount > 0) {
+        if (result?.oGiftcard?.nAmount) {
           const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
           if (mode == 'edit' || oExisting) {
             oExisting.nAmount = result.oGiftCard.nAmount;
           } else {
             this.appliedGiftCards.push(result.oGiftCard);
           }
-          this.changeInPayment();
         }
-        if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
+        if(result?.oExternalGiftcard?.nAmount) {
+          this.appliedGiftCards.push(result.oExternalGiftcard);
+        }
+
+        if (result?.redeemedLoyaltyPoints) {
           this.addReedemedPoints(result.redeemedLoyaltyPoints);
         }
+
+        this.changeInPayment();
       }
     });
   }
@@ -1992,4 +2002,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.listCommonBrandProducts(searchValue, false)
     }
   }
+
+  distributeAmount() {
+    this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
+    
+    if (this.appliedGiftCards?.length){
+      this.nGiftcardAmount = +((_.sumBy(this.appliedGiftCards.filter(el => el.type == 'custom'), 'nAmount') || 0).toFixed(2));
+      this.availableAmount += +((_.sumBy(this.appliedGiftCards.filter(el => el.type != 'custom'), 'nAmount') || 0).toFixed(2));
+    }
+
+    this.paymentDistributeService.distributeAmount({
+      transactionItems: this.transactionItems,
+      availableAmount: this.availableAmount,
+      nGiftcardAmount: this.nGiftcardAmount,
+      redeemedLoyaltyPoints: this.redeemedLoyaltyPoints,
+      payMethods: this.payMethods
+    });
+  }
+
 }

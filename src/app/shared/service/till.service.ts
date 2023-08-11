@@ -163,7 +163,7 @@ export class TillService {
       iWorkstationId: this.iWorkstationId,
       transactionItems: transactionItems,
       oTransaction: transaction,
-      payments: payMethods,//this.getUsedPayMethods(false, payMethods),
+      payments: payMethods,
       redeemedLoyaltyPoints,
       sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
     };
@@ -399,7 +399,7 @@ export class TillService {
   }
 
   createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
-    const originalTItems = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
+    const originalTItems = body.transactionItems.filter((i: any) => !this.aDiscountTypes.includes(i.oType.eKind));
     const gCard = body.giftCards[0];//.find((payment: any) => payment.sName === 'Giftcards' && payment.type === 'custom');
     let nDiscount = 0;
     if (gCard?.nAmount) nDiscount = (Math.round((gCard?.nAmount || 0) / (originalTItems?.length || 1))) || 0;

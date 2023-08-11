@@ -31,6 +31,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
   @ViewChild('searchExternalGift') serachExternal!: ElementRef;
   @ViewChild('loyaltyPointElem') loyaltyPointElem!: ElementRef;
+  @ViewChild('externalGiftcardAmountToUse') externalGiftcardAmountToUseElem!: ElementRef;
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
@@ -42,7 +43,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
   appliedGiftCards: Array<any> = [];
   
   oExternalGiftcard: any = {};
-  nExternalAmount = 0;
 
   loyaltyPoints = 0;
   redeemedLoyaltyPoints = 0;
@@ -149,27 +149,26 @@ export class CardsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  fetchExternalGiftCard(sGiftCardNumber: string) {
-    if (4 > sGiftCardNumber.length) {
-      return;
-    }
-    // this.fetchInProgress = true;
-    this.terminalService.getGiftCardInformation({ sGiftCardNumber, pincode: this.pincode })
-      .subscribe(res => {
-        this.oExternalGiftcard = res;
-        if(res?.message == 'success'){
-          this.toastService.show({type:'success' , text:this.translateService.instant('GIFT_CARD_APPLIED_SUCCESSFULLY')})
-        }
-      }, (error) => {
-        let errorMessage:any;
-        this.translateService.get(error.message).subscribe((res:any)=>{
-          errorMessage = res;
-        })
-        this.toastService.show({type:'warning' , text:errorMessage});
-        // alert(error.error);
-        this.dialogRef.close.emit(false);
-        this.fetchInProgress = false;
-      });
+  fetchExternalGiftCard(sExternalGiftCardNumber: string) {
+    if (sExternalGiftCardNumber.length < 4)  return;
+    
+    this.fetchInProgress = true;
+    this.terminalService.getGiftCardInformation({ sGiftCardNumber: sExternalGiftCardNumber, pincode: this.pincode }).subscribe(res => {
+      this.fetchInProgress = false;
+      this.oExternalGiftcard = { 
+        ...res, 
+        balance: parseFloat(res.balance),
+        sExternalGiftCardNumber
+      };
+      setTimeout(() => {
+        this.externalGiftcardAmountToUseElem.nativeElement.focus();
+      }, 200)
+      if (res) this.toastService.show({ type: 'success', text: this.translateService.instant('GIFT_CARD_APPLIED_SUCCESSFULLY') })
+      
+    }, (error) => {
+      this.toastService.show({ type: 'warning', text: this.translateService.instant(error.message) });
+      this.fetchInProgress = false;
+    });
   }
 
   fetchLoyaltyPoints() {
@@ -179,17 +178,34 @@ export class CardsComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    if((this.oGiftcard?.nCurrentLimit == 0 || this.oGiftcard.nAmount > this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount == 0) && (this.redeemedLoyaltyPoints==0 || this.loyaltyPoints < this.redeemedLoyaltyPoints)){
-      this.toastService.show({type:'warning' , text: this.translateService.instant('USING_MORE_THAN_AVAILABLE')});
+    const bIsGiftcardValid = this.oGiftcard?.nCurrentLimit == 0 || this.oGiftcard.nAmount > this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount == 0;
+    const bIsExternalGiftcardValid = (this.oExternalGiftcard?.sExternalGiftCardNumber && this.oExternalGiftcard.nAmount <= this.oExternalGiftcard.balance) || true;
+    const bIsLoyaltyPointsValid = this.redeemedLoyaltyPoints == 0 || this.loyaltyPoints < this.redeemedLoyaltyPoints;
+
+    // console.log({ bIsGiftcardValid, bIsExternalGiftcardValid, bIsLoyaltyPointsValid})
+
+    if (!bIsGiftcardValid || !bIsExternalGiftcardValid || !bIsLoyaltyPointsValid){
+      this.toastService.show({type:'warning' , text: this.translateService.instant('VALIDATION_ERROR_PLEASE_CHECK_AGAIN_THE_AMOUNT')});
     } else {
       const oGiftcard = { ...this.oGiftcard }
       oGiftcard.type = this.oExternalGiftcard.type ? this.oExternalGiftcard.type : 'custom';
       oGiftcard.nAmount += oGiftcard.nCurrentRedeemedAmount;
       oGiftcard.nGiftcardRemainingAmount -= this.oGiftcard.nAmount
-      const oBody = { 
-        oGiftCard:oGiftcard,
-        redeemedLoyaltyPoints: this.redeemedPointsValue 
+
+      const oBody:any = { 
+        oGiftcard
       }
+
+      if (this.redeemedLoyaltyPoints) oBody.redeemedLoyaltyPoints = this.redeemedPointsValue;
+      if(this.oExternalGiftcard.nAmount) {
+        oBody.oExternalGiftcard = {
+          ...this.oExternalGiftcard,
+          sGiftCardNumber: this.oExternalGiftcard.sExternalGiftCardNumber,
+          nAmount: this.oExternalGiftcard.nAmount,
+          pincode: this.pincode
+        }
+      }
+      // console.log('closing', oBody)
       this.close(oBody);
     }
   }
