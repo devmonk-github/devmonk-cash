@@ -415,9 +415,11 @@ export class WebOrderDetailsComponent implements OnInit {
       //   nTotalCouponDiscount: this.nTotalCouponDiscount, 
       //   nTotalGiftcardDiscount: this.nTotalGiftcardDiscount, 
       //   nTotalVat: this.nTotalVat})
-      
+      oItem.sProductName = '';
       if (oItem.bRegular) {
-        oItem.sProductName = oItem.oBusinessProductMetaData?.oName[this.selectedLanguage] || oItem.oBusinessProductMetaData?.oName['en'];
+        if (oItem.oBusinessProductMetaData?.oName && Object.keys(oItem.oBusinessProductMetaData?.oName)?.length) {
+          oItem.sProductName = oItem.oBusinessProductMetaData?.oName[this.selectedLanguage] || oItem.oBusinessProductMetaData?.oName['en'];
+        }
         oItem.nPaymentAmount -= oItem.nDiscountToShow;
       }
       oItem.sArticleGroupName = '';
