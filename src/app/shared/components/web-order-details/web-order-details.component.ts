@@ -47,7 +47,11 @@ export class WebOrderDetailsComponent implements OnInit {
   // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
   //statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
-  carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
+  
+  carriers = ['PostNL', 'DHL', 'DPD', 'bpost','UPS','GLS','Amazon Logistics','DPD Local','Royal Mail','Parcelforce Woldwide',
+  'CollectPlus',
+  'Fedex',
+  'APC Overnight', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
   faReceipt = faReceipt;
