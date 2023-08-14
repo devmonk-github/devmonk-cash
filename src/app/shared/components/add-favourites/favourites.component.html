@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header align-items-center mt-20px">
         <div class="col-md-10">
-            <h4 class="m-0" *ngIf="mode === 'create'">{{ 'CREATE_FAVOURITE' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'create'">{{'CREATE_FAVOURITE' | translate}}</h4>
             <h4 class="m-0" *ngIf="mode === 'assign'">{{'ASSIGN_PRODUCT' | translate}}</h4>
         </div>
         <div>
@@ -103,7 +103,7 @@
                     <label> {{ "PRODUCT_NAME" | translate}}</label>
                     <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
                         [(ngModel)]="newSelectedProduct.sName" (ngModelChange)="validate()">
-                    <span class="err-msg" *ngIf="newSelectedProduct.sName?.length > limit">
+                    <span class="err-msg" *ngIf="newSelectedProduct.sName?.length > limit && mode != 'assign'">
                         {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
                     </span>
                 </div>
@@ -112,10 +112,10 @@
                     <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
                         [(ngModel)]="newSelectedProduct.nPrice">
                 </div>
-                <div class="row mb-5">
+                <div class="row mb-5" *ngIf="mode != 'assign'">
                     <label> {{ "SHORTCUT_KEY" | translate}}</label>
                     <div class="d-flex justify-content-center align-items-center">
-                        <div class="w-100 mx-2">
+                        <div class="w-100">
                             <ng-select [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
                                 [clearable]="false" placeholder="{{'SELECT_FUNCTION_KEY' | translate }}"></ng-select>
                         </div>
@@ -136,7 +136,7 @@
         </button>
 
         <button *ngIf="mode == 'assign'" class="btn btn-primary" (click)="assignProduct()" [disabled]="!bValid">
-            {{'ASSIGN' | translate}}
+            {{'ASSIGN' | translate}} 
         </button>
 
         <!-- <button class="btn btn-secondary" (click)="close(false)">{{ 'CLOSE' | translate}}</button> -->
