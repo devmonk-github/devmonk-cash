@@ -824,15 +824,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
-              const oDocumentsBody = {aImage : this.aImage,
-                iCustomerId:result.data._id,
-                sDocumentName:this.sDocumentName,
-                sDocumentNumber:this.sDocumentNumber,
-                iBusinessId:this.requestParams.iBusinessId
+              if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+                const oDocumentsBody = {
+                  aImage: this.aImage,
+                  iCustomerId: result.data._id,
+                  sDocumentName: this.sDocumentName,
+                  sDocumentNumber: this.sDocumentNumber,
+                  iBusinessId: this.requestParams.iBusinessId
+                }
+                this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                  (result: any) => {
+                  })
               }
-              this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
-              (result: any) => {
-              })
             } else {
               let errorMessage = ""
               this.translateService.get(result.message).subscribe(
