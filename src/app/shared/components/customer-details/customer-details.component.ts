@@ -338,6 +338,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   nClientId:any="-";
   oS:any;
   showDeleteBtn: boolean = false;
+  sDocumentName: any = '';
+  sDocumentNumber: any = 0;
   
 
   constructor(
@@ -397,8 +399,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   openImageModal() {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
-        if (result.event.result.data.url)
-        this.customer.sImage = result.event.result.data.url;
+        if (result.event.result.data.url)this.customer.sImage = result.event.result.data.url;
+        if(result.event.result.data.sDocumentName) this.sDocumentName = result.event.result.data.sDocumentName;
+        if(result.event.result.data.sDocumentNumber) this.sDocumentNumber = result.event.result.data.sDocumentNumber;
+        
+        
       });
   }
   openImage(image:any){
@@ -820,6 +825,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
+              const oDocumentsBody = {sImage : this.customer.sImage,
+                iCustomerId:result.data._id,
+                sDocumentName:this.sDocumentName,
+                sDocumentNumber:this.sDocumentNumber,
+                iBusinessId:this.requestParams.iBusinessId
+              }
+              this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+              (result: any) => {
+              })
             } else {
               let errorMessage = ""
               this.translateService.get(result.message).subscribe(
