@@ -29,6 +29,7 @@ export const environment = {
   webpackUrl: `${ORGANIZATION_URL}/api/v1/webpack`,
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
+  JEWELS_AND_WATCHES_URL : 'http://localhost:3009',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
   indexedDBName: 'indexedDB1',
