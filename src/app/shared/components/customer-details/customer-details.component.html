@@ -1161,19 +1161,20 @@
                         <fa-icon [icon]="faUpload"></fa-icon>
                     </button>
 
-                    <div class="d-flex justify-content-between flex-wrap" *ngIf="customer?.sImage">
-                        <div class="px-1 py-2">
+                    <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">
+                        <div class="px-1 py-2" *ngFor="let image of aImage; let i = index" (mouseover)="showDeleteBtn = true"
+                        (mouseout)="showDeleteBtn = false">
                           <div class="image-input" data-kt-image-input="true"
                             style="background-image: url('assets/media/svg/avatars/blank.svg')">
-                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(customer?.sImage)"
+                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(i)"
                               style="background-image: url(assets/media/avatars/300-1.jpg)">
-                              <img src="{{ customer?.sImage }}" width="100px" height="100px" />
+                              <img src="{{ image }}" width="100px" height="100px" />
                             </div>
               
                             <div>
                               <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
-                                data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removeImage()">
-                                <i class="bi bi-x fs-2" (click)="removeImage()"></i>
+                                data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removeImage(i)">
+                                <i class="bi bi-x fs-2" (click)="removeImage(i)"></i>
                               </button>
                             </div>
                           </div>

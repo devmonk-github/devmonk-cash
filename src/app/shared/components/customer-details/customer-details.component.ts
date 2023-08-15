@@ -390,13 +390,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     
   }
 
-  
-
-
-
-  removeImage() {
-    this.customer.sImage = '';
-  }
   openImageModal() {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
@@ -405,9 +398,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         if(result.event.result.data.sDocumentNumber) this.sDocumentNumber = result.event.result.data.sDocumentNumber;
       });
   }
-  openImage(image:any){
-    const url =image;
+ 
+
+  openImage(imageIndex:any){
+    const url =this.aImage[imageIndex];
     window.open(url , "_blank");
+  }
+  removeImage(index: number): void {
+    this.aImage.splice(index, 1);
   }
   
   onTabChange(index: any) {
