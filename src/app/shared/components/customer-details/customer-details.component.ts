@@ -857,6 +857,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
             this.fetchUpdatedDetails();
             this.close({ action: true });
+            if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+              const oDocumentsBody = {
+                aImage: this.aImage,
+                iCustomerId: this.customer._id,
+                sDocumentName: this.sDocumentName,
+                sDocumentNumber: this.sDocumentNumber,
+                iBusinessId: this.requestParams.iBusinessId
+              }
+              this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                (result: any) => {
+                })
+            }
           }
           else {
             let errorMessage = "";
