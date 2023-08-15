@@ -340,6 +340,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   showDeleteBtn: boolean = false;
   sDocumentName: any = '';
   sDocumentNumber: any = 0;
+  aImage:any = [];
   
 
   constructor(
@@ -399,11 +400,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   openImageModal() {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
-        if (result.event.result.data.url)this.customer.sImage = result.event.result.data.url;
+        if (result.event.result.data.url) this.aImage.push(result.event.result.data.url);
         if(result.event.result.data.sDocumentName) this.sDocumentName = result.event.result.data.sDocumentName;
         if(result.event.result.data.sDocumentNumber) this.sDocumentNumber = result.event.result.data.sDocumentNumber;
-        
-        
       });
   }
   openImage(image:any){
@@ -825,7 +824,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
-              const oDocumentsBody = {sImage : this.customer.sImage,
+              const oDocumentsBody = {aImage : this.aImage,
                 iCustomerId:result.data._id,
                 sDocumentName:this.sDocumentName,
                 sDocumentNumber:this.sDocumentNumber,
