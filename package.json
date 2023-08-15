@@ -56,7 +56,7 @@
     "jspdf": "^2.5.1",
     "line-awesome": "^1.3.0",
     "moment": "^2.29.2",
-    "ng-apexcharts": "^1.7.1",
+    "ng-apexcharts": "1.7.1",
     "ng-select": "^1.0.2",
     "ngx-csv-parser": "1.1.1",
     "ngx-filesaver": "^13.0.0",
