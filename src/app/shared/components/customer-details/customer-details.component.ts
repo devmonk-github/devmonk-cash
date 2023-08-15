@@ -5,7 +5,9 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
-import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+//import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+import { ImageAndDocumentsDialogComponent } from 'src/app/shared/components/image-and-documents-dialog/image-and-documents-dialog.component';
+
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -197,6 +199,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     createrDetail:{},
     iEmployeeId:'',
     aGroups:[],
+    sImage:'',
     bIsCompany:false,
     oContactPerson:{
       sFirstName: '',
@@ -336,6 +339,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   oS:any;
   showDeleteBtn: boolean = false;
   
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -344,6 +348,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private dialogService: DialogService,
     private translateService: TranslateService,
     public tillService: TillService,
+   
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -379,17 +384,21 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
+    
   }
 
-  removePicture() {
+  
+
+
+
+  removeImage() {
     this.customer.sImage = '';
   }
   openImageModal() {
-    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
-        console.log("result", result);
-        if (result.url)
-        this.customer.sImage = result.url;
+        if (result.event.result.data.url)
+        this.customer.sImage = result.event.result.data.url;
       });
   }
   openImage(image:any){

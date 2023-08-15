@@ -865,6 +865,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="row mb-3" *ngIf="customer?.bIsCompany">
 
                         <div class="col-6">
@@ -1128,6 +1130,29 @@
                 <div class="col-4">
 
                     <div class="my-3">
+                        <button class="btn btn-secondary btn-sm w-100" (click)="openImageModal()"> {{ "UPLOAD_IMAGES" | translate}}
+                            <fa-icon [icon]="faUpload"></fa-icon>
+                        </button>
+
+                        <div class="d-flex justify-content-between flex-wrap" *ngIf="customer?.sImage">
+                            <div class="px-1 py-2">
+                              <div class="image-input" data-kt-image-input="true"
+                                style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                                <div class="image-input-wrapper w-100px h-100px" (click)="openImage(customer?.sImage)"
+                                  style="background-image: url(assets/media/avatars/300-1.jpg)">
+                                  <img src="{{ customer?.sImage }}" width="100px" height="100px" />
+                                </div>
+                  
+                                <div>
+                                  <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
+                                    data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removeImage()">
+                                    <i class="bi bi-x fs-2" (click)="removeImage()"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        
                         <label for="note">{{'NOTES' | translate}}</label>
                         <textarea name="note" id="note" cols="30" rows="6" class="form-control"
                             [(ngModel)]="customer.sNote"></textarea>

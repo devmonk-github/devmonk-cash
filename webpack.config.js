@@ -243,6 +243,13 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
+    new ModuleFederationPlugin({
+      remotes: {
+        "imageUpload": "imageUpload@http://localhost:3001/api/v1/webpack/jewels-and-watches/image-upload.js",
+      },
+      shared: share(sharedLibrary)
+    }),
+    
     // new ModuleFederationPlugin({
     //   name: "SupplierProductSliderModule",
     //   filename: "supplier-product-slider.js",
