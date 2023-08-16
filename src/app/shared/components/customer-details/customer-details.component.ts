@@ -341,6 +341,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   sDocumentName: any = '';
   sDocumentNumber: any = 0;
   aImage:any = [];
+  oTemp :any;
   
 
   constructor(
@@ -391,23 +392,25 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   openImageModal() {
-    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' } })
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData:this.oTemp } })
       .instance.close.subscribe(result => {
         if (result.event.docs){
-          this.aImage = result.event.docs.aImage;
-          this.sDocumentName = result.event.docs.sDocumentName;
-          this.sDocumentNumber = result.event.docs.sDocumentNumber;
+          this.oTemp = {
+            aImage: result.event.docs.aImage,
+            sDocumentName: result.event.docs.sDocumentName,
+            sDocumentNumber: result.event.docs.sDocumentNumber
+          }
         }
       });
   }
  
 
   openImage(imageIndex:any){
-    const url =this.aImage[imageIndex];
+    const url =this.oTemp.aImage[imageIndex];
     window.open(url , "_blank");
   }
   removeImage(index: number): void {
-    this.aImage.splice(index, 1);
+    this.oTemp.aImage.splice(index, 1);
   }
   
   onTabChange(index: any) {
@@ -824,12 +827,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
-              if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+              if (this.oTemp) {
                 const oDocumentsBody = {
-                  aImage: this.aImage,
+                  aImage: this.oTemp?.aImage,
                   iCustomerId: result.data._id,
-                  sDocumentName: this.sDocumentName,
-                  sDocumentNumber: this.sDocumentNumber,
+                  sDocumentName: this.oTemp?.sDocumentName,
+                  sDocumentNumber: this.oTemp?.sDocumentNumber,
                   iBusinessId: this.requestParams.iBusinessId
                 }
                 this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
@@ -857,12 +860,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
             this.fetchUpdatedDetails();
             this.close({ action: true });
-            if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+            if (this.oTemp) {
               const oDocumentsBody = {
-                aImage: this.aImage,
+                aImage: this.oTemp?.aImage,
                 iCustomerId: this.customer._id,
-                sDocumentName: this.sDocumentName,
-                sDocumentNumber: this.sDocumentNumber,
+                sDocumentName: this.oTemp?.sDocumentName,
+                sDocumentNumber: this.oTemp?.sDocumentNumber,
                 iBusinessId: this.requestParams.iBusinessId
               }
               this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
