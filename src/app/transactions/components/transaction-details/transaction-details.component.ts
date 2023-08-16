@@ -95,6 +95,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bIsFiscallyEnabled: boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -149,6 +152,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
     this.fetchLocationName();
+
+    if (this.businessDetails.currentLocation) {
+      /*Needed to change fields order*/
+      this.sBusinessCountry = this.businessDetails.currentLocation?.oAddress?.countryCode;
+      console.log(this.sBusinessCountry);
+      if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+        this.bNormalOrder = false;
+      }
+    }
     
    
   }
