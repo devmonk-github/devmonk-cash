@@ -139,8 +139,8 @@ export class ExportsComponent implements OnInit {
       (result: any) => {
         this.customerList = result.data[0].result;
         this.customerList?.forEach((customer: any, index: Number) => {
-          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " "+ customer?.oShippingAddress?.sPostalCode;
-          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " "+ customer?.oInvoiceAddress?.sPostalCode;
+          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " " + customer?.oShippingAddress?.sCity + " " + customer?.oShippingAddress?.sPostalCode;
+          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " " + customer?.oInvoiceAddress?.sCity + " " + customer?.oInvoiceAddress?.sPostalCode;
           let Mobile = customer?.oPhone?.sMobile;
           if(customer?.oPhone?.sPrefixMobile) Mobile = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
           let Landline = customer?.oPhone?.sLandLine;
@@ -299,8 +299,8 @@ export class ExportsComponent implements OnInit {
             customer['oPhone.sMobile'] = (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
           }
 
-          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " "+ customer?.oShippingAddress?.sPostalCode;
-          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " "+ customer?.oInvoiceAddress?.sPostalCode;
+          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " " + customer?.oShippingAddress?.sCity + " " + customer?.oShippingAddress?.sPostalCode;
+          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " " + customer?.oInvoiceAddress?.sCity + " " + customer?.oInvoiceAddress?.sPostalCode;
           
           customer['oShippingAddress'] = ShippingAddress || "-";
           customer['oInvoiceAddress'] = InvoiceAddress || "-";

@@ -124,6 +124,7 @@ export class AddFavouritesComponent implements OnInit {
 
   onSelectProduct(product: any, isFrom?: string, isFor?: string) {
     if (this.mode == 'create' || this.mode == 'assign') {
+      this.newSelectedProduct._id = product._id;
       this.newSelectedProduct.sName = product.oName ? product.oName[this.currentLanguage] : 'No name';
       this.newSelectedProduct.iBusinessProductId = product._id;
       this.newSelectedProduct.aImage = product.aImage;
@@ -131,7 +132,7 @@ export class AddFavouritesComponent implements OnInit {
         this.newSelectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
       }
       this.shopProducts = null;
-    this.validate();  
+      this.validate(); 
     }else{
       this.shopProducts = null;
     }
@@ -202,9 +203,17 @@ export class AddFavouritesComponent implements OnInit {
   }
 
   validate() {
-    if(this.newSelectedProduct.sName.length > this.limit) 
+    // Disable -> no product is selected, name is more than the limit (quick buttons case) or if the length is 0.
+    
+    /*Create new quick button validation (to create qb, products needs to be created/selected first)*/
+    if(this.mode != 'assign' && (!this.newSelectedProduct._id || this.newSelectedProduct.sName.length > this.limit || this.newSelectedProduct.sName.length == 0)){
       this.bValid = false;
-    else this.bValid = true;
+    }else if(this.mode === 'assign' && (!this.newSelectedProduct._id || this.newSelectedProduct.sName.length == 0)){
+      /*Assign product to existing AI/A validation*/
+      this.bValid = false;
+    }else{
+      this.bValid = true;
+    }
   }
 
   close(action: boolean) {

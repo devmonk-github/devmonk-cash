@@ -56,7 +56,7 @@ export class CustomerStructureService {
       result += this.formatZip(address.sPostalCode) + ' ';
     }
     if (address.sCity) {
-      result += address.sCity;
+      result += address.sCity + ' ';
     }
     if (includeCountry && address.sCountry) {
       result += address.sCountry;

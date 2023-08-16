@@ -16,6 +16,7 @@ import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
+import { ImageAndDocumentsDialogComponent } from './components/image-and-documents-dialog/image-and-documents-dialog.component';
 import { WebcamModule } from 'ngx-webcam';
 import { DeviceDetailsComponent } from './components/device-details/device-details.component';
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
@@ -80,6 +81,7 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     ConfirmationDialogComponent,
     AddFavouritesComponent,
     ImageUploadComponent,
+    ImageAndDocumentsDialogComponent,
     DeviceDetailsComponent,
     PrintSettingsDetailsComponent,
     PdfComponent,

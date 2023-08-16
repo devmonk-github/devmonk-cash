@@ -1037,6 +1037,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             setTimeout(() => {
               this.saveInProgress = false;
               this.fetchBusinessPartnersProductCount(uniq);
+              this.eKind = 'regular';
             }, 100);
             if (this.selectedTransaction) {
               this.deleteParkedTransaction();

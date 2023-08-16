@@ -5,7 +5,9 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
-import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+//import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+import { ImageAndDocumentsDialogComponent } from 'src/app/shared/components/image-and-documents-dialog/image-and-documents-dialog.component';
+
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -197,6 +199,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     createrDetail:{},
     iEmployeeId:'',
     aGroups:[],
+    sImage:'',
     bIsCompany:false,
     oContactPerson:{
       sFirstName: '',
@@ -335,7 +338,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   nClientId:any="-";
   oS:any;
   showDeleteBtn: boolean = false;
+  sDocumentName: any = '';
+  sDocumentNumber: any = 0;
+  aImage:any = [];
   
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -344,6 +351,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private dialogService: DialogService,
     private translateService: TranslateService,
     public tillService: TillService,
+   
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -379,22 +387,25 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
+    
   }
 
-  removePicture() {
-    this.customer.sImage = '';
-  }
   openImageModal() {
-    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
-        console.log("result", result);
-        if (result.url)
-        this.customer.sImage = result.url;
+        if (result.event.result.data.url) this.aImage.push(result.event.result.data.url);
+        if(result.event.result.data.sDocumentName) this.sDocumentName = result.event.result.data.sDocumentName;
+        if(result.event.result.data.sDocumentNumber) this.sDocumentNumber = result.event.result.data.sDocumentNumber;
       });
   }
-  openImage(image:any){
-    const url =image;
+ 
+
+  openImage(imageIndex:any){
+    const url =this.aImage[imageIndex];
     window.open(url , "_blank");
+  }
+  removeImage(index: number): void {
+    this.aImage.splice(index, 1);
   }
   
   onTabChange(index: any) {
@@ -811,6 +822,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
+              if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+                const oDocumentsBody = {
+                  aImage: this.aImage,
+                  iCustomerId: result.data._id,
+                  sDocumentName: this.sDocumentName,
+                  sDocumentNumber: this.sDocumentNumber,
+                  iBusinessId: this.requestParams.iBusinessId
+                }
+                this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                  (result: any) => {
+                  })
+              }
             } else {
               let errorMessage = ""
               this.translateService.get(result.message).subscribe(
@@ -832,6 +855,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
             this.fetchUpdatedDetails();
             this.close({ action: true });
+            if (this.aImage.length || this.sDocumentName != '' || this.sDocumentNumber != '0') {
+              const oDocumentsBody = {
+                aImage: this.aImage,
+                iCustomerId: this.customer._id,
+                sDocumentName: this.sDocumentName,
+                sDocumentNumber: this.sDocumentNumber,
+                iBusinessId: this.requestParams.iBusinessId
+              }
+              this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                (result: any) => {
+                })
+            }
           }
           else {
             let errorMessage = "";

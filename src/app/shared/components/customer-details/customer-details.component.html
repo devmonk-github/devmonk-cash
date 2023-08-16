@@ -66,7 +66,7 @@
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
-                                <div class="col-2">
+                                <!-- <div class="col-2">
                                     <div class="d-flex flex-column mb-3">
                                         <div>
                                             <h4 class="text-gray-700 fw-bolder mb-2">{{'PICTURE' | translate}}</h4>
@@ -82,7 +82,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'ABOUT' | translate}}</h4>
                                     <div class="d-flex flex-column mb-5">
@@ -229,42 +229,49 @@
                         </div>
                     </div>
 
+                    <div class="row mb-6" *ngIf="!editProfile">
+                        <div *ngIf="customer?.dDateOfBirth || customer?.sCompanyName || customer?.nPaymentTermDays || customer?.sVatNumber"
+                        class="col-9 d-flex flex-wrap">
+                            <div class="col-3" *ngIf="customer?.dDateOfBirth">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{(customer?.dDateOfBirth | date:'yyyy-MM-dd')}} </p>
+                            </div>
+                            <div class="col-3" *ngIf="customer?.sCompanyName">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.sCompanyName}}</p>
+                            </div>
+                            <div class="col-3" *ngIf="customer?.nPaymentTermDays">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.nPaymentTermDays}}</p>
+                            </div>
+                            <div class="col-3" *ngIf="customer?.sVatNumber">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.sVatNumber}}</p>
+                            </div>
+                            <!-- <div class="col-3" *ngIf="customer?.oIdentity?.documentName">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName}}</p>
+                            </div>
+                            <div class="col-3" *ngIf="customer?.oIdentity?.documentNumber">
+                                <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER' |
+                                    translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber}} </p>
+                            </div> -->
+                        </div>
 
-                    <div *ngIf="!editProfile && (customer?.dDateOfBirth || customer?.oIdentity?.documentName || customer?.oIdentity?.documentNumber)"
-                        class="row my-6">
-                        <div class="col-3" *ngIf="customer?.dDateOfBirth">
-                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{(customer?.dDateOfBirth | date:'yyyy-MM-dd')}} </p>
-                        </div>
-                        <div class="col-3" *ngIf="customer?.oIdentity?.documentName">
-                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName}}</p>
-                        </div>
-                        <div class="col-3" *ngIf="customer?.oIdentity?.documentNumber">
-                            <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber}} </p>
-                        </div>
-                    </div>
-
-                    <div *ngIf="!editProfile && (customer?.sCompanyName || customer?.nPaymentTermDays || customer?.sVatNumber)"
-                        class="row mb-6">
-                        <div class="col-3" *ngIf="customer?.sCompanyName">
-                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.sCompanyName}}</p>
-                        </div>
-                        <div class="col-3" *ngIf="customer?.nPaymentTermDays">
-                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.nPaymentTermDays}}</p>
-                        </div>
-                        <div class="col-3" *ngIf="customer?.sVatNumber">
-                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER' |
-                                translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.sVatNumber}}</p>
+                        <div class="col-3">
+                            <!--TODO: Show documents and images of a customer -->
+                            <div class="w-100" *ngIf="customer?.dDateOfBirth">
+                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENTS_AND_IMAGES' | translate}} </label>
+                                <button class="btn btn-info btn-sm">
+                                    {{"SHOW_DOCUMENTS_AND_IMAGES" | translate}}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -865,6 +872,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="row mb-3" *ngIf="customer?.bIsCompany">
 
                         <div class="col-6">
@@ -1153,6 +1162,34 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="fw-bolder text-muted">{{'DOCUMENTS_AND_IMAGES' | translate}}
+                        </label>
+                    <button class="btn btn-info btn-sm w-100" (click)="openImageModal()"> {{ "UPLOAD_DOCUMENT_AND_IMAGES" | translate}}
+                        <fa-icon [icon]="faUpload"></fa-icon>
+                    </button>
+
+                    <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">
+                        <div class="px-1 py-2" *ngFor="let image of aImage; let i = index" (mouseover)="showDeleteBtn = true"
+                        (mouseout)="showDeleteBtn = false">
+                          <div class="image-input" data-kt-image-input="true"
+                            style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                            <div class="image-input-wrapper w-100px h-100px" (click)="openImage(i)"
+                              style="background-image: url(assets/media/avatars/300-1.jpg)">
+                              <img src="{{ image }}" width="100px" height="100px" />
+                            </div>
+              
+                            <div>
+                              <button class="btn btn-icon btn-circle btn-active-color-primary w-20px h-20px bg-body shadow"
+                                data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image" (click)="removeImage(i)">
+                                <i class="bi bi-x fs-2" (click)="removeImage(i)"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                    <!-- DOCUMENT SECTION -->
+                    <!-- <div class="mb-3">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
                         <ng-select id="documentName" class="form-control form-control-solid p-0"
                             [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
@@ -1162,7 +1199,7 @@
                     <div class="mb-6">
                         <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
                             [(ngModel)]="customer.oIdentity.documentNumber" />
-                    </div>
+                    </div> -->
                     <div class="" *ngIf="!customer?.bIsCompany && customer?.sCompanyName">
                         <h3 class="my-3">{{'COMPANY_DETAILS' | translate}}</h3>
                         <div class="mb-3">
