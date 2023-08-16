@@ -175,7 +175,7 @@ export class CustomersComponent implements OnInit {
 
           /*Needed to change fields order*/
           this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
-          console.log(this.sBusinessCountry);
+          //console.log(this.sBusinessCountry);
           if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
             this.bNormalOrder = false;
           }
