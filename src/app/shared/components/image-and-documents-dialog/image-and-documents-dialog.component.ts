@@ -47,7 +47,7 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
   private trigger: Subject<void> = new Subject<void>();
   // switch to next / previous / specific webcam; true/false: forward/backwards, string: deviceId
   private nextWebcam: Subject<boolean | string> = new Subject<boolean | string>();
-  imageData = new BehaviorSubject<any>({});
+  imageData:any;
   @ViewChild('image', { read: ViewContainerRef }) container!: ViewContainerRef;
   componentRef: any;
 
@@ -82,6 +82,7 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
           const componentFactory = moduleRef.instance.resolveComponent();
           this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
           this.componentRef.instance.$data = this.imageData;
+          this.componentRef.instance.oDocsDetail = this.imageData;
           this.componentRef.instance.triggerEvent.subscribe((event: any) => {
             if(event){
               this.close({ event });

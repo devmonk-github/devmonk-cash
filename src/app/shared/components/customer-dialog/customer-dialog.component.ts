@@ -186,6 +186,10 @@ export class CustomerDialogComponent implements OnInit {
      {key:'COMPANY' , value:'company'}
    ]
 
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
+  businessDetails:any={};
+ 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
   constructor(
@@ -218,7 +222,32 @@ export class CustomerDialogComponent implements OnInit {
      })
     this.allcustomer = this.dialogRef?.context?.allcustomer;
     this.getCustomerGroups();
+    this.getBusinessDetails();
   }
+
+  getBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
+      const currentLocation = localStorage.getItem('currentLocation');
+      if (response?.data) this.businessDetails = response.data;
+      if (this.businessDetails?.aLocation?.length) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+
+        if (locationIndex != -1) {
+          const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
+
+          /*Needed to change fields order*/
+          this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
+          //console.log(this.sBusinessCountry);
+          if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+            this.bNormalOrder = false;
+          }
+        }
+      }
+    });
+  }
+
+
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
@@ -432,31 +461,31 @@ export class CustomerDialogComponent implements OnInit {
     });
   }
 
-  makeCustomerAddress(address: any, includeCountry: boolean) {
-    if (!address) {
-      return '';
-    }
-    let result = '';
-    if (address.sStreet) {
-      result += address.sStreet + ' ';
-    }
-    if (address.sHouseNumber) {
-      result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
-    }
-    if (address.sHouseNumberSuffix) {
-      result += address.sHouseNumberSuffix + ' ';
-    }
-    if (address.sPostalCode) {
-      result += this.formatZip(address.sPostalCode) + ' ';
-    }
-    if (address.sCity) {
-      result += address.sCity;
-    }
-    if (includeCountry && address.sCountry) {
-      result += address.sCountry;
-    }
-    return result;
-  }
+  // makeCustomerAddress(address: any, includeCountry: boolean) {
+  //   if (!address) {
+  //     return '';
+  //   }
+  //   let result = '';
+  //   if (address.sStreet) {
+  //     result += address.sStreet + ' ';
+  //   }
+  //   if (address.sHouseNumber) {
+  //     result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
+  //   }
+  //   if (address.sHouseNumberSuffix) {
+  //     result += address.sHouseNumberSuffix + ' ';
+  //   }
+  //   if (address.sPostalCode) {
+  //     result += this.formatZip(address.sPostalCode) + ' ';
+  //   }
+  //   if (address.sCity) {
+  //     result += address.sCity;
+  //   }
+  //   if (includeCountry && address.sCountry) {
+  //     result += address.sCountry;
+  //   }
+  //   return result;
+  // }
 
   getCustomers() {
     if (this.requestParams?.searchValue?.length < 3) return; // && !condition1
@@ -483,8 +512,8 @@ export class CustomerDialogComponent implements OnInit {
               }else{
                 customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
               }
-              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+              customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+              customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
               customer['EMAIL'] = customer.sEmail;
               customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
             }
@@ -514,8 +543,8 @@ export class CustomerDialogComponent implements OnInit {
             
             for(const customer of this.customers){
               customer['NAME'] = await this.makeCustomerName(customer);
-              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+              customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+              customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
               customer['EMAIL'] = customer.sEmail;
               //customer['STATUS'] = customer.bIsConnected;
               customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
@@ -532,8 +561,8 @@ export class CustomerDialogComponent implements OnInit {
     this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(async (result) =>{ 
       let customer =  result.customer;
       customer['NAME'] =  await this.makeCustomerName(customer);
-      customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-      customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+      customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+      customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
       customer['EMAIL'] = customer.sEmail;
       customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
       this.close({action: true, customer: customer });
@@ -602,8 +631,8 @@ export class CustomerDialogComponent implements OnInit {
           this.allcustomer[isIndex].isUpdated = true;
           this.allcustomer[isIndex].name = data?.customer?.data?.sSalutation.toUpperCase() +" " + data?.customer?.data?.sFirstName + " "+  data?.customer?.data?.sPrefix + " "+  data?.customer?.data?.sLastName ;
           this.allcustomer[isIndex]['NAME'] = data?.customer?.data?.sSalutation.toUpperCase() +" " + data?.customer?.data?.sFirstName + " "+  data?.customer?.data?.sPrefix + " "+  data?.customer?.data?.sLastName ;
-          this.allcustomer[isIndex]['SHIPPING_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
-          this.allcustomer[isIndex]['INVOICE_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
+          this.allcustomer[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false, this.bNormalOrder);
+          this.allcustomer[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false, this.bNormalOrder);
           this.allcustomer[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
           this.allcustomer[isIndex]['PHONE'] =(data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sPrefixLandline ? data?.customer?.data?.oPhone.sPrefixLandline : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone.sMobile && data?.customer?.data?.oPhone.sPrefixMobile ? data?.customer?.data?.oPhone.sPrefixMobile : '') +  (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
         }

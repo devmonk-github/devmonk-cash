@@ -190,15 +190,31 @@
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oShippingAddress">
-                                        <p class="m-0">
+                                        <p class="m-0" *ngIf="bNormalOrder">
                                             <span *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
                                                 {{ customer.oShippingAddress.sStreet }} {{ customer.oShippingAddress.sHouseNumber}}
                                                 <span class="text-uppercase">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span>
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode" class="text-uppercase">{{ customer.oShippingAddress.sPostalCode}},</span>
-                                            <span *ngIf="customer?.oShippingAddress?.sCity">{{ customer.oShippingAddress.sCity }}<br></span>
-                                            <span *ngIf="customer?.oShippingAddress?.sState">{{ customer.oShippingAddress.sState }}<br></span>
+                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode" class="text-uppercase">{{ customer.oShippingAddress.sPostalCode}} </span>
+                                            <span *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
+                                                {{ customer.oShippingAddress.sCity }}, <br> 
+                                                {{ customer.oShippingAddress.sState || ' - '}}, 
+                                            </span>
+                                            {{ customer.oShippingAddress.sCountry }}
+                                        </p>
+                                        <p class="m-0" *ngIf="!bNormalOrder">
+                                            <span *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
+                                                {{ customer.oShippingAddress.sHouseNumber}}<span class="text-uppercase">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span>
+                                                {{ customer.oShippingAddress.sStreet }}, 
+                                                <br>
+                                            </span>
+                                            <span *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
+                                                {{ customer.oShippingAddress.sCity }}, {{ customer.oShippingAddress.sState || ' - '}} <br>
+                                            </span>
+                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode" class="text-uppercase">
+                                                {{ customer.oShippingAddress.sPostalCode}}<br> 
+                                            </span>
                                             {{ customer.oShippingAddress.sCountry }}
                                         </p>
                                     </div>
@@ -206,21 +222,35 @@
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'INVOICE_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
-                                        <p class="m-0">
+                                        <p class="m-0" *ngIf="bNormalOrder">
                                             <span
                                                 *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
-                                                {{ customer.oInvoiceAddress.sStreet}} {{
-                                                customer.oInvoiceAddress.sHouseNumber}}
-                                                <span style="text-transform: uppercase;">{{
-                                                    customer.oInvoiceAddress.sHouseNumberSuffix }}</span>
+                                                {{ customer.oInvoiceAddress.sStreet}} 
+                                                {{ customer.oInvoiceAddress.sHouseNumber}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span>,
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode"
-                                                style="text-transform: uppercase;">
-                                                {{ customer.oInvoiceAddress.sPostalCode}},
+                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode" style="text-transform: uppercase;">
+                                                {{ customer.oInvoiceAddress.sPostalCode}} 
                                             </span>
-                                            <span *ngIf="customer.oInvoiceAddress.sCity">{{
-                                                customer.oInvoiceAddress.sCity}}<br></span>
+                                            <span *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
+                                                {{ customer.oInvoiceAddress.sCity }}, <br>
+                                                {{ customer.oInvoiceAddress.sState || ' - '}}, 
+                                            </span>
+                                            {{customer.oInvoiceAddress.sCountry}}
+                                        </p>
+                                        <p class="m-0" *ngIf="!bNormalOrder">
+                                            <span
+                                                *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
+                                                    {{customer.oInvoiceAddress.sHouseNumber}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span>
+                                                    {{ customer.oInvoiceAddress.sStreet}},
+                                                <br>
+                                            </span>
+                                            <span *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
+                                                {{ customer.oInvoiceAddress.sCity }}, {{ customer.oInvoiceAddress.sState || ' - '}}<br>
+                                            </span>
+                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode" style="text-transform: uppercase;">
+                                                {{ customer.oInvoiceAddress.sPostalCode}} <br>
+                                            </span>
                                             {{customer.oInvoiceAddress.sCountry}}
                                         </p>
                                     </div>
@@ -1016,20 +1046,19 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-7">
+                                <div class="col-7" [ngClass]="bNormalOrder ? 'order-1' : 'order-3'">
                                     <input class="form-control"
                                         placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sStreet"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')"
                                         (keydown)="onlyLetters($event)" />
                                 </div>
-
-                                <div class="col-3 custom-number">
+                                <div class="col-3 custom-number" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
                                     <input  class="form-control" type="number"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
-                                <div class="col-2">
+                                <div class="col-2" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">
                                     <input  class="form-control"
                                         placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix"
@@ -1037,18 +1066,18 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-1' : 'order-3'">
                                     <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sPostalCode"
                                         (ngModelChange)="customer.oInvoiceAddress.sPostalCode = $event.toUpperCase()" />
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sCity"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sCity')"
                                         (keydown)="onlyLetters($event)" />
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">
                                     <input class="form-control" placeholder="{{'STATE' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sState"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sState')"
@@ -1070,7 +1099,7 @@
                             <h3 class="m-0 mb-6">{{'SHIPPING_ADDRESS' | translate}}</h3>
 
                             <div class="row mb-3">
-                                <div class="col-7">
+                                <div class="col-7" [ngClass]="bNormalOrder ? 'order-1' : 'order-3'">
                                     <input *ngIf="(mode === 'details' && editProfile)" class="form-control"
                                         placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sStreet"
@@ -1082,7 +1111,7 @@
                                         (keydown)="onlyLetters($event)" />
                                 </div>
 
-                                <div class="col-3 custom-number">
+                                <div class="col-3 custom-number" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
                                     <input *ngIf="(mode === 'details' && editProfile)" class="form-control"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
@@ -1090,7 +1119,7 @@
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
                                 </div>
-                                <div class="col-2">
+                                <div class="col-2" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">
                                     <input *ngIf="(mode === 'details' && editProfile)" class="form-control"
                                         placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumberSuffix" />
@@ -1101,18 +1130,18 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-1' : 'order-3'">
                                     <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sPostalCode"
                                         (ngModelChange)="customer.oShippingAddress.sPostalCode = $event.toUpperCase()" />
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sCity"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sCity')"
                                         (keydown)="onlyLetters($event)" />
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">
                                     <input class="form-control" placeholder="{{'STATE' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sState"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sState')"
@@ -1168,7 +1197,7 @@
                         <fa-icon [icon]="faUpload"></fa-icon>
                     </button>
 
-                    <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">
+                    <!-- <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">
                         <div class="px-1 py-2" *ngFor="let image of aImage; let i = index" (mouseover)="showDeleteBtn = true"
                         (mouseout)="showDeleteBtn = false">
                           <div class="image-input" data-kt-image-input="true"
@@ -1186,7 +1215,7 @@
                             </div>
                           </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                     <!-- DOCUMENT SECTION -->
                     <!-- <div class="mb-3">

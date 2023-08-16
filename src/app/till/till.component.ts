@@ -176,7 +176,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     currentPage: 1,
     totalItems: 0
   };
-
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -252,6 +253,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.businessDetails = _businessData.data;
     this.aBusinessLocation = this.businessDetails?.aLocation || [];
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
+    /*Needed to change fields order*/
+    if (this.businessDetails?.currentLocation) {
+      this.sBusinessCountry = this.businessDetails?.currentLocation?.oAddress?.countryCode;
+      //console.log(this.sBusinessCountry);
+      if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+        this.bNormalOrder = false;
+      }
+    }
+
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
     // this.getPrintSettings(true)
     this.getPrintSettings()
@@ -762,8 +772,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       (result: any) => {
         const customer = result;
         customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
-        customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-        customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+        customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+        customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
         customer['EMAIL'] = customer.sEmail;
         customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
         this.customer = customer;
