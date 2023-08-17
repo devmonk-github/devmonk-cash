@@ -373,7 +373,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       })
   }
 
-  nupdateSettings() {
+  UpdateSettings() {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     }else{
@@ -398,22 +398,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];
     }
 
+   
+    
     const body = {
       nLastInvoiceNumber: this.settings?.nLastInvoiceNumber || 0,
       nLastReceiptNumber: this.settings?.nLastReceiptNumber || 0 ,
       sDayClosurePeriod: this.settings?.sDayClosurePeriod || 'day',
       sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
-      bOpenCashDrawer: this.settings?.bOpenCashDrawer || true,
-      bShowOrder: this.settings?.bShowOrder || true,
-      bShowGoldPurchase: this.settings?.bShowGoldPurchase || true,
-      bShowOpenDrawer: this.settings?.bShowOpenDrawer || true,
+      bOpenCashDrawer: this.settings?.bOpenCashDrawer,
+      bShowOrder: this.settings?.bShowOrder ,
+      bShowGoldPurchase: this.settings?.bShowGoldPurchase,
+      bShowOpenDrawer: this.settings?.bShowOpenDrawer,
       aBagNumbers: this.settings?.aBagNumbers || [],
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill || [],
       iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder || null,
       iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair || null ,
       bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
       bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
-      bShowForm: this.settings?.bShowForm || true
+      bShowForm: this.settings?.bShowForm  
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

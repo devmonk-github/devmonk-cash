@@ -130,7 +130,11 @@ export class CustomersComponent implements OnInit {
     {key:'ACTION' , disabled:true }
   ]
   customerGroupList :any=[];
- 
+
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
+  businessDetails:any={};
+
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
@@ -156,7 +160,30 @@ export class CustomersComponent implements OnInit {
     this.getCustomers();
     this.getBusinessSettings();
     this.getCustomerGroups();
+    this.getBusinessDetails();
   }
+
+  getBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
+      const currentLocation = localStorage.getItem('currentLocation');
+      if (response?.data) this.businessDetails = response.data;
+      if (this.businessDetails?.aLocation?.length) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+
+        if (locationIndex != -1) {
+          const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
+
+          /*Needed to change fields order*/
+          this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
+          //console.log(this.sBusinessCountry);
+          if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+            this.bNormalOrder = false;
+          }
+        }
+      }
+    });
+  }
+
 
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
@@ -458,8 +485,8 @@ export class CustomersComponent implements OnInit {
               customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             }
 
-            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
             customer['EMAIL'] = customer.sEmail;
             customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
           }

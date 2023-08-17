@@ -80,31 +80,50 @@
                     <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
                         <div class="col-md-6">
                             <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                            <div class="text-gray-800 mt-2">
-                                <span>
+                            <div class="text-gray-800 mt-2" *ngIf="bNormalOrder">
+                                <span class="text-uppercase">
                                     {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }}
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumberSuffix }},
+                                    <br>
                                 </span>
                                 <span>
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }}
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }}, <br>
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sState }}, {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
+                                </span>
+                            </div>
+                            <div class="text-gray-800 mt-2" *ngIf="!bNormalOrder">
+                                <span class="text-uppercase">
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumberSuffix }}
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }}, <br>
+                                </span>
                                 <span>
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }}, {{ transaction?.oCustomer?.oInvoiceAddress?.sState }},
+                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }}, <br> 
                                     {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
                                 </span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
-                            <div class="text-gray-800 mt-2">
-                                <span>
+                            <div class="text-gray-800 mt-2" *ngIf="bNormalOrder">
+                                <span class="text-uppercase">
                                     {{ transaction?.oCustomer?.oShippingAddress?.sStreet }}
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oShippingAddress?.sHouseNumberSuffix }},
+                                    <br>
                                 </span>
                                 <span>
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }}
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sCity }}
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} {{ transaction?.oCustomer?.oShippingAddress?.sCity }}, <br>
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sState }}, {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
+                                </span>
+                            </div>
+                            <div class="text-gray-800 mt-2" *ngIf="!bNormalOrder">
+                                <span class="text-uppercase">
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oShippingAddress?.sHouseNumberSuffix }}
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sStreet }}, <br>
                                 </span>
                                 <span>
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sCity }}, {{ transaction?.oCustomer?.oShippingAddress?.sState }},
+                                    {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }}, <br>
                                     {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
                                 </span>
                             </div>

@@ -53,6 +53,10 @@ export class ExportsComponent implements OnInit {
   dialogRef: DialogComponent;
   customerGroupList: any = [];
 
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
+  businessDetails: any;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -70,8 +74,30 @@ export class ExportsComponent implements OnInit {
     this.iBusinessId = localStorage.getItem('currentBusiness');
     // this.fetchSecondHeaderList();
     this.getCustomerGroups();
+    this.getBusinessDetails();
   }
   
+  getBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((response: any) => {
+      const currentLocation = localStorage.getItem('currentLocation');
+      if (response?.data) this.businessDetails = response.data;
+      if (this.businessDetails?.aLocation?.length) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+
+        if (locationIndex != -1) {
+          const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
+
+          /*Needed to change fields order*/
+          this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
+          //console.log(this.sBusinessCountry);
+          if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+            this.bNormalOrder = false;
+          }
+        }
+      }
+    });
+  }
+
   getCustomerGroups(){
     this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
       if (res?.data?.length) {
@@ -139,8 +165,8 @@ export class ExportsComponent implements OnInit {
       (result: any) => {
         this.customerList = result.data[0].result;
         this.customerList?.forEach((customer: any, index: Number) => {
-          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " "+ customer?.oShippingAddress?.sPostalCode;
-          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " "+ customer?.oInvoiceAddress?.sPostalCode;
+          let ShippingAddress =  this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+          let InvoiceAddress =  this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
           let Mobile = customer?.oPhone?.sMobile;
           if(customer?.oPhone?.sPrefixMobile) Mobile = customer?.oPhone?.sPrefixMobile + customer?.oPhone?.sMobile;
           let Landline = customer?.oPhone?.sLandLine;
@@ -299,8 +325,8 @@ export class ExportsComponent implements OnInit {
             customer['oPhone.sMobile'] = (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
           }
 
-          let ShippingAddress = customer?.oShippingAddress?.sStreet + " "+ customer?.oShippingAddress?.sHouseNumber + " "+ customer?.oShippingAddress?.sPostalCode;
-          let InvoiceAddress = customer?.oInvoiceAddress?.sStreet + " "+ customer?.oInvoiceAddress?.sHouseNumber + " "+ customer?.oInvoiceAddress?.sPostalCode;
+          let ShippingAddress =  this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+          let InvoiceAddress =  this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
           
           customer['oShippingAddress'] = ShippingAddress || "-";
           customer['oInvoiceAddress'] = InvoiceAddress || "-";

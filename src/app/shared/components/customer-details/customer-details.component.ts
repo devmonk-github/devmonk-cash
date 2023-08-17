@@ -5,7 +5,9 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
-import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+//import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+import { ImageAndDocumentsDialogComponent } from 'src/app/shared/components/image-and-documents-dialog/image-and-documents-dialog.component';
+
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -197,6 +199,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     createrDetail:{},
     iEmployeeId:'',
     aGroups:[],
+    sImage:'',
     bIsCompany:false,
     oContactPerson:{
       sFirstName: '',
@@ -335,7 +338,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   nClientId:any="-";
   oS:any;
   showDeleteBtn: boolean = false;
+  sDocumentName: any = '';
+  sDocumentNumber: any = 0;
+  aImage:any = [];
+  oTemp :any;
   
+  bNormalOrder: boolean = true;
+  sBusinessCountry: string = '';
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -344,6 +354,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private dialogService: DialogService,
     private translateService: TranslateService,
     public tillService: TillService,
+   
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -379,22 +390,29 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
+    
   }
 
-  removePicture() {
-    this.customer.sImage = '';
-  }
   openImageModal() {
-    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData:this.oTemp } })
       .instance.close.subscribe(result => {
-        console.log("result", result);
-        if (result.url)
-        this.customer.sImage = result.url;
+        if (result.event.docs){
+          this.oTemp = {
+            aImage: result.event.docs.aImage,
+            sDocumentName: result.event.docs.sDocumentName,
+            sDocumentNumber: result.event.docs.sDocumentNumber
+          }
+        }
       });
   }
-  openImage(image:any){
-    const url =image;
+ 
+
+  openImage(imageIndex:any){
+    const url =this.oTemp.aImage[imageIndex];
     window.open(url , "_blank");
+  }
+  removeImage(index: number): void {
+    this.oTemp.aImage.splice(index, 1);
   }
   
   onTabChange(index: any) {
@@ -524,25 +542,44 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
       const currentLocation = localStorage.getItem('currentLocation');
       if (response?.data) this.businessDetails = response.data;
-      if (this.businessDetails?.aLocation?.length && !this.customer?._id) {
+      if(this.businessDetails?.aLocation?.length){
         const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
         if (locationIndex != -1) {
+         
+        }
+      }
+      
+      if (this.businessDetails?.aLocation?.length) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+
+        if (locationIndex != -1) {
           const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
-          if (currentLocationDetail?.oAddress?.countryCode) {
-            const oCountryPhoneCode = this.aCountryPhoneCodes.find(code => code.key === currentLocationDetail?.oAddress?.countryCode);
-            this.customer.oPhone.sPrefixMobile = oCountryPhoneCode.value;
-            this.customer.oPhone.sPrefixLandline = oCountryPhoneCode.value;
+
+          /*Needed to change fields order*/
+          this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
+          //console.log(this.sBusinessCountry);
+          if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+            this.bNormalOrder = false;
           }
-          if (currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode) {
-            this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
-            this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
-            this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
-            this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+  
+          if(!this.customer?._id){
+            if (currentLocationDetail?.oAddress?.countryCode) {
+              const oCountryPhoneCode = this.aCountryPhoneCodes.find(code => code.key === currentLocationDetail?.oAddress?.countryCode);
+              this.customer.oPhone.sPrefixMobile = oCountryPhoneCode.value;
+              this.customer.oPhone.sPrefixLandline = oCountryPhoneCode.value;
+            }
+            if (currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode) {
+              this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
+              this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+              this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
+              this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+            }
           }
         }
       }
     });
   }
+
   addLoyalityPoints(){
     this.pointsAdded = true;
     if(this.customerLoyalityPoints < 0 && this.customerLoyalityPoints < -this.customer.nLoyaltyPoints){
@@ -811,6 +848,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 return;
               }
               this.close({ action: true, customer: result.data });
+              if (this.oTemp) {
+                const oDocumentsBody = {
+                  aImage: this.oTemp?.aImage,
+                  iCustomerId: result.data._id,
+                  sDocumentName: this.oTemp?.sDocumentName,
+                  sDocumentNumber: this.oTemp?.sDocumentNumber,
+                  iBusinessId: this.requestParams.iBusinessId
+                }
+                this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                  (result: any) => {
+                  })
+              }
             } else {
               let errorMessage = ""
               this.translateService.get(result.message).subscribe(
@@ -832,6 +881,18 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
             this.fetchUpdatedDetails();
             this.close({ action: true });
+            if (this.oTemp) {
+              const oDocumentsBody = {
+                aImage: this.oTemp?.aImage,
+                iCustomerId: this.customer._id,
+                sDocumentName: this.oTemp?.sDocumentName,
+                sDocumentNumber: this.oTemp?.sDocumentNumber,
+                iBusinessId: this.requestParams.iBusinessId
+              }
+              this.apiService.postNew('JEWELS_AND_WATCHES', '/api/v1/document/create', oDocumentsBody).subscribe(
+                (result: any) => {
+                })
+            }
           }
           else {
             let errorMessage = "";

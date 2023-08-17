@@ -505,13 +505,18 @@
                     <span *ngIf="customer.sCompanyName"> {{customer.sCompanyName}} <br> </span>
                     <span *ngIf="customer.bIsCompany"> {{customer.oContactPerson.sFirstName}} {{customer.oContactPerson.sLastName}}<br></span>
                     <span *ngIf="customer.sEmail">{{customer.sEmail}} <br> </span>
-                    <span *ngIf="customer.oInvoiceAddress?.sStreet || customer.oInvoiceAddress?.sHouseNumber">
-                      {{customer.oInvoiceAddress?.sStreet}} {{customer.oInvoiceAddress?.sHouseNumber}}
+                    <span *ngIf="customer['INVOICE_ADDRESS']">
+                        {{customer['INVOICE_ADDRESS']}}
+                    </span>
+                    <!-- <span *ngIf="customer.oInvoiceAddress?.sStreet || customer.oInvoiceAddress?.sHouseNumber">
+                      <span *ngIf="bNormalOrder">{{customer.oInvoiceAddress?.sStreet}} {{customer.oInvoiceAddress?.sHouseNumber}}{{customer.oInvoiceAddress?.sHouseNumberSuffix}}</span>
+                      <span *ngIf="!bNormalOrder">{{customer.oInvoiceAddress?.sHouseNumber}}{{customer.oInvoiceAddress?.sHouseNumberSuffix}} {{customer.oInvoiceAddress?.sStreet}}</span>
                       <br>
                     </span>
-                    <span *ngIf="customer.oInvoiceAddress?.sPostalCode || customer.oInvoiceAddress?.sCity">
-                      {{customer.oInvoiceAddress?.sPostalCode}} {{customer.oInvoiceAddress?.sCity}}<br>
-                    </span>
+                    <span *ngIf="customer.oInvoiceAddress?.sPostalCode || customer.oInvoiceAddress?.sCity || customer.oInvoiceAddress?.sState">
+                      <span *ngIf="bNormalOrder">{{customer.oInvoiceAddress?.sPostalCode}} {{customer.oInvoiceAddress?.sCity}} {{customer.oInvoiceAddress?.sState}}</span><br>
+                      <span *ngIf="!bNormalOrder">{{customer.oInvoiceAddress?.sCity}} {{customer.oInvoiceAddress?.sState}} {{customer.oInvoiceAddress?.sPostalCode}}</span><br>
+                    </span> -->
                   </p>
                   <p class="mt-3 mb-0 text-gray-800" *ngIf="tillService.oSavingPointSettings.bEnabled && !customer.bCounter" >
                     <!-- <span class="fw-bolder">{{"SAVING_POINTS" | translate}}:</span> <span>{{ customer.oPoints.spendable }}</span> -->
@@ -534,7 +539,7 @@
                   <button class="btn btn-secondary"
                     (click)="selectedTransaction ? updateParkedTransaction() : park()">
                     {{(selectedTransaction ? "SAVE" : "PARK") |translate}}</button>
-                  <button class="btn btn-secondary" (click)="selectedTransaction = null" *ngIf="selectedTransaction">
+                  <button class="btn btn-secondary" (click)="clearAll()" *ngIf="selectedTransaction">
                     <fa-icon [icon]="faTimesCircle"></fa-icon>
                   </button>
                   <button class="btn btn-secondary" *ngIf="selectedTransaction" (click)="deleteParkedTransaction()">
