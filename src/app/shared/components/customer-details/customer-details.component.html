@@ -191,29 +191,41 @@
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oShippingAddress">
                                         <p class="m-0" *ngIf="bNormalOrder">
-                                            <span *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
-                                                {{ customer.oShippingAddress.sStreet }} {{ customer.oShippingAddress.sHouseNumber}}
-                                                <span class="text-uppercase">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span>
+                                            <span
+                                                *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
+                                                {{ customer.oShippingAddress.sStreet }} {{
+                                                customer.oShippingAddress.sHouseNumber}}
+                                                <span class="text-uppercase">{{
+                                                    customer.oShippingAddress.sHouseNumberSuffix }}</span>
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode" class="text-uppercase">{{ customer.oShippingAddress.sPostalCode}} </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
-                                                {{ customer.oShippingAddress.sCity }}, <br> 
-                                                {{ customer.oShippingAddress.sState || ' - '}}, 
+                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode"
+                                                class="text-uppercase">{{ customer.oShippingAddress.sPostalCode}}
+                                            </span>
+                                            <span
+                                                *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
+                                                {{ customer.oShippingAddress.sCity }}, <br>
+                                                {{ customer.oShippingAddress.sState || ' - '}},
                                             </span>
                                             {{ customer.oShippingAddress.sCountry }}
                                         </p>
                                         <p class="m-0" *ngIf="!bNormalOrder">
-                                            <span *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
-                                                {{ customer.oShippingAddress.sHouseNumber}}<span class="text-uppercase">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span>
-                                                {{ customer.oShippingAddress.sStreet }}, 
+                                            <span
+                                                *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
+                                                {{ customer.oShippingAddress.sHouseNumber}}<span
+                                                    class="text-uppercase">{{
+                                                    customer.oShippingAddress.sHouseNumberSuffix }}</span>
+                                                {{ customer.oShippingAddress.sStreet }},
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
-                                                {{ customer.oShippingAddress.sCity }}, {{ customer.oShippingAddress.sState || ' - '}} <br>
+                                            <span
+                                                *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
+                                                {{ customer.oShippingAddress.sCity }}, {{
+                                                customer.oShippingAddress.sState || ' - '}} <br>
                                             </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode" class="text-uppercase">
-                                                {{ customer.oShippingAddress.sPostalCode}}<br> 
+                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode"
+                                                class="text-uppercase">
+                                                {{ customer.oShippingAddress.sPostalCode}}<br>
                                             </span>
                                             {{ customer.oShippingAddress.sCountry }}
                                         </p>
@@ -225,30 +237,39 @@
                                         <p class="m-0" *ngIf="bNormalOrder">
                                             <span
                                                 *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
-                                                {{ customer.oInvoiceAddress.sStreet}} 
-                                                {{ customer.oInvoiceAddress.sHouseNumber}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span>,
+                                                {{ customer.oInvoiceAddress.sStreet}}
+                                                {{ customer.oInvoiceAddress.sHouseNumber}}<span
+                                                    style="text-transform: uppercase;">{{
+                                                    customer.oInvoiceAddress.sHouseNumberSuffix }}</span>,
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode" style="text-transform: uppercase;">
-                                                {{ customer.oInvoiceAddress.sPostalCode}} 
+                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode"
+                                                style="text-transform: uppercase;">
+                                                {{ customer.oInvoiceAddress.sPostalCode}}
                                             </span>
-                                            <span *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
+                                            <span
+                                                *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
                                                 {{ customer.oInvoiceAddress.sCity }}, <br>
-                                                {{ customer.oInvoiceAddress.sState || ' - '}}, 
+                                                {{ customer.oInvoiceAddress.sState || ' - '}},
                                             </span>
                                             {{customer.oInvoiceAddress.sCountry}}
                                         </p>
                                         <p class="m-0" *ngIf="!bNormalOrder">
                                             <span
                                                 *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
-                                                    {{customer.oInvoiceAddress.sHouseNumber}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span>
-                                                    {{ customer.oInvoiceAddress.sStreet}},
+                                                {{customer.oInvoiceAddress.sHouseNumber}}<span
+                                                    style="text-transform: uppercase;">{{
+                                                    customer.oInvoiceAddress.sHouseNumberSuffix }}</span>
+                                                {{ customer.oInvoiceAddress.sStreet}},
                                                 <br>
                                             </span>
-                                            <span *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
-                                                {{ customer.oInvoiceAddress.sCity }}, {{ customer.oInvoiceAddress.sState || ' - '}}<br>
+                                            <span
+                                                *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
+                                                {{ customer.oInvoiceAddress.sCity }}, {{ customer.oInvoiceAddress.sState
+                                                || ' - '}}<br>
                                             </span>
-                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode" style="text-transform: uppercase;">
+                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode"
+                                                style="text-transform: uppercase;">
                                                 {{ customer.oInvoiceAddress.sPostalCode}} <br>
                                             </span>
                                             {{customer.oInvoiceAddress.sCountry}}
@@ -261,7 +282,7 @@
 
                     <div class="row mb-6" *ngIf="!editProfile">
                         <div *ngIf="customer?.dDateOfBirth || customer?.sCompanyName || customer?.nPaymentTermDays || customer?.sVatNumber"
-                        class="col-9 d-flex flex-wrap">
+                            class="col-9 d-flex flex-wrap">
                             <div class="col-3" *ngIf="customer?.dDateOfBirth">
                                 <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH' |
                                     translate}} </label>
@@ -273,7 +294,8 @@
                                 <p class="fs-6 mb-2">{{customer?.sCompanyName}}</p>
                             </div>
                             <div class="col-3" *ngIf="customer?.nPaymentTermDays">
-                                <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS' |
+                                <label
+                                    class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS' |
                                     translate}} </label>
                                 <p class="fs-6 mb-2">{{customer?.nPaymentTermDays}}</p>
                             </div>
@@ -516,7 +538,8 @@
                                         </tbody>
                                     </table>
                                     <div class="row" *ngIf="aTransactionItems?.length">
-                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_purchases_table_length">
                                                 <label>
                                                     <select name="kt_purchases_table_length"
@@ -565,8 +588,10 @@
                                                 <td>{{activity?.sNumber}}</td>
                                                 <td>{{activity?.sBagNumber || '-'}}</td>
                                                 <td>{{getTypes(activity.activityitems)}}</td>
-                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
-                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
                                                 <td>
                                                     <div *ngFor="let status of repairStatuses">
                                                         <div *ngIf="activity.eActivityItemStatus == status.value">
@@ -598,7 +623,8 @@
                                     </table>
 
                                     <div class="row" *ngIf="aActivities?.length">
-                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_activities_table_length">
                                                 <label>
                                                     <select name="kt_activities_table_length"
@@ -646,8 +672,10 @@
                                                 <td>{{activity?.sNumber}}</td>
                                                 <td>{{activity?.sBagNumber || '-'}}</td>
                                                 <td>{{activity?.oType?.eTransactionType}}</td>
-                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
-                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
                                                 <td>
                                                     <div *ngFor="let status of repairStatuses">
                                                         <div *ngIf="activity.eActivityItemStatus == status.value">
@@ -679,7 +707,8 @@
                                         </tbody>
                                     </table>
                                     <div class="row" *ngIf="aActivityItems?.length">
-                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
                                             <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
                                                 <label>
                                                     <select name="kt_ecommerce_sales_table_length"
@@ -1047,20 +1076,18 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-7" [ngClass]="bNormalOrder ? 'order-1' : 'order-3'">
-                                    <input class="form-control"
-                                        placeholder="{{'STREET' | translate}}"
+                                    <input class="form-control" placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sStreet"
                                         (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')"
                                         (keydown)="onlyLetters($event)" />
                                 </div>
                                 <div class="col-3 custom-number" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
-                                    <input  class="form-control" type="number"
+                                    <input class="form-control" type="number"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">
-                                    <input  class="form-control"
-                                        placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix"
                                         (keydown)="onlyLetters($event)" />
                                 </div>
@@ -1190,13 +1217,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="fw-bolder text-muted">{{'DOCUMENTS_AND_IMAGES' | translate}}
                         </label>
-                    <button class="btn btn-info btn-sm w-100" (click)="openImageModal()"> {{ "UPLOAD_DOCUMENT_AND_IMAGES" | translate}}
-                        <fa-icon [icon]="faUpload"></fa-icon>
-                    </button>
-
+                        <button class="btn btn-info btn-sm w-100" (click)="openImageModal()"> {{ "UPLOAD_DOCUMENT_AND_IMAGES" | translate}}
+                            <fa-icon [icon]="faUpload"></fa-icon>
+                        </button>
+                    </div> -->
                     <!-- <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">
                         <div class="px-1 py-2" *ngFor="let image of aImage; let i = index" (mouseover)="showDeleteBtn = true"
                         (mouseout)="showDeleteBtn = false">
@@ -1216,7 +1243,7 @@
                           </div>
                         </div>
                     </div> -->
-                </div>
+
                     <!-- DOCUMENT SECTION -->
                     <!-- <div class="mb-3">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
