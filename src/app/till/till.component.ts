@@ -1512,7 +1512,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // shopProducts: this.shopProducts,
       iBusinessId: this.iBusinessId,
       iSupplierId: this.supplierId,
-      iActivityId: this.iActivityId,
+      //iActivityId: this.iActivityId,
       bIsStockSelected: this.isStockSelected,
       aPayMethods: this.payMethods,
       oBusiness: this.business,
