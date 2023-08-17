@@ -392,10 +392,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.loadTransactions();
     
   }
-
   openImageModal() {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData:this.oTemp } })
       .instance.close.subscribe(result => {
+        console.log("result", result)
         if (result.event.docs){
           this.oTemp = {
             aImage: result.event.docs.aImage,
@@ -403,9 +403,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             sDocumentNumber: result.event.docs.sDocumentNumber
           }
         }
+        console.log("this.oTemp", this.oTemp)
       });
   }
- 
 
   openImage(imageIndex:any){
     const url =this.oTemp.aImage[imageIndex];

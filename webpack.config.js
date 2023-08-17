@@ -245,19 +245,10 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       remotes: {
-        "imageUpload": "imageUpload@http://localhost:3001/api/v1/webpack/jewels-and-watches/image-upload.js",
+        "customersDocsImagesUpload": "customersDocsImagesUpload@http://localhost:3001/api/v1/webpack/jewels-and-watches/customers-docs-images-upload.js",
       },
       shared: share(sharedLibrary)
     }),
-    
-    // new ModuleFederationPlugin({
-    //   name: "SupplierProductSliderModule",
-    //   filename: "supplier-product-slider.js",
-    //   exposes: {
-    //     "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
-    //   },
-    //   shared: share(sharedLibrary)
-    // }),
     new ModuleFederationPlugin({
       name: "ImportGiftCardModule",
       filename: "import-gift-card.js",

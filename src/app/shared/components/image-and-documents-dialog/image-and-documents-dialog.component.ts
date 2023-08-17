@@ -42,15 +42,15 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.requestParams.iBusinessId = localStorage.getItem("currentBusiness");
-    this.openImageDialog();
+    this.openCustomersDocsImagesUploadDialog();
   }
 
-  openImageDialog() {
+  openCustomersDocsImagesUploadDialog() {
    // this.container.clear();
     try {
-      import('imageUpload/ImageUploadModule').then(({ ImageUploadModule }) => {
-        this.compiler.compileModuleAsync(ImageUploadModule).then(moduleFactory => {
-          const moduleRef: NgModuleRef<typeof ImageUploadModule> = moduleFactory.create(this.injector);
+      import('customersDocsImagesUpload/CustomersDocsImagesUploadModule').then(({ CustomersDocsImagesUploadModule }) => {
+        this.compiler.compileModuleAsync(CustomersDocsImagesUploadModule).then(moduleFactory => {
+          const moduleRef: NgModuleRef<typeof CustomersDocsImagesUploadModule> = moduleFactory.create(this.injector);
           const componentFactory = moduleRef.instance.resolveComponent();
           this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
           this.componentRef.instance.$data = this.imageData;
