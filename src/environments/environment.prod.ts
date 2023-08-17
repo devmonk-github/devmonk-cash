@@ -8,6 +8,7 @@ const BACKUP_URL = 'https://backup.e-orderportal.com';
 const ORGANIZATION_URL = 'https://organization.e-orderportal.com';
 const LOG_URL = 'https://log.e-orderportal.com';
 const FISKALY_URL = 'https://fiskaly.backend-retailgear.org';
+const JEWELS_AND_WATCHES_URL = 'https://jewels.backend-retailgear.org';
 /* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
@@ -22,6 +23,7 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
+  JEWELS_AND_WATCHES_URL: JEWELS_AND_WATCHES_URL,
   apiURL: 'https://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',

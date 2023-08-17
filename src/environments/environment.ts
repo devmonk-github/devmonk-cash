@@ -12,6 +12,7 @@ const BACKUP_URL = 'http://localhost:3008';
 const ORGANIZATION_URL = 'http://localhost:3001';
 const LOG_URL = 'http://localhost:3003';
 const FISKALY_URL = 'http://localhost:3020';
+const JEWELS_AND_WATCHES_URL = 'http://localhost:3009';
 /* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
@@ -26,10 +27,10 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
+  JEWELS_AND_WATCHES_URL: JEWELS_AND_WATCHES_URL,
   webpackUrl: `${ORGANIZATION_URL}/api/v1/webpack`,
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
-  JEWELS_AND_WATCHES_URL : 'http://localhost:3009',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
   indexedDBName: 'indexedDB1',

@@ -147,6 +147,7 @@ export class PaymentDistributionService {
       }
       const nDistributedAmount = +(_.sumBy(aItems.filter((el:any) => el.amountToBePaid > 0), 'paymentAmount').toFixed(2))
       availableAmount -= nDistributedAmount;
+      availableAmount = +(availableAmount.toFixed(2));
       if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
 
       let assignedAmount = +(_.sumBy(aItems, 'paymentAmount').toFixed(2));
@@ -156,8 +157,8 @@ export class PaymentDistributionService {
         if (bTesting) console.log('availableAmount > 0', availableAmount)
         if(assignedAmount > 0) {
           if (bTesting) console.log('assignedAmount > 0', assignedAmount)
-          arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
-          if (bTesting) console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
+          arrToUpdate[arrToUpdate.length - 1].paymentAmount += availableAmount;
+          if (bTesting) console.log("updated last item's paymentAmount to ", arrToUpdate[arrToUpdate.length - 1].paymentAmount, { availableAmount })
         } else {
           if (bTesting) console.log('assignedAmount < 0', assignedAmount)
           assignedAmount = -assignedAmount;
