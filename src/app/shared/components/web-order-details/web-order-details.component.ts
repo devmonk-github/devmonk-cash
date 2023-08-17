@@ -386,15 +386,16 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   processWebItems(aItems: any) {
-    // console.log(aItems);
+    // console.log(JSON.parse(JSON.stringify(aItems)));
     let completed = 0, refunded = 0;
     const aDiscountTypes = ['discount', 'giftcard-discount', 'coupon-discount'];
     // aItems.sort((item1: any, item2: any) => !item1?.iBusinessProductId ? -1 : (!item2?.iBusinessProductId ? -1 : (item2.iBusinessProductId - item1.iBusinessProductId)))
     // const aDiscountItems = aItems.filter((el: any) => aDiscountTypes.includes(el.oType.eKind));
-    // console.log({ aDiscountItems });
+    // console.log({ aDiscountTypes });
     this.activityItems = this.reOrderItems(aItems.filter((el: any) => !aDiscountTypes.includes(el.oType.eKind)));
-    //console.log(this.activityItems);
+    // console.log(JSON.parse(JSON.stringify(this.activityItems)));
     this.activityItems.forEach((oItem: any) => {
+      // console.log(oItem.oType.eKind);
       oItem.bRegular = oItem.oType.eKind == 'regular';
       if (oItem.bRegular) this.tillService.calculateDiscount(oItem);
       if (!oItem?.nDiscountToShow) oItem.nDiscountToShow = 0;
@@ -434,6 +435,8 @@ export class WebOrderDetailsComponent implements OnInit {
         oItem.eKindName = oItem.oType.eKind.replace('-', '_').toUpperCase();
       }
 
+      // console.log(oItem.eKindName, oItem.oType.eKind)
+
       if (['completed', 'refund', 'refundInCashRegister'].includes(oItem.eActivityItemStatus)) completed += 1;
       if (['refund', 'refundInCashRegister'].includes(oItem.eActivityItemStatus)) refunded += 1;
 
@@ -457,17 +460,25 @@ export class WebOrderDetailsComponent implements OnInit {
     if (completed == this.activityItems?.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems?.length})` }
     else if (completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems?.length})` }
     else this.FeStatus = 'New';
+
+    // console.log('final - ', this.activityItems);
   }
 
   reOrderItems(aItems:any){
     const aOrderedItems:any = [];
     const aRegularItems = aItems.filter((el: any) => el.oType.eKind == 'regular');
     aRegularItems.forEach((oRegular: any) => {
-      const aRelatedItems = aItems.filter((oRelated: any) => oRelated.sUniqueIdentifier == oRegular.sUniqueIdentifier && oRelated.oType.eKind != 'regular');
+      // console.log('oRegular', JSON.parse(JSON.stringify(oRegular)))
+      const aRelatedItems = aItems.filter((oRelated: any) => oRelated.sUniqueIdentifier == oRegular.sUniqueIdentifier && !['regular','shipping-cost'].includes(oRelated.oType.eKind));
       aOrderedItems.push(oRegular, ...aRelatedItems);
+      // console.log('aRelatedItems',JSON.parse(JSON.stringify(aRelatedItems)))
     });
+    
+    // console.log('after', JSON.parse(JSON.stringify(aOrderedItems)))
     const oShippingCostItem = aItems.find((el: any) => el.oType.eKind == 'shipping-cost');
+    // console.log({ oShippingCostItem })
     if (oShippingCostItem) {
+      // console.log('pushing now shipping cost')
       aOrderedItems.push(oShippingCostItem);
     }
     return aOrderedItems;
