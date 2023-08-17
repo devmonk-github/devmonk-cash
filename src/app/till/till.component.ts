@@ -408,8 +408,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = +(_.sumBy(this.transactionItems, 'quantity').toFixed(2))
     this.nTotalPayment = +(_.sumBy(this.transactionItems.filter((i: any) => !i.isExclude), 'paymentAmount').toFixed(2))
+    // console.log('here in 411',this.nTotalPayment, this.nItemsTotalToBePaid, this.availableAmount);
     if (this.availableAmount > this.nItemsTotalToBePaid && this.nTotalPayment == this.nItemsTotalToBePaid) {
-      // console.log('if 1')
+      // console.log('if 1', Math.abs(this.availableAmount - this.nItemsTotalToBePaid).toFixed(2), this.availableAmount, this.nItemsTotalToBePaid)
       this.nFinalAmount = +(Math.abs(this.availableAmount - this.nItemsTotalToBePaid).toFixed(2));
     } else if (this.availableAmount > this.nTotalPayment) {
       // console.log('else if 1')
@@ -505,7 +506,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       // console.log(bAllItemsAreExcluded,
       //   { bAllGiftcardPaid: this.bAllGiftcardPaid, nTotalPayment: this.nTotalPayment, availableAmount: this.availableAmount})
-      }
+    }
 
   }
   async addItem(type: string) {
@@ -855,7 +856,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.payMethods.forEach(o => { o.amount = null, o.isDisabled = false });
-    if (this.transactionItems?.length) this.distributeAmount();
+    if (this.transactionItems?.length) 
+      this.distributeAmount();
+    else
+      this.availableAmount = 0;
+
     this.updateAmountVariables();
   }
 
@@ -1519,6 +1524,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.iLocationId,
       oRequestParams: this.requestParams,
     };
+    // console.log(body);
     return body;
   }
   park() {
@@ -1550,6 +1556,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.parkedTransactionLoading = true;
     this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.iBusinessId}`)
       .subscribe((transactionInfo: any) => {
+        // console.log(transactionInfo);
         this.tillService.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
@@ -1562,6 +1569,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.iLocationId = transactionInfo.iLocationId;
         this.requestParams = transactionInfo.oRequestParams;
         this.parkedTransactionLoading = false;
+        this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
+        this.updateAmountVariables();
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
         this.parkedTransactionLoading = false;
