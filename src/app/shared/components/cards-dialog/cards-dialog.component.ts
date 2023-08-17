@@ -178,11 +178,11 @@ export class CardsComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    const bIsGiftcardValid = this.oGiftcard?.nCurrentLimit == 0 || this.oGiftcard.nAmount > this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount == 0;
+    const bIsGiftcardValid = this.oGiftcard?.nCurrentLimit != 0 || this.oGiftcard.nAmount <= this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount != 0;
     const bIsExternalGiftcardValid = (this.oExternalGiftcard?.sExternalGiftCardNumber && this.oExternalGiftcard.nAmount <= this.oExternalGiftcard.balance) || true;
-    const bIsLoyaltyPointsValid = this.redeemedLoyaltyPoints == 0 || this.loyaltyPoints < this.redeemedLoyaltyPoints;
+    const bIsLoyaltyPointsValid = this.redeemedLoyaltyPoints != 0 || this.loyaltyPoints >= this.redeemedLoyaltyPoints;
 
-    // console.log({ bIsGiftcardValid, bIsExternalGiftcardValid, bIsLoyaltyPointsValid})
+    //console.log({ bIsGiftcardValid, bIsExternalGiftcardValid, bIsLoyaltyPointsValid})
 
     if (!bIsGiftcardValid || !bIsExternalGiftcardValid || !bIsLoyaltyPointsValid){
       this.toastService.show({type:'warning' , text: this.translateService.instant('VALIDATION_ERROR_PLEASE_CHECK_AGAIN_THE_AMOUNT')});

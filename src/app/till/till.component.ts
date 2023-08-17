@@ -1620,11 +1620,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result) {
         // console.log({result, oGiftcard, mode})
         if (result?.oGiftcard?.nAmount) {
-          const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftCard._id);
+          const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftcard?._id);
           if (mode == 'edit' || oExisting) {
-            oExisting.nAmount = result.oGiftCard.nAmount;
+            oExisting.nAmount = result?.oGiftcard?.nAmount;
           } else {
-            this.appliedGiftCards.push(result.oGiftCard);
+            this.appliedGiftCards.push(result?.oGiftcard);
           }
         }
         if(result?.oExternalGiftcard?.nAmount) {
@@ -2015,11 +2015,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   distributeAmount() {
+    this.nGiftcardAmount = 0;
     this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
     
     if (this.appliedGiftCards?.length){
       this.nGiftcardAmount = +((_.sumBy(this.appliedGiftCards.filter(el => el.type == 'custom'), 'nAmount') || 0).toFixed(2));
       this.availableAmount += +((_.sumBy(this.appliedGiftCards.filter(el => el.type != 'custom'), 'nAmount') || 0).toFixed(2));
+      //console.log(this.availableAmount, this.nGiftcardAmount);
     }
 
     this.paymentDistributeService.distributeAmount({
