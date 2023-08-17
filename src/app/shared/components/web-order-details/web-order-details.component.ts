@@ -152,7 +152,7 @@ export class WebOrderDetailsComponent implements OnInit {
       for (const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
     }
     if (type == 'sentToCustomer') {
-      if (!this.activity.sTrackingNumber || this.activity.sTrackingNumber == '' || !this.activity.eCarrier || this.activity.eCarrier == '') {
+      if (!this.activity.eCarrier || this.activity.eCarrier == '') { //!this.activity.sTrackingNumber || this.activity.sTrackingNumber == '' THIS IS OPTIONAL SO COMMENTED
         this.toastService.show({ type: 'warning', text: this.translate['SET_TRACKING_NUMBER_AND_CARRIER'] });
         return;
       }
@@ -364,7 +364,7 @@ export class WebOrderDetailsComponent implements OnInit {
       printSettings: oSettings,
       // printActionSettings: this.printActionSettings,
       // eSituation: 'is_created',
-      sAction: (print) ? 'print' : 'download',
+      sAction: (sAction) ? sAction : (print) ? 'print' : 'download',
       sApiKey: this.businessDetails?.oPrintNode?.sApiKey
     }).toPromise();
 
@@ -689,7 +689,8 @@ export class WebOrderDetailsComponent implements OnInit {
       iTransactionId: this.transaction._id,
       iActivityId: this.activity._id,
       sTrackingNumber: this.activity.sTrackingNumber,
-      eCarrier: this.activity.eCarrier
+      eCarrier: this.activity.eCarrier,
+      businessDetails: this.businessDetails
     }
 
     this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(

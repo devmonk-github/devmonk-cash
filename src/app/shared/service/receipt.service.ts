@@ -145,8 +145,11 @@ export class ReceiptService {
                 sAction: sAction,
                 sApiKey: sApiKey
             }).then((response) => {
+                if (sAction == 'sentToCustomer'){
+                    observer.next(response);
+                }
                 observer.complete();
-                if (sAction == 'sentToCustomer') return response;
+
             });
         });
     }
