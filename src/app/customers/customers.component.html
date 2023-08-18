@@ -40,15 +40,16 @@
                             </div>
                             <div class="col-4 me-4 customers-fields">
                                 <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_FIELDS' | translate}} </label>
-                                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [closeOnSelect]="false"
                                     [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" (ngModelChange)="setPlaceHolder()">
-                                    <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+                                        <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
                                 </ng-select>
                             </div>
                             <div class="col-3 me-4 customers-fields">
                                 <label class="fw-bolder text-muted" for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
-                                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false" [(ngModel)]="requestParams.oFilterBy.aSelectedGroups">
-                                    <ng-option *ngFor="let group of customerGroupList" [value]="group._id">{{group.sName}}</ng-option>
+                                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false" [closeOnSelect]="false"
+                                    [(ngModel)]="requestParams.oFilterBy.aSelectedGroups">
+                                        <ng-option *ngFor="let group of customerGroupList" [value]="group._id">{{group.sName}}</ng-option>
                                 </ng-select>
                             </div>
                             <div class="col-3 me-4 customers-fields">
