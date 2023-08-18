@@ -392,14 +392,18 @@
                                             </p>
                                             <p class="m-0" *ngIf="item.sProductName">
                                                 {{ item.sProductName}}
+                                                <br>
+                                                <span class="fw-semibold small" *ngIf="item.sProductName">
+                                                    {{"PRODUCT_NUMBER" | translate}}: {{item.sProductNumber}}
+                                                </span>
                                             </p>
                                             <p class="m-0 text-muted" *ngIf="item.sArticleNumber">
                                                 ({{item.sArticleNumber}})
                                             </p>
                                             <span *ngIf="item.sDescription" class="custom-truncate">
                                                 {{ item.sDescription}}
+                                                <br>
                                             </span>
-                                            <br>
                                             <span *ngIf="item?.bPrepayment">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount}}
                                                 <br />
