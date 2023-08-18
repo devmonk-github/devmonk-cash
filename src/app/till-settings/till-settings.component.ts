@@ -10,6 +10,7 @@ import { ToastService } from '../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
 import { SetPaymentMethodSequenceComponent } from '../shared/components/set-payment-method-sequence-dialog/set-payment-method-sequence.component';
 import { TillService } from '../shared/service/till.service';
+import { QuickbuttonWizardComponent } from '../shared/components/quickbutton-wizard/quickbutton-wizard.component';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -432,7 +433,18 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
 
   createFavourite() {
-    this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+    // this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+    //   if (result.action)
+    //     this.fetchQuickButtons();
+    // });
+
+    this.createFavouriteModalSub = this.dialogService.openModal(QuickbuttonWizardComponent, { 
+      context: { mode: 'create' }, 
+      cssClass: "modal-lg", 
+      hasBackdrop: true, 
+      closeOnBackdropClick: true, 
+      closeOnEsc: true 
+    }).instance.close.subscribe(result => {
       if (result.action)
         this.fetchQuickButtons();
     });

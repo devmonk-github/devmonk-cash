@@ -10,6 +10,23 @@ import { TillService } from '../../service/till.service';
   templateUrl: './favourites.component.html',
   styleUrls: ['./favourites.component.sass']
 })
+
+ /**
+  * TODO:
+  * 1. Disable buttons on footer if no product is selected
+  * 2. Create new product functionality
+  *   a. Check if internal supllier exists
+  *   b. Check if article group exists -> repairs, orders, giftcards, stocks, services and others
+  *   c. Calculate margin function
+  *   d. Fetch business taxes
+  *   e. Backend call to create product
+  * 3. After selection or creation, needs to pass product information to STEP 3
+  *   a. Select product function
+  * 4. Show article number inside STEP 3
+  * 5. Create quick button backend call
+  * 6. Clear/reset everything at the end (or add a button to clear/reset wizard).
+  */
+ 
 export class AddFavouritesComponent implements OnInit {
 
   dialogRef: DialogComponent;
