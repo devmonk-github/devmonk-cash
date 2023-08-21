@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
 import { ToastService } from '../components/toast';
 
-type ApiTypes = 'auth' | 'organization' | 'core' | 'cashregistry' | 'customer' | 'bookkeeping' | 'website-builder' | 'backup' | 'oldplatform' | 'log' | 'fiskaly' | 'JEWELS_AND_WATCHES'
+type ApiTypes = 'auth' | 'organization' | 'core' | 'cashregistry' | 'customer' | 'bookkeeping' | 'website-builder' | 'backup' | 'oldplatform' | 'log' | 'fiskaly' | 'JEWELS_AND_WATCHES' | 'cron'
 
 @Injectable({
   providedIn: 'root'
@@ -190,6 +190,8 @@ export class ApiService {
         return environment.FISKALY_URL;
       case 'JEWELS_AND_WATCHES':
           return environment.JEWELS_AND_WATCHES_URL;
+      case 'cron':
+            return environment.CRON_URL;
       case 'oldplatform':
         return oldplatform += ':3000';
     }

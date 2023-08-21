@@ -23,10 +23,11 @@ export class DropshippingServiceComponent implements OnInit {
     this.fetchDropshipperList();
   }
 
-  addEditDropshipper(dropshipper?: any) {
-    this.dialogService.openModal(AddEditDropshipperComponent, { cssClass: 'mw-50', context: {dropshipper} })
-      .instance.close.subscribe((result: any) => {
-        if(result == 'fetchList'){
+  async addEditDropshipper(dropshipper?: any) {
+    this.dialogService.openModal(AddEditDropshipperComponent, { cssClass: 'mw-50', context: { dropshipper } })
+      .instance.close.subscribe(async (result: any) => {
+        if (result == 'fetchList') {
+          await this.apiService.postNew('cron', '/api/v1/cron/dropshipper', { iBusinessId: this.iBusinessId }).toPromise();
           this.fetchDropshipperList();
         }
       });

@@ -13,11 +13,13 @@ const ORGANIZATION_URL = 'http://localhost:3001';
 const LOG_URL = 'http://localhost:3003';
 const FISKALY_URL = 'http://localhost:3020';
 const JEWELS_AND_WATCHES_URL = 'http://localhost:3009';
+const CRON_URL = 'http://localhost:3013';
 /* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
   production: false,
   CORE_URL: CORE_URL,
+  CRON_URL: CRON_URL,
   CASH_URL: CASH_URL,
   AUTH_URL: AUTH_URL,
   CUSTOMER_URL: CUSTOMER_URL,
@@ -40,7 +42,7 @@ export const environment = {
     font-src 'self' https://fonts.gstatic.com;
     style-src 'self'  https://fonts.googleapis.com https://fonts.googleapis.com 'unsafe-inline';
     script-src 'self' https://s3.eu-central-1.amazonaws.com/directives-multiscreenplatform.com/ ${ORGANIZATION_URL};
-    connect-src 'self' ${CORE_URL} ${CASH_URL} ${AUTH_URL} ${CUSTOMER_URL} ${WEBSITE_URL} ${BOOKKEEPING_URL} ${BACKUP_URL} ${ORGANIZATION_URL} ${LOG_URL} ${FISKALY_URL};
+    connect-src 'self' ${CORE_URL} ${CRON_URL} ${CASH_URL} ${AUTH_URL} ${CUSTOMER_URL} ${WEBSITE_URL} ${BOOKKEEPING_URL} ${BACKUP_URL} ${ORGANIZATION_URL} ${LOG_URL} ${FISKALY_URL};
     frame-src 'self' ;
     `
   // worker-src blob:http://localhost:4202/;
