@@ -41,6 +41,7 @@ import { CardsComponent } from "./components/cards-dialog/cards-dialog.component
 import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
 import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
 import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
+import { QuickbuttonWizardComponent } from "./components/quickbutton-wizard/quickbutton-wizard.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
@@ -80,6 +81,7 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     CustomPaymentMethodComponent,
     ConfirmationDialogComponent,
     AddFavouritesComponent,
+    QuickbuttonWizardComponent,
     ImageUploadComponent,
     ImageAndDocumentsDialogComponent,
     DeviceDetailsComponent,

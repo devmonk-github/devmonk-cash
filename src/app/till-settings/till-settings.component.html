@@ -3,7 +3,7 @@
     <div class="card-header row">
       <div class="card-title">
         <div class="col-md-9">
-          <span>{{ 'CASH_REGISTER' | translate}}</span>
+          <h2 class="fw-bolder m-0">{{ 'CASH_REGISTER' | translate}}</h2>
         </div>
       </div>
     </div>
@@ -72,7 +72,7 @@
 
           <div class="row mb-5" *ngIf="settings?.currentLocation">
             <div class="col-12  mb-3">
-              <h3 class="fw-bolder mb-0">{{'BAG_NUMBERS' | translate}}</h3>
+              <h4 class="fw-bolder mb-0">{{'BAG_NUMBERS' | translate}}</h4>
             </div>
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
@@ -200,8 +200,8 @@
 
       <div class="row mt-3" *ngIf="settings?.currentLocation">
         <div class="col-12">
-          <h3 class="fw-bolder mb-1">{{'CASH_REGISTER_PREFILL' | translate}}</h3>
-          <label class="fs-6 form-label fw-bolder text-dark">{{'FIELDS' | translate}}</label>
+          <h4 class="fw-bolder mb-1">{{'CASH_REGISTER_PREFILL' | translate}}</h4>
+          <label class="fs-7 form-label fw-bolder text-dark">{{'FIELDS' | translate}}</label>
         </div>
         <div class="col-6">
           <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
@@ -340,7 +340,7 @@
       </div>
 
       <div class="row mt-5 py-3 border border-secondary" *ngIf="settings?.currentLocation">
-        <h3 class="fw-bolder mb-3">{{'CUSTOMERS_SETTINGS' | translate}}</h3>
+        <h4 class="fw-bolder mb-3">{{'CUSTOMERS_SETTINGS' | translate}}</h4>
 
         <div class="col-5 d-flex align-items-center justify-content-between mb-3">
           <label class="form-check form-switch form-check-custom form-check-solid">{{"UPDATE_NCLIENT_ID" |
@@ -401,22 +401,22 @@
           </button>
         </div>
       </div>
-
     </div>
+  </div>
 
-    <div class="card-body p-9 border-bottom" data-kt-scroll-section="payment-methods">
-      <div class="card-title fw-bold row">
+  <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="payment-methods">
+    <div class="card-header row py-3">
+      <div class="card-title">
         <div class="col-4">
-          <span class="fw-bold">
-            <h3>{{ 'PAYMENT_METHODS' | translate}}</h3>
-          </span>
+          <h2 class="fw-bolder m-0">{{ 'PAYMENT_METHODS' | translate}}</h2>
         </div>
         <div class="col-8 text-end">
-          <button class="btn btn-primary me-2" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
-          <button class="btn btn-primary" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' |
-            translate}}</button>
+          <button class="btn btn-light-primary me-3" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' | translate}}</button>
+          <button class="btn btn-primary" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
         </div>
       </div>
+    </div>
+    <div class="card-body p-9 border-bottom">
       <div *ngIf="payMethods.length" class="dataTables_wrapper dt-bootstrap4 no-footer">
         <div class="table-responsive">
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
@@ -457,21 +457,21 @@
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
       </div>
     </div>
-    <div class="card-body" data-kt-scroll-section="quick-buttons">
-      <div class="card-title fw-bold row">
-        <div class="col-md-8">
-          <span class="fw-bold">
-            <h3>{{ 'QUICK_BUTTONS' | translate}}</h3>
-          </span>
+  </div>
+
+  <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="quick-buttons">
+    <div class="card-header row py-3">
+      <div class="card-title">
+        <div class="col-4">
+          <h2 class="fw-bolder m-0">{{ 'QUICK_BUTTONS' | translate}}</h2>
         </div>
-        <div class="col-md-3">
-          <button class="btn btn-light-primary float-end" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' |
-            translate}}</button>
-        </div>
-        <div class="col-md-1">
-          <button class="btn btn-primary float-end" (click)="createFavourite()">{{ 'NEW' | translate}}</button>
+        <div class="col-8 text-end">
+          <button class="btn btn-light-primary" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' | translate}}</button>
+          <button class="btn btn-primary ms-3" (click)="createFavourite()">{{ 'NEW' | translate}}</button>
         </div>
       </div>
+    </div>
+    <div class="card-body">
       <div class="">
         <div *ngIf="quickButtonsLoading" class="spinner-border mx-auto"></div>
         <h5 *ngIf='!quickButtons.length && !quickButtonsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
@@ -512,14 +512,13 @@
                   </div>
                 </td>
               </tr>
-
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
   </div>
+
   <div class="card" *ngIf="bookKeepingMode">
     <div class="card-header row mt-4">
       <div class="col-md-4">
