@@ -75,12 +75,12 @@
                             </div>
                             <div class="col-12 d-flex bg-light py-5" *ngIf="searchKeyword?.length > 2">
                                 <div class="spinner-border mx-auto" *ngIf="bSearchingProduct"></div>
-                                <div class="alert alert-danger" role="alert" *ngIf="!bSearchingProduct && shopProducts.length == 0">
+                                <div class="alert alert-danger" role="alert" *ngIf="!bSearchingProduct && shopProducts?.length == 0">
                                     <p class="m-0 text-uppercase fw-bolder">
                                         {{"NO_DATA_FOUND" | translate}}! 
                                     </p>
                                 </div>
-                                <div class="row"  *ngIf="!bSearchingProduct && shopProducts.length > 0">
+                                <div class="row"  *ngIf="!bSearchingProduct && shopProducts?.length > 0">
                                     <pagination-controls
                                         id="paginate_shop_products"
                                         (pageChange)="pageChanged($event, 'shopProducts', searchKeyword)"
@@ -93,7 +93,7 @@
                                     </pagination-controls>
                                     <div class="col-xl-6 col-sm-12 cursor-pointer p-2" *ngFor="let product of shopProducts | paginate: oShopProductsPaginationConfig"
                                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-                                      <a (click)="moveToStep(3)">
+                                      <a (click)="moveToStep(3,product)">
                                         <div class="card custom-card m-2 shadow-sm" style="height: 145px !important;">
                                           <div class="card-body d-flex align-items-center p-3">
                                             <div class="image-container">
@@ -104,20 +104,20 @@
                                                 translate) }}</p>
                                               <div class="d-flex align-items-start justify-content-between flex-wrap">
                                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
-                                                  <strong>{{ product.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
-                                                  <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
+                                                  <small><strong>{{ product.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong></small><br>
+                                                  <small><strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}</small><br>
                                                 </p>
                                                 <p class="col-xl-5 col-sm-4 m-xl-0 mx-sm-2 text-gray-800">
-                                                  <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: <br>
-                                                  {{product?.sNewArticleNumber ? product?.sNewArticleNumber : (product?.sArticleNumber || '-') }}
-                                                  <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="{{product.sArticleNumber}}"></i>
+                                                  <span class="small">
+                                                    <strong>{{"ARTICLE_NUMBER" | translate}}</strong>: <br>
+                                                    {{product?.sNewArticleNumber ? product?.sNewArticleNumber : (product?.sArticleNumber || '-') }}
+                                                    <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="{{product.sArticleNumber}}"></i>
+                                                  </span>
                                                   <br>
+                                                  {{(product?.oCurrentLocation?.nPriceIncludesVat || 0) | currencyFormat: tillService.currency:tillService.separator}}
                                                 </p>
                                               </div>
-                                              <p *ngIf="product?.oCurrentLocation?.nStock == 0 && !product.bHasStock" class="m-0 mt-2 text-warning col-xl-12 col-sm-12">
-                                                {{"PRODUCT_WITHOUT_STOCK_WARNING" | translate}}
-                                              </p>
                                             </div>
                                           </div>
                                         </div>
@@ -133,31 +133,43 @@
                         <p class="fw-bolder mb-2 text-uppercase fs-5">
                             {{ "STEP_2" | translate}}: {{ "CREATE_PRODUCT" | translate}}
                         </p>
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <p class="m-0">
+                                {{"MAKE_SURE_FILL_EVERYTHING_CORRECTLY" | translate}}!
+                                <span class="text-muted small">{{"ALL_FIELDS_ARE_REQUIRED" | translate}}!</span>
+                            </p>
+                        </div>
                         <div class="col-12 d-flex bg-light p-5 flex-wrap">
-                            <div class="col-12 w-100 mb-5">
-                                <label for="product_name" class="form-label">{{"PRODUCT_NAME" | translate}}</label>
-                                <input type="text" class="form-control" id="product_name" [value]="searchKeyword" [(ngModel)]="oNewProduct.name"  name="prod_name">
+                            <div class="col-12 w-100 mb-5 d-flex align-items-center">
+                                <div class="col-8">
+                                    <label for="product_name" class="form-label">{{"PRODUCT_NAME" | translate}}</label>
+                                    <input type="text" class="form-control" id="product_name" [value]="searchKeyword"
+                                        [(ngModel)]="oNewProduct.name" name="prod_name">
+                                </div>
+                                <div class="col-3 ms-auto">
+                                    <label class="form-control-label mb-3">{{ "TAX" | translate}}</label>:
+                                    <ng-select name="taxRate" id="taxRate" class="form-control  mb-3 mb-lg-0" [(ngModel)]="oNewProduct.tax">
+                                      <ng-option *ngFor="let rate of taxes" [value]="rate.nRate">{{rate.sName}}</ng-option>
+                                    </ng-select>
+                                </div>
                             </div>
                             <div class="col-12 w-100 mb-5 d-flex">
-                                <div class="col-3 me-auto">
-                                    <label for="selling_price" class="form-label">{{"VAT" | translate}}</label>
-                                    <select class="form-select" [(ngModel)]="oNewProduct.vat"  name="prod_vat">
-                                        <option *ngFor="let vat of taxOptions" [value]="vat.nRate">
-                                            {{ vat.sName }}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-3">
-                                    <label for="purchase_price" class="form-label">{{"PURCHASE_PRICE" | translate}}</label>
-                                    <input type="text" class="form-control" id="purchase_price" [value]="" [(ngModel)]="oNewProduct.purchasePrice" name="prod_purchase_price">
-                                </div>
-                                <div class="col-2 mx-3">
-                                    <label for="margin" class="form-label">{{"MARGIN" | translate}}</label>
-                                    <input type="text" class="form-control" id="margin" [value]="" [(ngModel)]="oNewProduct.margin" name="prod_margin">
-                                </div>
                                 <div class="col-3">
                                     <label for="selling_price" class="form-label">{{"SELLING_PRICE" | translate}}</label>
-                                    <input type="text" class="form-control" id="selling_price" [value]="" [(ngModel)]="oNewProduct.sellingPrice" name="prod_selling_price">
+                                    <input type="number" class="form-control" id="selling_price" [value]="" min="0"
+                                        [(ngModel)]="oNewProduct.sellingPrice" name="prod_selling_price" (ngModelChange)="updatePricesAndMargin('purchasePrice')" >
+                                </div>
+                                <div class="col-2 mx-5">
+                                    <label for="margin" class="form-label">{{"MARGIN" | translate}}</label>
+                                    <input type="number" class="form-control" id="margin" [value]="" min="0" [(ngModel)]="oNewProduct.margin"
+                                        name="prod_margin" (ngModelChange)="updatePricesAndMargin('purchasePrice')">
+                                </div>
+                                <div class="col-4">
+                                    <label for="purchase_price" class="form-label">
+                                        {{"TRANSACTION_INVOICE_AMOUNT_PURCHASE_WITHOUT_VAT" | translate}}
+                                    </label>
+                                    <input type="number" class="form-control" id="purchase_price" [value]="" min="0"
+                                        [(ngModel)]="oNewProduct.purchasePrice" name="prod_purchase_price" (ngModelChange)="updatePricesAndMargin('margin')">
                                 </div>
                             </div>
                 
@@ -167,7 +179,8 @@
                                     <label class="form-check form-switch form-check-custom form-check-solid w-50">
                                         {{"THIS_BUTTON_IS_FOR" | translate}}
                                     </label>
-                                    <ng-select class="form-control p-0 ms-5" [(ngModel)]="oNewProduct.articleGroup" [clearable]="false" name="art_group">
+                                    <ng-select class="form-control p-0 ms-5" [(ngModel)]="oNewProduct.articleGroup"
+                                        [clearable]="false" name="art_group">
                                         <ng-option *ngFor="let item of aArticleGroupType" [value]="item.value">{{item.key | translate}}</ng-option>
                                     </ng-select>
                                 </div>            
@@ -195,31 +208,48 @@
                         </div>
                         <div class="col-12 d-flex bg-light p-5 flex-wrap">
                             <div class="col-md-12">
-                                <div class="mb-5">
-                                    <label> {{ "QUICK_BUTTON_NAME" | translate}}</label>
-                                    <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
-                                        [(ngModel)]="selectedProduct.sName" name="quickbutton_name">
+                                <div class="mb-3 border-bottom border-dark pb-2">
+                                    <div class="w-100">
+                                        <p class="fw-bolder text-uppercase text-primary mb-1">{{"PRODUCT_DETAILS" | translate}}</p>
+                                        <p class="mb-1">
+                                            {{"ARTICLE_NUMBER" | translate}}: <span class="text-muted">
+                                            {{selectedProduct?.sNewArticleNumber ? selectedProduct?.sNewArticleNumber : (selectedProduct?.sArticleNumber || '-') }}
+                                            <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="{{selectedProduct.sArticleNumber}}"></i>
+                                            </span>
+                                        </p>
+                                        <p class="m-0">
+                                            {{"NAME" | translate}}: <span class="text-muted">{{selectedProduct.sNameOriginal}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="mb-5 d-flex">
                                     <div class="alert alert-danger mt-2" role="alert" *ngIf="selectedProduct.sName?.length > limit" >
                                         <p class="m-0 text-danger">
                                             {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
                                         </p>
                                     </div>
+                                    <div class="col-7 me-auto">
+                                        <label> {{ "QUICK_BUTTON_NAME" | translate}}</label>
+                                        <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
+                                            [(ngModel)]="selectedProduct.sName" name="quickbutton_name">
+                                    </div>
+                                    <div class="col-4">
+                                        <label> {{ "PRICE" | translate}}</label>
+                                        <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
+                                            [(ngModel)]=" selectedProduct.sellingPrice" name="quickbutton_price">
+                                    </div>
                                 </div>
-                                <div class="mb-5">
-                                    <label> {{ "PRICE" | translate}}</label>
-                                    <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
-                                        [(ngModel)]=" selectedProduct.nPrice" name="quickbutton_price">
-                                </div>
-                                <div class="mb-5">
+                                <div class="">
                                     <label> {{ "SHORTCUT_KEY" | translate}}</label>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <div class="w-100">
-                                            <ng-select [(ngModel)]=" selectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
+                                    <div class="d-flex align-items-center">
+                                        <div class="col-5">
+                                            <ng-select [(ngModel)]="selectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
                                                 [clearable]="false" placeholder="{{'SELECT_FUNCTION_KEY' | translate }}" name="quickbutton_sKey1"></ng-select>
                                         </div>
-                                        <div class="w-100 mx-2" *ngIf="! selectedProduct.oKeyboardShortcut.sKey1.startsWith('F')">
+                                        <div class="col-6 ms-auto" *ngIf="selectedProduct.oKeyboardShortcut.sKey1 && !selectedProduct.oKeyboardShortcut.sKey1.startsWith('F')">
                                             <input type="text" class="form-control" placeholder="{{'SELECT_NUMBER' | translate}}"
-                                                [(ngModel)]=" selectedProduct.oKeyboardShortcut.sKey2"  name="quickbutton_sKey2">
+                                                [(ngModel)]="selectedProduct.oKeyboardShortcut.sKey2"  name="quickbutton_sKey2">
                                         </div>
                                     </div>
                                 </div>
@@ -230,13 +260,15 @@
             </form>
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-between">
-        <button class="btn btn-secondary" (click)="moveToStep(stepperIndex - 1)" [disabled]="stepperIndex == 1">
-            {{"BACK" | translate}}
+    <div class="card-footer d-flex justify-content-between" *ngIf="stepperIndex != 1">
+        <button class="btn btn-danger" (click)="moveToStep(1)">
+            {{"RESET" | translate}}
         </button>
-        <button class="btn" (click)="moveToStep(stepperIndex + 1)" [ngClass]="stepperIndex == 3 ? 'btn-success' : 'btn-secondary'">
-            <span *ngIf="stepperIndex == 3">{{"CREATE" | translate}}</span>
-            <span *ngIf="stepperIndex != 3">{{"NEXT" | translate}}</span>
+        <button class="btn btn-light-primary" (click)="createBusinessProduct()" *ngIf="stepperIndex != 3">
+            {{"NEXT" | translate}}
+        </button>
+        <button class="btn btn-success" (click)="createQuickButton()" *ngIf="stepperIndex == 3">
+            {{"CREATE" | translate}}
         </button>
     </div>
 </div>
