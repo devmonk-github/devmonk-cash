@@ -24,7 +24,11 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
   }
   
   imageData:any;
+  customer: any;
+  isFrom: any;
+
   @ViewChild('image', { read: ViewContainerRef }) container!: ViewContainerRef;
+
   componentRef: any;
 
   constructor(
@@ -53,8 +57,10 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
           const moduleRef: NgModuleRef<typeof CustomersDocsImagesUploadModule> = moduleFactory.create(this.injector);
           const componentFactory = moduleRef.instance.resolveComponent();
           this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
-          this.componentRef.instance.$data = this.imageData;
+          //this.componentRef.instance.$data = this.imageData;
+          this.componentRef.instance.isFrom = this.isFrom;
           this.componentRef.instance.oDocsDetail = this.imageData;
+          this.componentRef.instance.iCustomerId = this.customer;
           this.componentRef.instance.triggerEvent.subscribe((event: any) => {
             if(event){
               this.close({ event });

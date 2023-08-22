@@ -392,8 +392,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.loadTransactions();
     
   }
-  openImageModal() {
-    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData:this.oTemp } })
+  openImageModal(isFrom: any) {
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData: this.oTemp, customer: this.customer._id, isFrom: isFrom } })
       .instance.close.subscribe(result => {
         if(result){
           if (result.event.docs){
