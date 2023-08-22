@@ -62,10 +62,10 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
           })
         });
       }).catch(e => {
-        console.warn('error in importing customer docs image uplaod module');
+        console.warn('error in importing customer docs image upload module');
       });
     } catch (error) {
-      console.log('error while initializing customer docs image uplaod  module', error);
+      console.log('error while initializing customer docs image upload  module', error);
     }
   }
 

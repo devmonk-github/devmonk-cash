@@ -1068,10 +1068,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-6">
                                 <h3 class="m-0">{{'INVOICE_ADDRESS' | translate}}</h3>
                                 <div>
-                                    <button (click)="CopyInvoiceAddressToShipping()"
-                                        class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
-                                        translate}}</button>
-                                    <!-- <mark>todo: make this button copy all invoice details to shipping details</mark> -->
+                                    <button class="btn btn-sm btn-secondary" (click)="copyInvoiceAddressToShipping()">
+                                        {{'COPY_TO_SHIPPING_ADDRESS' | translate}}
+                                    </button>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -1220,8 +1219,13 @@
                     <div class="mb-3">
                         <label class="fw-bolder text-muted">{{'DOCUMENTS_AND_IMAGES' | translate}}
                         </label>
-                        <button class="btn btn-info btn-sm w-100" (click)="openImageModal()"> {{ "UPLOAD_DOCUMENT_AND_IMAGES" | translate}}
-                            <fa-icon [icon]="faUpload"></fa-icon>
+                        <button class="btn btn-sm w-100 mt-3" (click)="openImageModal()" [ngClass]="!this.oTemp ? 'btn-info' : 'btn-light-info'"> 
+                            <span *ngIf="!this.oTemp">
+                                {{ "UPLOAD_DOCUMENT_AND_IMAGES" | translate}}
+                            </span>
+                            <span *ngIf="this.oTemp">
+                                {{ "SHOW_DOCUMENT_AND_IMAGES" | translate}}
+                            </span>
                         </button>
                     </div>
                     <!-- <div class="d-flex justify-content-between flex-wrap" *ngIf="aImage.length">

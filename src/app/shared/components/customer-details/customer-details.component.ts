@@ -373,7 +373,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     } else {
       this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
     }
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED', 'LASTNAME_REQUIRED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -401,6 +401,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             sDocumentName: result.event.docs.sDocumentName,
             sDocumentNumber: result.event.docs.sDocumentNumber
           }
+        }else{
+          this.oTemp = undefined;
         }
       });
   }
@@ -751,6 +753,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   async EditOrCreateCustomer() {
+    if(this.customer.sLastName == "" || !this.customer.sLastName){
+      this.toastService.show({ type: 'danger', text: this.translations[`LASTNAME_REQUIRED`] });
+      return;
+    }
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
     if (this.customer?.bIsCompany) {
@@ -1405,7 +1411,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.nLoyaltyPointsValue = nPointsResult / this.oPointsSettingsResult.nPerEuro2;
     }
   }
-  CopyInvoiceAddressToShipping() {
+  
+  copyInvoiceAddressToShipping() {
     const invoiceAddress = {
       sStreet: this.customer.oInvoiceAddress.sStreet,
       sHouseNumber: this.customer.oInvoiceAddress.sHouseNumber,
