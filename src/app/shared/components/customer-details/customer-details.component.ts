@@ -395,14 +395,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   openImageModal() {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData:this.oTemp } })
       .instance.close.subscribe(result => {
-        if (result.event.docs){
-          this.oTemp = {
-            aImage: result.event.docs.aImage,
-            sDocumentName: result.event.docs.sDocumentName,
-            sDocumentNumber: result.event.docs.sDocumentNumber
+        if(result){
+          if (result.event.docs){
+            this.oTemp = {
+              aImage: result.event.docs.aImage,
+              sDocumentName: result.event.docs.sDocumentName,
+              sDocumentNumber: result.event.docs.sDocumentNumber
+            }
+          }else{
+            this.oTemp = undefined;
           }
-        }else{
-          this.oTemp = undefined;
         }
       });
   }
