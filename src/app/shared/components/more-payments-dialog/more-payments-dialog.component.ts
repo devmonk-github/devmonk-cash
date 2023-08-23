@@ -28,10 +28,6 @@ export class MorePaymentsDialogComponent implements OnInit {
   allPaymentMethods: Array<any> = [];
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private apiService: ApiService,
-    private toastrService: ToastService,
-    private createArticleGroupService: CreateArticleGroupService,
-    private fb: FormBuilder,
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);

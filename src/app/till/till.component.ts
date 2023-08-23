@@ -1661,7 +1661,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         closeOnEsc: false
       }).instance.close.subscribe(result => {
         if (result) {
-          this.payMethods.push(_.clone(result));
+          this.payMethods.push({...result, amount: null});
         }
       });
   }
