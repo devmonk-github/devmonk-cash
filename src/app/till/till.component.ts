@@ -129,7 +129,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   printSettings: any;
   activity: any;
   bIsOpeningDayState: boolean = false;
-  selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
   bHasIActivityItemId: boolean = false;
   bSerialSearchMode = false;
   employee: any;
@@ -150,7 +149,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
-  language: any = localStorage.getItem('language');
+  language: any = localStorage.getItem('language') || 'en';
 
   /* Check if saving points are enabled */
   // savingPointsSetting: boolean;// = JSON.parse(localStorage.getItem('savingPoints') || '');
@@ -1315,6 +1314,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.onSelectProduct(this.shopProducts[0], 'business', 'shopProducts');
         }
         this.shopProducts.forEach((product: any) => {
+          product.sProductName = this.tillService.getName(product?.oName, this.language)
           if (product?.sArticleNumber) {
             product.sNewArticleNumber = product.sArticleNumber.split('*/*')[0];
           }
@@ -1405,11 +1405,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    const name = this.tillService.getNameWithPrefillingSettings(product, this.selectedLanguage);
+    const name = this.tillService.getNameWithPrefillingSettings(product, this.language);
     const sDescription = this.tillService.getDescriptionWithGemDetails(product);
     // console.log({product});
     this.transactionItems.push({
-      name: name,
+      name,
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
@@ -1423,6 +1423,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: nVatRate,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
+      ean: product?.sEan,
       description: sDescription,//product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },

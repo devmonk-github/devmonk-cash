@@ -1010,4 +1010,10 @@ export class TillService {
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
   }
+
+  getName(oName:any, language:string = 'en', isFor:string = 'business-product') {
+    if (isFor === 'business-product' && oName && Object.keys(oName)?.length) {
+      return oName[language] || oName['en'] || this.translateService.instant('NO_NAME');
+    }
+  }
 }

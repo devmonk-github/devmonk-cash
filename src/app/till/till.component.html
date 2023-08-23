@@ -331,11 +331,11 @@
                               <img src="{{product.aImage[0]? product.aImage[0] : '../assets/images/no-photo-available.jpg' }}" class="rounded">
                             </div>
                             <div class="w-100 mx-4">
-                              <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'|
-                                translate) }}</p>
+                              <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">
+                                {{ product?.sProductName }}</p>
                               <div class="d-flex align-items-start justify-content-between flex-wrap">
                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
-                                  <strong>{{ product.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
+                                  <strong>{{ product?.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
                                   <strong>{{"EAN" | translate}}</strong>: {{ product.sEan || ('NO_EAN' | translate)}}<br>
                                   <strong>{{"STOCK"| translate}}</strong>: <span
                                     [ngClass]="product?.oCurrentLocation?.nStock == 0 && eKind != 'order'? 'text-danger' : ''">{{
