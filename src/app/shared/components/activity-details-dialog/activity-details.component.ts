@@ -512,19 +512,12 @@ export class ActivityDetailsComponent implements OnInit {
       })
   }
 
-  AssignOrderProduct(activity: any, index: any) {
+  async assignOrderProduct(activity: any, index: any) {
     this.dialogService.openModal(AddFavouritesComponent, { cssClass: 'modal-lg', context: { "mode": "assign", "oActivityItem": activity }, hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe((result: any) => {
       if (result?.action != false) {
-        this.getBusinessProduct(result.action.iBusinessProductId).subscribe((res: any) => {
-          const productDetail = res.data;
-          activity.sArticleNumber = productDetail.sArticleNumber
-          activity.sProductNumber = productDetail.sProductNumber
-          activity.sArticleName = productDetail?.oArticleGroup?.oName[this.language]
-          this.processTransactionItems()
-        });
+        activity.iBusinessProductId = result.action.iBusinessProductId
+        this.processTransactionItems()
       }
-    }, (error) => {
-      console.log(error);
     })
   }
 
@@ -685,6 +678,8 @@ export class ActivityDetailsComponent implements OnInit {
         const productDetail = _productData.data;
         obj.sArticleNumber = productDetail.sArticleNumber
         obj.sProductNumber = productDetail.sProductNumber
+        obj.sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+        obj.sEan = productDetail?.sEan
       }
       for (const item of obj.receipts) {
         this.transactions.push({ ...item, ...obj });
