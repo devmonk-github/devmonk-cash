@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { ToastService } from '../toast';
@@ -14,24 +14,6 @@ import { CreateArticleGroupService } from '../../service/create-article-groups.s
   styleUrls: ['./quickbutton-wizard.component.sass']
 })
 
- /**
-  * TODO:
-  * 2. Create new product functionality
-  *   a. Check if internal supllier exists
-  *   b. Check if article group exists -> repairs, orders, giftcards, stocks, services and others
-  *       I. By selecting stock, services or other default article group will return SERVER ERROR 500
-  *       -> "businessarticlegroups validation failed: eDefaultArticleGroup: `other` is not a valid enum value for path `eDefaultArticleGroup`."
-  *   DONE! c. Calculate margin function
-  *   DONE! d. Fetch business taxes
-  *   e. Backend call to create product
-  * 5. Create quick button backend call.
-  * 
-  * DONE! 1. Disable buttons onstep 1 -> On back RESET everything.
-  * DONE! 3. After selection or creation, needs to pass product information to STEP 3
-  *   a. Select product function
-  * DONE! 4. Show article number inside STEP 3
-  * DONE! 6. Clear/reset everything at the end (or add a button to clear/reset wizard).
-  */
 
 export class QuickbuttonWizardComponent implements OnInit {
   dialogRef: DialogComponent;
@@ -61,24 +43,26 @@ export class QuickbuttonWizardComponent implements OnInit {
   aArticleGroupType: Array<any> = [
     { key: 'REPAIRS', value: 'repair' },
     { key: 'ORDERS', value: 'order' },
-    { key: 'GIFTCARD', value: 'giftcard' },
+    // { key: 'GIFTCARD', value: 'giftcard' },
     { key: 'STOCK', value: 'stock' },
-    { key: 'SERVICES', value: 'service' },
+    // { key: 'SERVICES', value: 'service' },
     { key: 'OTHER', value: 'other' }
   ];
 
+  selectedArticleGroup: any = 'stock';
+
   oNewProduct: any = {
-    name: '',
-    articleGroup: 'stock',
-    purchasePrice: 0,
-    sellingPrice: 0,
-    margin: 1,
-    tax: 21
+    sName: '',
+    iArticleGroupId: '',
+    nPurchasePrice: 0,
+    nSellingPrice: 0,
+    nMargin: 1,
+    nVat: 21
   };
 
   selectedProduct: any = {
-    name: '',
-    sellingPrice: '',
+    sName: '',
+    nPrice: '',
     oKeyboardShortcut: {
       sKey1: '',
       sKey2: ''
@@ -104,24 +88,32 @@ export class QuickbuttonWizardComponent implements OnInit {
     { title: 'F12' },
   ]
   currentLanguage: any;
-
+  iEmployeeId: any;
+  @Output() triggerEvent: EventEmitter<any> = new EventEmitter();
+  translate: any;
+  
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private toastService: ToastService,
     private translateService: TranslateService,
     public tillService: TillService,
-    private createArticleGroupService: CreateArticleGroupService
+    private createArticleGroupService: CreateArticleGroupService,
   ) { 
     const _injector = this.viewContainer.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.currentLanguage = localStorage.getItem('language') || 'en';
     this.iLocationId = localStorage.getItem('currentLocation');
     this.taxes = this.tillService.taxes;
+
+    const translate=['PRODUCT_ADDED_SUCCESSFULLY' , 'GROUPS_UPDATE_SUCCESSFULLY'];
+    this.translateService.get(translate).subscribe((res:any)=>{
+        this.translate = res;
+    })
   }
 
   ngAfterContentInit(): void {
@@ -140,7 +132,10 @@ export class QuickbuttonWizardComponent implements OnInit {
         this.clearAll();
         break;
       case 2:
-        this.oNewProduct.name =  this.searchKeyword;
+        this.oNewProduct.sName =  this.searchKeyword;
+        break;
+      case 3: 
+        this.onSelectProduct(product);
         break;
       default:
         break;
@@ -151,21 +146,22 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.searchKeyword = '';
     this.bSearchingProduct = false;
     this.oNewProduct = {
-      name: '',
-      articleGroup: 'stock',
-      purchasePrice: 0,
-      sellingPrice: 0,
-      margin: 1,
-      vat: 21
+      sName: '',
+      iArticleGroupId: '',
+      nPurchasePrice: 0,
+      nSellingPrice: 0,
+      nMargin: 1,
+      nVat: 21
     };
     this.selectedProduct = {
       name: '',
-      sellingPrice: '',
+      nSellingPrice: '',
       oKeyboardShortcut: {
         sKey1: '',
         sKey2: ''
       }
     };
+    this.selectedArticleGroup = 'stock';
     this.shopProducts = [];
   }
 
@@ -224,12 +220,12 @@ export class QuickbuttonWizardComponent implements OnInit {
     });
   }
 
-  // Function to select product
+  // Function for selecting a product
   onSelectProduct(product: any) {
       this.selectedProduct._id = product._id;
       this.selectedProduct.sNameOriginal = product.oName ? product.oName[this.currentLanguage] : 'No name';
       if (product.oName[this.currentLanguage]?.length >= 20) {
-        this.selectedProduct.sName = product.oName[this.currentLanguage].slice(0, 20); // Ritaglia la stringa ai primi 20 caratteri
+        this.selectedProduct.sName = product.oName[this.currentLanguage].slice(0, 20);
       }else{
         this.selectedProduct.sName = product.oName ? product.oName[this.currentLanguage] : 'No name';
       }
@@ -239,52 +235,131 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.selectedProduct.aImage = product.aImage;
       //console.log('aLocation ', product?.aLocation);
       if (product?.aLocation?.length) {
-        this.selectedProduct.sellingPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0;
+        this.selectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0;
       }
       this.shopProducts = null;
   }
 
-  // Function for calculate storage factor or margin
+  // Function for calculating storage factor or margin
   updatePricesAndMargin(object: any) {
     switch(object){
       case 'purchasePrice':
-        this.oNewProduct.purchasePrice = this.oNewProduct.sellingPrice / this.oNewProduct.margin;
+        this.oNewProduct.nPurchasePrice = this.oNewProduct.nSellingPrice / this.oNewProduct.nMargin;
         break;
       case 'margin':
-        let margin = this.oNewProduct.sellingPrice / this.oNewProduct.purchasePrice;
-        this.oNewProduct.margin = Number(margin.toFixed(2));
+        let margin = this.oNewProduct.nSellingPrice / this.oNewProduct.nPurchasePrice;
+        this.oNewProduct.nMargin = Number(margin.toFixed(2));
         break;
       default: 
         break;
     }
   }
 
-  //Function for Business product creation
+
+  // Function for creating business product
   async createBusinessProduct(){
     //TODO: create Business Product 
     console.log('I will create a product with this info', this.oNewProduct);
+    
+    //STEP 1: CHECK SUPPLIER
+    let supplier: any = await this.createArticleGroupService.fetchInternalBusinessPartner(this.iBusinessId);
 
-    //STEP 1: Check if article group exist
+    //STEP 2: CHECK ARTICLE GROUP
     let result: any;
-    result = await this.createArticleGroupService.checkArticleGroups(this.oNewProduct.articleGroup).toPromise();
-    console.log(result);
-    let iArticleGroupId = '';
-    if (result?.data?.length && result?.data[0]?.result?.length) {
-      iArticleGroupId = result?.data[0]?.result[0]?._id;
+    if(this.selectedArticleGroup == 'stock' || this.selectedArticleGroup == 'other'){
+
+      let data = {
+        name: this.oNewProduct.sName?.toUpperCase(),
+        iBusinessId: this.iBusinessId,
+        nMargin: 0,
+        aBusinessPartner: [{
+            iBusinessPartnerId: supplier._id,
+            nMargin: supplier.nPurchaseMargin || 0
+          }]
+      };
+
+      result  = await (await this.createArticleGroupService.createNewArticleGroup(data)).toPromise();
+      this.oNewProduct.iArticleGroupId = result?.data?._id;
+
     }else{
-      
+      let iArticleGroupId = '';
+      result = await this.createArticleGroupService.checkArticleGroups(this.selectedArticleGroup).toPromise();
+      if (result?.data) {
+        iArticleGroupId = result?.data._id;
+      }
+      this.oNewProduct.iArticleGroupId = iArticleGroupId;
     }
 
-    //STEP 2: Check if supplier exist
-
-    //Create and go to step 3
-    this.moveToStep(3);
+    //STEP 3: Create Product and go to step 3 with data
+    this.oNewProduct.iBusinessId = this.iBusinessId;
+    this.oNewProduct.oName = {
+        nl: this.oNewProduct.sName,
+        en: this.oNewProduct.sName,
+        de: this.oNewProduct.sName,
+        fr: this.oNewProduct.sName,
+        es: this.oNewProduct.sName
+    };
+    this.oNewProduct.iSupplierId = supplier.iSupplierId;
+    this.oNewProduct.iBusinessPartnerId = supplier._id;
+    this.oNewProduct.sBusinessPartnerName = supplier.sName;
+    this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
+    this.oNewProduct.sFunctionName = 'create-business-product';
+    this.oNewProduct.sProductNumber = 'QB-' + Math.floor(Math.random() * 100);
+    this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
+    this.oNewProduct.aLocation = {
+      _id: this.iLocationId,
+      "nStock" : 0,
+      "nPriceIncludesVat" : this.oNewProduct.nSellingPrice,
+      "nMinStock" : 0,
+      "nVatRate" : this.oNewProduct.nVat
+    }
+    this.oNewProduct.nHighestPrice = this.oNewProduct.nSellingPrice;
+    this.oNewProduct.nLowestPrice = this.oNewProduct.nSellingPrice;
+    this.showLoader = true;
+    this.apiService.postNew('core', '/api/v1/business/products', this.oNewProduct).subscribe((result: any) => {
+      if (result && result.message == 'success') {
+          this.toastService.show({type: 'success', text: this.translate['PRODUCT_ADDED_SUCCESSFULLY']});
+          this.showLoader = false;
+          this.moveToStep(3, result.data);
+      }
+    }, error => { 
+      this.toastService.show({type: 'danger', text: error?.error?.message || 'Error while adding new product' });
+    });
+   
   }
 
-  //Function for Quick button creation
-  createQuickButton(){
-    //TODO: create quick button
-    console.log('I will create a quick button with this info',this.selectedProduct);
+  // Function for creating quick button
+  async createQuickButton(){
+    this.showLoader = true;
+
+    if(this.selectedProduct.oKeyboardShortcut.sKey1.startsWith('F')){
+      this.selectedProduct.oKeyboardShortcut.sKey2 = '';
+    }
+
+    let data = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      oQuickButton: this.selectedProduct,
+    };
+
+    if (!data.iLocationId) {
+      this.toastService.show({ type: 'warning', text: this.translateService.instant('PLEASE_SELECT_LOCATION')`Please select a location` });
+      return;
+    }
+
+    let _result: any, msg:string = '';
+    
+    _result = await this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).toPromise();
+    msg = this.translateService.instant('NEW_QUICK_BUTTON_ADDED')
+   
+    this.showLoader = false;
+
+    if (_result.message == 'success') {
+      this.close(true);
+      this.toastService.show({ type: 'success', text: msg }); //`New Quick Button added successfully`
+    } else {
+      this.toastService.show({ type: 'success', text: this.translateService.instant('AN_ERROR_OCCURED') });
+    }
   }
 
   //Function to close modal
