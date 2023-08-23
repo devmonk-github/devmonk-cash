@@ -258,8 +258,8 @@ export class QuickbuttonWizardComponent implements OnInit {
 
   // Function for creating business product
   async createBusinessProduct(){
-    //TODO: create Business Product 
-    console.log('I will create a product with this info', this.oNewProduct);
+ 
+    //console.log('I will create a product with this info', this.oNewProduct);
     
     //STEP 1: CHECK SUPPLIER
     let supplier: any = await this.createArticleGroupService.fetchInternalBusinessPartner(this.iBusinessId);
