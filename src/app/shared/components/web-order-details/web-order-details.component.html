@@ -111,20 +111,19 @@
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">{{ "DOWNLOAD_PDF" | translate}}</label>
                     </button>
-                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
-                        [disabled]="!showDeliverBtn && checkAllLocations()"
-                        class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
-                        <label class="mx-auto">{{ "SEND_TO_CUSTOMER" | translate}}</label>
-                    </button>
-                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
-                        class="btn btn-sm btn-secondary w-100 d-flex">
-                        <label class="mx-auto">{{ "READY_TO_PICKUP" | translate}}</label>
-                    </button>
-                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
-                        [disabled]="!showDeliverBtn && checkAllLocations()"
-                        class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
-                        <label class="mx-auto"> {{"DELIVER" | translate}}</label>
-                    </button>
+                    <ng-container *ngIf="bShowCompletedFields">
+                        <button [disabled]="!showDeliverBtn && checkAllLocations()"
+                            class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
+                            <label class="mx-auto">{{ "SEND_TO_CUSTOMER" | translate}}</label>
+                        </button>
+                        <button class="btn btn-sm btn-secondary w-100 d-flex">
+                            <label class="mx-auto">{{ "READY_TO_PICKUP" | translate}}</label>
+                        </button>
+                        <button [disabled]="!showDeliverBtn && checkAllLocations()"
+                            class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
+                            <label class="mx-auto"> {{"DELIVER" | translate}}</label>
+                        </button>
+                    </ng-container>
                 </div>
 
                 <div *ngIf="loading">

@@ -107,6 +107,7 @@ export class WebOrderDetailsComponent implements OnInit {
   oExtraServicesData: any;
   nTotalVat: number = 0;
   translate: any = [];
+  bShowCompletedFields = false;
   
     
     constructor(
@@ -442,9 +443,9 @@ export class WebOrderDetailsComponent implements OnInit {
 
 
       oItem.receipts?.forEach((oReceipt: any) => {
-        if (!oReceipt?.iStockLocationId && oReceipt?.iLocationId) {
-          oReceipt.iStockLocationId = oReceipt.iLocationId;
-        }
+        // if (!oReceipt?.iStockLocationId && oReceipt?.iLocationId) {
+        //   oReceipt.iStockLocationId = oReceipt.iLocationId;
+        // }
 
         if (oReceipt?.iStockLocationId) {
           const oLocation = this.businessDetails.aLocation.find((el: any) => el._id == oReceipt.iStockLocationId);
@@ -460,7 +461,7 @@ export class WebOrderDetailsComponent implements OnInit {
     if (completed == this.activityItems?.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems?.length})` }
     else if (completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems?.length})` }
     else this.FeStatus = 'New';
-
+    this.checkShowCompletedFields();
     // console.log('final - ', this.activityItems);
   }
 
@@ -491,6 +492,7 @@ export class WebOrderDetailsComponent implements OnInit {
           this.transaction = result.data[0];
           this.transaction.businessDetails = this.businessDetails;
           this.transaction.currentLocation = this.businessDetails.currentLocation;
+          this.checkShowCompletedFields();
           // console.log(this.transaction)
           // this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
           // console.log(427, this.transaction)
@@ -544,6 +546,7 @@ export class WebOrderDetailsComponent implements OnInit {
     .subscribe((result: any) => {
       this.loading = false;
       this.toastService.show({ type: 'success', text: this.translate['UPDATED_SUCCESSFULLY'] });
+      this.checkShowCompletedFields();
     },
       (error) => {
         this.loading = false;
@@ -612,12 +615,25 @@ export class WebOrderDetailsComponent implements OnInit {
         (result: any) => {
           this.loading = false;
           this.toastService.show({ type: 'success', text: this.translate['UPDATED_SUCCESSFULLY'] });
+          this.checkShowCompletedFields();
         },
         (error) => {
           this.loading = false;
           this.toastService.show({ type: 'warning', text: this.translate['SOMETHING_WENT_WRONG'] });
         }
       )
+  }
+  checkShowCompletedFields() {
+    let bCondition1 = true;
+    this.activityItems.forEach((oItem:any) => {
+      if (oItem.oType.eKind == 'regular' && !oItem.receipts[0].iStockLocationId) {
+        bCondition1 = false;
+      }
+    })
+    const bCondition2 = this.activity.eActivityItemStatus == 'completed';
+    
+    // console.log(639, this.activity, this.activityItems, {bCondition1, bCondition2});
+    this.bShowCompletedFields = bCondition1 && bCondition2;
   }
 
   close(data: any) {
