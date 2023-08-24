@@ -497,10 +497,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.transactionItems?.length) {
       const bAllItemsAreExcluded = this.transactionItems.filter((item: any) => item?.isExclude)?.length == this.transactionItems?.length;
       // if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
-      if (bAllItemsAreExcluded || (this.availableAmount && this.nTotalPayment)) { 
+      if ((bAllItemsAreExcluded || (this.availableAmount && this.nTotalPayment)) && this.bAllGiftcardPaid) {
         this.bDisableCheckout = false;
       } else if (this.nTotalPayment > this.availableAmount) {
         this.bShowOverassignedWarning = true;
+        this.bDisableCheckout = true;
+      }else if(this.nItemsTotalToBePaid == 0){
+        this.bDisableCheckout = false;
+      }else if(!this.bAllGiftcardPaid){
         this.bDisableCheckout = true;
       }
       // console.log(bAllItemsAreExcluded,
