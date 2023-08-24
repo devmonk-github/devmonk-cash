@@ -155,7 +155,7 @@
                             <div class="align-items-center">
                                 <img alt="Logo"
                                     *ngIf="transaction?.createrDetail?.sFirstName && (!transaction?.createrDetail?.sAvatar  || transaction?.createrDetail?.sAvatar == '')"
-                                    src="https://prismanote.com/public/prismanote.png" class="me-3">
+                                    src="https://prismanote.com/public/prismanote.png" class="createrImage default border border-warning">
                                 <img alt="Logo" *ngIf="transaction?.createrDetail?.sAvatar"
                                     [src]="transaction?.createrDetail?.sAvatar" class="createrImage">
                                 <span *ngIf="!transaction?.bMigrate"> 

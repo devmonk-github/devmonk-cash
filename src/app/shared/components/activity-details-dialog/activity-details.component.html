@@ -101,12 +101,11 @@
                             <div class="d-flex flex-column">
                                 <p class="fw-bolder mb-2">{{ 'CREATER_DETAIL' | translate}}</p>
                                 <div class="d-flex align-items-center fs-6 ms-1 my-1">
-                                    <img alt="Logo"
-                                        *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
-                                        src="https://prismanote.com/public/prismanote.png" class="createrImage">
-                                    <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar"
+                                    <img alt="Logo" *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')" 
+                                        src="https://prismanote.com/public/prismanote.png" class="createrImage default border border-warning">
+                                    <img alt="Logo" *ngIf="(createrDetail?.sAvatar && createrDetail.sAvatar != '')" [src]="createrDetail.sAvatar"
                                         class="createrImage">
-                                    <span>{{createrDetail?.sFirstName}} {{createrDetail?.sLastName}} </span>
+                                    <span>{{createrDetail?.sFirstName}} {{createrDetail?.sLastName}}</span>
                                 </div>
                             </div>
                         </div>
