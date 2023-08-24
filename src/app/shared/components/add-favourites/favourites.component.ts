@@ -62,6 +62,7 @@ export class AddFavouritesComponent implements OnInit {
 
   
   aFunctionKeys:any = [
+    { title: '' },
     { title: 'Control' },
     { title: 'Alt' },
     { title: 'F1' },
@@ -190,7 +191,7 @@ export class AddFavouritesComponent implements OnInit {
     event.target.disabled = true;
     this.creating = true;
 
-    if(this.newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F')){
+    if(this.newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F') || this.newSelectedProduct.oKeyboardShortcut.sKey1 == ''){
       this.newSelectedProduct.oKeyboardShortcut.sKey2 = '';
     }
 

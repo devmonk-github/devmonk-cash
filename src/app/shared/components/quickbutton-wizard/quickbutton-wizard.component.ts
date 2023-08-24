@@ -72,6 +72,7 @@ export class QuickbuttonWizardComponent implements OnInit {
   limit: number = 20;
 
   aFunctionKeys:any = [
+    { title: '' },
     { title: 'Control' },
     { title: 'Alt' },
     { title: 'F1' },
@@ -334,7 +335,7 @@ export class QuickbuttonWizardComponent implements OnInit {
   async createQuickButton(){
     this.showLoader = true;
 
-    if(this.selectedProduct.oKeyboardShortcut.sKey1.startsWith('F')){
+    if(this.selectedProduct.oKeyboardShortcut.sKey1.startsWith('F') || this.selectedProduct.oKeyboardShortcut.sKey1 == '' ){
       this.selectedProduct.oKeyboardShortcut.sKey2 = '';
     }
 

@@ -455,8 +455,23 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     try {
       this.fetchQuickButtonsSubscription = this.apiService.getNew('cashregistry', `/api/v1/quick-buttons/${this.requestParams.iBusinessId}?iLocationId=${this.iLocationId}`).subscribe((result: any) => {
         this.quickButtonsLoading = false;
-        if (result?.length) this.quickButtons = result;
-        else this.quickButtons =[];
+        
+        if (result?.length){
+          let hotKeys = new Set();
+          this.quickButtons = result;
+          for( const button of this.quickButtons) {
+            if(button.oKeyboardShortcut.sKey1 != ''){
+              const hotKey = JSON.stringify(button.oKeyboardShortcut);
+              if (hotKeys.has(hotKey)) {
+                button.bIsDuplicateHK = true;
+              }else{
+                hotKeys.add(hotKey);
+              }
+            }
+          }
+        } else {
+          this.quickButtons =[];
+        }
       }, (error) => {
         this.quickButtonsLoading = false;
       })

@@ -490,10 +490,11 @@
                 <td>{{button.sName}}</td>
                 <td>{{button.nPrice | currency: tillService.currency}}</td>
                 <td>
-                  {{ button.oKeyboardShortcut?.sKey1 }}
-                  <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> +
-                  </span>
-                  {{ button.oKeyboardShortcut?.sKey2 }}
+                  <p class="m-0" [ngClass]="button.bIsDuplicateHK? 'badge bg-danger p-3' : ''">
+                    {{ button.oKeyboardShortcut?.sKey1 }}
+                    <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> + </span>
+                    {{ button.oKeyboardShortcut?.sKey2 }}
+                  </p>
                 </td>
                 <td>
                   <div>

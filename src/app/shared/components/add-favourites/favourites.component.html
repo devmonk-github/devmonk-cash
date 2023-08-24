@@ -115,8 +115,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-5 d-flex">
-                    <div class="alert alert-danger mt-2" role="alert" *ngIf="newSelectedProduct.sName?.length > limit" >
+                <div class="mb-5 d-flex flex-wrap">
+                    <div class="col-12 alert alert-danger mt-2" role="alert" *ngIf="newSelectedProduct.sName?.length > limit" >
                         <p class="m-0 text-danger">
                             {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
                         </p>
