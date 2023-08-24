@@ -747,6 +747,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customerCountryChanged(type: string, event: any) {
     this.customer[type].sCountryCode = event.key;
     this.customer[type].sCountry = event.value;
+    
+    if(this.customer[type].sCountryCode == 'UK' ||  this.customer[type].sCountryCode == 'GB'|| this.customer[type].sCountryCode == 'FR'){
+      this.bNormalOrder = false;
+    }else{
+      this.bNormalOrder = true;
+    }
   }
 
   async checkAddress(addressBody: any) {
