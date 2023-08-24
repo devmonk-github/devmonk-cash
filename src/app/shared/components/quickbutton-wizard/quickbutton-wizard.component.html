@@ -139,16 +139,28 @@
                                 <span class="text-muted small">{{"ALL_FIELDS_ARE_REQUIRED" | translate}}!</span>
                             </p>
                         </div>
-                        <div class="col-12 d-flex bg-light p-5 flex-wrap">
+                        <div *ngIf="showLoader">
+                            <div class="flex-column current">
+                                <div class="d-flex" style="position: relative;">
+                                    <div class="row h-200px">
+                                        <div class="spinner-box h-200px">
+                                            <div class="three-quarter-spinner">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex bg-light p-5 flex-wrap"  *ngIf="!showLoader">
                             <div class="col-12 w-100 mb-5 d-flex align-items-center">
                                 <div class="col-8">
                                     <label for="product_name" class="form-label">{{"PRODUCT_NAME" | translate}}</label>
                                     <input type="text" class="form-control" id="product_name" [value]="searchKeyword"
-                                        [(ngModel)]="oNewProduct.name" name="prod_name">
+                                        [(ngModel)]="oNewProduct.sName" name="prod_name">
                                 </div>
                                 <div class="col-3 ms-auto">
                                     <label class="form-control-label mb-3">{{ "TAX" | translate}}</label>:
-                                    <ng-select name="taxRate" id="taxRate" class="form-control  mb-3 mb-lg-0" [(ngModel)]="oNewProduct.tax">
+                                    <ng-select name="taxRate" id="taxRate" class="form-control  mb-3 mb-lg-0" [(ngModel)]="oNewProduct.nVat">
                                       <ng-option *ngFor="let rate of taxes" [value]="rate.nRate">{{rate.sName}}</ng-option>
                                     </ng-select>
                                 </div>
@@ -157,11 +169,11 @@
                                 <div class="col-3">
                                     <label for="selling_price" class="form-label">{{"SELLING_PRICE" | translate}}</label>
                                     <input type="number" class="form-control" id="selling_price" [value]="" min="0"
-                                        [(ngModel)]="oNewProduct.sellingPrice" name="prod_selling_price" (ngModelChange)="updatePricesAndMargin('purchasePrice')" >
+                                        [(ngModel)]="oNewProduct.nSellingPrice" name="prod_selling_price" (ngModelChange)="updatePricesAndMargin('purchasePrice')" >
                                 </div>
                                 <div class="col-2 mx-5">
                                     <label for="margin" class="form-label">{{"MARGIN" | translate}}</label>
-                                    <input type="number" class="form-control" id="margin" [value]="" min="0" [(ngModel)]="oNewProduct.margin"
+                                    <input type="number" class="form-control" id="margin" [value]="" min="0" [(ngModel)]="oNewProduct.nMargin"
                                         name="prod_margin" (ngModelChange)="updatePricesAndMargin('purchasePrice')">
                                 </div>
                                 <div class="col-4">
@@ -169,7 +181,7 @@
                                         {{"TRANSACTION_INVOICE_AMOUNT_PURCHASE_WITHOUT_VAT" | translate}}
                                     </label>
                                     <input type="number" class="form-control" id="purchase_price" [value]="" min="0"
-                                        [(ngModel)]="oNewProduct.purchasePrice" name="prod_purchase_price" (ngModelChange)="updatePricesAndMargin('margin')">
+                                        [(ngModel)]="oNewProduct.nPurchasePrice" name="prod_purchase_price" (ngModelChange)="updatePricesAndMargin('margin')">
                                 </div>
                             </div>
                 
@@ -179,13 +191,12 @@
                                     <label class="form-check form-switch form-check-custom form-check-solid w-50">
                                         {{"THIS_BUTTON_IS_FOR" | translate}}
                                     </label>
-                                    <ng-select class="form-control p-0 ms-5" [(ngModel)]="oNewProduct.articleGroup"
+                                    <ng-select class="form-control p-0 ms-5" [(ngModel)]="selectedArticleGroup"
                                         [clearable]="false" name="art_group">
                                         <ng-option *ngFor="let item of aArticleGroupType" [value]="item.value">{{item.key | translate}}</ng-option>
                                     </ng-select>
                                 </div>            
                             </div>
-                
                         </div>
                     </div>
 
@@ -206,10 +217,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 d-flex bg-light p-5 flex-wrap">
+                        <div class="col-12 d-flex bg-light p-5 flex-wrap" *ngIf="!showLoader">
                             <div class="col-md-12">
-                                <div class="mb-3 border-bottom border-dark pb-2">
-                                    <div class="w-100">
+                                <div class="mb-3 border-bottom border-dark pb-2 d-flex">
+                                    <div class="w-50">
                                         <p class="fw-bolder text-uppercase text-primary mb-1">{{"PRODUCT_DETAILS" | translate}}</p>
                                         <p class="mb-1">
                                             {{"ARTICLE_NUMBER" | translate}}: <span class="text-muted">
@@ -221,6 +232,13 @@
                                         <p class="m-0">
                                             {{"NAME" | translate}}: <span class="text-muted">{{selectedProduct.sNameOriginal}}</span>
                                         </p>
+                                    </div>
+                                    <div class="w-50 ms-2">
+                                        <div class="alert alert-info mt-2" role="alert">
+                                            <p class="m-0">
+                                                {{ 'SEARCH_PRODUCT_IN_ASSORTMENT_PAGE_TO_MAKE_CHANGES' | translate }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="mb-5 d-flex">
@@ -237,7 +255,7 @@
                                     <div class="col-4">
                                         <label> {{ "PRICE" | translate}}</label>
                                         <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
-                                            [(ngModel)]=" selectedProduct.sellingPrice" name="quickbutton_price">
+                                            [(ngModel)]=" selectedProduct.nPrice" name="quickbutton_price">
                                     </div>
                                 </div>
                                 <div class="">
