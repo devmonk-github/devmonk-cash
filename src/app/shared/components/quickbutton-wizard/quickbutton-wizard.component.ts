@@ -91,6 +91,7 @@ export class QuickbuttonWizardComponent implements OnInit {
   iEmployeeId: any;
   @Output() triggerEvent: EventEmitter<any> = new EventEmitter();
   translate: any;
+  product: any;
   
   constructor(
     private viewContainer: ViewContainerRef,
@@ -222,6 +223,7 @@ export class QuickbuttonWizardComponent implements OnInit {
 
   // Function for selecting a product
   onSelectProduct(product: any) {
+      this.product = product;
       this.selectedProduct._id = product._id;
       this.selectedProduct.sNameOriginal = product.oName ? product.oName[this.currentLanguage] : 'No name';
       if (product.oName[this.currentLanguage]?.length >= 20) {
@@ -347,8 +349,29 @@ export class QuickbuttonWizardComponent implements OnInit {
       return;
     }
 
-    let _result: any, msg:string = '';
-    
+    if(this.selectedProduct.nPrice != this.product.nPrice){
+      
+      //Update business product selling price
+      let newPriceIncVat = this.product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat;
+      this.product?.aLocation.map((location: any) => {
+        if(location._id === this.iLocationId)
+        location.nPriceIncludesVat =  Number(this.selectedProduct.nPrice);
+      }); 
+      this.product.sFunctionName = 'update-business-product';
+      await this.apiService.putNew('core', `/api/v1/business/products/${this.product._id}?iBusinessId=${this.iBusinessId}`, this.product).toPromise();
+
+      //Update purchase price
+      let margin = Number((newPriceIncVat / this.product.nPurchasePrice).toFixed(2));
+      let newPurchasePrice = this.selectedProduct.nPrice / margin;
+     
+      let data = {
+        iLocationId: this.iLocationId,
+        nPurchasePrice: newPurchasePrice
+      }
+      await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
+    }
+
+    let _result: any, msg:string = '';    
     _result = await this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).toPromise();
     msg = this.translateService.instant('NEW_QUICK_BUTTON_ADDED')
    

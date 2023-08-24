@@ -58,6 +58,7 @@ export class AddFavouritesComponent implements OnInit {
   button?:any;
   bValid:boolean = false;
   limit: number = 20;
+  product: any;
 
   
   aFunctionKeys:any = [
@@ -89,16 +90,31 @@ export class AddFavouritesComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     if(this.mode==='edit') {
+      await this.fetchQuickbuttonProduct();
       this.newSelectedProduct.nPrice = this.button?.nPrice || 0;
       this.newSelectedProduct.sName = this.button?.sName || 'No name';
       this.newSelectedProduct._id = this.button?._id;
       if (this.button?.oKeyboardShortcut) this.newSelectedProduct.oKeyboardShortcut = this.button?.oKeyboardShortcut;
       this.validate();
     }
-  } 
+  }
+
+  async fetchQuickbuttonProduct(){
+    this.product = await this.apiService.getNew('core',  `/api/v1/business/products/${this.button?.iBusinessProductId}?iBusinessId=${this.iBusinessId}`).toPromise();
+
+    if (this.product && this.product.data) {
+      this.product = this.product.data;
+      this.newSelectedProduct.sNameOriginal = this.product.oName ? this.product.oName[this.currentLanguage] : 'NO NAME';
+      this.newSelectedProduct.sArticleNumber = this.product.sArticleNumber;
+      this.newSelectedProduct.sNewArticleNumber = this.product.sArticleNumber?.split('*/*')[0];
+      if (this.product?.aLocation?.length) {
+        this.product.nPrice = this.product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
+      }
+    }
+  }
 
   async search() {
     this.shopProducts = [];
@@ -174,6 +190,10 @@ export class AddFavouritesComponent implements OnInit {
     event.target.disabled = true;
     this.creating = true;
 
+    if(this.newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F')){
+      this.newSelectedProduct.oKeyboardShortcut.sKey2 = '';
+    }
+
     let data = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
@@ -185,13 +205,33 @@ export class AddFavouritesComponent implements OnInit {
       return;
     }
     let _result: any, msg:string = '';
-    if (this.mode === 'create') {
-      _result = await this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).toPromise();
-      msg = this.translateService.instant('NEW_QUICK_BUTTON_ADDED')
-    } else {
-      _result = await this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${this.newSelectedProduct._id}`, data).toPromise();
-      msg = this.translateService.instant('QUICK_BUTTON_UPDATED')
+
+    //UPDATE SELLING PRICE AND PURCHASE PRICE IF PRICE OF QUICKBUTTON AND BUSINESS PRODUCT IS DIFFERENT.
+    if(this.newSelectedProduct.nPrice != this.product.nPrice){
+      
+      //Update business product selling price
+      let newPriceIncVat = this.product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat;
+      this.product?.aLocation.map((location: any) => {
+        if(location._id === this.iLocationId)
+        location.nPriceIncludesVat =  Number(this.newSelectedProduct.nPrice);
+      }); 
+      this.product.sFunctionName = 'update-business-product';
+      await this.apiService.putNew('core', `/api/v1/business/products/${this.product._id}?iBusinessId=${this.iBusinessId}`, this.product).toPromise();
+
+      //Update purchase price
+      let margin = Number((newPriceIncVat / this.product.nPurchasePrice).toFixed(2));
+      let newPurchasePrice = this.newSelectedProduct.nPrice / margin;
+     
+      let data = {
+        iLocationId: this.iLocationId,
+        nPurchasePrice: newPurchasePrice
+      }
+      await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
     }
+    
+    _result = await this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${this.newSelectedProduct._id}`, data).toPromise();
+    msg = this.translateService.instant('QUICK_BUTTON_UPDATED')
+    
     event.target.disabled = false;
     this.creating = false;
 
