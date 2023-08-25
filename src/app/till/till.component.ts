@@ -1391,9 +1391,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
       product = _oBaseProductDetail.data;
     } else {
-      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise().catch((error) => {
+        if(isFrom == 'quick-button'){
+          setTimeout(() => {
+            this.toastrService.show({ type: 'danger', text: this.translateService.instant('BUSINESS_PRODUCT_NOT_FOUND_PLEASE_DELETE_QB')});
+            source.loading = false;
+          }, 400);
+        }
+      });
       if (_oBusinessProductDetail?.data) _oBusinessProductDetail.data.sSerialNumber = product?.sSerialNumber;
-      product = _oBusinessProductDetail.data;
+      product = _oBusinessProductDetail?.data;
       if (product?.aLocation?.length) {
         product.aLocation = product.aLocation.filter((oProdLoc: any) => {
           const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
