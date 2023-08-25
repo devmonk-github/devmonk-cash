@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faDownload, faEnvelope, faLongArrowAltDown, faLongArrowAltUp, faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEnvelope, faLongArrowAltDown, faLongArrowAltUp, faReceipt, faTimes, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ReceiptService } from '../../service/receipt.service';
@@ -56,6 +56,7 @@ export class WebOrderDetailsComponent implements OnInit {
   faDownload = faDownload;
   faReceipt = faReceipt;
   faEnvelope = faEnvelope;
+  faUndoAlt = faUndoAlt;
   faArrowUp = faLongArrowAltUp;
   faArrowDown = faLongArrowAltDown;
   customer: any;

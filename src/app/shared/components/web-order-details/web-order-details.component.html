@@ -95,33 +95,36 @@
                     </label> -->
                 </div>
                 <div class="col-md-4">
-                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="thermalPrintWebOrder()">
-                        <fa-icon [icon]="faDownload"></fa-icon>
-                        <label class="mx-auto">{{ "RECEIPT" | translate}}</label>
+                    <button class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex mb-2" (click)="thermalPrintWebOrder()">
+                        <fa-icon [icon]="faReceipt"></fa-icon>
+                        <label class="mx-auto cursor-pointer">{{ "RECEIPT" | translate}}</label>
                     </button>
-                    <!-- <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="thermalPrintWebOrder()">
+                    <!-- <button class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex mb-2" (click)="thermalPrintWebOrder()">
                         <fa-icon [icon]="faReceipt"></fa-icon>
                         <label class="mx-auto">{{ "THERMAL_PRINT" | translate}}</label>
                     </button> -->
-                    <button class="btn btn-sm btn-secondary w-100 d-flex"
+                    <button class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex mb-2"
                         (click)="openTransaction(activity, 'activity')">
-                        <label class="mx-auto"> {{"EXCHANGE" | translate}}</label>
+                        <fa-icon [icon]="faUndoAlt"></fa-icon>
+                        <label class="mx-auto cursor-pointer"> {{"EXCHANGE" | translate}}</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="generatePDF(false)">
+                    <button class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex mb-2" (click)="generatePDF(false)">
                         <fa-icon [icon]="faDownload"></fa-icon>
-                        <label class="mx-auto">{{ "DOWNLOAD_PDF" | translate}}</label>
+                        <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_PDF" | translate}}</label>
                     </button>
                     <ng-container *ngIf="bShowCompletedFields">
                         <button [disabled]="!showDeliverBtn && checkAllLocations()"
-                            class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
-                            <label class="mx-auto">{{ "SEND_TO_CUSTOMER" | translate}}</label>
+                            class="btn btn-sm btn-primary w-100 d-flex" (click)="deliver('sentToCustomer')">
+                            <fa-icon [icon]="faEnvelope"></fa-icon>
+                            <label class="mx-auto cursor-pointer">{{ "SEND_TO_CUSTOMER" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex">
-                            <label class="mx-auto">{{ "READY_TO_PICKUP" | translate}}</label>
+                        <button class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex mb-2">
+                            <fa-icon [icon]="faEnvelope"></fa-icon>
+                            <label class="mx-auto cursor-pointer">{{ "READY_TO_PICKUP" | translate}}</label>
                         </button>
                         <button [disabled]="!showDeliverBtn && checkAllLocations()"
-                            class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
-                            <label class="mx-auto"> {{"DELIVER" | translate}}</label>
+                            class="btn btn-sm btn-light btn-active-light-primary w-100 d-flex" (click)="deliver('deliver')">
+                            <label class=""> {{"DELIVER" | translate}}</label>
                         </button>
                     </ng-container>
                 </div>
