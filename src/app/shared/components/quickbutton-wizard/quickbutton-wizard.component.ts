@@ -269,10 +269,11 @@ export class QuickbuttonWizardComponent implements OnInit {
 
     //STEP 2: CHECK ARTICLE GROUP
     let result: any;
+    let rand = Math.floor(Math.random() * 900);
     if(this.selectedArticleGroup == 'stock' || this.selectedArticleGroup == 'other'){
 
       let data = {
-        name: this.oNewProduct.sName?.toUpperCase(),
+        name: 'QB.'+this.oNewProduct.sName?.toUpperCase().slice(0, 5)+'.'+rand,
         iBusinessId: this.iBusinessId,
         nMargin: 0,
         aBusinessPartner: [{
@@ -280,10 +281,9 @@ export class QuickbuttonWizardComponent implements OnInit {
             nMargin: supplier.nPurchaseMargin || 0
           }]
       };
-
+      //console.log(data)
       result  = await (await this.createArticleGroupService.createNewArticleGroup(data)).toPromise();
       this.oNewProduct.iArticleGroupId = result?.data?._id;
-
     }else{
       let iArticleGroupId = '';
       result = await this.createArticleGroupService.checkArticleGroups(this.selectedArticleGroup).toPromise();
@@ -307,7 +307,7 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.oNewProduct.sBusinessPartnerName = supplier.sName;
     this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
     this.oNewProduct.sFunctionName = 'create-business-product';
-    this.oNewProduct.sProductNumber = 'QB-' + Math.floor(Math.random() * 100);
+    this.oNewProduct.sProductNumber = 'QB-' + rand;
     this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
     this.oNewProduct.aLocation = {
       _id: this.iLocationId,
