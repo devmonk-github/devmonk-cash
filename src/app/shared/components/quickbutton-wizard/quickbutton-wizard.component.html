@@ -58,7 +58,7 @@
                                 <div class="d-flex align-items-center mb-3">
                                     <input type="text" class="form-control w-75"  placeholder="{{'SEARCH_PRODUCT' | translate}}" [(ngModel)]="searchKeyword" name="searchKeyword"
                                         (ngModelChange)="searchKeyword ? shopProducts = shopProducts : shopProducts = []"
-                                        (ngModelChange)="search()" #searchField autofocus>
+                                        (ngModelChange)="search()" #searchField>
                                     <button class="btn btn-primary ms-3" (click)="search()" [disabled]="searchKeyword?.length <= 2">
                                         {{"SEARCH" | translate}}
                                     </button>

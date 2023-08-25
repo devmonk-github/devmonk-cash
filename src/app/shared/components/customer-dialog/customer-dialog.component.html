@@ -14,7 +14,7 @@
                 </fa-icon>
                 <input type="text" class="form-control form-control-solid ps-10" 
                 [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers()" (keyup)="customerEventHandler($event)" name="search"
-                placeholder="{{(aPlaceHolder).join(',')}}">
+                placeholder="{{(aPlaceHolder).join(',')}}" #inputElement>
                 <!-- <input type="text" class="form-control form-control-solid ps-10" (ngModelChange)="stringDetection()" name="search"
                     [(ngModel)]="requestParams.searchValue"  value="" placeholder="{{(aPlaceHolder).join(' ')}}" (keydown.enter)="getCustomers()"/> -->
                     

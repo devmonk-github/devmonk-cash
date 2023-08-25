@@ -12,7 +12,7 @@
                                     </span>
                                     <input type="text" class="form-control form-control-solid w-100 ps-14" 
                                        [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers()" (keyup)="customerEventHandler($event)" name="search"
-                                        placeholder="{{(aPlaceHolder).join(',')}}">
+                                        placeholder="{{(aPlaceHolder).join(',')}}" autofocus>
                                 </div>
                                 <button class="btn btn-primary me-2" (click)="getCustomers()">{{'SEARCH' | translate}} </button>
                                 <div class="d-flex align-items-center ads_search">

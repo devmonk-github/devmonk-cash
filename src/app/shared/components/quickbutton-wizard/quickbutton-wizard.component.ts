@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { ToastService } from '../toast';
@@ -91,6 +91,7 @@ export class QuickbuttonWizardComponent implements OnInit {
   currentLanguage: any;
   iEmployeeId: any;
   @Output() triggerEvent: EventEmitter<any> = new EventEmitter();
+  @ViewChildren('searchField') searchField!: QueryList<ElementRef>;
   translate: any;
   product: any;
   
@@ -116,6 +117,10 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.translateService.get(translate).subscribe((res:any)=>{
         this.translate = res;
     })
+  }
+  
+  ngAfterViewInit(): void {
+    this.searchField.first.nativeElement.focus();
   }
 
   ngAfterContentInit(): void {
