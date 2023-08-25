@@ -259,9 +259,9 @@
           <label class="form-control-label mb-3">{{ "ARTICLE_GROUP" | translate }}</label>
           <ng-select [(ngModel)]="item.iArticleGroupId" class="form-control form-control-solid p-0" [clearable]="false">
             <ng-container *ngIf="oStaticData?.articleGroupsList?.length">
-            <ng-option *ngFor="let oArticleGroup of articleGroupsList" [value]="oArticleGroup._id">
-              <p class="m-0 text-truncate">{{ oArticleGroup.sArticleGroupName }}</p>
-            </ng-option>
+              <ng-option *ngFor="let oArticleGroup of oStaticData?.articleGroupsList" [value]="oArticleGroup._id">
+                <p class="m-0 text-truncate">{{ oArticleGroup.sArticleGroupName }}</p>
+              </ng-option>
             </ng-container>
           </ng-select>
         </div>

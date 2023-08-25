@@ -17,7 +17,7 @@ export class SelectArticleDialogComponent implements OnInit {
   filteredArticleGroups: Array<any> = [];
   filteredSupplierList: Array<any> = [];
   filteredBrandList: Array<any> = [];
-  articleGroupsList: Array<any> = [];
+  articleGroupsList: Array<any>;
   partnersList: Array<any> = [];
   brandsList: Array<any> = [];
   brand: any = null;
@@ -28,7 +28,7 @@ export class SelectArticleDialogComponent implements OnInit {
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
   from: any;
-  
+  bIsChanged: any = false;
   @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
   articleGroupLoading = false;
 
@@ -42,7 +42,7 @@ export class SelectArticleDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selectedLanguage = localStorage.getItem('language') || 'nl';
+    this.selectedLanguage = localStorage.getItem('language') || 'en';
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
     if(this.from == 'repair'){
@@ -59,7 +59,7 @@ export class SelectArticleDialogComponent implements OnInit {
 
   async getDefaultArticleGroupDetail(iArticleGroupId:any) {
     const eDefaultArticleGroup = this.articleGroupsList.find((el: any) => el._id === this.iArticleGroupId);
-    if(eDefaultArticleGroup){
+    if(eDefaultArticleGroup && !this.bIsChanged){
       this.articlegroup = eDefaultArticleGroup;
       this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
     }
@@ -71,11 +71,15 @@ export class SelectArticleDialogComponent implements OnInit {
       iBusinessId: this.iBusinessId,
     };
 
-    const result: any = await this.getAllArticleGroupList(data);
-    if(result.data?.length && result.data[0]?.result?.length){
-      this.articleGroupsList = result.data[0].result;
-      this.articleGroupLoading = false;
+    if(!this.articleGroupsList){
+      const result: any = await this.getAllArticleGroupList(data);
+      if(result.data?.length && result.data[0]?.result?.length){
+        this.articleGroupsList = result.data[0].result;
+        this.articleGroupLoading = false;
+      }
     }
+    
+
     if (this.iArticleGroupId) {
       this.getDefaultArticleGroupDetail(this.iArticleGroupId);
     } else {
@@ -97,11 +101,12 @@ export class SelectArticleDialogComponent implements OnInit {
         }
       }
     }
+    this.articleGroupLoading = false;
   }
 
   // Function for search article group
   searchArticlegroup(searchStr: string) {
-    if (searchStr && searchStr.length > 2) {
+    if (searchStr && searchStr.length > 1) {
       this.filteredArticleGroups = this.articleGroupsList.filter((articlegroup: any) => {
         return articlegroup;
       });
@@ -112,7 +117,7 @@ export class SelectArticleDialogComponent implements OnInit {
 
   // Function for search supplier
   searchSupplier(searchStr: string) {
-    if (searchStr && searchStr.length > 2) {
+    if (searchStr && searchStr.length > 1) {
       this.filteredSupplierList = this.partnersList.filter((supplier: any) => {
         return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
@@ -122,7 +127,7 @@ export class SelectArticleDialogComponent implements OnInit {
   }
 
   searchBrand(searchStr: string) {
-    if (searchStr && searchStr.length > 2) {
+    if (searchStr && searchStr.length > 1) {
       this.filteredBrandList = this.brandsList.filter((brand: any) => {
         return brand.sName && brand.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
@@ -152,28 +157,48 @@ export class SelectArticleDialogComponent implements OnInit {
     });
   }
 
-  changeInArticleGroup() {
-    const aBusinessPartnerId: Array<any> = [];
-    if (this.articlegroup?.aBusinessPartner && this.articlegroup?.aBusinessPartner.length) {
-      this.articlegroup?.aBusinessPartner.forEach((bPartner: any) => {
-        aBusinessPartnerId.push(bPartner.iBusinessPartnerId);
-      });
-    };
-    if (!this.supplier)
-      this.fetchBusinessPartners(aBusinessPartnerId);
+  changeInArticleGroup(articlegroup: any) {
+    // const aBusinessPartnerId: Array<any> = [];
+    // if (this.articlegroup?.aBusinessPartner && this.articlegroup?.aBusinessPartner.length) {
+    //   this.articlegroup?.aBusinessPartner.forEach((bPartner: any) => {
+    //     aBusinessPartnerId.push(bPartner.iBusinessPartnerId);
+    //   });
+    // };
+    // if (!this.supplier)
+    //   this.fetchBusinessPartners(aBusinessPartnerId);
 
+    if(articlegroup){
+      this.iArticleGroupId = articlegroup._id;
+      this.getDefaultArticleGroupDetail(this.iArticleGroupId);
+    }else{
+      this.articlegroup = articlegroup;
+      this.filteredArticleGroups = [];
+    }
+   
+    //console.log('after', articlegroup,this.articlegroup, this.iArticleGroupId);
   }
 
   changeInSupplier() {
-    this.fetchArticleGroups(this.supplier._id, true);
+    /*No need to fetch article groups related to supplier.*/
+    //this.fetchArticleGroups(this.supplier._id, true);
+    if(!this.supplier)
+      this.bIsChanged = false;
+    else
+      this.bIsChanged = true;
   }
 
-  changeInBrand() {
-    if (!this.supplier) {
-      if (this.from && this.from === 'repair') {
-        this.brand.iBusinessPartnerId = this.brand.iRepairerId ? this.brand.iRepairerId : this.brand.iBusinessPartnerId
-      }
-      this.fetchBusinessPartners([this.brand.iBusinessPartnerId]);
+  changeInBrand(brand:any) {
+    // if (!this.supplier) {
+    //   if (this.from && this.from === 'repair') {
+    //     this.brand.iBusinessPartnerId = this.brand.iRepairerId ? this.brand.iRepairerId : this.brand.iBusinessPartnerId
+    //   }
+    //   this.fetchBusinessPartners([this.brand.iBusinessPartnerId]);
+    // }
+
+    this.brand = brand;
+    let newSupplier = this.partnersList.find((el: any) => el.iSupplierId === brand.iSupplierId)
+    if(this.brand && !this.bIsChanged && newSupplier){
+      this.supplier = newSupplier;
     }
   }
 

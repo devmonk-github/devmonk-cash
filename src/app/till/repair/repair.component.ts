@@ -91,6 +91,25 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       // this.item.new = false;
     }
+
+    if(!this.oStaticData?.articleGroupsList.length){
+      let data = {
+        // iBusinessPartnerId:this.item.iBusinessPartnerId,
+         iBusinessId: localStorage.getItem('currentBusiness'),
+       };
+      const result: any = await this.getAllArticleGroupList(data);
+      if(result.data?.length && result.data[0]?.result?.length){
+        //if(!this.oStaticData?.articleGroupsList.length)
+        this.oStaticData.articleGroupsList = result.data[0].result;
+        this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+          el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
+        })
+      }
+    }
+  }
+
+  async getAllArticleGroupList(data: any) {
+    return this.apiService.postNew('core', '/api/v1/business/article-group/list', data).toPromise();
   }
 
   /* setting a property if item already having the property */

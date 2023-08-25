@@ -104,10 +104,14 @@ export class OrderComponent implements OnInit {
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
-    const result: any = await this.getAllArticleGroupList(data);
-    if(result.data?.length && result.data[0]?.result?.length){
-      //if(!this.oStaticData?.articleGroupsList.length)
-      this.articleGroupsList = result.data[0].result;
+    if(!this.oStaticData?.articleGroupsList.length){
+      const result: any = await this.getAllArticleGroupList(data);
+      if(result.data?.length && result.data[0]?.result?.length){
+        this.oStaticData.articleGroupsList = result.data[0].result;
+        this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+          el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
+        })
+      }
     }
   }
 
@@ -122,7 +126,7 @@ export class OrderComponent implements OnInit {
     this.dialogService.openModal(SelectArticleDialogComponent,
       {
         cssClass: 'modal-m',
-        context: { item: this.item, from: 'order' },
+        context: { item: this.item, from: 'order', articleGroupsList:  this.oStaticData.articleGroupsList },
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
@@ -149,7 +153,7 @@ export class OrderComponent implements OnInit {
         }
 
         this.oStaticData = {
-          articleGroupsList: data.articleGroupsList,
+          articleGroupsList: data.articlegroup,
           brandsList: data.brandsList,
           partnersList: data.partnersList
         }
@@ -338,8 +342,8 @@ export class OrderComponent implements OnInit {
         this.suppliersList = response.result;
         if (this.item.iSupplierId) {
           const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
-          this.supplier = tempsupp.sName;
-          this.item.sBusinessPartnerName = tempsupp.sName;
+          this.supplier = tempsupp?.sName;
+          this.item.sBusinessPartnerName = tempsupp?.sName;
         }
       }
     }, (error) => {
