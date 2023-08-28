@@ -1378,11 +1378,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
     // console.log('onSelectProduct', product);
     this.bProductSelected = true;
+    let selectedQuickButton;
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
       this.onSelectRegular();
-      let selectedQuickButton = product;
+      selectedQuickButton = product;
       this.bSearchingProduct = false;
       nPriceIncludesVat = selectedQuickButton.nPrice;
     }
@@ -1411,7 +1412,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
-          if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          if (isFrom == 'quick-button'){
+            //UPDATE QUICK BUTTON PRICE IF nPrice IS DIFFERENT FROM BUSINESS PRODUCT nPriceIncludesVat.
+            if(selectedQuickButton.nPrice != currentLocation?.nPriceIncludesVat){
+              selectedQuickButton.nPrice = currentLocation?.nPriceIncludesVat;
+              nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+              let data = {
+                iBusinessId: this.iBusinessId,
+                iLocationId: this.iLocationId,
+                oQuickButton: selectedQuickButton,
+              };
+              this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${selectedQuickButton?._id}`, data).toPromise();
+            }
+          }else{
+            nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          }
           nVatRate = currentLocation?.nVatRate || 0;
         }
       }
@@ -1460,7 +1475,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       bHasStock: product?.bHasStock
     });
     // console.log('this.transactionItems', this.transactionItems);
-    if (isFrom === 'quick-button') { source.loading = false }
+    if (isFrom === 'quick-button') { 
+      source.loading = false;
+    }
     this.clearPaymentAmounts();
     if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
     // console.log('calling reset search now')
