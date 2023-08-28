@@ -14,7 +14,7 @@
           <div class="row">
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.2.89
+                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.00
               </label>
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
@@ -411,7 +411,8 @@
           <h2 class="fw-bolder m-0">{{ 'PAYMENT_METHODS' | translate}}</h2>
         </div>
         <div class="col-8 text-end">
-          <button class="btn btn-light-primary me-3" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' | translate}}</button>
+          <button class="btn btn-light-primary me-3" (click)="setSequenceForCashRegister()">{{ 'CASH_REGISTER_ORDER' |
+            translate}}</button>
           <button class="btn btn-primary" (click)="createPaymentMethod()">{{ 'NEW' | translate}}</button>
         </div>
       </div>
@@ -466,7 +467,8 @@
           <h2 class="fw-bolder m-0">{{ 'QUICK_BUTTONS' | translate}}</h2>
         </div>
         <div class="col-8 text-end">
-          <button class="btn btn-light-primary" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' | translate}}</button>
+          <button class="btn btn-light-primary" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' |
+            translate}}</button>
           <button class="btn btn-primary ms-3" (click)="createFavourite()">{{ 'NEW' | translate}}</button>
         </div>
       </div>
@@ -492,7 +494,8 @@
                 <td>
                   <p class="m-0" [ngClass]="button.bIsDuplicateHK? 'badge bg-danger p-3' : ''">
                     {{ button.oKeyboardShortcut?.sKey1 }}
-                    <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> + </span>
+                    <span class="mx-2" *ngIf="button.oKeyboardShortcut?.sKey1 && button.oKeyboardShortcut?.sKey2"> +
+                    </span>
                     {{ button.oKeyboardShortcut?.sKey2 }}
                   </p>
                 </td>
