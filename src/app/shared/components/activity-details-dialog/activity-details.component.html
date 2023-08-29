@@ -654,7 +654,7 @@
                                                         <p class="d-block">
                                                             <span class="text-truncate">{{'ARTICLE_DETAIL' | translate}}</span>: 
                                                             {{activity?.sArticleNumber || '-'}}
-                                                            {{activity?.sArticleName || '-'}}
+                                                            <span *ngIf="activity?.sArticleName">- {{activity?.sArticleName}}</span>
                                                         </p>
                                                     </div>
                                                     <div class="col-xl-12">
