@@ -34,6 +34,7 @@ export class ActionSettingsComponent implements OnInit {
     'PRINT_PDF',
     'PRINT_PDF_ALTERNATIVE',
     'PRINT_THERMAL',
+    'PRINT_THERMAL_ALTERNATIVE',
     'EMAIL'
   ];
 

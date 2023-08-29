@@ -1206,7 +1206,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           sType: type,
           sTemplateType: (type == 'regular') ? 'business-receipt' : type
         }).toPromise();
+      }else if(aActionToPerform.includes('PRINT_THERMAL_ALTERNATIVE')){
+        await this.receiptService.printThermalReceipt({
+          oDataSource: oDataSource,
+          printSettings: this.printSettings,
+          sAction: 'thermal',
+          apikey: this.businessDetails.oPrintNode.sApiKey,
+          title: oDataSource.sNumber,
+          sType: 'repair_alternative',
+          sTemplateType: (type == 'repair') ? 'repair_alternative':'business-receipt'
+        }).toPromise();
       }
+
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
         await this.receiptService.exportToPdf({
