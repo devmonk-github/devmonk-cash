@@ -188,6 +188,7 @@ export class ActivityDetailsComponent implements OnInit {
   aDiscountRecords: any;
   sMessage:any;
   aArticleGroup: any;
+  bShowWarning: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -236,7 +237,10 @@ export class ActivityDetailsComponent implements OnInit {
       } else {
         this.oLocationName ="";
       }
-      this.fetchActivity(this.activityItems[0].iActivityId);
+      if(this.activityItems[0].bMigrate) this.bShowWarning = true;
+      if(!this.activityItems[0].bMigrate || this.activityItems[0].eActivityItemStatus != 'delivered'){
+        this.fetchActivity(this.activityItems[0].iActivityId);
+      }
       this.fetchTransactionItems(this.activityItems[0]._id);
       if(this.activityItems[0]?.iCustomerId)this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
@@ -747,7 +751,7 @@ export class ActivityDetailsComponent implements OnInit {
         if(this.activityItems[0]?.aGiftcardRedeemedTransactionData?.length) this.activityItems[0]?.aGiftcardRedeemedTransactionData.sort((a:any, b:any) => (a.dRedeemedDate < b.dRedeemedDate) ? 1: -1);
         this.aDiscountRecords = this.activityItems.filter((el: any) => this.tillService.aDiscountTypes.includes(el.oType.eKind));
       }
-        this.processTransactionItems()
+      this.processTransactionItems()
     });
   }
 
