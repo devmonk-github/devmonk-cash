@@ -460,7 +460,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
           let hotKeys = new Set();
           this.quickButtons = result;
           for( const button of this.quickButtons) {
-            if(button.oKeyboardShortcut.sKey1 != ''){
+            if(button.oKeyboardShortcut && button.oKeyboardShortcut?.sKey1 != '' && button.oKeyboardShortcut?.sKey1){
               const hotKey = JSON.stringify(button.oKeyboardShortcut);
               if (hotKeys.has(hotKey)) {
                 button.bIsDuplicateHK = true;

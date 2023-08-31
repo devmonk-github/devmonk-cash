@@ -761,7 +761,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   async EditOrCreateCustomer() {
-    if(this.customer.sLastName == "" || !this.customer.sLastName){
+    if((this.customer.sLastName == "" || !this.customer.sLastName) && this.customer.sSalutation != 'FIRM'){
       this.toastService.show({ type: 'danger', text: this.translations[`LASTNAME_REQUIRED`] });
       return;
     }
