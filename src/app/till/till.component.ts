@@ -859,10 +859,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.payMethods.forEach(o => { o.amount = null, o.isDisabled = false });
-    if (this.transactionItems?.length) 
-      this.distributeAmount();
-    else
-      this.availableAmount = 0;
+    if (this.transactionItems?.length) this.distributeAmount();
+    else this.availableAmount = 0;
 
     this.updateAmountVariables();
   }
@@ -1656,7 +1654,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       context: { customer: this.customer, oGiftcard: oPassedGiftcard, mode: mode, appliedGiftCards: this.appliedGiftCards }
     }).instance.close.subscribe(result => {
       if (result) {
-        // console.log({result, oGiftcard, mode})
         if (result?.oGiftcard?.nAmount) {
           const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftcard?._id);
           if (mode == 'edit' || oExisting) {
@@ -1665,14 +1662,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.appliedGiftCards.push(result?.oGiftcard);
           }
         }
-        if(result?.oExternalGiftcard?.nAmount) {
-          this.appliedGiftCards.push(result.oExternalGiftcard);
-        }
 
-        if (result?.redeemedLoyaltyPoints) {
-          this.addReedemedPoints(result.redeemedLoyaltyPoints);
-        }
-
+        if(result?.oExternalGiftcard?.nAmount) this.appliedGiftCards.push(result.oExternalGiftcard);
+        if (result?.redeemedLoyaltyPoints) this.addReedemedPoints(result.redeemedLoyaltyPoints);
         this.changeInPayment();
       }
     });
@@ -1721,15 +1713,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let result: any;
     result = await this.createArticleGroupService.checkArticleGroups('loyalty-points').toPromise();
     let iArticleGroupId = '';
-    if (result?.data?.length && result?.data[0]?.result?.length) {
-      iArticleGroupId = result?.data[0]?.result[0]?._id;
-    } else {
-      const articleBody = { name: 'Loyalty Points', sCategory: 'Loyalty Points', sSubCategory: 'Loyalty Points' };
-      result = await this.createArticleGroupService.createArticleGroup(articleBody);
-      if (result?.data) {
-        iArticleGroupId = result?.data?._id;
-      }
-    }
+    if (result?.data?._id) iArticleGroupId = result?.data?._id;
+    
     this.transactionItems.push({
       name: 'Loyalty Points',
       type: 'loyalty-points',
@@ -2066,7 +2051,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transactionItems: this.transactionItems,
       availableAmount: this.availableAmount,
       nGiftcardAmount: this.nGiftcardAmount,
-      redeemedLoyaltyPoints: this.redeemedLoyaltyPoints,
+      nRedeemedLoyaltyPoints: this.redeemedLoyaltyPoints,
       payMethods: this.payMethods
     });
   }

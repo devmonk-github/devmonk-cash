@@ -52,6 +52,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   fetchInProgress = false;
   redeemedPointsValue:number = 0;
   savingPointsSetting: boolean = false;
+  bLoyaltyPointsValid = true;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -180,23 +181,23 @@ export class CardsComponent implements OnInit, AfterViewInit {
   submit() {
     const bIsGiftcardValid = this.oGiftcard?.nCurrentLimit != 0 || this.oGiftcard.nAmount <= this.oGiftcard.nCurrentLimit || this.oGiftcard.nAmount != 0;
     const bIsExternalGiftcardValid = (this.oExternalGiftcard?.sExternalGiftCardNumber && this.oExternalGiftcard.nAmount <= this.oExternalGiftcard.balance) || true;
-    const bIsLoyaltyPointsValid = this.redeemedLoyaltyPoints != 0 || this.loyaltyPoints >= this.redeemedLoyaltyPoints;
-
     //console.log({ bIsGiftcardValid, bIsExternalGiftcardValid, bIsLoyaltyPointsValid})
 
-    if (!bIsGiftcardValid || !bIsExternalGiftcardValid || !bIsLoyaltyPointsValid){
+    if (!bIsGiftcardValid || !bIsExternalGiftcardValid || !this.bLoyaltyPointsValid){
       this.toastService.show({type:'warning' , text: this.translateService.instant('VALIDATION_ERROR_PLEASE_CHECK_AGAIN_THE_AMOUNT')});
     } else {
-      const oGiftcard = { ...this.oGiftcard }
-      oGiftcard.type = this.oExternalGiftcard.type ? this.oExternalGiftcard.type : 'custom';
-      oGiftcard.nAmount += oGiftcard.nCurrentRedeemedAmount;
-      oGiftcard.nGiftcardRemainingAmount -= this.oGiftcard.nAmount
+      const oBody:any = {}
 
-      const oBody:any = { 
-        oGiftcard
+      if(this.oGiftcard?.sGiftCardNumber) {
+        const oGiftcard = { ...this.oGiftcard }
+        oGiftcard.type = this.oExternalGiftcard.type ? this.oExternalGiftcard.type : 'custom';
+        oGiftcard.nAmount += oGiftcard.nCurrentRedeemedAmount;
+        oGiftcard.nGiftcardRemainingAmount -= this.oGiftcard.nAmount
+        oBody.oGiftcard = oGiftcard;
       }
 
       if (this.redeemedLoyaltyPoints) oBody.redeemedLoyaltyPoints = this.redeemedPointsValue;
+      
       if(this.oExternalGiftcard.nAmount) {
         oBody.oExternalGiftcard = {
           ...this.oExternalGiftcard,
@@ -208,5 +209,10 @@ export class CardsComponent implements OnInit, AfterViewInit {
       // console.log('closing', oBody)
       this.close(oBody);
     }
+  }
+
+  calculateLoyaltyPointsValue() {
+    this.redeemedPointsValue = +(this.redeemedLoyaltyPoints / this.tillService.oSavingPointSettings.nPerEuro2).toFixed(2)
+    this.bLoyaltyPointsValid = this.redeemedLoyaltyPoints == 0 || this.redeemedLoyaltyPoints <= this.loyaltyPoints;
   }
 }
