@@ -175,6 +175,9 @@
                 <div class="row">
                     
                     <div class="col-8 fw-bold gy-1">
+                        <div class="alert alert-warning my-2" role="alert" *ngIf="transaction.bMigrate">
+                            {{"THIS_IS_A_MIGRATED_ACTIVITY_TRANSACTION" | translate}}
+                        </div>
                         <div class="row">
                             <h3 class="fw-bolder mb-4">
                                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
@@ -393,7 +396,7 @@
                                             <p class="m-0" *ngIf="item.sProductName">
                                                 {{ item.sProductName}}
                                                 <br>
-                                                <span class="fw-semibold small" *ngIf="item.sProductName">
+                                                <span class="fw-semibold small" *ngIf="item.sProductNumber">
                                                     {{"PRODUCT_NUMBER" | translate}}: {{item.sProductNumber}}
                                                 </span>
                                             </p>

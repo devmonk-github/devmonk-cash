@@ -859,10 +859,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.payMethods.forEach(o => { o.amount = null, o.isDisabled = false });
-    if (this.transactionItems?.length) 
-      this.distributeAmount();
-    else
-      this.availableAmount = 0;
+    if (this.transactionItems?.length) this.distributeAmount();
+    else this.availableAmount = 0;
 
     this.updateAmountVariables();
   }
@@ -1206,7 +1204,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           sType: type,
           sTemplateType: (type == 'regular') ? 'business-receipt' : type
         }).toPromise();
+      }else if(aActionToPerform.includes('PRINT_THERMAL_ALTERNATIVE')){
+        await this.receiptService.printThermalReceipt({
+          oDataSource: oDataSource,
+          printSettings: this.printSettings,
+          sAction: 'thermal',
+          apikey: this.businessDetails.oPrintNode.sApiKey,
+          title: oDataSource.sNumber,
+          sType: 'repair_alternative',
+          sTemplateType: (type == 'repair') ? 'repair_alternative':'business-receipt'
+        }).toPromise();
       }
+
       const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
         await this.receiptService.exportToPdf({
@@ -1378,11 +1387,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
     // console.log('onSelectProduct', product);
     this.bProductSelected = true;
+    let selectedQuickButton;
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
       this.onSelectRegular();
-      let selectedQuickButton = product;
+      selectedQuickButton = product;
       this.bSearchingProduct = false;
       nPriceIncludesVat = selectedQuickButton.nPrice;
     }
@@ -1411,7 +1421,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
-          if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          if (isFrom == 'quick-button'){
+            //UPDATE QUICK BUTTON PRICE IF nPrice IS DIFFERENT FROM BUSINESS PRODUCT nPriceIncludesVat.
+            if(selectedQuickButton.nPrice != currentLocation?.nPriceIncludesVat){
+              selectedQuickButton.nPrice = currentLocation?.nPriceIncludesVat;
+              nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+              let data = {
+                iBusinessId: this.iBusinessId,
+                iLocationId: this.iLocationId,
+                oQuickButton: selectedQuickButton,
+              };
+              this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${selectedQuickButton?._id}`, data).toPromise();
+            }
+          }else{
+            nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          }
           nVatRate = currentLocation?.nVatRate || 0;
         }
       }
@@ -1460,7 +1484,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       bHasStock: product?.bHasStock
     });
     // console.log('this.transactionItems', this.transactionItems);
-    if (isFrom === 'quick-button') { source.loading = false }
+    if (isFrom === 'quick-button') { 
+      source.loading = false;
+    }
     this.clearPaymentAmounts();
     if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
     // console.log('calling reset search now')
@@ -1639,7 +1665,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       context: { customer: this.customer, oGiftcard: oPassedGiftcard, mode: mode, appliedGiftCards: this.appliedGiftCards }
     }).instance.close.subscribe(result => {
       if (result) {
-        // console.log({result, oGiftcard, mode})
         if (result?.oGiftcard?.nAmount) {
           const oExisting = this.appliedGiftCards.find((el: any) => el._id == result.oGiftcard?._id);
           if (mode == 'edit' || oExisting) {
@@ -1648,14 +1673,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.appliedGiftCards.push(result?.oGiftcard);
           }
         }
-        if(result?.oExternalGiftcard?.nAmount) {
-          this.appliedGiftCards.push(result.oExternalGiftcard);
-        }
 
-        if (result?.redeemedLoyaltyPoints) {
-          this.addReedemedPoints(result.redeemedLoyaltyPoints);
-        }
-
+        if(result?.oExternalGiftcard?.nAmount) this.appliedGiftCards.push(result.oExternalGiftcard);
+        if (result?.redeemedLoyaltyPoints) this.addReedemedPoints(result.redeemedLoyaltyPoints);
         this.changeInPayment();
       }
     });
@@ -1704,15 +1724,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let result: any;
     result = await this.createArticleGroupService.checkArticleGroups('loyalty-points').toPromise();
     let iArticleGroupId = '';
-    if (result?.data?.length && result?.data[0]?.result?.length) {
-      iArticleGroupId = result?.data[0]?.result[0]?._id;
-    } else {
-      const articleBody = { name: 'Loyalty Points', sCategory: 'Loyalty Points', sSubCategory: 'Loyalty Points' };
-      result = await this.createArticleGroupService.createArticleGroup(articleBody);
-      if (result?.data) {
-        iArticleGroupId = result?.data?._id;
-      }
-    }
+    if (result?.data?._id) iArticleGroupId = result?.data?._id;
+    
     this.transactionItems.push({
       name: 'Loyalty Points',
       type: 'loyalty-points',
@@ -2049,7 +2062,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transactionItems: this.transactionItems,
       availableAmount: this.availableAmount,
       nGiftcardAmount: this.nGiftcardAmount,
-      redeemedLoyaltyPoints: this.redeemedLoyaltyPoints,
+      nRedeemedLoyaltyPoints: this.redeemedLoyaltyPoints,
       payMethods: this.payMethods
     });
   }

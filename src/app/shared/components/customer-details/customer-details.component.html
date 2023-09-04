@@ -1081,7 +1081,7 @@
                                         (keydown)="onlyLetters($event)" />
                                 </div>
                                 <div class="col-3 custom-number" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
-                                    <input class="form-control" type="number"
+                                    <input class="form-control" type="text"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
@@ -1141,7 +1141,7 @@
                                     <input *ngIf="(mode === 'details' && editProfile)" class="form-control"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
-                                    <input *ngIf="mode === 'create'" class="form-control" type="number"
+                                    <input *ngIf="mode === 'create'" class="form-control" type="text"
                                         placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
                                 </div>

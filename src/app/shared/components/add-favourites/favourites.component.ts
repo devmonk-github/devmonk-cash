@@ -60,6 +60,13 @@ export class AddFavouritesComponent implements OnInit {
   limit: number = 20;
   product: any;
 
+  oShopProductsPaginationConfig: any = {
+    id: 'paginate_shop_products',
+    itemsPerPage: 4,
+    currentPage: 1,
+    totalItems: 0
+  };
+
   
   aFunctionKeys:any = [
     { title: '' },
@@ -138,7 +145,14 @@ export class AddFavouritesComponent implements OnInit {
     }
     this.searching = false;
   }
-  
+
+  // Function for pagination
+  pageChanged(page: any, isFrom: string = 'shopProducts', searchValue: string) {
+    if (isFrom == 'shopProducts') {
+      this.oShopProductsPaginationConfig.currentPage = page;
+      this.search();
+    }
+  }
 
   onSelectProduct(product: any, isFrom?: string, isFor?: string) {
     if (this.mode == 'create' || this.mode == 'assign') {
@@ -150,6 +164,7 @@ export class AddFavouritesComponent implements OnInit {
         this.newSelectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
       }
       this.shopProducts = null;
+      this.searchKeyword ='';
       this.validate(); 
     }else{
       this.shopProducts = null;

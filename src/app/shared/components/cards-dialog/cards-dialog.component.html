@@ -134,9 +134,12 @@
                             <span>{{"POINTS_SPENDABLE"| translate}}: {{loyaltyPoints || 0}}</span>
                         </div>
                         <div class="col-6">
-                            <input min="0" class="form-control mb-3" type="number" [(ngModel)]="redeemedLoyaltyPoints" (ngModelChange)="redeemedPointsValue = +(redeemedLoyaltyPoints / tillService.oSavingPointSettings.nPerEuro2).toFixed(2)"> 
-                            <span *ngIf="redeemedLoyaltyPoints > 0">
+                            <input min="0" class="form-control mb-3" type="number" [(ngModel)]="redeemedLoyaltyPoints" (ngModelChange)="calculateLoyaltyPointsValue()"> 
+                            <span *ngIf="bLoyaltyPointsValid && redeemedLoyaltyPoints > 0">
                                 = {{ redeemedPointsValue | currency: tillService.currency }}
+                            </span>
+                            <span class="err-msg" @fade *ngIf="!bLoyaltyPointsValid">
+                                {{ 'YOU_HAVE_ENTERED_AN_INVALID_AMOUNT' | translate }}
                             </span>
                         </div>
                         <!-- <div class="col-2">
