@@ -146,10 +146,10 @@ export class TestFilterComponent implements OnInit, OnDestroy {
         data3 = 'repair';
       }
       this.type = data3;
-      console.log("this.type", this.type);
+      //console.log("this.type", this.type);
       var fromdate = new Date();
       fromdate = new Date(fromdate.getTime());
-      fromdate.setDate(fromdate.getDate() - 30);
+      fromdate.setDate(fromdate.getDate() - 365);
       let fromDate = this.convert(fromdate);
       let ToDate = this.convert(new Date());
       const queryParams: any = {
@@ -295,7 +295,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       selectedWorkstations: [],
       locations: [],
       selectedLocations: [],
-      selectedKind: [],
+      selectedKind: [this.type],
       aSelectedBusinessPartner: [],
       iEmployeeId: '',
       iAssigneeId: '',
