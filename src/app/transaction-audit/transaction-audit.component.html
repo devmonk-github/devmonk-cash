@@ -50,11 +50,11 @@
                                             </div>
                                             <div class="w-100" *ngIf="aDayClosure?.length">
                                             <ng-select class="form-control form-control-solid p-0"
-                                                [(ngModel)]="statisticFilter.dFromState" [clearable]="false"
+                                                [clearable]="false"
                                                 (change)="onStateChange($event, true)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
-                                                    [value]="oDayClosure.dOpenDate">
-                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}
+                                                    [value]="oDayClosure">
+                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} {{ oDayClosure?.eCreationType === "migration" ? '(MIGRATED)' : '' }}
                                                     <span *ngIf="sDayClosureMethod === 'workstation' ">|
                                                         {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
@@ -70,12 +70,12 @@
                                             </div>
                                             <div class="w-100" *ngIf="aDayClosure?.length">
                                             <ng-select class="form-control form-control-solid p-0"
-                                                [(ngModel)]="statisticFilter.dToState" [clearable]="false"
+                                                [clearable]="false"
                                                 (change)="onStateChange($event, false)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
-                                                    [value]="oDayClosure.dCloseDate"
+                                                    [value]="oDayClosure"
                                                     [disabled]="oDayClosure?.isDisable ? true : false">
-                                                    {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }}
+                                                    {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} {{ oDayClosure?.eCreationType === "migration" ? '(MIGRATED)' : '' }}
                                                     <span *ngIf="sDayClosureMethod === 'workstation' ">|
                                                         {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
@@ -111,7 +111,7 @@
                                                     <div class="menu-item" data-kt-menu-trigger="hover"
                                                         data-kt-menu-placement="right-start">
                                                         <!--begin::Menu link-->
-                                                        <a class="menu-link py-3">
+                                                        <a class="menu-link py-3" [class.disabled]="parent.bDisable">
                                                             <span class="menu-icon">
                                                                 <i class="bi bi-bar-chart fs-3"></i>
                                                             </span>
@@ -129,7 +129,7 @@
                                                                         class="menu-item" data-kt-menu-trigger="hover"
                                                                         data-kt-menu-placement="right-start">
                                                                         <!--begin::Menu link-->
-                                                                        <a class="menu-link py-3">
+                                                                        <a class="menu-link py-3" [class.disabled]="child1.bDisable">
                                                                             <span class="menu-icon">
                                                                                 <i class="bi bi-bar-chart fs-3"></i>
                                                                             </span>
@@ -146,7 +146,7 @@
                                                                             <div *ngFor="let child2 of child1.children"
                                                                                 class="menu-item">
                                                                                 <a (click)="onDropdownItemSelected(parent,child1,child2)"
-                                                                                    class="menu-link px-1 py-3">
+                                                                                    class="menu-link px-1 py-3" [class.disabled]="child2.bDisable">
                                                                                     <span class="menu-bullet me-0">
                                                                                         <span
                                                                                             class="bullet bullet-dot"></span>

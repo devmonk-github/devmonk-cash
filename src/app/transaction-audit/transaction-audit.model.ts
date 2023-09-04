@@ -2,17 +2,20 @@ export interface View {
     sKey: string;
     sValue: string;
     children: ViewMenuChild[];
+    bDisable: boolean;
 }
 
 export interface ViewMenuChild {
     sKey?: string;
     sValue?: string;
     children: ChildChild[];
+    bDisable: boolean
 }
 
 export interface ChildChild {
     sKey: string;
     sValue: string;
+    bDisable: boolean;
     data?: {
         displayMethod?: eDisplayMethodKeysEnum,
         modeFilter?: 'supplier' | 'businessOwner',
