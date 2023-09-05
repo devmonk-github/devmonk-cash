@@ -544,13 +544,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
       const currentLocation = localStorage.getItem('currentLocation');
       if (response?.data) this.businessDetails = response.data;
-      if(this.businessDetails?.aLocation?.length){
-        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
-        if (locationIndex != -1) {
-         
-        }
-      }
-      
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == currentLocation.toString())[0];
+      this.tillService.selectCurrency(this.businessDetails.currentLocation);
+
       if (this.businessDetails?.aLocation?.length) {
         const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
 

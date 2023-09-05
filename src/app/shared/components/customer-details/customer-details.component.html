@@ -424,7 +424,7 @@
                                                 <td>{{transaction.sNumber}}</td>
                                                 <td>{{transaction.sReceiptNumber}}</td>
                                                 <td>{{transaction.eType}}</td>
-                                                <td>{{(transaction.sTotal | currency: tillService.currency) || 0}}</td>
+                                                <td>{{(transaction.sTotal || 0) | currency: tillService.currency}}</td>
                                                 <ng-container>
                                                     <!--*ngIf="from === 'customer'"-->
                                                     <td>
