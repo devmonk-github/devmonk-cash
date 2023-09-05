@@ -177,6 +177,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   bNormalOrder: boolean = true;
   sBusinessCountry: string = '';
+  bAllowOpenManualCashDrawer: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -1071,6 +1072,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (id != '') {
       this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
         this.employee = result?.data;
+        this.bAllowOpenManualCashDrawer = this.employee.aRights.includes('DEVELOPER') || this.employee.aRights.includes('OWNER');
+
       });
     }
   }
