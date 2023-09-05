@@ -244,7 +244,7 @@ export class ImportRepairOrderService {
           iBusinessId: iBusinessId,
           iWorkStationId: iWorkStationId,
           iEmployeeId: oData?.iEmployeeId,
-          iAssigneeId: oData?.iAssigneeId,
+          iAssigneeId: oData?.iAssigneeId ? oData?.iAssigneeId : undefined,
           iLocationId: iLocationId,
           /* File */
           sBagNumber: oData?.sBagNumber,

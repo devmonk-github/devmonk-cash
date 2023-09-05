@@ -12,7 +12,8 @@ export class ImportService {
     processImportCustomer(data: any) {
         const { customer } = data;
 
-        const processCustomer = {   
+        const processCustomer = { 
+            nClientId: customer?.['nClientId'] ? customer['nClientId'] : "do-nothing",
             sSalutation: customer?.['sSalutation'] ? customer['sSalutation'] : "do-nothing",
             sFirstName: customer?.['sFirstName'] ? customer['sFirstName'] : "do-nothing",
             sPrefix: customer?.['sPrefix'] ? customer['sPrefix'] : "do-nothing",
