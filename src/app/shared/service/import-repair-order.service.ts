@@ -75,6 +75,11 @@ export class ImportRepairOrderService {
         sName: "oCustomer.sFirstName",
       },
       {
+        sColumnHeader: "CUSTOMER_NUMBER",
+        sDataBaseFieldName: "oCustomer.nClientId",
+        sName: "oCustomer.nClientId",
+      },
+      {
         sColumnHeader: "customerId",
         sDataBaseFieldName: "iCustomerId",
         sName: "iCustomerId",
@@ -205,6 +210,7 @@ export class ImportRepairOrderService {
 
         const oCustomer = {
           _id: oData.iCustomerId,
+          nClientId: oData['oCustomer.nClientId'],
           oShippingAddress: {
             sStreet: street,
             sHouseNumber: HouseNumber,
