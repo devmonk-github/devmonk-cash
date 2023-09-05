@@ -55,3 +55,8 @@ span.valid {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+a.disabled {
+    color: #EBEBE4;
+    cursor: not-allowed;
+}

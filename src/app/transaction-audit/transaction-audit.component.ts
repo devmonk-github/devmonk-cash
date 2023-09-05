@@ -15,6 +15,7 @@ import { TillService } from '../shared/service/till.service';
 import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
 import * as moment from 'moment';
 import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
+
 @Component({
   selector: 'app-transaction-audit',
   templateUrl: './transaction-audit.component.html',
@@ -61,6 +62,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     isProductLevel: false,
     dFromState: '',
     dToState: '',
+    eChosenStateCreationType: '' /* To disable the TO_STATE if Migration date chosen from FROM_STATE */
   };
   filterDates:any = {
     startDate: "",//new Date(new Date().setHours(0, 0, 0)),
@@ -236,14 +238,17 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       {
         sKey: 'SALES',
         sValue: 'cash-registry',
+        bDisable: false,
         children: [
           {
             sKey: 'ArticleGroup',
             sValue: this.translateService.instant('ARTICLE_GROUP'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -252,6 +257,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -263,10 +269,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Bookkeeping',
             sValue: this.translateService.instant('BOOKKEEPING'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Vat rates',
                 sValue: this.translateService.instant('VAT_RATES'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
@@ -274,6 +282,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Revenue per',
                 sValue: this.translateService.instant('REVENUE_PER'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
@@ -281,6 +290,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Article group',
                 sValue: this.translateService.instant('ARTICLE_GROUP'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -290,10 +300,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Supplier',
             sValue: this.translateService.instant('SUPPLIER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -302,6 +314,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -313,10 +326,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Manager',
             sValue: this.translateService.instant('MANAGER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -325,6 +340,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -338,14 +354,17 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       {
         sKey: 'PURCHASE',
         sValue: 'purchase-order',
+        bDisable: false,
         children: [
           {
             sKey: 'ArticleGroup',
             sValue: this.translateService.instant('ARTICLE GROUP'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -354,6 +373,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -365,10 +385,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Bookkeeping',
             sValue: this.translateService.instant('BOOKKEEPING'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Vat rates',
                 sValue: this.translateService.instant('VAT_RATES'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
@@ -376,6 +398,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Revenue per',
                 sValue: this.translateService.instant('REVENUE_PER'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
@@ -383,6 +406,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Article group',
                 sValue: this.translateService.instant('ARTICLE_GROUP'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -392,10 +416,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Supplier',
             sValue: this.translateService.instant('SUPPLIER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -404,6 +430,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -415,10 +442,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Manager',
             sValue: this.translateService.instant('MANAGER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -427,6 +456,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -440,14 +470,17 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       {
         sKey: 'SALES_ORDERS',
         sValue: 'sales-order',
+        bDisable: false,
         children: [
           {
             sKey: 'ArticleGroup',
             sValue: this.translateService.instant('ARTICLE GROUP'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -456,6 +489,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -467,10 +501,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Bookkeeping',
             sValue: this.translateService.instant('BOOKKEEPING'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Vat rates',
                 sValue: this.translateService.instant('VAT_RATES'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
@@ -478,6 +514,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Revenue per',
                 sValue: this.translateService.instant('REVENUE_PER'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
@@ -485,6 +522,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Article group',
                 sValue: this.translateService.instant('ARTICLE_GROUP'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -494,10 +532,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Supplier',
             sValue: this.translateService.instant('SUPPLIER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -506,6 +546,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -517,10 +558,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           {
             sKey: 'Manager',
             sValue: this.translateService.instant('MANAGER'),
+            bDisable: false,
             children: [
               {
                 sKey: 'Compact',
                 sValue: this.translateService.instant('COMPACT'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -529,6 +572,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Specific',
                 sValue: this.translateService.instant('SPECIFIC'),
+                bDisable: false,
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -548,6 +592,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       const oTurnoverGroup = {
         sKey: 'Turnover Group',
         sValue: this.translateService.instant('TURN_OVER_GROUP'),
+        bDisable: false,
         data: {
           displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
         }
@@ -587,7 +632,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.location.back()
   }
 
-  onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
+  onDropdownItemSelected(parent: any, child1: any, child2: any) {
+    if (child2?.bDisable) return;
     this.bShowProperty = false;
     this.sOptionMenu = {
       parent,
@@ -1527,7 +1573,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               dOpenDate: oDayClosure?.dOpenDate,
               dCloseDate: oDayClosure?.dCloseDate,
               isDisable: true,
-              sWorkStationName: oDayClosure?.sWorkStationName
+              sWorkStationName: oDayClosure?.sWorkStationName,
+              eCreationType: oDayClosure?.eCreationType
             }
           });
           
@@ -1540,25 +1587,65 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
   }
 
-  onStateChange(dDate: any, isOpenDate: boolean) {
-    // console.log('onStateChange', { dDate, isOpenDate, aDayClosure: this.aDayClosure})
+  /* we are only enabling the [sales->article-group->compcat] mode when migration date chosen */
+  toggleDropdownOfState() {
+    const isMigrationChosen = this.statisticFilter.eChosenStateCreationType == 'migration' ? true : false;
+
+    const oData = {
+      oParent: {},
+      oChild: {},
+      oGrandChild: {}
+    }
+
+    /* Parent */
+    for (const oOption of this.aOptionMenu) {
+      oOption.bDisable = false;
+      if (isMigrationChosen && oOption.sKey !== 'SALES') oOption.bDisable = true;
+      else oData.oParent = oOption;
+
+      /* Child */
+      for (const oChild of oOption?.children) {
+        oChild.bDisable = false;
+        if (isMigrationChosen && oChild.sKey !== 'ArticleGroup') oChild.bDisable = true;
+        else oData.oChild = oChild;
+
+        /* Grand-Child */
+        for (const oGrandChild of oChild.children) {
+          oGrandChild.bDisable = false;
+          if (isMigrationChosen && oGrandChild.sKey !== 'Compact') oGrandChild.bDisable = true;
+          else oData.oGrandChild = oGrandChild;
+        }
+      }
+    }
+
+    /* Migrated statistic only works with Sales->ArticleGroup->Compact so we making default selected */
+    if (isMigrationChosen) this.onDropdownItemSelected(oData.oParent, oData.oChild, oData.oGrandChild);
+  }
+
+  onStateChange(_oDayClosure: any, isOpenDate: boolean) {
+    if (_oDayClosure?.eCreationType) this.statisticFilter.eChosenStateCreationType = _oDayClosure.eCreationType;
+
+    if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
+    else this.statisticFilter.dToState = _oDayClosure.dCloseDate
+
     this.aStatistic = [];
     this.aStatisticsIds = [];
 
     const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
     const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
-      /* Disabling the date which is smaller than the dFromState in dToState */
-      this.aDayClosure.forEach((oDayClosure:any) => {
-        oDayClosure.isDisable = false;
-        const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
-        if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true;
-        
-        const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
-        const dToTime = new Date(oDayClosure.dCloseDate).getTime();
-        
-        if (dFromTime >= dFromStateTime && dToTime <= dToStateTime) this.aStatisticsIds.push(oDayClosure._id);
-      });
+    /* Disabling the date which is smaller than the dFromState in dToState */
+    this.aDayClosure.forEach((oDayClosure: any) => {
+      oDayClosure.isDisable = false;
+      const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
+      if (dFromStateTime > dDayClosureDateTime || oDayClosure.eCreationType !== _oDayClosure.eCreationType) oDayClosure.isDisable = true;
 
+      const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
+      const dToTime = new Date(oDayClosure.dCloseDate).getTime();
+
+      if (dFromTime >= dFromStateTime && dToTime <= dToStateTime) this.aStatisticsIds.push(oDayClosure._id);
+    });
+
+    this.toggleDropdownOfState();
     this.checkShowDownload();
   }
 
