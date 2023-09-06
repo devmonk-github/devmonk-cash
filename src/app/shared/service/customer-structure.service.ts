@@ -45,19 +45,19 @@ makeCustomerAddress(address: any, includeCountry: boolean, order: any) {
 
     if(order){
       if (address.sStreet) result += address.sStreet + ' ';
-      if (address.sHouseNumber) result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
-      if (address.sHouseNumberSuffix) result += address.sHouseNumberSuffix + ' ';
+      if (address.sHouseNumber) result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ', ');
+      if (address.sHouseNumberSuffix) result += address.sHouseNumberSuffix +', ' + ' ';
       if (address.sPostalCode) result += this.formatZip(address.sPostalCode) + ' ';
       if (address.sCity) result += address.sCity + ' ';
-      if (address.sState) result += address.sState + ' ';
+      if (address.sState) result += address.sState + ',' + ' ';
       if (includeCountry && address.sCountry) result += address.sCountry;
     }else{
-      if (address.sHouseNumber) result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
+      if (address.sHouseNumber) result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ', ');
       if (address.sHouseNumberSuffix) result += address.sHouseNumberSuffix + ' ';
-      if (address.sStreet) result += address.sStreet + ' ';
+      if (address.sStreet) result += address.sStreet + ', ';
       if (address.sCity) result += address.sCity + ' ';
       if (address.sState) result += address.sState + ' ';
-      if (address.sPostalCode) result += this.formatZip(address.sPostalCode) + ' ';
+      if (address.sPostalCode) result += this.formatZip(address.sPostalCode) + ', ';
       if (includeCountry && address.sCountry) result += address.sCountry;
     }
     return result;

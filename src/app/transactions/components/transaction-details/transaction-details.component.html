@@ -58,86 +58,60 @@
                     
                     </ng-container>
                 </div>
-                <div class="row fw-bold gy-1 mb-5">
+                <div class="row fw-bold gy-1 mb-5 mt-3">
                     <div class="col-md-12">
-                        <div class="text-gray-900 mt-2">
-                           <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sFirstName }} </span>
-                           <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sPrefix}} </span>
-                           <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sLastName }} </span>
-                           <span *ngIf="transaction?.oCustomer?.bIsCompany">  {{transaction?.oCustomer?.sCompanyName}}</span>
+                        <div class="text-gray-800 fw-bolder mt-3">
+                            <span *ngIf="transaction?.oCustomer?.bIsCompany"> {{transaction?.oCustomer?.sCompanyName}}</span>
+                            <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sFirstName }} </span>
+                            <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sPrefix}} </span>
+                            <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sLastName }} </span>
                         </div>
                     </div>
                     <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && !transaction?.oCustomer?.bCounter">
-                        <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
+                        <div class="mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
                             <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
                         </div>
-                        <div class=" mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
+                        <div class="mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
                             <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
                         </div>
                     </div>
+                    <div class="col-md-12" *ngIf="transaction?.oCustomer?.bIsCompany && !transaction?.oCustomer?.bCounter">
+                        <div class="mt-2" *ngIf="transaction?.oCustomer?.oContactPerson">
+                            <span class="text-muted me-5">{{ 'CONTACT_PERSON' | translate}}: </span>
+                            <span class="text-gray-800">
+                                {{ transaction?.oCustomer?.oContactPerson.sFirstName }} {{ transaction?.oCustomer?.oContactPerson.sPrefix }} {{ transaction?.oCustomer?.oContactPerson.sLastName }}
+                            </span>
+                        </div>
+                        <div class="mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
+                            <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
+                            <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bCounter">
+                        <div class="text-gray-800 mt-2"
+                            *ngIf="transaction?.oCustomer?.sEmail">
+                            <span class="text-muted me-5">{{'EMAIL' | translate}}: </span>{{transaction?.oCustomer?.sEmail}}
+                        </div>
+                        <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
+                            <span class="text-muted me-5">{{'MOBILE_PHONE' | translate}}: </span>{{transaction?.oCustomer?.oPhone?.sPrefixMobile}} {{transaction?.oCustomer?.oPhone?.sMobile}}
+                        </div>
+                        <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
+                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}}: </span> {{transaction?.oCustomer?.oPhone?.sPrefixLandline}} {{transaction?.oCustomer?.oPhone?.sLandLine}}
+                        </div>
+                    </div>
                     <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
-                        <div class="col-md-6">
+                        <div class="col-md-6" *ngIf="transaction.oCustomer['invoice']">
                             <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                            <div class="text-gray-800 mt-2" *ngIf="bNormalOrder">
-                                <span class="text-uppercase">
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }}
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumberSuffix }},
-                                    <br>
-                                </span>
-                                <span>
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }}, <br>
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sState }}, {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
-                                </span>
-                            </div>
-                            <div class="text-gray-800 mt-2" *ngIf="!bNormalOrder">
-                                <span class="text-uppercase">
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumberSuffix }}
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }}, <br>
-                                </span>
-                                <span>
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }}, {{ transaction?.oCustomer?.oInvoiceAddress?.sState }},
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }}, <br> 
-                                    {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
-                                </span>
+                            <div class="text-gray-800 mt-2">
+                                {{ transaction.oCustomer['invoice'] }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
-                            <div class="text-gray-800 mt-2" *ngIf="bNormalOrder">
-                                <span class="text-uppercase">
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sStreet }}
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oShippingAddress?.sHouseNumberSuffix }},
-                                    <br>
-                                </span>
-                                <span>
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} {{ transaction?.oCustomer?.oShippingAddress?.sCity }}, <br>
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sState }}, {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
-                                </span>
-                            </div>
-                            <div class="text-gray-800 mt-2" *ngIf="!bNormalOrder">
-                                <span class="text-uppercase">
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}{{ transaction?.oCustomer?.oShippingAddress?.sHouseNumberSuffix }}
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sStreet }}, <br>
-                                </span>
-                                <span>
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sCity }}, {{ transaction?.oCustomer?.oShippingAddress?.sState }},
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }}, <br>
-                                    {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="text-gray-800 mt-2"
-                                *ngIf="!transaction?.oCustomer?.bCounter && transaction?.oCustomer?.sEmail">
-                                {{transaction?.oCustomer?.sEmail}}
-                            </div>
-                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
-                                {{transaction?.oCustomer?.oPhone?.sPrefixMobile}} {{transaction?.oCustomer?.oPhone?.sMobile}}
-                            </div>
-                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
-                                {{transaction?.oCustomer?.oPhone?.sPrefixLandline}} {{transaction?.oCustomer?.oPhone?.sLandLine}}
+                            <div class="text-gray-800 mt-2" *ngIf="transaction.oCustomer['shipping']">
+                                {{ transaction.oCustomer['shipping'] }}
                             </div>
                         </div>
                     </ng-container>
@@ -456,10 +430,10 @@
                                     <td *ngIf="item.bShowGiftcardDiscountField || transaction.totalGiftcardDiscount > 0">{{ (item?.nGiftcardDiscount || 0) | currency: tillService.currency}}</td>
                                     <td *ngIf="item?.bShowLoyaltyPointsDiscountField || transaction.totalRedeemedLoyaltyPoints > 0">{{ item?.nRedeemedPointsPerQty || 0  }} </td>
                                     <td *ngIf="tillService.oSavingPointSettings.bEnabled && !transaction?.oCustomer?.bCounter">{{item?.nSavingsPoints || 0}} </td>
-                                    <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
+                                    <td>{{item.nVatRate}} % ({{(item.vat || 0) | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <div>{{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
+                                            <div>{{(item.totalPaymentAmount || 0) | currency: tillService.currency}}</div>
                                             <ng-container *ngIf="from != 'activity-details' && from != 'audit'">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
@@ -532,7 +506,7 @@
                                         ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
-                                    <td>{{item.nAmount || 0 | currency: tillService.currency}}</td>
+                                    <td>{{(item?.nAmount || 0) | currency: tillService.currency}}</td>
                                     <td *ngIf="paymentEditMode">
                                         <div *ngIf="!item.bIgnore">
                                             <input class="form-control" type="number" [(ngModel)]="item.nNewAmount"
@@ -615,7 +589,7 @@
                                     <td>{{ (item?.oPayNL) ? 'PayNL' : 'CCV' }}</td>
                                     <td>{{ item?.sCardName }}</td>
                                     <td>{{ (item?.oPayNL) ? item.oPayNL.sTransactionId : ''}}</td>
-                                    <td>{{ item.nAmount || 0 | currency: tillService.currency}}</td>
+                                    <td>{{ (item?.nAmount || 0) | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>

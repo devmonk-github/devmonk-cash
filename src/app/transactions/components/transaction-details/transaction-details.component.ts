@@ -18,6 +18,7 @@ import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { FiskalyService } from 'src/app/shared/service/fiskaly.service';
+import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -110,6 +111,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private taxService: TaxService,
     private fiskalyService: FiskalyService,
     private createArticleGroupService: CreateArticleGroupService,
+    private customerStructureService: CustomerStructureService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -161,8 +163,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.bNormalOrder = false;
       }
     }
-    
-   
+
+    if(this.transaction?.oCustomer){
+      this.transaction.oCustomer['shipping'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, true, this.bNormalOrder);
+      this.transaction.oCustomer['invoice'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, true, this.bNormalOrder);
+    }
+
   }
   // loadTransaction() {
   //     this.handleTransactionResponse();
@@ -749,6 +755,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       this.transaction.oCustomer = oBody?.oCustomer;
       this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.transaction.oCustomer);
+      if(this.transaction?.oCustomer){
+        this.transaction.oCustomer['shipping'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, false, this.bNormalOrder);
+        this.transaction.oCustomer['invoice'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, false, this.bNormalOrder);
+      }
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);
