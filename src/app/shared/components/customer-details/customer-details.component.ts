@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes ,faUpload} from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from 'src/app/shared/service/till.service';
 //import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
@@ -72,15 +72,15 @@ export const ChartColors = {
   styleUrls: ['./customer-details.component.sass']
 })
 
-export class CustomerDetailsComponent implements OnInit, AfterViewInit{
+export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   aCountryPhoneCodes: Array<any> = countryPhoneCodeList;
   dialogRef: DialogComponent;
   salutations: Array<any> = [
-    {key:'mr' , value:'MR'},
-    {key:'mrs' , value:'MRS'},
-    {key:'mr_mrs' , value:'MR_MRS'},
-    {key:'family' , value:'FAMILY'},
-    {key:'firm' , value:'FIRM'}];
+    { key: 'mr', value: 'MR' },
+    { key: 'mrs', value: 'MRS' },
+    { key: 'mr_mrs', value: 'MR_MRS' },
+    { key: 'family', value: 'FAMILY' },
+    { key: 'firm', value: 'FIRM' }];
   gender: Array<any> = ['Male', 'Female', "Other"]
   documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
@@ -93,16 +93,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   faUpload = faUpload;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
-  translations:any;
+  translations: any;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 10;
-  iEmployeeId:any;
-  employeesList:any;
-  mergeCustomerIdList:any;
+  iEmployeeId: any;
+  employeesList: any;
+  mergeCustomerIdList: any;
   customerLoyalityPoints: number = 0;
-  pointsAdded:Boolean = false;
-  oPointsSettingsResult:any;
+  pointsAdded: Boolean = false;
+  oPointsSettingsResult: any;
   employees: Array<any> = [];
   purchasePaginationConfig: any = {
     id: 'purchases_paginate',
@@ -123,27 +123,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     totalItems: 0
   };
   itemsPaginationConfig: any = {
-    id:'items_paginate',
+    id: 'items_paginate',
     itemsPerPage: 10,
     currentPage: 1,
     totalItems: 0
   };
- purchaseRequestParams:any ={
-  skip:0,
-  limit:10
- }
- transactionItemRequestParams:any ={
-  skip:0,
-  limit:10
- }
- activitiesRequestParams:any ={
-  skip:0,
-  limit:10
- }
- itemsRequestParams:any ={
-  skip:0,
-  limit:10
- }
+  purchaseRequestParams: any = {
+    skip: 0,
+    limit: 10
+  }
+  transactionItemRequestParams: any = {
+    skip: 0,
+    limit: 10
+  }
+  activitiesRequestParams: any = {
+    skip: 0,
+    limit: 10
+  }
+  itemsRequestParams: any = {
+    skip: 0,
+    limit: 10
+  }
   customer: any = {
     _id: '',
     bNewsletter: true,
@@ -195,13 +195,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     sCocNumber: '',
     nPaymentTermDays: '',
     nLoyaltyPoints: 0,
-    nLoyaltyPointsValue: 0 ,
-    createrDetail:{},
-    iEmployeeId:'',
-    aGroups:[],
-    sImage:'',
-    bIsCompany:false,
-    oContactPerson:{
+    nLoyaltyPointsValue: 0,
+    createrDetail: {},
+    iEmployeeId: '',
+    aGroups: [],
+    sImage: '',
+    bIsCompany: false,
+    oContactPerson: {
       sFirstName: '',
       sPrefix: '',
       sLastName: ''
@@ -212,11 +212,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eActivityItemStatus' ,'sBusinessPartnerName',
-    'bIsMerged','eStatus','bIsImported','sImage'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'sBagNumber', 'dEstimatedDate', 'eActivityItemStatus', 'sBusinessPartnerName',
+      'bIsMerged', 'eStatus', 'bIsImported', 'sImage'],
 
   };
-  
+
   bTransactionsLoader: boolean = false;
   bTransactionItemLoader: boolean = false;
   bActivitiesLoader: boolean = false;
@@ -284,14 +284,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   ];
   currentTab = 0;
   tabs = [
-    { index: 0, name: 'PURCHASES'},
-    { index: 1, name: 'TRANSACTION_ITEMS'},
+    { index: 0, name: 'PURCHASES' },
+    { index: 1, name: 'TRANSACTION_ITEMS' },
     { index: 2, name: 'ACTIVITIES' },
-    { index: 3, name: 'ITEMS_PER_VISIT'  },
+    { index: 3, name: 'ITEMS_PER_VISIT' },
     { index: 4, name: 'STATISTICS' },
-    { index: 5, name: 'GENERAL'}
+    { index: 5, name: 'GENERAL' }
   ];
- 
+
   tabTitles: any = [
     'Purchases',
     'Transaction Items',
@@ -314,35 +314,35 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   aStatisticsChartDataLoading = false
   aActivityTitles: any = [
-    { name:"REPAIRS",  type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
-    { name:"SPECIALS",  type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
-    { name:"SHOP_PURCHASE",  type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
-    { name:"QUOTATION",  type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
-    { name:"WEBSHOP",  type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { name:"GIFTCARD",  type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
-    { name:"GOLD_PURCHASE",  type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
-    { name:"PRODUCT_RESERVATION",  type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
+    { name: "REPAIRS", type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
+    { name: "SPECIALS", type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { name: "SHOP_PURCHASE", type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { name: "QUOTATION", type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
+    { name: "WEBSHOP", type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
+    { name: "GIFTCARD", type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
+    { name: "GOLD_PURCHASE", type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { name: "PRODUCT_RESERVATION", type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
-  activityTitlesEkind = ['regular', 'reservation', 'giftcard', 'gold-purchase', 'repair' , 'order'];
+  activityTitlesEkind = ['regular', 'reservation', 'giftcard', 'gold-purchase', 'repair', 'order'];
   aStatisticsChartData: any = [];
 
   totalActivities: number = 0;
   from !: string;
 
-  customerNotesChangedSubject : Subject<string> = new Subject<string>();
+  customerNotesChangedSubject: Subject<string> = new Subject<string>();
   nTotalTurnOver: any;
   nAvgOrderValueIncVat: number;
-  customerGroupList :any=[];
-  aSelectedGroups:any =[];
-  businessDetails:any={};
-  nClientId:any="-";
-  oS:any;
+  customerGroupList: any = [];
+  aSelectedGroups: any = [];
+  businessDetails: any = {};
+  nClientId: any = "-";
+  oS: any;
   showDeleteBtn: boolean = false;
   sDocumentName: any = '';
   sDocumentNumber: any = 0;
-  aImage:any = [];
-  oTemp :any;
-  
+  aImage: any = [];
+  oTemp: any;
+
   bNormalOrder: boolean = true;
   sBusinessCountry: string = '';
 
@@ -354,7 +354,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private dialogService: DialogService,
     private translateService: TranslateService,
     public tillService: TillService,
-   
+
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -366,20 +366,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     let str = this.customer?.nClientId;
-    if(str && str.indexOf('/') > 0) {
-      str = str.replaceAll('undefined','-');
+    if (str && str.indexOf('/') > 0) {
+      str = str.replaceAll('undefined', '-');
       this.customer.nClientId = str;
       this.nClientId = str.substring(0, str.indexOf('/'));
     } else {
       this.nClientId = this.customer.nClientId == '' ? '-' : this.customer.nClientId;
     }
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED', 'LASTNAME_REQUIRED']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED', 'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED', 'LASTNAME_REQUIRED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
-    this.iEmployeeId = localStorage.getItem('currentUser') ?JSON.parse(localStorage.getItem('currentUser') || '') : "";
+    this.iEmployeeId = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser') || '') : "";
 
     this.requestParams.oFilterBy = {
       _id: this.customer._id,
@@ -390,33 +390,33 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
-    
+
   }
   openImageModal(isFrom: any) {
-    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create' , imageData: this.oTemp, customer: this.customer._id, isFrom: isFrom } })
+    this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create', imageData: this.oTemp, customer: this.customer._id, isFrom: isFrom } })
       .instance.close.subscribe(result => {
-        if(result){
-          if (result.event.docs){
+        if (result) {
+          if (result.event.docs) {
             this.oTemp = {
               aImage: result.event.docs.aImage,
               sDocumentName: result.event.docs.sDocumentName,
               sDocumentNumber: result.event.docs.sDocumentNumber
             }
-          }else{
+          } else {
             this.oTemp = undefined;
           }
         }
       });
   }
 
-  openImage(imageIndex:any){
-    const url =this.oTemp.aImage[imageIndex];
-    window.open(url , "_blank");
+  openImage(imageIndex: any) {
+    const url = this.oTemp.aImage[imageIndex];
+    window.open(url, "_blank");
   }
   removeImage(index: number): void {
     this.oTemp.aImage.splice(index, 1);
   }
-  
+
   onTabChange(index: any) {
     if (this.currentTab === index) return;
     this.currentTab = index;
@@ -424,11 +424,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     else if (index === 1) this.loadTransactionItems();
     else if (index === 2) this.loadActivities();
     else if (index === 3) this.loadActivityItems();
-    else if (index === 4) this.getCoreStatistics();this.loadStatisticsTabData();
+    else if (index === 4) this.getCoreStatistics(); this.loadStatisticsTabData();
   }
-  
-  mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE" } })
+
+  mergeCustomer(customer: any, Id: any, iSearchedCustomerId: any, key: any) {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer, iChosenCustomerId: Id, iSearchedCustomerId: null, key: "MERGE" } })
       .instance.close.subscribe((data) => {
         this.requestParams = {
           iBusinessId: this.requestParams.iBusinessId,
@@ -443,7 +443,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   deleteCustomer(customer: any) {
     let confirmBtnDetails = [
-      { text: "CANCEL", value: 'close', class: 'btn btn-secondary ml-auto mr-2'  },
+      { text: "CANCEL", value: 'close', class: 'btn btn-secondary ml-auto mr-2' },
       { text: "YES", value: 'remove', status: 'success', class: 'btn btn-success ml-auto mr-2' }
     ];
     this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: this.translations[`ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER`], buttonDetails: confirmBtnDetails } })
@@ -455,15 +455,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
                 this.close({ action: true });
                 this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_DELETED`] })
               } else {
-                this.toastService.show({ type: 'warning', text:'Internal Server Error' });
+                this.toastService.show({ type: 'warning', text: 'Internal Server Error' });
               }
             })
-            
+
           }
         })
   }
 
-  
+
   async getMergedCustomerIds() {
     if (this.customer && this.customer?._id) {
       const oBody = {
@@ -478,32 +478,32 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
 
-  customerNotesChanged(event:any){
+  customerNotesChanged(event: any) {
     this.customerNotesChangedSubject.next(event);
   }
 
-  customerType(event:any){
+  customerType(event: any) {
     this.customer.sSalutation = event.value;
-    if(event.key == 'firm'){
+    if (event.key == 'firm') {
       this.customer.bIsCompany = true;
       this.customer.sGender = 'other';
-      if(this.mode === 'create'){
+      if (this.mode === 'create') {
         this.customer.oContactPerson.sFirstName = this.customer.sFirstName;
         this.customer.oContactPerson.sPrefix = this.customer.sPrefix;
         this.customer.oContactPerson.sLastName = this.customer.sLastName;
         this.customer.sFirstName = '';
         this.customer.sPrefix = '';
         this.customer.sLastName = '';
-      }else{
+      } else {
         this.customer.oContactPerson.sFirstName = this.customer.sFirstName;
         this.customer.oContactPerson.sPrefix = this.customer.sPrefix;
         this.customer.oContactPerson.sLastName = this.customer.sLastName;
       }
-      
-    } 
-    else{
+
+    }
+    else {
       this.customer.bIsCompany = false;
-      if(this.mode === 'create'){
+      if (this.mode === 'create') {
         this.customer.sFirstName = this.customer.sFirstName || this.customer.oContactPerson.sFirstName;
         this.customer.sPrefix = this.customer.sPrefix || this.customer.oContactPerson.sPrefix;
         this.customer.sLastName = this.customer.sLastName || this.customer.oContactPerson.sLastName;
@@ -514,7 +514,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         this.customer.sVatNumber = "";
         this.customer.nPaymentTermDays = null;
       }
-      if(this.mode === 'details'){
+      if (this.mode === 'details') {
         this.customer.oContactPerson.sFirstName = '';
         this.customer.oContactPerson.sPrefix = '';
         this.customer.oContactPerson.sLastName = '';
@@ -522,7 +522,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }
   }
 
-  getCustomerGroups(){
+  getCustomerGroups() {
     this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
       if (res?.message == 'success') {
         if (res?.data?.length) {
@@ -537,14 +537,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           }
         }
       }
-    }, (error) => {})
+    }, (error) => { })
   }
 
   getBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
       const currentLocation = localStorage.getItem('currentLocation');
       if (response?.data) this.businessDetails = response.data;
-      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == currentLocation.toString())[0];
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == currentLocation?.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
       if (this.businessDetails?.aLocation?.length) {
@@ -556,11 +556,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           /*Needed to change fields order*/
           this.sBusinessCountry = currentLocationDetail?.oAddress?.countryCode;
           //console.log(this.sBusinessCountry);
-          if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
+          if (this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB' || this.sBusinessCountry == 'FR') {
             this.bNormalOrder = false;
           }
-  
-          if(!this.customer?._id){
+
+          if (!this.customer?._id) {
             if (currentLocationDetail?.oAddress?.countryCode) {
               const oCountryPhoneCode = this.aCountryPhoneCodes.find(code => code.key === currentLocationDetail?.oAddress?.countryCode);
               this.customer.oPhone.sPrefixMobile = oCountryPhoneCode.value;
@@ -578,31 +578,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     });
   }
 
-  addLoyalityPoints(){
+  addLoyalityPoints() {
     this.pointsAdded = true;
-    if(this.customerLoyalityPoints < 0 && this.customerLoyalityPoints < -this.customer.nLoyaltyPoints){
-      this.toastService.show({type:'warning' , title:this.translations['LOYALITY_POINTS_NOT_ADDED'], text:this.translations['REDUCING_MORE_THAN_AVAILABLE']});
+    if (this.customerLoyalityPoints < 0 && this.customerLoyalityPoints < -this.customer.nLoyaltyPoints) {
+      this.toastService.show({ type: 'warning', title: this.translations['LOYALITY_POINTS_NOT_ADDED'], text: this.translations['REDUCING_MORE_THAN_AVAILABLE'] });
       this.pointsAdded = false;
-    }else{
-      const oBody ={
-        iBusinessId:this.requestParams.iBusinessId ,
-        iLocationId:localStorage.getItem('currentLocation'),
-        iCustomerId:this.customer._id,
-        nSavingsPoints:this.customerLoyalityPoints   
+    } else {
+      const oBody = {
+        iBusinessId: this.requestParams.iBusinessId,
+        iLocationId: localStorage.getItem('currentLocation'),
+        iCustomerId: this.customer._id,
+        nSavingsPoints: this.customerLoyalityPoints
       }
-      this.apiService.postNew('cashregistry' , '/api/v1/points-settings/createPoints' , oBody).subscribe((res:any)=>{
-        if(res.message == 'success' && res?.data?._id){
+      this.apiService.postNew('cashregistry', '/api/v1/points-settings/createPoints', oBody).subscribe((res: any) => {
+        if (res.message == 'success' && res?.data?._id) {
           this.pointsAdded = false;
           this.customerLoyalityPoints = 0;
           this.customer.nLoyaltyPoints = this.customer.nLoyaltyPoints + res.data.nSavingsPoints;
           this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints / this.oPointsSettingsResult.nPerEuro2;
-          this.toastService.show({type:'success' , text:this.translations['LOYALITY_POINTS_ADDED']});
-        }else{
+          this.toastService.show({ type: 'success', text: this.translations['LOYALITY_POINTS_ADDED'] });
+        } else {
           this.pointsAdded = false;
           this.customerLoyalityPoints = 0;
-          this.toastService.show({type:'danger' , text:this.translations['LOYALITY_POINTS_NOT_ADDED']});
+          this.toastService.show({ type: 'danger', text: this.translations['LOYALITY_POINTS_NOT_ADDED'] });
         }
-  
+
       })
     }
   }
@@ -616,12 +616,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
-        if(this.customer?.iEmployeeId){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.customer.iEmployeeId);
-           if(createerIndex != -1){
+        if (this.customer?.iEmployeeId) {
+          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.customer.iEmployeeId);
+          if (createerIndex != -1) {
             this.customer.createrDetail = this.employeesList[createerIndex];
-           }
           }
+        }
       }
     }, (error) => {
     });
@@ -640,30 +640,30 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       }
     }
   }
- 
-  handleCustomerNotesUpdate(){
-          if (this.mode == 'details') {
-            this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
-              (result: any) => {
-                if (result?.message === 'success') {
-                  this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
-                }else{
-                  let errorMessage = ""
-                  this.translateService.get(result?.message).subscribe(
-                    result => errorMessage = result
-                  )
-                  this.toastService.show({ type: 'warning', text: errorMessage });
-                }
-              },
-              (error: any) => {
-                let errorMessage = ""
-                this.translateService.get(error.message).subscribe(
-                  result => errorMessage = result
-                )
-                this.toastService.show({ type: 'warning', text: errorMessage });
-              }
-            );
+
+  handleCustomerNotesUpdate() {
+    if (this.mode == 'details') {
+      this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
+        (result: any) => {
+          if (result?.message === 'success') {
+            this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
+          } else {
+            let errorMessage = ""
+            this.translateService.get(result?.message).subscribe(
+              result => errorMessage = result
+            )
+            this.toastService.show({ type: 'warning', text: errorMessage });
           }
+        },
+        (error: any) => {
+          let errorMessage = ""
+          this.translateService.get(error.message).subscribe(
+            result => errorMessage = result
+          )
+          this.toastService.show({ type: 'warning', text: errorMessage });
+        }
+      );
+    }
   }
 
   ngAfterViewInit() {
@@ -671,29 +671,29 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
     this.customerNotesChangedSubject.pipe(
       filter(Boolean),
-        debounceTime(500),
-        distinctUntilChanged(),
-    ).subscribe(()=>{
+      debounceTime(500),
+      distinctUntilChanged(),
+    ).subscribe(() => {
       this.handleCustomerNotesUpdate();
     });
   }
 
-  changeItemsPerPage(pageCount: any , tab:any) {
-    if(tab == 'purchases'){
+  changeItemsPerPage(pageCount: any, tab: any) {
+    if (tab == 'purchases') {
       this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
       this.purchaseRequestParams.skip = 0;
       this.purchasePaginationConfig.currentPage = 1;
       this.purchaseRequestParams.limit = parseInt(this.purchasePaginationConfig.itemsPerPage);
       this.loadTransactions()
     }
-    if(tab == 'TransactionItems'){
+    if (tab == 'TransactionItems') {
       this.transactionItemPaginationConfig.itemsPerPage = parseInt(pageCount);
       this.purchaseRequestParams.skip = 0;
       this.transactionItemPaginationConfig.currentPage = 1;
       this.transactionItemRequestParams.limit = parseInt(this.transactionItemPaginationConfig.itemsPerPage);
       this.loadTransactionItems()
     }
-    if(tab == 'activities'){
+    if (tab == 'activities') {
       this.activitiesPaginationConfig.itemsPerPage = parseInt(pageCount);
       this.purchaseRequestParams.skip = 0;
       this.activitiesPaginationConfig.currentPage = 1;
@@ -701,52 +701,52 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.loadActivities()
     }
 
-    if(tab == 'activityItems'){
+    if (tab == 'activityItems') {
       this.itemsPaginationConfig.itemsPerPage = parseInt(pageCount);
       this.purchaseRequestParams.skip = 0;
       this.itemsPaginationConfig.currentPage = 1;
       this.itemsRequestParams.limit = parseInt(this.itemsPaginationConfig.itemsPerPage);
       this.loadActivityItems()
     }
-    
+
   }
 
-  pageChanged(page: any , tab:any) {
-    if(tab == 'purchases'){
+  pageChanged(page: any, tab: any) {
+    if (tab == 'purchases') {
       this.purchasePaginationConfig.currentPage = parseInt(page);
       this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
       this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
       this.loadTransactions()
     }
-    if(tab == 'TransactionItems'){
+    if (tab == 'TransactionItems') {
       this.transactionItemPaginationConfig.currentPage = parseInt(page);
       this.transactionItemRequestParams.skip = this.transactionItemPaginationConfig.itemsPerPage * (page - 1);
       this.transactionItemRequestParams.limit = this.transactionItemPaginationConfig.itemsPerPage;
       this.loadTransactionItems()
     }
-    if(tab == 'activities'){
+    if (tab == 'activities') {
       this.activitiesPaginationConfig.currentPage = parseInt(page);
       this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (page - 1);
       this.activitiesRequestParams.limit = this.activitiesPaginationConfig.itemsPerPage;
       this.loadActivities()
     }
-    if(tab == 'activityItems'){
+    if (tab == 'activityItems') {
       this.itemsPaginationConfig.currentPage = parseInt(page);
       this.itemsRequestParams.skip = this.itemsPaginationConfig.itemsPerPage * (page - 1);
       this.itemsRequestParams.limit = this.itemsPaginationConfig.itemsPerPage;
       this.loadActivityItems()
     }
-  
-  
+
+
   }
 
   customerCountryChanged(type: string, event: any) {
     this.customer[type].sCountryCode = event.key;
     this.customer[type].sCountry = event.value;
-    
-    if(this.customer[type].sCountryCode == 'UK' ||  this.customer[type].sCountryCode == 'GB'|| this.customer[type].sCountryCode == 'FR'){
+
+    if (this.customer[type].sCountryCode == 'UK' || this.customer[type].sCountryCode == 'GB' || this.customer[type].sCountryCode == 'FR') {
       this.bNormalOrder = false;
-    }else{
+    } else {
       this.bNormalOrder = true;
     }
   }
@@ -757,7 +757,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   async EditOrCreateCustomer() {
-    if((this.customer.sLastName == "" || !this.customer.sLastName) && this.customer.sSalutation != 'FIRM'){
+    if ((this.customer.sLastName == "" || !this.customer.sLastName) && this.customer.sSalutation != 'FIRM') {
       this.toastService.show({ type: 'danger', text: this.translations[`LASTNAME_REQUIRED`] });
       return;
     }
@@ -796,28 +796,28 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       }
       let bInvoiceAddressBlank = false;
       let bShippingAddressBlank = false;
-      
-      if(!this.customer.oInvoiceAddress?.sStreet && !this.customer.oInvoiceAddress?.sHouseNumberSuffix && !this.customer.oInvoiceAddress?.sPostalCode && !this.customer.oInvoiceAddress?.sHouseNumber)
-      bInvoiceAddressBlank = true;
 
-      if(!this.customer.oShippingAddress?.sStreet && !this.customer.oShippingAddress?.sHouseNumberSuffix && !this.customer.oShippingAddress?.sPostalCode && !this.customer.oShippingAddress?.sHouseNumber)
-      bShippingAddressBlank = true;
+      if (!this.customer.oInvoiceAddress?.sStreet && !this.customer.oInvoiceAddress?.sHouseNumberSuffix && !this.customer.oInvoiceAddress?.sPostalCode && !this.customer.oInvoiceAddress?.sHouseNumber)
+        bInvoiceAddressBlank = true;
+
+      if (!this.customer.oShippingAddress?.sStreet && !this.customer.oShippingAddress?.sHouseNumberSuffix && !this.customer.oShippingAddress?.sPostalCode && !this.customer.oShippingAddress?.sHouseNumber)
+        bShippingAddressBlank = true;
 
       let addressesLength = 0;
-      if(bInvoiceAddressBlank && bShippingAddressBlank){
+      if (bInvoiceAddressBlank && bShippingAddressBlank) {
         addressesLength = 0;
-      }else{
+      } else {
         const addresses = await this.checkAddress(addressBody);
         addressesLength = addresses?.data?.length;
       }
-      
+
       if (addressesLength) {
         let confirmBtnDetails = [
           { text: "YES", value: 'success', status: 'success', class: 'btn-success me-3' },
-          { text: "NO", value: 'close', class: 'btn-warning'}
+          { text: "NO", value: 'close', class: 'btn-warning' }
         ];
-        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " ("+this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS')+': ' + addressesLength +")";
-        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header:'ADDRESS_ALREADY_EXISTS', bodyText:bodyText , buttonDetails: confirmBtnDetails }, hasBackdrop: false })
+        let bodyText = this.translateService.instant("CUSTOMER_WITH_ADDRESS_ALREADY_EXIST") + " (" + this.translateService.instant('CUSTOMERS_WITH_THIS_ADDRESS') + ': ' + addressesLength + ")";
+        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'ADDRESS_ALREADY_EXISTS', bodyText: bodyText, buttonDetails: confirmBtnDetails }, hasBackdrop: false })
           .instance.close.subscribe((status: any) => {
             if (status == 'success') {
               this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
@@ -1052,7 +1052,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.sortAndLoadTransactionItems(sortHeader)
     }
   }
- 
+
   sortAndLoadTransactionItems(sortHeader: any) {
     let sortBy = 'dCreatedDate';
     if (sortHeader.key == 'Product no.') sortBy = 'sProductName';
@@ -1063,7 +1063,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.loadTransactionItems();
   }
 
-  
+
 
   getTypes(arr: any) {
     let str = '';
@@ -1203,9 +1203,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     if (this.customer.bCounter) return;
     this.aActivities = [];
     this.bActivitiesLoader = true;
-    let oBody:any ={... this.requestParams , ... this.activitiesRequestParams};
+    let oBody: any = { ... this.requestParams, ... this.activitiesRequestParams };
     delete oBody.oFilterBy._id;
-   
+
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
       this.activitiesPaginationConfig.totalItems = result.count;
@@ -1219,7 +1219,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   loadActivityItems() {
     if (this.customer.bCounter) return;
     this.bActivityItemsLoader = true;
-    let oBody: any = { ... this.requestParams , ...this.itemsRequestParams };
+    let oBody: any = { ... this.requestParams, ...this.itemsRequestParams };
     delete oBody.oFilterBy._id;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
@@ -1232,7 +1232,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       })
   }
 
-  
+
 
   loadStatisticsTabData() {
     if (this.customer.bCounter) return;
@@ -1270,7 +1270,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       },
       yaxis: {
         title: {
-          text:this.translateService.instant("REVENUE"),
+          text: this.translateService.instant("REVENUE"),
           style: {
             'fontSize': '15px'
           }
@@ -1312,7 +1312,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       },
       labels: this.aPaymentChartData.map((el: any) => `${el.sMethod} (${el.nAmount})`),
       options: {
-   
+
       }
     };
   }
@@ -1339,14 +1339,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, businessDetails: this.businessDetails , eType: 'cash-register-revenue', from: 'customer' } })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, businessDetails: this.businessDetails, eType: 'cash-register-revenue', from: 'customer' } })
       .instance.close.subscribe(
         (res: any) => {
           // console.log({res});
-          if (res?.action){
+          if (res?.action) {
             this.close(false);
             this.router.navigate(['business/till']);
-          } 
+          }
         });
   }
   openActivityItems(activity: any, openActivityId?: any) {
@@ -1368,8 +1368,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         if (result?.oData?.oCurrentCustomer) {
           if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
           if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
-          if(result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
-          if(result?.oData?.oCurrentCustomer?.bIsCompany) activity.oCustomer.bIsCompany = result?.oData.oCurrentCustomer?.bIsCompany
+          if (result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
+          if (result?.oData?.oCurrentCustomer?.bIsCompany) activity.oCustomer.bIsCompany = result?.oData.oCurrentCustomer?.bIsCompany
         }
       }, (error) => {
         console.log('Error here');
@@ -1388,7 +1388,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         cssClass: 'modal-xl',
         //hasBackdrop: true,
         //closeOnBackdropClick: true,
-       // closeOnEsc: true,
+        // closeOnEsc: true,
         context: {
           activity,
           businessDetails: this.businessDetails,
@@ -1415,7 +1415,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.nLoyaltyPointsValue = nPointsResult / this.oPointsSettingsResult.nPerEuro2;
     }
   }
-  
+
   copyInvoiceAddressToShipping() {
     const invoiceAddress = {
       sStreet: this.customer.oInvoiceAddress.sStreet,
@@ -1435,17 +1435,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   onlyLetters(event: any) {
     let charCode = event.keyCode;
-    let pattern =  /[0-9]/;
+    let pattern = /[0-9]/;
     let char = String.fromCharCode(charCode);
     //console.log(char, ' - ', charCode, ' - ', String.fromCharCode(charCode),' - ', pattern.test(char) || (charCode >= 96 && charCode <= 105 ));
     // invalid character, prevent input
-    if (pattern.test(char) || (charCode >= 96 && charCode <= 105 )){
+    if (pattern.test(char) || (charCode >= 96 && charCode <= 105)) {
       event.preventDefault();
       this.toastService.show({ type: 'warning', text: this.translations['ONLY_LETTERS_ARE_ALLOWED'] });
-    }    
+    }
   }
 
-  removeSpaces(string: string){
+  removeSpaces(string: string) {
     return string.replace(/\s/g, '');
   }
 }
