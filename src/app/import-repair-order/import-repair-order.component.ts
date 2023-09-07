@@ -70,7 +70,6 @@ export class ImportRepairOrderComponent implements OnInit {
         iEmployeeId: this.iEmployeeId
       }
       const AllRecords = [];
-
       const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
       //console.log("timportRepairOrder============s 2: ", JSON.parse(JSON.stringify(this.parsedRepairOrderData)));
       this.parsedRepairOrderData = parsedRepairOrderData;
@@ -83,22 +82,29 @@ export class ImportRepairOrderComponent implements OnInit {
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
         AllRecords.push(oBody);
-        // return;
-        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
-          this.importInprogress = false;
-          this.parsedRepairOrderData = [];
-        }, (error) => {
-          this.parsedRepairOrderData = [];
-          console.error(error);
-        });
-        
+        //return;
+        if(aTransactionItem[i].eActivityItemStatus == 'delivered'){
+          this.apiService.postNew('cashregistry', '/api/v1/till/historical-activity', oBody).subscribe((result: any) => {
+            this.importInprogress = false;
+            this.parsedRepairOrderData = [];
+          }, (error) => {
+            this.parsedRepairOrderData = [];
+            console.error(error);
+          });
+        }else{
+          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
+            this.importInprogress = false;
+            this.parsedRepairOrderData = [];
+          }, (error) => {
+            this.parsedRepairOrderData = [];
+            console.error(error);
+          });
+        }
       }
-      console.log("AllRecords.length" + AllRecords.length);
-      
-
+      //console.log("AllRecords.length" + AllRecords.length);
     } catch (error) {
       this.parsedRepairOrderData = [];
-      console.log('Import Repair Order');
+      console.log('Import Repair Order error', error);
     }
   }
 

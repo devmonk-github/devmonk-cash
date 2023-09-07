@@ -237,8 +237,8 @@ export class ActivityDetailsComponent implements OnInit {
       } else {
         this.oLocationName ="";
       }
-      if(this.activityItems[0].bMigrate) this.bShowWarning = true;
-      if(!this.activityItems[0].bMigrate || this.activityItems[0].eActivityItemStatus != 'delivered'){
+      if(this.activityItems[0].bMigrate || this.activityItems[0].bImported) this.bShowWarning = true;
+      if(!(this.activityItems[0].bMigrate || this.activityItems[0].bImported) || this.activityItems[0]?.eActivityItemStatus != 'delivered'){
         this.fetchActivity(this.activityItems[0].iActivityId);
       }
       this.fetchTransactionItems(this.activityItems[0]._id);
