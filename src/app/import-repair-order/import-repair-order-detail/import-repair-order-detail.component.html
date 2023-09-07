@@ -19,7 +19,7 @@
         <h4 class="fw-bolder mb-3 mt-3 text-uppercase">{{ 'REPAIR_ORDER_DETAILS' | translate}}</h4>
         <div class="row mb-4">
             <div class="col-md-2 no-padding-left">
-                <h5>{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
+                <h5>{{"FOUND_COLUMN(CSV_HEADERS)" | translate}}</h5>
             </div>
             <div class="col-md-3 no-padding-left">
                 <h5>{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
@@ -30,10 +30,10 @@
         </div>
         <div class="row mb-4" *ngFor="let option of headerOptions">
             <div class="col-md-2 no-padding-left">
-                {{option}} <span
+                {{option}}
+                <!-- <span
                     *ngIf="option === 'Contact when ready' || option === 'Creation date' || option === 'Creator' || option === 'Remaining to pay' || option === 'Repairer' || option === 'Total price' || option === 'Type' || option === 'bagNumber' || option === 'customerId' || option === 'eActivityItemStatus' || option === 'vatRate' || option === 'Estimated price'"
-                    style="color: red;">*</span>
-    
+                    style="color: red;">*</span> -->
             </div>
             <div class="col-md-3 no-padding-left" *ngIf="allFields?.all?.length">
                 <ng-select class="form-control form-control-solid p-0" [clearable]="false" id="repair-order-attributes"

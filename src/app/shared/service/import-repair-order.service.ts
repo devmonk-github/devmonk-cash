@@ -8,6 +8,26 @@ import { ApiService } from 'src/app/shared/service/api.service';
 export class ImportRepairOrderService {
   EmployeeId :any;
   AssigneeId:any;
+
+  aActivityItemStatus: any = [
+    'new',
+    'processing',
+    'inspection',
+    'completed',
+    'delivered',
+    'cancelled',
+    'refund',
+    'refundInCashRegister',
+    'offer',
+    'offer-is-ok',
+    'offer-is-not-ok',
+    'to-repair',
+    'part-are-order',
+    'shipped-to-repair',
+    'product-ordered',
+    'order-ready'
+  ];
+
   constructor(
     private translateService: TranslateService,
     private apiService: ApiService,
@@ -30,22 +50,42 @@ export class ImportRepairOrderService {
         sName: "dCreatedDate",
       },
       {
+        sColumnHeader: "ESTIMATED_DATE",
+        sDataBaseFieldName: "dEstimatedDate",
+        sName: "dEstimatedDate",
+      },
+      {
         sColumnHeader: "MATCHING_CODE",
         sDataBaseFieldName: "nMatchingCode",
         sName: "nMatchingCode",
       },
-      {
-        sColumnHeader: "REMAINING_VALUE",
-        sDataBaseFieldName: "nRemainingValue",
-        sName: "nRemainingValue",
-      },
+      // {
+      //   sColumnHeader: "REMAINING_VALUE",
+      //   sDataBaseFieldName: "nRemainingValue",
+      //   sName: "nRemainingValue",
+      // },
       {
         sColumnHeader: "PRICE_INC_VAT",
         sDataBaseFieldName: "nPriceIncVat",
         sName: "nPriceIncVat",
       },
       {
-        sColumnHeader: "TOTAL_PRICE",
+        sColumnHeader: "ACTUAL_COST",
+        sDataBaseFieldName: "nActualCost",
+        sName: "nActualCost",
+      },
+      {
+        sColumnHeader: "QUANTITY",
+        sDataBaseFieldName: "nQuantity",
+        sName: "nQuantity",
+      },
+      {
+        sColumnHeader: "PAID_AMOUNT",
+        sDataBaseFieldName: "nPaymentAmount",
+        sName: "nPaymentAmount",
+      },
+      {
+        sColumnHeader: "ESTIMATED_PRICE_UPON_INGESTION",
         sDataBaseFieldName: "nTotalAmount",
         sName: "nTotalAmount",
       },
@@ -65,87 +105,87 @@ export class ImportRepairOrderService {
         sName: "nVatRate",
       },
       {
-        sColumnHeader: "Photos",
+        sColumnHeader: "PHOTOS",
         sDataBaseFieldName: "aImage",
         sName: "aImage",
       },
       {
         sColumnHeader: "CUSTOMER_NAME",
         sDataBaseFieldName: "oCustomer.sFirstName",
-        sName: "oCustomer.sFirstName",
+        sName: "sFirstname",
       },
       {
         sColumnHeader: "CUSTOMER_NUMBER",
         sDataBaseFieldName: "oCustomer.nClientId",
-        sName: "oCustomer.nClientId",
+        sName: "nClientId",
       },
       {
-        sColumnHeader: "customerId",
+        sColumnHeader: "CUSTOMER_ID",
         sDataBaseFieldName: "iCustomerId",
         sName: "iCustomerId",
       },
       {
-        sColumnHeader: "Note servicepartner",
-        sDataBaseFieldName: "sServicePartnerRemark",
-        sName: "sServicePartnerRemark",
+        sColumnHeader: "REMARK_FOR_SERVICE_PARTNERS",
+        sDataBaseFieldName: "sCommentVisibleServicePartner",
+        sName: "sCommentVisibleServicePartner",
       },
       {
-        sColumnHeader: "contact_when_ready",
-        sDataBaseFieldName: "contact_when_ready",
-        sName: "contact_when_ready",
+        sColumnHeader: "CONTACT_ACTION",
+        sDataBaseFieldName: "eEstimatedDateAction",
+        sName: "eEstimatedDateActiony",
       },
       {
-        sColumnHeader: "eActivityItemStatus",
+        sColumnHeader: "STATUS",
         sDataBaseFieldName: "eActivityItemStatus",
         sName: "eActivityItemStatus",
       },
       {
-        sColumnHeader: "oShippingAddress_sStreet",
+        sColumnHeader: "CUSTOMER_SHIPPING_STREET",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sStreet",
-        sName: "oCustomer.oShippingAddress.sStreet",
+        sName: "oShippingAddress.sStreet",
       },
       {
-        sColumnHeader: "oShippingAddress_sHouseNumber",
+        sColumnHeader: "CUSTOMER_SHIPPING_HOUSE_NUMBER",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sHouseNumber",
-        sName: "oCustomer.oShippingAddress.sHouseNumber",
+        sName: "oShippingAddress.sHouseNumber",
       },
       {
-        sColumnHeader: "oShippingAddress_sHouseNumberSuffix",
-        sDataBaseFieldName: "oCustomer.oShippingAddress.sHouseNumberSuffix",
-        sName: "oCustomer.oShippingAddress.sHouseNumberSuffix",
-      },
-      {
-        sColumnHeader: "oShippingAddress_sCountryCode",
+        sColumnHeader: "CUSTOMER_SHIPPING_COUNTRY_CODE",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sCountryCode",
-        sName: "oCustomer.oShippingAddress.sCountryCode",
+        sName: "oShippingAddress.sCountryCode",
       },
       {
-        sColumnHeader: "oShippingAddress_sPostalCode",
+        sColumnHeader: "CUSTOMER_SHIPPING_POSTAL_CODE",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sPostalCode",
-        sName: "oCustomer.oShippingAddress.sPostalCode",
+        sName: "oShippingAddress.sPostalCode",
       },
       {
-        sColumnHeader: "oShippingAddress_sCity",
+        sColumnHeader: "CUSTOMER_SHIPPING_CITY",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sCity",
-        sName: "oCustomer.oShippingAddress.sCity",
+        sName: "oShippingAddress.sCity",
       },
       {
-        sColumnHeader: "Title",
+        sColumnHeader: "TITLE",
         sDataBaseFieldName: "sProductName",
         sName: "sProductName",
       },
       {
-        sColumnHeader: "extraComment",
+        sColumnHeader: "COMMENT",
         sDataBaseFieldName: "sDescription",
         sName: "sDescription",
       },
       {
-        sColumnHeader: "Creator",
+        sColumnHeader: "REMARK_FOR_COLLEAGUES",
+        sDataBaseFieldName: "sCommentVisibleColleagues",
+        sName: "sCommentVisibleColleagues",
+      },
+      {
+        sColumnHeader: "EMPLOYEE",
         sDataBaseFieldName: "iEmployeeId",
         sName: "iEmployeeId",
       },
       {
-        sColumnHeader: "Repairer",
+        sColumnHeader: "REPAIRER",
         sDataBaseFieldName: "iAssigneeId",
         sName: "iAssigneeId",
       }
@@ -200,6 +240,17 @@ export class ImportRepairOrderService {
           imageArray = oData?.aImage.split(";");
         }
 
+
+        oData.nPriceIncVat = parseFloat((oData?.nPriceIncVat)?.replace(/,/g, '.'));
+        oData.nActualCost = parseFloat((oData?.nActualCost)?.replace(/,/g, '.'));
+        oData.nTotalAmount = parseFloat((oData?.nTotalAmount)?.replace(/,/g, '.'));
+
+        if(!this.aActivityItemStatus.includes(oData?.eActivityItemStatus)){
+           oData.sCommentVisibleColleagues += 'Status: '+ oData?.eActivityItemStatus + '\n';
+           oData.eActivityItemStatus = 'inspection';
+        }
+        
+        
         if (oData?.sDescription) {
           oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
         }
@@ -240,11 +291,15 @@ export class ImportRepairOrderService {
           oData.eEstimatedDateAction = "call_on_ready";
         }
 
-        const formatdate = new Date(oData?.dCreatedDate.split('-').reverse().join('/'));
-        const dCreatedDate = new Date(formatdate).setHours(5, 30, 0, 0);
-        const finaldate = new Date(dCreatedDate);
+        const formatCdate = new Date(oData?.dCreatedDate.split('-').reverse().join('/'));
+        const dCreatedDate = new Date(formatCdate).setHours(5, 30, 0, 0);
+        const finalCdate = new Date(dCreatedDate);
 
-        const sProductName = this.translateService.instant(eType === 'order' ? 'ORDER' : 'REPAIR');
+        const formatEdate = new Date(oData?.dEstimatedDate.split('-').reverse().join('/'));
+        const dEstimatedDate = new Date(formatEdate).setHours(5, 30, 0, 0);
+        const finalEdate = new Date(dEstimatedDate);
+        
+        //const sProductName = this.translateService.instant(eType === 'order' ? 'ORDER' : 'REPAIR');
         const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
         const oTransactionItem = {
           iBusinessId: iBusinessId,
@@ -258,15 +313,17 @@ export class ImportRepairOrderService {
           nTotalAmount: oData?.nTotalAmount,
           nVatRate: oData?.nVatRate,
           nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
-          dCreatedDate: finaldate,
-          nEstimatedTotal: oData?.nPriceIncVat,
-          nPaymentAmount: oData?.nPriceIncVat,
+          dCreatedDate: finalCdate,
+          dEstimatedDate: finalEdate,
+          //nEstimatedTotal: Number(oData?.nPriceIncVat),
+          nPaidAmount: oData?.nPaymentAmount ?  parseFloat((oData?.nPaymentAmount)?.replace(/,/g, '.')) : (oData.eActivityItemStatus != 'delivered'? 0 : oData?.nPriceIncVat),
+          nPaymentAmount: oData?.nPaymentAmount ?  parseFloat((oData?.nPaymentAmount)?.replace(/,/g, '.')) : (oData.eActivityItemStatus != 'delivered'? 0 : oData?.nPriceIncVat),
           nRevenueAmount: oData?.nPriceIncVat,
-          nPaidAmount: oData?.nRemainingValue,
-          nRemainingValue: oData?.nRemainingValue,
+          nActualCost: oData?.nActualCost,
+          //nRemainingValue: oData?.nRemainingValue,
           /* calculated */
-          nPurchasePrice: nPurchasePrice,
-          nProfit: oData?.nPriceIncVat - nPurchasePrice,
+          nPurchasePrice:  nPurchasePrice,
+          nProfit:  oData?.nPriceIncVat - nPurchasePrice,
           /* Backend */
           iArticleGroupId: '', /* repair-order */
           iArticleGroupOriginalId: '',
@@ -279,7 +336,7 @@ export class ImportRepairOrderService {
           eStatus: "y",
           aImage: imageArray,
           nMargin: 1,
-          nQuantity: 1,
+          nQuantity: oData?.nQuantity ? oData?.nQuantity : 1,
           oArticleGroupMetaData: {
             aProperty: [],
             sCategory: eType,
@@ -303,7 +360,8 @@ export class ImportRepairOrderService {
           },
           nDiscount: 0,
           sDescription: oData.sDescription,
-          sServicePartnerRemark: oData?.sServicePartnerRemark,
+          sCommentVisibleServicePartner: oData?.sCommentVisibleServicePartner,
+          sCommentVisibleColleagues: oData?.sCommentVisibleColleagues,
           eEstimatedDateAction: oData?.eEstimatedDateAction,
           eActivityItemStatus: oData?.eActivityItemStatus,
           bDiscountOnPercentage: false,
