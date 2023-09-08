@@ -98,21 +98,21 @@ export class CardsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     const keyup$ = fromEvent(this.input.nativeElement, 'keyup');
     const searchExternalGift$ = fromEvent(this.serachExternal.nativeElement, 'keyup');
-    keyup$.pipe(
-      map((i: any) => i.currentTarget.value),
-      debounceTime(500)
-    ).subscribe((value) => {
+    // keyup$.pipe(
+    //   map((i: any) => i.currentTarget.value),
+    //   debounceTime(500)
+    // ).subscribe((value) => {
       
-      this.fetchGiftCard(value);
-    });
+    //   this.fetchGiftCard(value);
+    // });
     
-    searchExternalGift$.pipe(
-      map((i: any) => i.currentTarget.value),
-      debounceTime(500)
-    )
-      .subscribe((value) => {
-        this.fetchExternalGiftCard(value);
-      });
+    // searchExternalGift$.pipe(
+    //   map((i: any) => i.currentTarget.value),
+    //   debounceTime(500)
+    // )
+    //   .subscribe((value) => {
+    //     this.fetchExternalGiftCard(value);
+    //   });
   }
   
   close(data: any) {

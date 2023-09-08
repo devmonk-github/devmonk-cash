@@ -68,8 +68,18 @@
             <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" #externalGiftcards>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-5">
                             {{"GIFTCARD_NUMBER" | translate}}:
+                        </div>
+                        <div class="col-1 d-flex justify-content-end">
+                            <img *ngIf="oExternalGiftcard?.profileIconUrl" style="height: 42px; width: 42px;"
+                                [src]="oExternalGiftcard?.profileIconUrl" alt="">
+                            <!-- <button class="btn btn-primary w-100" (click)="fetchExternalGiftCard(sGiftCardNumber)"
+                                [disabled]="fetchInProgress">
+                                <span>
+                                    {{ "FETCH" | translate}}
+                                </span>
+                            </button> -->
                         </div>
                         <div class="col-4">
                             <input class="form-control" type="text" [(ngModel)]="oExternalGiftcard.sExternalGiftCardNumber" #searchExternalGift>
@@ -79,21 +89,15 @@
                                     <label for="pincode">{{"PINCODE" | translate}}</label>
                                 </div>
                                 <div class="col-9">
-                                    <input name="pincode" class="form-control" type="text" [(ngModel)]="pincode"
-                                        (keyup.enter)="fetchExternalGiftCard(oExternalGiftcard.sExternalGiftCardNumber)">
+                                    <input name="pincode" class="form-control" type="text" [(ngModel)]="pincode">
+                                    <!--(keyup.enter)="fetchExternalGiftCard(oExternalGiftcard.sExternalGiftCardNumber)"-->
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-2">
-                            <img *ngIf="oExternalGiftcard?.profileIconUrl" style="height: 35px; width: 35px;"
-                                [src]="oExternalGiftcard?.profileIconUrl" alt="">
-                            <!-- <button class="btn btn-primary w-100" (click)="fetchExternalGiftCard(sGiftCardNumber)"
-                                [disabled]="fetchInProgress">
-                                <span>
-                                    {{ "FETCH" | translate}}
-                                </span>
-                            </button> -->
+                            <button class="btn btn-primary w-100" (click)="fetchExternalGiftCard(oExternalGiftcard.sExternalGiftCardNumber)">
+                                <span>{{ "FETCH" | translate}}</span>
+                            </button>
                         </div>
                     </div>
                     <div class="row mt-5">
