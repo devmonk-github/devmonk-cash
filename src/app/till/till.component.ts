@@ -178,6 +178,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bNormalOrder: boolean = true;
   sBusinessCountry: string = '';
   bAllowOpenManualCashDrawer: boolean = false;
+  aInitialPaymentMethods: any = [];
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -352,7 +353,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-
         const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister)
         if (this.tillService?.settings?.aPaymentMethodSequence?.length) {
           this.tillService.settings.aPaymentMethodSequence.forEach((iPaymentMethodId: any) =>
@@ -362,6 +362,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.payMethods = aVisibleMethods;
         }
       }
+      this.aInitialPaymentMethods = this.payMethods;
       this.payMethodsLoading = false;
     }, (error) => {
       this.payMethodsLoading = false;
@@ -844,6 +845,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.commonProducts = [];
     this.searchKeyword = '';
     this.selectedTransaction = null;
+    if(!this.payMethods.length) this.payMethods = this.aInitialPaymentMethods;
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.appliedGiftCards = [];
     this.nGiftcardAmount = 0;
