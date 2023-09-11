@@ -1156,11 +1156,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'is_created', 'regular');
     }
 
+    let today = new Date();
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
     const template = aTemplates.find((template: any) => template.eType === 'repair');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'repair').forEach((oItem: any) => {
       const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
-      //console.log(oItem.eActivityItemStatus);
-      if(oItem.eActivityItemStatus == 'new'){
+      
+      let creationDate = new Date(oItem.dCreatedDate);
+      creationDate.setSeconds(0);
+      creationDate.setMilliseconds(0);
+      // console.log(oItem.eActivityItemStatus, today.toISOString(), creationDate.toISOString());
+      if(oItem.eActivityItemStatus == 'new' ||  today.toISOString() == creationDate.toISOString()){
         this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
       }
     })
@@ -1171,8 +1179,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oAlternativeDataSource.forEach((data: any) => {
       data.sBusinessLogoUrl = aResult[1].data;
       data.businessDetails = this.businessDetails;
-      //console.log(data.eActivityItemStatus);
-      if(data.eActivityItemStatus == 'new'){
+      
+      let creationDate = new Date(data.dCreatedDate);
+      creationDate.setSeconds(0);
+      creationDate.setMilliseconds(0);
+      // console.log(data.eActivityItemStatus, today.toISOString(), creationDate.toISOString());
+      if(data.eActivityItemStatus == 'new' || today.toISOString() == creationDate.toISOString()){
         this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
       }
     })
