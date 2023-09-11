@@ -1507,12 +1507,14 @@
     <ng-container *ngIf="iStatisticId">
         <!-- COUNTING SECTION START -->
         <div class="row">
-            <div class="card card-flush">
+            <div class="card">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-6">
                         <div class="card-header align-items-center p-5">
-                            <div class="card-title col-md-12">
-                                <h4>{{ "COUNTING" | translate}}</h4>
+                            <h4 class="card-title">{{ "COUNTING" | translate}}</h4>
+                            <div class="card-toolbar" *ngIf="bOpeningDayClosure && bAllowOpenManualCashDrawer">
+                                <div *ngIf="bOpeningDrawer" class="spinner-border me-2"></div>
+                                <button class="btn btn-primary btn-sm" [disabled]="bOpeningDrawer" (click)="openDrawer()">{{'OPEN_DRAWER' | translate}}</button>
                             </div>
                         </div>
                         <div class="card-body p-5">

@@ -1073,7 +1073,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
         this.employee = result?.data;
         this.bAllowOpenManualCashDrawer = this.employee.aRights.includes('DEVELOPER') || this.employee.aRights.includes('OWNER');
-
       });
     }
   }
@@ -1240,7 +1239,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPrintSettings() {
-    let oBody = {
+    const oBody = {
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId
     }
@@ -2021,15 +2020,30 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tillService.oSavingPointSettings = null;
   }
 
-  openDrawer() {
-    const aThermalSettings = this.printSettings?.filter((settings: any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
-    const oSettings = aThermalSettings?.find((s: any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
+  async openDrawer() {
+    const oSettings = this.printSettings?.find((settings: any) => 
+      settings.sMethod === 'thermal' && 
+      settings.iWorkstationId === this.iWorkstationId &&
+      settings.sType === 'regular' && 
+      settings.nComputerId && 
+      settings.nPrinterId);
+
     if (oSettings) {
-      this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
+      const response: any = await this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId).toPromise();
+      if (response.status == "PRINTJOB_NOT_CREATED") {
+        let message = '';
+        if (response.computerStatus != 'online') {
+          message = 'Your computer status is : ' + response.computerStatus + '.';
+        } else if (response.printerStatus != 'online') {
+          message = 'Your printer status is : ' + response.printerStatus + '.';
+        }
+        this.toastrService.show({ type: 'warning', title: 'DRAWER_NOT_OPENED', text: message });
+      } else {
+        this.toastrService.show({ type: 'success', text: 'DRAWER_OPENED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+      }
     } else {
       this.toastrService.show({ type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!' })
     }
-
   }
 
   articleGroupDataChange(oStaticData: any) {

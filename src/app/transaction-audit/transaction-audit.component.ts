@@ -15,6 +15,7 @@ import { TillService } from '../shared/service/till.service';
 import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
 import * as moment from 'moment';
 import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
+import { ReceiptService } from '../shared/service/receipt.service';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -28,7 +29,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
   iWorkstationId:any = localStorage.getItem('currentWorkstation');
-  iEmployeeId: any = '';
+  iEmployeeId: any = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
   sUserType: any = localStorage.getItem('type');
   iStatisticId: any;
   aLocation: any = [];
@@ -119,6 +120,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   aSelectedBusinessPartnerId: any;
   aArticleGroupDetails: any;
   bReCalculateLoading: boolean = false;
+  bAllowOpenManualCashDrawer: boolean = false;
+  oCurrentEmployee: any;
+  aPrintSettings: any;
+  bOpeningDrawer: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -130,7 +135,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     public transactionAuditPdfService: TransactionAuditUiPdfService,
     private taxService: TaxService,
     private dialogService: DialogService,
-    private tillService: TillService
+    private tillService: TillService,
+    private receiptService: ReceiptService,
   ) {
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
@@ -192,8 +198,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastService);
     await this.tillService.fetchSettings();
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
-    const value = localStorage.getItem('currentUser');
-    if (value) this.iEmployeeId = JSON.parse(value)._id;
     if(this.bOpeningDayClosure) {
       if(this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
     }
@@ -1092,6 +1096,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.aEmployee = result.data[0].result;
+        this.oCurrentEmployee = this.aEmployee.find((oEmployee:any) => oEmployee._id == this.iEmployeeId);
+        if(this.oCurrentEmployee) {
+          this.bAllowOpenManualCashDrawer = this.oCurrentEmployee.aRights.includes('DEVELOPER') || this.oCurrentEmployee.aRights.includes('OWNER');
+        }
       }
     });
   }
@@ -1757,6 +1765,44 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (this.employeeListSubscription) this.employeeListSubscription.unsubscribe();
     if (this.transactionItemListSubscription) this.transactionItemListSubscription.unsubscribe();
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
+  }
+  
+  async openDrawer() {
+    this.bOpeningDrawer = true;
+    if (!this.aPrintSettings?.length) {
+      const oBody = {
+        iLocationId: this.iLocationId,
+        iWorkstationId: this.iWorkstationId
+      }
+      const result:any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.aPrintSettings = result.data[0].result;
+      }
+    }
+    const oSettings = this.aPrintSettings?.find((settings: any) =>
+      settings.sMethod === 'thermal' &&
+      settings.iWorkstationId === this.iWorkstationId &&
+      settings.sType === 'regular' &&
+      settings.nComputerId &&
+      settings.nPrinterId);
+
+    if (oSettings) {
+      const response:any = await this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId).toPromise();
+      this.bOpeningDrawer = false;
+      if (response.status == "PRINTJOB_NOT_CREATED") {
+        let message = '';
+        if (response.computerStatus != 'online') {
+          message = 'Your computer status is : ' + response.computerStatus + '.';
+        } else if (response.printerStatus != 'online') {
+          message = 'Your printer status is : ' + response.printerStatus + '.';
+        }
+        this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+      } else {
+        this.toastService.show({ type: 'success', text: 'DRAWER_OPENED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+      }
+    } else {
+      this.toastService.show({ type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!' })
+    }
   }
 
   listBusinessSubscription!: Subscription;
