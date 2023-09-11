@@ -625,6 +625,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'settingsChanged':
         //console.log('Here', event.data);
+        this.checkBagNumber(event.data)
         let number = event.data.match(/\d+/g);
         this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
         break;
@@ -634,6 +635,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
     }
     this.updateFiskalyTransaction('ACTIVE', []);
+  }
+
+  /*CHECK IF BAG NUMBER EXISTS, IF IT EXISTS THEN SHOW WARNING MESSAGE */
+  checkBagNumber(sBagNumber: any){
+    let oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness'),
+      sSearchValue: sBagNumber
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe((result: any) => {
+      if (result?.data?.length) {
+        let dup = result.data.find((el:any) => (el.sBagNumber == sBagNumber));
+        if(dup) this.toastrService.show({type: 'warning', title: 'DUPLICATED_BAGNUMBER' +': '+ sBagNumber, text: 'THIS_BAGNUMBER_ALREADY_EXIST'});
+      }
+    });
   }
 
   createGiftCard(item: any, index: number): void {
