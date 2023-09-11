@@ -1160,7 +1160,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const template = aTemplates.find((template: any) => template.eType === 'repair');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'repair').forEach((oItem: any) => {
       const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
-      this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
+      //console.log(oItem.eActivityItemStatus);
+      if(oItem.eActivityItemStatus == 'new'){
+        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
+      }
     })
 
     const oAlternativeReceiptTemplate = aTemplates.find((template: any) => template.eType === 'repair_alternative');
@@ -1169,7 +1172,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oAlternativeDataSource.forEach((data: any) => {
       data.sBusinessLogoUrl = aResult[1].data;
       data.businessDetails = this.businessDetails;
-      this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
+      //console.log(data.eActivityItemStatus);
+      if(data.eActivityItemStatus == 'new'){
+        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
+      }
     })
 
     const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
@@ -1191,7 +1197,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation: string = 'is_created', type: any) {
-    // console.log('sendForReceipt', this.printActionSettings)
+    // console.log('sendForReceipt', eSituation, type)
     const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({oPrintActionSettings});
     if (oPrintActionSettings) {
