@@ -190,26 +190,10 @@
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oShippingAddress">
-                                        <p class="m-0" *ngIf="bNormalOrder">
-                                            <span
-                                                *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
-                                                {{ customer.oShippingAddress.sStreet }} {{
-                                                customer.oShippingAddress.sHouseNumber}}
-                                                <span class="text-uppercase">{{
-                                                    customer.oShippingAddress.sHouseNumberSuffix }}</span>
-                                                <br>
-                                            </span>
-                                            <span *ngIf="customer?.oShippingAddress?.sPostalCode"
-                                                class="text-uppercase">{{ customer.oShippingAddress.sPostalCode}}
-                                            </span>
-                                            <span
-                                                *ngIf="customer?.oShippingAddress?.sCity || customer?.oShippingAddress?.sState">
-                                                {{ customer.oShippingAddress.sCity }}, <br>
-                                                {{ customer.oShippingAddress.sState || ' - '}},
-                                            </span>
-                                            {{ customer.oShippingAddress.sCountry }}
+                                        <p class="m-0">
+                                            {{customer?.shippingAddress}}
                                         </p>
-                                        <p class="m-0" *ngIf="!bNormalOrder">
+                                        <!-- <p class="m-0" *ngIf="!bNormalOrder">
                                             <span
                                                 *ngIf="customer.oShippingAddress.sStreet || customer.oShippingAddress.sHouseNumber || customer.oShippingAddress.sHouseNumberSuffix">
                                                 {{ customer.oShippingAddress.sHouseNumber}}<span
@@ -228,33 +212,16 @@
                                                 {{ customer.oShippingAddress.sPostalCode}}<br>
                                             </span>
                                             {{ customer.oShippingAddress.sCountry }}
-                                        </p>
+                                        </p> -->
                                     </div>
                                 </div>
                                 <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'INVOICE_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
-                                        <p class="m-0" *ngIf="bNormalOrder">
-                                            <span
-                                                *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
-                                                {{ customer.oInvoiceAddress.sStreet}}
-                                                {{ customer.oInvoiceAddress.sHouseNumber}}<span
-                                                    style="text-transform: uppercase;">{{
-                                                    customer.oInvoiceAddress.sHouseNumberSuffix }}</span>,
-                                                <br>
-                                            </span>
-                                            <span *ngIf="customer.oInvoiceAddress.sPostalCode"
-                                                style="text-transform: uppercase;">
-                                                {{ customer.oInvoiceAddress.sPostalCode}}
-                                            </span>
-                                            <span
-                                                *ngIf="customer?.oInvoiceAddress?.sCity || customer?.oInvoiceAddress?.sState">
-                                                {{ customer.oInvoiceAddress.sCity }}, <br>
-                                                {{ customer.oInvoiceAddress.sState || ' - '}},
-                                            </span>
-                                            {{customer.oInvoiceAddress.sCountry}}
+                                        <p class="m-0">
+                                            {{customer?.invoiceAddress}}
                                         </p>
-                                        <p class="m-0" *ngIf="!bNormalOrder">
+                                        <!-- <p class="m-0" *ngIf="!bNormalOrder">
                                             <span
                                                 *ngIf="customer.oInvoiceAddress.sStreet || customer.oInvoiceAddress.sHouseNumber || customer.oInvoiceAddress.sHouseNumberSuffix ">
                                                 {{customer.oInvoiceAddress.sHouseNumber}}<span
@@ -273,7 +240,7 @@
                                                 {{ customer.oInvoiceAddress.sPostalCode}} <br>
                                             </span>
                                             {{customer.oInvoiceAddress.sCountry}}
-                                        </p>
+                                        </p> -->
                                     </div>
                                 </div>
                             </div>
