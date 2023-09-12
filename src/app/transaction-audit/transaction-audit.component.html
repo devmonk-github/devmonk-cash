@@ -183,7 +183,7 @@
                                 </div>
 
                                 <!-- LOCATION -->
-                                <div class="col-md-3">
+                                <div class="col-md-3" *ngIf="statisticFilter.eChosenStateCreationType !== 'migration'">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' |
                                         translate}}</label>
                                     <div class="w-100" *ngIf="!aLocation?.length">
@@ -201,7 +201,7 @@
 
                             <div class="row mb-5">
                                 <!-- EMPLOYEE -->
-                                <div class="col-3">
+                                <div class="col-3" *ngIf="statisticFilter.eChosenStateCreationType !== 'migration'">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
                                     <ng-select class="form-control form-control-solid p-0"
                                         [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()"
@@ -932,7 +932,7 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity.toFixed()}}
                                                         </h4>
                                                     </th>
                                                     <th class="w-150px">

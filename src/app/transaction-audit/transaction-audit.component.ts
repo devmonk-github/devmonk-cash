@@ -741,6 +741,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aLocation = [this.oStatisticsData.iLocationId];
       iWorkstationId = [this.oStatisticsData.iWorkstationId]
     }
+    const isMigrationChosen = this.statisticFilter.eChosenStateCreationType == 'migration' ? true : false;
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
@@ -755,6 +756,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: this.bIsSupplierMode,
+        isMigrationChosen: isMigrationChosen /* to pass into back-end to fetch dynamic data of PN1 */
       }
     }
 
@@ -1637,7 +1639,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.aDayClosure.forEach((oDayClosure: any) => {
       oDayClosure.isDisable = false;
       const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
-      if (dFromStateTime > dDayClosureDateTime || oDayClosure.eCreationType !== _oDayClosure.eCreationType) oDayClosure.isDisable = true;
+      if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true; // || oDayClosure.eCreationType !== _oDayClosure.eCreationType
 
       const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
       const dToTime = new Date(oDayClosure.dCloseDate).getTime();
