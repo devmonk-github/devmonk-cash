@@ -66,6 +66,7 @@ import { CustomerActivitiesDialogComponent } from "./components/customer-activit
 import { BankConfirmationDialogComponent } from './components/bank-confirmation-dialog/bank-confirmation-dialog.component';
 import { ClosingDaystateDialogComponent } from "./components/closing-daystate-dialog/closing-daystate-dialog.component";
 import { SetPaymentMethodSequenceComponent } from "./components/set-payment-method-sequence-dialog/set-payment-method-sequence.component";
+import { ClosingDaystateHelperDialogComponent } from "./components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component";
 
 @NgModule({
   declarations: [
@@ -112,7 +113,8 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     CustomerActivitiesDialogComponent,
     BankConfirmationDialogComponent,
     ClosingDaystateDialogComponent,
-    SetPaymentMethodSequenceComponent
+    SetPaymentMethodSequenceComponent,
+    ClosingDaystateHelperDialogComponent
   ],
   imports: [
     CommonModule,
@@ -156,7 +158,8 @@ import { SetPaymentMethodSequenceComponent } from "./components/set-payment-meth
     CurrencyFormatPipe,
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
-    ClosingDaystateDialogComponent
+    ClosingDaystateDialogComponent,
+    ClosingDaystateHelperDialogComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })
