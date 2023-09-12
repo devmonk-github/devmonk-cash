@@ -188,7 +188,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
  async loadTransaction(isPageChanged?: boolean) {
     this.activityItems = [];
-    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
+    if (this.sSearchValue && !isPageChanged) this.resetThePagination();
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     if (this.requestParams?.selectedKind?.length) this.requestParams.selectedKind = this.requestParams.selectedKind

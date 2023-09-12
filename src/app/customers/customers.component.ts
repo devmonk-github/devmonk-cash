@@ -465,7 +465,7 @@ export class CustomersComponent implements OnInit {
 
   getCustomers(isPageChanged?: boolean) {
     this.showLoader = true;
-    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
+    if (this.requestParams.searchValue && !isPageChanged) this.resetThePagination();
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
