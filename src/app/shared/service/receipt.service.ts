@@ -971,11 +971,8 @@ export class ReceiptService {
     }
 
     openDrawer(sApiKey: any, nPrinterId: any, nComputerId: any,) {
-        // console.log("Open drawer", sApiKey);
-        let drawerJob = this.pn2escposService.epOpenDrawer()
-        this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result: any) => {
-            // console.log('drawer response', result);
-        });
+        const drawerJob = this.pn2escposService.epOpenDrawer()
+        return this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey);
     }
 
     generateBarcodeURI(data: any, options: any = {}) {

@@ -178,6 +178,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bNormalOrder: boolean = true;
   sBusinessCountry: string = '';
   bAllowOpenManualCashDrawer: boolean = false;
+  aInitialPaymentMethods: any = [];
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -352,7 +353,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-
         const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister)
         if (this.tillService?.settings?.aPaymentMethodSequence?.length) {
           this.tillService.settings.aPaymentMethodSequence.forEach((iPaymentMethodId: any) =>
@@ -362,6 +362,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.payMethods = aVisibleMethods;
         }
       }
+      this.aInitialPaymentMethods = this.payMethods;
       this.payMethodsLoading = false;
     }, (error) => {
       this.payMethodsLoading = false;
@@ -625,6 +626,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'settingsChanged':
         //console.log('Here', event.data);
+        this.checkBagNumber(event.data)
         let number = event.data.match(/\d+/g);
         this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
         break;
@@ -634,6 +636,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
     }
     this.updateFiskalyTransaction('ACTIVE', []);
+  }
+
+  /*CHECK IF BAG NUMBER EXISTS, IF IT EXISTS THEN SHOW WARNING MESSAGE */
+  checkBagNumber(sBagNumber: any){
+    let oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness'),
+      sSearchValue: sBagNumber
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe((result: any) => {
+      if (result?.data?.length) {
+        let dup = result.data.find((el:any) => (el.sBagNumber == sBagNumber));
+        if(dup) this.toastrService.show({type: 'warning', title: 'DUPLICATED_BAGNUMBER' +': '+ sBagNumber, text: 'THIS_BAGNUMBER_ALREADY_EXIST'});
+      }
+    });
   }
 
   createGiftCard(item: any, index: number): void {
@@ -829,6 +845,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.commonProducts = [];
     this.searchKeyword = '';
     this.selectedTransaction = null;
+    if(!this.payMethods.length) this.payMethods = this.aInitialPaymentMethods;
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.appliedGiftCards = [];
     this.nGiftcardAmount = 0;
@@ -1073,7 +1090,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
         this.employee = result?.data;
         this.bAllowOpenManualCashDrawer = this.employee.aRights.includes('DEVELOPER') || this.employee.aRights.includes('OWNER');
-
       });
     }
   }
@@ -1157,10 +1173,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'is_created', 'regular');
     }
 
+    let today = new Date();
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
     const template = aTemplates.find((template: any) => template.eType === 'repair');
     this.activityItems.filter((oItem: any) => oItem.oType.eKind == 'repair').forEach((oItem: any) => {
       const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(oItem, oDataSource, this.employee)
-      this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
+      
+      let creationDate = new Date(oItem.dCreatedDate);
+      creationDate.setSeconds(0);
+      creationDate.setMilliseconds(0);
+      // console.log(oItem.eActivityItemStatus, today.toISOString(), creationDate.toISOString());
+      if(oItem.eActivityItemStatus == 'new' ||  today.toISOString() == creationDate.toISOString()){
+        this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'is_created', 'repair');
+      }
     })
 
     const oAlternativeReceiptTemplate = aTemplates.find((template: any) => template.eType === 'repair_alternative');
@@ -1169,7 +1196,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oAlternativeDataSource.forEach((data: any) => {
       data.sBusinessLogoUrl = aResult[1].data;
       data.businessDetails = this.businessDetails;
-      this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
+      
+      let creationDate = new Date(data.dCreatedDate);
+      creationDate.setSeconds(0);
+      creationDate.setMilliseconds(0);
+      // console.log(data.eActivityItemStatus, today.toISOString(), creationDate.toISOString());
+      if(data.eActivityItemStatus == 'new' || today.toISOString() == creationDate.toISOString()){
+        this.sendForReceipt(data, oAlternativeReceiptTemplate, data.sNumber, 'is_created', 'repair_alternative');
+      }
     })
 
     const oGiftcardTemplate = aTemplates.find((template: any) => template.eType === 'giftcard');
@@ -1191,7 +1225,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation: string = 'is_created', type: any) {
-    // console.log('sendForReceipt', this.printActionSettings)
+    // console.log('sendForReceipt', eSituation, type)
     const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({oPrintActionSettings});
     if (oPrintActionSettings) {
@@ -1234,7 +1268,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPrintSettings() {
-    let oBody = {
+    const oBody = {
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId
     }
@@ -2015,15 +2049,30 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tillService.oSavingPointSettings = null;
   }
 
-  openDrawer() {
-    const aThermalSettings = this.printSettings?.filter((settings: any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
-    const oSettings = aThermalSettings?.find((s: any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
+  async openDrawer() {
+    const oSettings = this.printSettings?.find((settings: any) => 
+      settings.sMethod === 'thermal' && 
+      settings.iWorkstationId === this.iWorkstationId &&
+      settings.sType === 'regular' && 
+      settings.nComputerId && 
+      settings.nPrinterId);
+
     if (oSettings) {
-      this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
+      const response: any = await this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId).toPromise();
+      if (response.status == "PRINTJOB_NOT_CREATED") {
+        let message = '';
+        if (response.computerStatus != 'online') {
+          message = 'Your computer status is : ' + response.computerStatus + '.';
+        } else if (response.printerStatus != 'online') {
+          message = 'Your printer status is : ' + response.printerStatus + '.';
+        }
+        this.toastrService.show({ type: 'warning', title: 'DRAWER_NOT_OPENED', text: message });
+      } else {
+        this.toastrService.show({ type: 'success', text: 'DRAWER_OPENED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+      }
     } else {
       this.toastrService.show({ type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!' })
     }
-
   }
 
   articleGroupDataChange(oStaticData: any) {
