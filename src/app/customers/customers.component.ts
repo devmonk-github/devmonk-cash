@@ -465,7 +465,7 @@ export class CustomersComponent implements OnInit {
 
   getCustomers(isPageChanged?: boolean) {
     this.showLoader = true;
-    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
+    if (this.requestParams.searchValue && !isPageChanged) this.resetThePagination();
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -485,8 +485,8 @@ export class CustomersComponent implements OnInit {
               customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             }
 
-            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
-            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
+            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, true, this.bNormalOrder);
+            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, true, this.bNormalOrder);
             customer['EMAIL'] = customer.sEmail;
             customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
           }

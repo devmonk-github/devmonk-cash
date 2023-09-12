@@ -216,7 +216,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction(isPageChanged?: boolean) {
-    if (this.requestParams.sSearchValue && !isPageChanged) this.resetThePagination();
+    if (this.requestParams.searchValue && !isPageChanged) this.resetThePagination();
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
