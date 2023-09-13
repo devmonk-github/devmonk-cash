@@ -973,7 +973,7 @@
                                                                         <span *ngIf="!oArticleGroup?.oName || !object.keys(oArticleGroup?.oName)?.length">
                                                                             {{ oArticleGroup.sName }}
                                                                         </span>
-                                                                        <div class="mx-5">
+                                                                        <div class="mx-5" *ngIf="statisticFilter.eChosenStateCreationType !== 'migration'">
                                                                             <i *ngIf="!oArticleGroup.bIsCollapseItem"
                                                                                 class="px-sm-2 cursor-pointer bi bi-chevron-down"
                                                                                 (click)="expandItem(oArticleGroup)">
