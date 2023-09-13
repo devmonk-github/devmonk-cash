@@ -16,6 +16,7 @@ import { ClosingDaystateDialogComponent } from '../shared/components/closing-day
 import * as moment from 'moment';
 import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
 import { ReceiptService } from '../shared/service/receipt.service';
+import { ClosingDaystateHelperDialogComponent } from '../shared/components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -124,6 +125,16 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oCurrentEmployee: any;
   aPrintSettings: any;
   bOpeningDrawer: boolean = false;
+  oHelperDetails: any = {
+    oStartAmountIncorrect: {
+      bChecked: false,
+      nAmount: 0
+    },
+    bCantCloseDueToDifference: false,
+    bWrongDayEndCash: false,
+    aReasons: [{ nAmount: 0 }],
+    bSaved: true
+  };
 
   constructor(
     private apiService: ApiService,
@@ -132,7 +143,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastService: ToastService,
     private location: Location,
-    public transactionAuditPdfService: TransactionAuditUiPdfService,
+    public auditService: TransactionAuditUiPdfService,
     private taxService: TaxService,
     private dialogService: DialogService,
     private tillService: TillService,
@@ -217,7 +228,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (transactionAudits) {
       transactionAuditArray = JSON.parse(transactionAudits);
     }
-   if(transactionAuditArray?.length) this.transactionAuditPdfService.aAmount = transactionAuditArray;
+   if(transactionAuditArray?.length) this.auditService.aAmount = transactionAuditArray;
 
     setTimeout(() => {
       MenuComponent.bootstrap();
@@ -671,7 +682,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.sCurrentLocation = result?.data?.sName;
         this.aLocation.forEach((oLocation: any) => {
           if (oLocation._id === this.iLocationId) {
-            this.transactionAuditPdfService.selectCurrency(oLocation);
+            this.auditService.selectCurrency(oLocation);
             this.sCurrentLocation += " (" + oLocation?.sName + ")";
             this.aSelectedLocation.push(oLocation._id);
           }
@@ -701,7 +712,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
     if (aKeys?.length) {
-      this.transactionAuditPdfService.aAmount.map((item: any) => {
+      this.auditService.aAmount.map((item: any) => {
         if (aKeys.includes(item.key)) {
           item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
         }
@@ -808,7 +819,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
             } else {
-              this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
+              this.oStatisticsDocument = this.auditService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
             this.checkShowDownload();
@@ -949,7 +960,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
-              if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
+              if (item?.sMethod === 'cash') this.oCountings.nCashInTill = +((item?.nAmount || 0).toFixed(2));
               return item;
             });
             if (this.IsDynamicState) this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
@@ -1133,7 +1144,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         oLocation = this.aLocation.find((el: any) => el._id === this.oStatisticsData.iLocationId);
       }
       if(oLocation) {
-        this.transactionAuditPdfService.selectCurrency(oLocation);
+        this.auditService.selectCurrency(oLocation);
         this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
         this.aSelectedLocation.push(oLocation._id);
       }
@@ -1142,7 +1153,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   async exportToPDF(mode:string = 'compact') {
     this.pdfGenerationInProgress = true;
-    await this.transactionAuditPdfService.exportToPDF({
+    await this.auditService.exportToPDF({
       aSelectedLocation: this.aSelectedLocation,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
@@ -1173,11 +1184,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   calculateTotalCounting() {
     this.oCountings.nCashCounted = 0;
-    this.transactionAuditPdfService.aAmount.forEach((amount: any) => {
+    this.auditService.aAmount.forEach((amount: any) => {
       this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
-    localStorage.setItem('transactionAuditPdfService.aAmount', JSON.stringify(this.transactionAuditPdfService.aAmount));
+    localStorage.setItem('transactionAuditPdfService.aAmount', JSON.stringify(this.auditService.aAmount));
   }
 
   async expandItem(item: any, iBusinessPartnerId: any = undefined, from: string = 'articlegroup') {
@@ -1430,7 +1441,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
+    this.auditService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
     const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
     let oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
@@ -1820,6 +1831,40 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     } else {
       this.toastService.show({ type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!' })
     }
+  }
+
+  openDayClosureHelpModal() {
+    this.dialogService.openModal(ClosingDaystateHelperDialogComponent, { 
+      cssClass: 'modal-lg', 
+      hasBackdrop: true,
+      context: {
+        oHelperDetails: JSON.parse(JSON.stringify(this.oHelperDetails)),
+        oCountings: this.oCountings,
+        paymentMethod: this.allPaymentMethod
+      } 
+    }).instance.close.subscribe((result:any) => {
+      if(result?.type) {
+        this.oHelperDetails = JSON.parse(JSON.stringify(result.data));
+        this.oHelperDetails.bSaved = false;
+        // console.log(this.oHelperDetails);
+        let nAmountToDeduct = 0, nAmountToAdd = 0;
+        this.oHelperDetails.aReasons.forEach((oReason:any) => {
+          if (['lost-money', 'add-expenses'].includes(oReason.sKey)) {
+            nAmountToDeduct += oReason.nAmount;
+            oReason.nAmount = -oReason.nAmount;
+          };
+        })
+        this.oHelperDetails.nAmountToDeduct = -nAmountToDeduct;
+      }
+    });
+  }
+
+  saveHelperDetails() {
+    this.fetchStatistics();
+    // this.oHelperDetails.bCantCloseDueToDifference = false;
+    // this.oHelperDetails.bWrongDayEndCash = false;
+    // this.oHelperDetails.aReasons = [{ nAmount: 0 }];
+    this.oHelperDetails.bSaved = true;
   }
 
   listBusinessSubscription!: Subscription;

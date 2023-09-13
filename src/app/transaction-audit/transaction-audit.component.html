@@ -409,7 +409,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <span class="">{{ 'TOTAL' | translate}}</span>
-                                    <h3 class="text-black">{{ nTotalRevenue | currency: transactionAuditPdfService.currency  }}</h3>
+                                    <h3 class="text-black">{{ nTotalRevenue | currency: auditService.currency  }}</h3>
                                 </div>
                                 <div class="col-md-4">
                                     <strong *ngIf="!IsDynamicState">{{ 'STATIC_DATA' | translate }}</strong>
@@ -1521,10 +1521,10 @@
                             <div class="counting-list mb-5">
                                 <table style="display: block;column-count: 2">
                                     <tbody>
-                                        <tr *ngFor="let amount of transactionAuditPdfService.aAmount">
+                                        <tr *ngFor="let amount of auditService.aAmount">
                                             <td class="w-50">
                                                 <label class="currency">
-                                                    {{ amount.sLabel | currency: transactionAuditPdfService.currency }}
+                                                    {{ amount.sLabel | currency: auditService.currency }}
                                                     x
                                                 </label>
                                             </td>
@@ -1536,7 +1536,7 @@
                                             </td>
                                             <td class="w-50">
                                                 <label class="currency">{{ (amount.nQuantity * amount.nValue) |
-                                                    currency: transactionAuditPdfService.currency}}</label>
+                                                    currency: auditService.currency}}</label>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1565,17 +1565,17 @@
                             <div class="earnings-section">
                                 <div>
                                     <label>{{ "CASH_LEFTOVER" | translate}}</label>
-                                    <label class="">{{ oCountings.nCashAtStart | currency:
-                                        transactionAuditPdfService.currency }}</label>
+                                    <label class="">{{ (oCountings.nCashAtStart + oHelperDetails.oStartAmountIncorrect.nAmount) | currency:
+                                        auditService.currency }}</label>
                                 </div>
                                 <div>
                                     <label>{{ "CASH_MUTATION" | translate}}</label>
-                                    <label class="">{{ '0.00' | currency: transactionAuditPdfService.currency }}</label>
+                                    <label class="">{{ '0.00' | currency: auditService.currency }}</label>
                                 </div>
                                 <div>
                                     <label>{{ "CASH_IN_TILL" | translate}}</label>
                                     <label class="">
-                                        {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
+                                        {{ oCountings.nCashInTill | currency: auditService.currency }}
                                     </label>
                                 </div>
                                 <div>
@@ -1585,16 +1585,43 @@
                                         (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
                                         [disabled]="bDayStateClosed">
                                 </div>
+                                <div *ngIf="!oHelperDetails.bSaved && oHelperDetails.aReasons?.length" class="border ps-5 py-3 d-block">
+                                    <label class="bold">{{ 'CORRECTIONS' | translate }}</label>
+                                    <ng-container *ngFor="let oReason of oHelperDetails.aReasons">
+                                        <div *ngIf="oReason.nAmount">
+                                            <label>{{ oReason.sTitle | translate}}</label>
+                                            <span class="text-end">
+                                                {{ oReason.nAmount | currency: auditService.currency }}
+                                            </span>
+                                        </div>
+                                    </ng-container>
+                                </div>
                                 <div>
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
-                                    <label class="bold">
+                                    <label class="d-flex flex-column">
                                         <ng-container *ngIf="bDayStateClosed">
                                             {{ oCountings.nCashDifference | currency:
-                                            transactionAuditPdfService.currency }}
+                                            auditService.currency }}
                                         </ng-container>
                                         <ng-container *ngIf="!bDayStateClosed">
-                                            {{ oCountings.nCashCounted - (oCountings.nCashAtStart +
-                                            oCountings.nCashInTill) | currency: transactionAuditPdfService.currency }}
+                                            <span class="bold text-end">
+                                                {{ oCountings.nCashCounted - 
+                                                    (
+                                                        oCountings.nCashAtStart + oCountings.nCashInTill + 
+                                                        oHelperDetails.oStartAmountIncorrect.nAmount +
+                                                        (oHelperDetails.nAmountToDeduct || 0)
+                                                    ) | currency: auditService.currency }}
+                                            </span>
+                                            <span *ngIf="oCountings.nCashCounted - 
+                                                    (
+                                                        oCountings.nCashAtStart + oCountings.nCashInTill + 
+                                                        oHelperDetails.oStartAmountIncorrect.nAmount +
+                                                        (oHelperDetails.nAmountToDeduct || 0)
+                                                    ) != 0" 
+                                                class="badge badge-warning cursor-pointer" 
+                                                (click)="openDayClosureHelpModal()">
+                                                {{ 'CLICK_TO_JUSTIFY_DIFFERENCE' | translate }}
+                                            </span>
                                         </ng-container>
                                     </label>
                                 </div>
@@ -1614,10 +1641,17 @@
                                 <br>
 
                                 <div class="d-flex justify-content-start" *ngIf="oStatisticsDocument?.bIsDayState">
-                                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                    <div *ngIf="!oHelperDetails.bSaved" class="d-flex flex-column align-items-start">
+                                        <span class="err-msg">{{'YOU_MUST_SAVE_CHANGES_BEFORE_CLOSE_DAY_STATE' | translate }}</span>
+                                        <button class="btn btn-primary btn-sm" (click)="saveHelperDetails()">
+                                            {{ 'SAVE_AND_RELOAD' | translate }}
+                                        </button>
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary me-2" data-kt-roles-modal-action="submit" *ngIf="oHelperDetails.bSaved"
                                         [disabled]="bStatisticLoading || closingDayState"
                                         (click)="checkAndAskForQuickCountings()">
-                                        <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                        {{ "CLOSE_DAYSTATE" | translate}}
                                     </button>
                                     <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
                                 </div>

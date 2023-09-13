@@ -179,6 +179,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   sBusinessCountry: string = '';
   bAllowOpenManualCashDrawer: boolean = false;
   aInitialPaymentMethods: any = [];
+  workstations: Array<any> = [];
+
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -226,6 +228,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.getWorkstations();
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
     this.tillService.updateVariables();
@@ -278,7 +281,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-
+  getWorkstations() {
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+        if (result && result.data) {
+          this.workstations = result.data;
+        }
+      });
+  }
 
   async mapFiscallyData() {
     let _fiscallyData: any;
@@ -1049,6 +1058,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             transaction.aTransactionItems = aTransactionItems;
             transaction.activity = activity;
             this.transaction = transaction;
+            this.transaction.sWorkStationName = this.workstations.find((workstation: any) => workstation._id == this.iWorkstationId).sName;
             this.activityItems = activityItems;
             this.activity = activity;
             const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');

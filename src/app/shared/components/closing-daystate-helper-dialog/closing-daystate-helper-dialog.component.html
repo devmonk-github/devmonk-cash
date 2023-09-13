@@ -1,0 +1,81 @@
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h3 class="card-title">{{ 'CLOSE_DAY_STATE' | translate}}</h3>
+    <div class="card-toolbar">
+      <button type="button" class="btn btn-sm btn-light" (click)="close({type: false})">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="container-fluid">
+      <div class="row mb-4">
+    
+        <div class="col-12">
+          <label class="form-check form-check-custom">
+            <input class="form-check-input checkbox-hw me-3" type="checkbox"
+              [(ngModel)]="oHelperDetails.oStartAmountIncorrect.bChecked" />
+            <span class="cursor-pointer">{{'MY_START_CASH_WAS_INCORRECT' | translate }}</span>
+          </label>
+        </div>
+    
+        <div class="col-8 offset-1 d-flex justify-content-between align-items-center"
+          *ngIf="oHelperDetails.oStartAmountIncorrect.bChecked">
+          <span class="me-5">{{'TYPE_YOUR_START_AMOUNT_HERE' | translate }}</span>
+          <input type="number" class="form-control ms-5" [(ngModel)]="oHelperDetails.oStartAmountIncorrect.nAmount">
+        </div>
+    
+      </div>
+    
+      <div class="row mb-4">
+        <div class="col-12">
+          <label class="form-check form-check-custom">
+            <input class="form-check-input checkbox-hw" type="checkbox"
+              [(ngModel)]="oHelperDetails.bCantCloseDueToDifference" />
+            <span class="ms-3 cursor-pointer">{{'CANT_CLOSE_BECAUSE_OF_DIFFERENCE' | translate }}</span>
+          </label>
+        </div>
+        <div class="col-8 mt-2 offset-1" *ngIf="oHelperDetails.bCantCloseDueToDifference">
+          <span class="me-5">{{'CALL' | translate }}: +31 345 631 776</span>
+        </div>
+      </div>
+    
+      <div class="row mb-4">
+        <div class="col-12 mb-4">
+          <label class="form-check form-check-custom me-2">
+            <input class="form-check-input checkbox-hw" type="checkbox" [(ngModel)]="oHelperDetails.bWrongDayEndCash"/>
+            <span class="ms-3 cursor-pointer">{{'MY_CASH_AT_END_OF_DAY_IS_INCORRECT_BECAUSE' | translate }}</span>
+          </label>
+        </div>
+        <div class="col-12" *ngIf="oHelperDetails.bWrongDayEndCash">
+          <div class="row">
+            <ng-container *ngFor="let oReason of oHelperDetails.aReasons, let i = index">
+              <div class="col-8">
+                <ng-select class="w-100 mb-3" placeholder="{{'SELECT' | translate }}" [clearable]="false" [disabled]="oReason.selected"
+                  [(ngModel)]="oReason.sKey"
+                  (change)="onChange($event, oReason)">
+                  <ng-option [value]="oItem.sKey" [disabled]="oItem.selected" *ngFor="let oItem of aReasons">
+                    {{ oItem.sTitle | translate }}
+                  </ng-option>
+                </ng-select>
+              </div>
+              <div class="col-2">
+                <input type="number" class="form-control" [(ngModel)]="oReason.nAmount" [disabled]="oReason.selected">
+              </div>
+            </ng-container>
+            <div class="col-2">
+              <button class="btn btn-dark btn-sm" (click)="addMoreReasons()">{{ 'ADD_MORE' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <div class="text-end">
+      <button class="btn btn-primary me-2" (click)="close({type: true, data: oHelperDetails})">{{ 'CONTINUE' | translate}}</button>
+      <button class="btn btn-info me-2" (click)="reset()">{{ 'RESET' | translate}}</button>
+      <button class="btn btn-secondary" (click)="close({type: false})">{{ 'CANCEL' | translate}}</button>
+    </div>
+  </div>
+</div>

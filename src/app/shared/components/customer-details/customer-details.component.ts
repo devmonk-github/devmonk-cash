@@ -30,6 +30,7 @@ import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
 import countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
+import { CustomerStructureService } from '../../service/customer-structure.service';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -354,7 +355,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private translateService: TranslateService,
     public tillService: TillService,
-
+    private customerStructureService: CustomerStructureService,
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -390,7 +391,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     await this.getMergedCustomerIds();
     this.getCustomerGroups();
     this.loadTransactions();
-
   }
   openImageModal(isFrom: any) {
     this.dialogService.openModal(ImageAndDocumentsDialogComponent, { cssClass: "modal-xl", context: { mode: 'create', imageData: this.oTemp, customer: this.customer._id, isFrom: isFrom } })
@@ -573,6 +573,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
               this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
             }
           }
+
+          this.customer.invoiceAddress = this.customerStructureService.makeCustomerAddress(this.customer?.oInvoiceAddress, true, this.bNormalOrder);
+          this.customer.shippingAddress = this.customerStructureService.makeCustomerAddress(this.customer?.oShippingAddress, true, this.bNormalOrder);
         }
       }
     });
@@ -1333,7 +1336,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     }
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, items: true, from: 'transaction-details' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, businessDetails: this.businessDetails, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => { });
   }
 

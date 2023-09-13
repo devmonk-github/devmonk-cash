@@ -539,7 +539,7 @@
                 </select>
                 <ng-container>
                   <button class="btn btn-secondary"
-                    (click)="selectedTransaction ? updateParkedTransaction() : park()">
+                    (click)="selectedTransaction ? updateParkedTransaction() : park()" [disabled]="transactionItems.length == 0 && !selectedTransaction">
                     {{(selectedTransaction ? "SAVE" : "PARK") |translate}}</button>
                   <button class="btn btn-secondary" (click)="clearAll()" *ngIf="selectedTransaction">
                     <fa-icon [icon]="faTimesCircle"></fa-icon>

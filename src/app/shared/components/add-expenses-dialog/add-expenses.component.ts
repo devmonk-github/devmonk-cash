@@ -164,7 +164,7 @@ export class AddExpensesComponent implements OnInit {
       .subscribe((res: any) => {
         this.bLoading = true;
         this.toastrService.show({ type: 'success', text: res.message });
-        this.close(res);
+        this.close(transactionItem);
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
