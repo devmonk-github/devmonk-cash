@@ -118,7 +118,6 @@ export class TransactionActionDialogComponent implements OnInit {
       sThermalTemplateType = type;
     
     } else if (type === 'regular') {
-      
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
       sThermalTemplateType = 'business-receipt';
@@ -146,6 +145,7 @@ export class TransactionActionDialogComponent implements OnInit {
     if (action == 'PRINT_THERMAL') {
 
       await this.receiptService.printThermalReceipt({
+        currency: this.tillService.currency,
         oDataSource: oDataSource,
         printSettings: this.printSettings,
         apikey: this.businessDetails.oPrintNode.sApiKey,

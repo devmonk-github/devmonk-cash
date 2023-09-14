@@ -1058,7 +1058,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             transaction.aTransactionItems = aTransactionItems;
             transaction.activity = activity;
             this.transaction = transaction;
-            this.transaction.sWorkStationName = this.workstations.find((workstation: any) => workstation._id == this.iWorkstationId).sName;
+            this.transaction.sWorkstationName = this.workstations.find((workstation: any) => workstation._id == this.iWorkstationId).sName;
             this.activityItems = activityItems;
             this.activity = activity;
             const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');
