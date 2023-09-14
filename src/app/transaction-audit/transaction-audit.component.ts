@@ -745,6 +745,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   //     }
   //   )
   // }
+  // async importRepair() {
+  //   await this.apiService.postNew('cashregistry', '/api/v1/till/historical-activity', { aDeliveredTransction: [], iBusinessId: this.iBusinessId }).toPromise();
+  // }
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
