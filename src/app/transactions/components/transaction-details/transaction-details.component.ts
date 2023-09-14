@@ -532,6 +532,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async getThermalReceipt(type: string) {
     this.transaction.nTotalSavedPoints = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.transaction.iCustomerId}`).toPromise();
     this.transaction.currentLocation.currency = this.tillService.currency;
+    if(this.transaction.oCustomer.bCounter) this.transaction.oCustomer = {};
     await this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,
       oDataSource: this.transaction,

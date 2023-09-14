@@ -59,7 +59,7 @@ export class ImportRepairOrderComponent implements OnInit {
   }
 
   importRepairOrder() : any{
-  try {
+    try {
       this.importInprogress = true;
       const oData = {
         parsedRepairOrderData: this.parsedRepairOrderData,
@@ -69,11 +69,12 @@ export class ImportRepairOrderComponent implements OnInit {
         iWorkStationId: this.iWorkStationId,
         iEmployeeId: this.iEmployeeId
       }
-      const AllRecords = [];
+      let aAllRecords = [];
       const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
       //console.log("timportRepairOrder============s 2: ", JSON.parse(JSON.stringify(this.parsedRepairOrderData)));
       this.parsedRepairOrderData = parsedRepairOrderData;
       const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
+      console.log(aTransactionItem?.length, aTransactionItem)
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
         oBody.oTransaction.iCustomerId = aTransactionItem[i].iCustomerId;
@@ -81,7 +82,9 @@ export class ImportRepairOrderComponent implements OnInit {
         oBody.oTransaction.oCustomer = aTransactionItem[i].oCustomer;
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
-        AllRecords.push(oBody);
+        
+        let oCopy = {...oBody}
+        aAllRecords.push(oCopy);
         //return;
         if(aTransactionItem[i].eActivityItemStatus == 'delivered'){
           this.apiService.postNew('cashregistry', '/api/v1/till/historical-activity', oBody).subscribe((result: any) => {
@@ -101,14 +104,47 @@ export class ImportRepairOrderComponent implements OnInit {
           });
         }
       }
-      //console.log("AllRecords.length" + AllRecords.length);
+      console.log('All records info', aAllRecords.length,  aAllRecords)
+      //let limit = 1300;
+      //WHILE LOOP
+      // while (aAllRecords.length) {
+      //   console.log("--- START LOOP ---")
+      //   let aTransaction =  aAllRecords.splice(0, limit);
+      //   console.log('in loop total length: ', aAllRecords.length, aTransaction.length);
+      //   console.log('aTransaction info: ', aTransaction);
+      //   for(const transaction of aTransaction){
+      //     if(transaction.transactionItems[0].eActivityItemStatus == 'delivered'){
+      //       // await this.apiService.postNew('cashregistry', '/api/v1/till/historical-activity', transaction);
+      //     }else{
+      //       // await this.apiService.postNew('cashregistry', '/api/v1/till/transaction', transaction);
+      //     }
+      //   }
+      // }
+
+      //FOR LOOP
+      // for (let i = 0; i < nTotalLoop; i++) {
+      //     console.log("Repair Loop execute", i);
+      //     let skip = i * limit;
+      //     try {
+      //         console.log('--- STARTING ---')
+      //         let aTransactions = aAllRecords.slice(skip, (skip + limit));
+      //         console.log('skip', skip);
+      //         console.log('aTransactions info', aTransactions.length, (skip + limit));
+      //         for(const transaction of aTransactions){
+      //           console.log(transaction.transactionItems)
+      //           
+      //         }
+      //         console.log('--- ENDING ---')
+      //     } catch (error) {
+      //       this.importInprogress = false;
+      //       this.parsedRepairOrderData = [];
+      //       console.error(error);
+      //     }
+      // }
     } catch (error) {
       this.parsedRepairOrderData = [];
       console.log('Import Repair Order error', error);
     }
   }
-
-
-  
 
 }

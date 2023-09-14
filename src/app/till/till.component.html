@@ -332,7 +332,7 @@
                             </div>
                             <div class="w-100 mx-4">
                               <p class="d-block m-0 mb-2 fs-7 text-uppercase text-primary fw-bolder">
-                                {{ product?.sProductName }}</p>
+                                {{ product?.sProductName ||"Unknown"}}</p>
                               <div class="d-flex align-items-start justify-content-between flex-wrap">
                                 <p class="col-xl-6 col-sm-4 m-0 text-gray-800">
                                   <strong>{{ product?.sProductNumber || ("NO_PROUCT_NUMBER" | translate)}}</strong><br>
@@ -399,7 +399,7 @@
                               <!-- <span>
                                 <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                               </span> -->
-                              <p class="d-block m-0 mb-2 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || ('NO_NAME'| translate) }}</p>
+                              <p class="d-block m-0 mb-2 text-uppercase text-primary fw-bolder">{{ product.oName['en'] || "Unknown" }}</p>
                               <div class="d-flex align-items-start justify-content-between">
                                 <p class="col-5 m-0 text-gray-800">
                                   <strong>{{ product?.sProductNumber || '-'}}</strong> <br>
@@ -539,7 +539,7 @@
                 </select>
                 <ng-container>
                   <button class="btn btn-secondary"
-                    (click)="selectedTransaction ? updateParkedTransaction() : park()">
+                    (click)="selectedTransaction ? updateParkedTransaction() : park()" [disabled]="transactionItems.length == 0 && !selectedTransaction">
                     {{(selectedTransaction ? "SAVE" : "PARK") |translate}}</button>
                   <button class="btn btn-secondary" (click)="clearAll()" *ngIf="selectedTransaction">
                     <fa-icon [icon]="faTimesCircle"></fa-icon>
