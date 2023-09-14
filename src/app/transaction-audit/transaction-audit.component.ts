@@ -731,24 +731,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     } else this.fetchAuditStatistic(sDisplayMethod);
   }
 
-  /* TESTING PURPOSE ONLY, SHOULD BE REMOVE */
-  // fetchWebShopCountDetail() {
-  //   const businessId = localStorage.hasOwnProperty('currentBusiness') ? localStorage.getItem('currentBusiness') : undefined;
-  //   this.apiService.postNew('cashregistry', '/api/v1/activities/new-webshop-activity-count', { iBusinessId: businessId }).subscribe(
-  //     (result: any) => {
-  //       if (result?.data?.length > 0) {
-  //         result.data.forEach((details: any) => {
-  //           console.log('details: ', details);
-  //           // this.webshopCount[details._id] = details.count;
-  //         });
-  //       }
-  //     }
-  //   )
-  // }
-  // async importRepair() {
-  //   await this.apiService.postNew('cashregistry', '/api/v1/till/historical-activity', { aDeliveredTransction: [], iBusinessId: this.iBusinessId }).toPromise();
-  // }
-
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
