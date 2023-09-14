@@ -165,11 +165,7 @@ export class TerminalDialogComponent implements OnInit {
   checkTerminalStatus(url: string, testmode:boolean = false) {
     console.log('checkTerminalStatus called', url)
     setTimeout(() => {
-      const oBody = {
-        iBusinessId: this.iBusinessId,
-        url
-      }
-      this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/check-status`, oBody).subscribe((res: any) => {
+      this.httpClient.get(url).subscribe((res: any) => {
         console.log('response of check', res)
           if (res.status === 'start') {
             this.checkTerminalStatus(url);
