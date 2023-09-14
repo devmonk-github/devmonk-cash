@@ -140,13 +140,12 @@ export class TerminalDialogComponent implements OnInit {
     this.progressClass = '';
     this.startProgressBar();
     this.statusMessage = 'PAYMENT_WAITING_ON_CUSTOMER';
+    console.log('started terminal payment, amount=', this.amount, this.sSelectedProvider)
     this.terminalService.startTerminalPayment(this.amount, this.sSelectedProvider)
       .subscribe((res) => {
-        paymentInfo.paymentReference = res.paymentReference;
-        if(this.amount == 0.02)
-          this.checkTerminalStatus(res.terminalStatusUrl, true);
-        else 
-          this.checkTerminalStatus(res.terminalStatusUrl, false);
+        paymentInfo.paymentReference = res.paymentReference; 
+        console.log('response from paynl', res)
+        this.checkTerminalStatus(res.terminalStatusUrl);
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -164,14 +163,21 @@ export class TerminalDialogComponent implements OnInit {
   //For translations: Add PAYMENT_ before these strings
 
   checkTerminalStatus(url: string, testmode:boolean = false) {
+    console.log('checkTerminalStatus called', url)
     setTimeout(() => {
-      this.httpClient.get(url)
-        .subscribe((res: any) => {
+      const oBody = {
+        iBusinessId: this.iBusinessId,
+        url
+      }
+      this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/check-status`, oBody).subscribe((res: any) => {
+        console.log('response of check', res)
           if (res.status === 'start') {
             this.checkTerminalStatus(url);
           }
           if (res.incidentcodetext || testmode) {
+            console.log('res', res, 'index', this.selectedIndex)
             if (res.approved === '1' || testmode) {
+              console.log('res approved')
               this.ifCardSuccess = true;
             }
             this.cardPayments[this.selectedIndex].remark = 'PAYMENT_' + res.incidentcodetext;
@@ -180,7 +186,9 @@ export class TerminalDialogComponent implements OnInit {
             this.cardPayments[this.selectedIndex].oPayNL.sTransactionId = res.txid;
             this.cardPayments[this.selectedIndex].oPayNL.sTransactionStatus = res.incidentcodetext;
             this.cardPayments[this.selectedIndex].oPayNL.sTicketHash = res.ticket;
+            console.log('current status = ',this.cardPayments[this.selectedIndex]);
             if (res.error === '1') {
+              console.log('res error')
               this.progressClass = 'mat-warn';
               this.cardPayments[this.selectedIndex].status = 'RETRY';
             }
@@ -198,6 +206,7 @@ export class TerminalDialogComponent implements OnInit {
 
   continue() {
     this.cardPayments = this.cardPayments.filter((item: any) => item.status === 'SUCCESS')
+    console.log('successfull card payments', this.cardPayments)
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
     const oCashPaymentMethod = this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash')
     const cashPaymentMethod = _.clone(oCashPaymentMethod);
