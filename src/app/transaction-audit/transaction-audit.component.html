@@ -39,9 +39,10 @@
                                         </div>
                                     </div>
 
+                                    <full-calendar [options]="calendarOptions" [events]="eventsPromise | async"></full-calendar>
+
                                     <!-- For Static, FROM-STATE to TO-STATE -->
                                     <div class="row mb-5" *ngIf="!IsDynamicState">
-
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
                                                 translate}}</label>

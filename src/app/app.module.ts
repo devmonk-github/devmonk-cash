@@ -17,6 +17,7 @@ import { BarcodeComponent } from './barcode/barcode.component';
 import { TranslationsService } from 'src/app/shared/service/translation.service';
 import { AppInitService } from './shared/service/app-init.service';
 
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { AppInitService } from './shared/service/app-init.service';
   ],
   imports: [
     BrowserModule,
+    FullCalendarModule,
     HttpClientModule,
     // BrowserAnimationsModule,
     AppRoutingModule,
