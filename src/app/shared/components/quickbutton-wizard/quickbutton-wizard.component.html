@@ -197,6 +197,27 @@
                                     </ng-select>
                                 </div>            
                             </div>
+                            <div class="col-12 mt-2" *ngIf="selectedArticleGroup === 'stock'">
+                                <div class="col-12 mb-3 d-flex align-items-center justify-content-between">
+                                    <label class="form-check form-switch form-check-custom form-check-solid w-50">
+                                        {{"SELECT_ARTICLE_GROUP" | translate}}
+                                    </label>
+                                    <ng-select [(ngModel)]="oNewProduct.iArticleGroupId" class="form-control p-0 ms-5" [clearable]="false" name="article_group"  *ngIf="!bNewArticlegroup">
+                                        <ng-container *ngIf="oStaticData?.articleGroupsList?.length">
+                                          <ng-option *ngFor="let oArticleGroup of oStaticData?.articleGroupsList" [value]="oArticleGroup._id">
+                                            <p class="m-0 text-truncate">{{ oArticleGroup.sArticleGroupName }}</p>
+                                          </ng-option>
+                                        </ng-container>
+                                    </ng-select>
+                                    <input type="text" class="form-control" id="article_group_name" [(ngModel)]="sNewArticlegroupName" name="artg_name" *ngIf="bNewArticlegroup">
+                                </div>
+                                <div class="col-12 mb-3 d-flex align-items-center justify-content-between text-muted">
+                                    <label class="form-check form-check-sm form-check-custom me-5 fs-8">
+                                        <input class="form-check-input w-15px h-15px" type="checkbox" (change)="bNewArticlegroup = !bNewArticlegroup; oNewProduct.iArticleGroupId = '';">
+                                        <span class="form-check-label"> {{"CREATE_NEW_ARTICLE_GROUP" | translate}}</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
