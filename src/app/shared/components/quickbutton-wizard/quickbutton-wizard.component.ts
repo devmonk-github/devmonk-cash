@@ -170,6 +170,8 @@ export class QuickbuttonWizardComponent implements OnInit {
 
   clearAll(){
     this.bNewArticlegroup = false;
+    this.sNewArticlegroupName = '';
+    this.showLoader = false;
     this.searchKeyword = '';
     this.bSearchingProduct = false;
     this.oNewProduct = {
