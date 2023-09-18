@@ -17,10 +17,7 @@ import * as moment from 'moment';
 import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
 import { ReceiptService } from '../shared/service/receipt.service';
 import { ClosingDaystateHelperDialogComponent } from '../shared/components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component';
-
-/* Range-wise calendar depedency */
-import { CalendarOptions, EventInput } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import { CalendarGanttViewDialogComponent } from '../shared/components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -129,6 +126,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oCurrentEmployee: any;
   aPrintSettings: any;
   bOpeningDrawer: boolean = false;
+  aCalendarEvent: any = []; /* to show the data in calendar */
+  bIsCalendarOpen: boolean = false;
   oHelperDetails: any = {
     oStartAmountIncorrect: {
       bChecked: false,
@@ -139,27 +138,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     aReasons: [{ nAmount: 0 }],
     bSaved: true
   };
-
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin],
-    events: [
-      // An array of events to display on the calendar
-      {
-        abc: 'Event 1',
-        SStart: '2023-09-15T10:00:00',
-        enddd: '2023-09-18T12:00:00',
-      },
-      {
-        title: 'Event 2',
-        start: '2023-09-14T14:00:00',
-        end: '2023-09-17T16:00:00',
-      },
-      // More events...
-    ],
-    eventClick: this.handleEventClick.bind(this), 
-  };
-  eventsPromise: Promise<EventInput>;
 
   constructor(
     private apiService: ApiService,
@@ -259,19 +237,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       MenuComponent.bootstrap();
     }, 200);
    
-  }
-
-  handleEventClick(info: any): void {
-    const event = info.event;
-    const title = event.title;
-    const start = event.start;
-    const end = event.end;
-    const customProperty = event.extendedProps.customProperty;
-
-    console.log('Event clicked:', title);
-    console.log('Start:', start);
-    console.log('End:', end);
-    console.log('Custom Property:', customProperty);
   }
 
   fetchBusinessPartners() {
@@ -1627,15 +1592,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
-          const aCalendarEvent: any = [];
+          
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
-            aCalendarEvent.push({
+            this.aCalendarEvent.push({
               title: oDayClosure?.sWorkStationName,
               start: oDayClosure?.dOpenDate,
               end: oDayClosure?.dCloseDate,
-              customProperty: {
-                _id: oDayClosure?._id
-              },
+              customProperty: { oDayClosure },
             })
             return {
               _id: oDayClosure?._id,
@@ -1646,7 +1609,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               eCreationType: oDayClosure?.eCreationType
             }
           });
-          this.calendarOptions.events = aCalendarEvent;
+          // this.calendarOptions.events = aCalendarEvent;
         }
       }, (error) => {
         console.log('error: ', error);
@@ -1654,6 +1617,33 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log('error: ', error);
     }
+  }
+
+  async openCalendar() {
+    this.bIsCalendarOpen = true;
+    if (!this.aCalendarEvent?.length) {
+      this.toastService.show({ type: 'warning', text: `There is no data available` });
+      return;
+    }
+    this.dialogService.openModal(CalendarGanttViewDialogComponent, {
+      cssClass: "modal-lg",
+      context: { aCalendarEvent: this.aCalendarEvent },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe((result: any) => {
+      this.bIsCalendarOpen = false;
+      if (result?.isChosen) {
+        const _oDayClosure = result?.oData?.extendedProps?.customProperty?.oDayClosure;
+        this.onStateChange(_oDayClosure, true);
+        this.onStateChange(_oDayClosure, false);
+        // console.log('result: ', result?.oData);
+        // console.log('oData clicked:', result?.oData?.title);
+        // console.log('Start:', result?.oData?.start);
+        // console.log('End:', result?.oData?.end);
+        // console.log('_oDayClosure:', _oDayClosure);
+      }
+    });
   }
 
   /* we are only enabling the [sales->article-group->compcat] mode when migration date chosen */
@@ -1693,7 +1683,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   onStateChange(_oDayClosure: any, isOpenDate: boolean) {
     if (_oDayClosure?.eCreationType) this.statisticFilter.eChosenStateCreationType = _oDayClosure.eCreationType;
-
+    console.log('_oDayClosure.dOpenDate: ', _oDayClosure.dOpenDate, _oDayClosure.dCloseDate);
+    
     if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
     else this.statisticFilter.dToState = _oDayClosure.dCloseDate
 

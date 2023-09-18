@@ -39,38 +39,43 @@
                                         </div>
                                     </div>
 
-                                    <full-calendar [options]="calendarOptions" [events]="eventsPromise | async"></full-calendar>
-
                                     <!-- For Static, FROM-STATE to TO-STATE -->
                                     <div class="row mb-5" *ngIf="!IsDynamicState">
-                                        <div class="col-md-6">
+
+                                        <div class="col-md-5">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
                                                 translate}}</label>
                                             <div class="w-100" *ngIf="!aDayClosure?.length">
                                                     <div class="spinner-border mx-auto"></div>
                                             </div>
                                             <div class="w-100" *ngIf="aDayClosure?.length">
-                                            <ng-select class="form-control form-control-solid p-0"
+                                            <span>
+                                                {{statisticFilter.dFromState | date: 'yyyy-MM-dd HH:mm'}}
+                                            </span>
+                                            <!-- <ng-select class="form-control form-control-solid p-0"
                                                 [clearable]="false"
                                                 (change)="onStateChange($event, true)">
-                                                <ng-option *ngFor="let oDayClosure of aDayClosure"
-                                                    [value]="oDayClosure">
-                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} {{ oDayClosure?.eCreationType === "migration" ? '(MIGRATED)' : '' }}
-                                                    <span *ngIf="sDayClosureMethod === 'workstation' ">|
-                                                        {{oDayClosure?.sWorkStationName}}</span>
+                                                <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure">
+                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} {{ oDayClosure?.eCreationType === "migration" ? '(MIGRATED)' :
+                                                    '' }}
+                                                    <span *ngIf="sDayClosureMethod === 'workstation' "> | {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
-                                            </ng-select>
+                                            </ng-select> -->
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-5">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
-                                                translate}}</label>
+                                                translate}}
+                                            </label>
                                             <div class="w-100" *ngIf="!aDayClosure?.length">
                                                     <div class="spinner-border mx-auto"></div>
                                             </div>
                                             <div class="w-100" *ngIf="aDayClosure?.length">
-                                            <ng-select class="form-control form-control-solid p-0"
+                                                <span>
+                                                    {{statisticFilter.dToState | date: 'yyyy-MM-dd HH:mm'}}
+                                                </span>
+                                            <!-- <ng-select class="form-control form-control-solid p-0"
                                                 [clearable]="false"
                                                 (change)="onStateChange($event, false)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
@@ -80,8 +85,15 @@
                                                     <span *ngIf="sDayClosureMethod === 'workstation' ">|
                                                         {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
-                                            </ng-select>
+                                            </ng-select> -->
                                             </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <br>
+                                            <button type="button" (click)="openCalendar()" class="btn btn-info" [disabled]="!aCalendarEvent.length">
+                                                <i class="fa fa-calendar"></i>
+                                            </button>
                                         </div>
 
                                     </div>

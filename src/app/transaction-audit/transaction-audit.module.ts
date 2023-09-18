@@ -8,7 +8,6 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { TillProductSectionComponent } from './component/till-product-section/till-product-section.component';
 import { TransactionAuditComponent } from './transaction-audit.component';
 import { FormsModule } from '@angular/forms';
-import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
   declarations: [
@@ -19,8 +18,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     FormsModule,
     TransactionAuditRoutingModule,
     SharedModule,
-    TranslateModule,
-    FullCalendarModule
+    TranslateModule
   ]
 })
 export class TransactionAuditModule { }

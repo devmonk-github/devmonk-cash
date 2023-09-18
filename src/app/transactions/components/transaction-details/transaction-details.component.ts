@@ -50,8 +50,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   iLocationId: any = localStorage.getItem("currentLocation");
   iWorkstationId: any = localStorage.getItem("currentWorkstation");
 
- 
-
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
