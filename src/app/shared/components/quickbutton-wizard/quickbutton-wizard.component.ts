@@ -117,13 +117,12 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.iLocationId = localStorage.getItem('currentLocation');
     this.taxes = this.tillService.taxes;
 
-    const translate = ['PRODUCT_ADDED_SUCCESSFULLY', 'GROUPS_UPDATE_SUCCESSFULLY'];
-    this.translateService.get(translate).subscribe((res: any) => {
-      this.translate = res;
+    const translate=['PRODUCT_ADDED_SUCCESSFULLY' , 'GROUPS_UPDATE_SUCCESSFULLY'];
+    this.translateService.get(translate).subscribe((res:any)=>{
+        this.translate = res;
     })
-    this.getArticleGroups()
   }
-
+  
   ngAfterViewInit(): void {
     this.searchField.first.nativeElement.focus();
   }
