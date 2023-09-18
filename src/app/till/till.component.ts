@@ -1236,7 +1236,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation: string = 'is_created', type: any) {
     // console.log('sendForReceipt', eSituation, type)
-    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
+    const oPrintActionSettings = this.printActionSettings?.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({oPrintActionSettings});
     if (oPrintActionSettings) {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
@@ -1688,17 +1688,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openExpenses() {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
-    this.dialogService.openModal(AddExpensesComponent,
-      {
-        cssClass: 'modal-m',
-        context: {
-          paymentMethod,
-          taxes: this.tillService.taxes
-        },
-        hasBackdrop: true,
-        closeOnBackdropClick: false,
-        closeOnEsc: false
-      }).instance.close.subscribe(result => { });
+    this.dialogService.openModal(AddExpensesComponent, {
+      cssClass: 'modal-m',
+      context: {
+        paymentMethod,
+      },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe(result => { });
   }
 
   openCardsModal(mode: string = 'new', oGiftcard?: any) {

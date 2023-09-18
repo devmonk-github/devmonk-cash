@@ -159,6 +159,13 @@ export class CreateArticleGroupService {
     return this.apiService.postNew('core', '/api/v1/business/article-group/get/default-article', data);
   }
 
+  getArticleGroupData(sType:string) {
+    return new Promise(async (resolve, reject) => {
+      const result = await this.checkArticleGroups(sType).toPromise();
+      if(result) resolve(result.data)
+    })  
+  }
+
   processError(err: any) {
     let message = '';
     if (err.error instanceof ErrorEvent) {

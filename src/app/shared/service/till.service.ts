@@ -28,6 +28,17 @@ export class TillService {
   aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
   oSavingPointSettings:any;
   iStatisticsId: any;
+  ledgerDescriptions = [
+    { title: 'drinks', type: 'negative', eDefaultArticleType: 'expense-drinks' },
+    { title: 'food', type: 'negative', eDefaultArticleType: 'expense-food' },
+    { title: 'cleaning costs', type: 'negative', eDefaultArticleType: 'expense-cleaning-cost' },
+    { title: 'office supplies', type: 'negative', eDefaultArticleType: 'expense-office-supplies' },
+    { title: 'promotional material', type: 'negative', eDefaultArticleType: 'expense-promotional-material' },
+    { title: 'shipping costs', type: 'negative', eDefaultArticleType: 'expense-shipping-cost' },
+    { title: 'car costs', type: 'negative', eDefaultArticleType: 'expense-car-cost' },
+    { title: 'Add money to cash register', type: 'positive', eDefaultArticleType: 'expense-add-to-cash' },
+    { title: 'Lost money/money difference', type: 'negative', eDefaultArticleType: 'expense-lost-money' },
+  ];
 
   constructor(
     private apiService: ApiService,
@@ -428,6 +439,50 @@ export class TillService {
       body.transactionItems.push(tItem1);
     });
     // console.log(329, body);
+  }
+
+  createExpenseTransactionItem(oData:any) {
+    const { oArticleGroup, oPaymentMethod, oExpenseType, sDescription, nAmount, nTax }:any = oData;
+
+    const oArticleGroupMetaData = {
+      aProperty: oArticleGroup?.aProperty,
+      sCategory: oArticleGroup?.sCategory,
+      sSubCategory: oArticleGroup?.sSubCategory,
+      oName: oArticleGroup?.oName
+    }
+    const oPayment = {
+      iPaymentMethodId: oPaymentMethod._id,
+      sMethod: oPaymentMethod.sName.toLowerCase(),
+      nAmount: (oExpenseType?.type === 'negative') ? -(nAmount) : nAmount,
+      sComment: sDescription
+    };
+    const oItem:any = {
+      sProductName: oExpenseType.title,
+      sComment: sDescription,
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
+      oArticleGroupMetaData,
+      iEmployeeId: this.getValueFromLocalStorage('currentUser').userId,
+      nVatRate: nTax,
+      oType: {
+        eTransactionType: 'expenses',
+        bRefund: false,
+        eKind: 'expenses',
+        bDiscount: false,
+      },
+      oPayment,
+      sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
+    };
+    oItem.iArticleGroupId = oItem.iArticleGroupOriginalId = oArticleGroup?._id,
+    oItem.nPriceIncVat = oItem.nPurchasePrice = oItem.nTotal = oItem.nPaymentAmount = oItem.nRevenueAmount = nAmount;
+
+    if (oExpenseType?.type === 'negative') {
+      oItem.nTotal = -oItem.nTotal;
+      oItem.nPaymentAmount = -oItem.nPaymentAmount;
+      oItem.nRevenueAmount = -oItem.nRevenueAmount;
+    }
+    return oItem;
   }
 
   checkArticleGroups(): Observable<any> {
@@ -1015,5 +1070,21 @@ export class TillService {
     if (isFor === 'business-product' && oName && Object.keys(oName)?.length) {
       return oName[language] || oName['en'] || this.translateService.instant('NO_NAME');
     }
+  }
+
+  getSum(aArray:any, key:string) {
+    return _.sumBy(aArray, key)
+  }
+
+  prepareExpenseBody(oArticleGroup: any, oCashPaymentMethod: any, oExpenseType:any, nAmount:number, nTax:number) {
+    const oBody = {
+      oArticleGroup,
+      oPaymentMethod: oCashPaymentMethod,
+      oExpenseType,
+      nTax,
+      sDescription: oExpenseType?.title,
+      nAmount
+    }
+    return { oTransactionItem: this.createExpenseTransactionItem(oBody), ...oBody };
   }
 }

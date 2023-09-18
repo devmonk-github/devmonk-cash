@@ -404,11 +404,11 @@
                         <div>
                             <div class="row" *ngIf="aStatistic[0]?.overall?.length">
                                 <div class="col-md-4">
-                                    <span class="">{{ 'QUANTITY' | translate}}</span>
+                                    <span>{{ 'QUANTITY' | translate}}</span>
                                     <h3 class="text-black">{{ nTotalQuantity }}</h3>
                                 </div>
                                 <div class="col-md-4">
-                                    <span class="">{{ 'TOTAL' | translate}}</span>
+                                    <span>{{ 'TOTAL' | translate}}</span>
                                     <h3 class="text-black">{{ nTotalRevenue | currency: auditService.currency  }}</h3>
                                 </div>
                                 <div class="col-md-4">
@@ -468,23 +468,23 @@
                                             *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
+                                                    <th><span>{{ 'SUPPLIER' | translate}}</span>
                                                         <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                    <th class="w-150px"><span>{{"PRICE_WITH_VAT" |
                                                             translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalRevenue | number
                                                             :'1.2-2'}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                    <th class="w-150px"><span>{{"PURCHASE_PRICE" |
                                                             translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
                                                             :'1.2-2'}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                    <th class="w-150px"><span>{{"GROSS_PROFIT" |
                                                             translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}
                                                         </h4>
@@ -568,22 +568,22 @@
                                             <thead>
                                                 <tr>
                                                     <th>
-                                                        <span class="">{{ 'CATEGORY' | translate}}</span>
+                                                        <span>{{ 'CATEGORY' | translate}}</span>
                                                         <h3 class="text-black">{{oSupplier.sCategory | translate}}</h3>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <span>{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <span>{{"PURCHASE_PRICE" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"GROSS_PROFIT" |translate}}</span>
+                                                        <span>{{"GROSS_PROFIT" |translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}</h4>
                                                     </th>
                                                 </tr>
@@ -673,19 +673,19 @@
                                             *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
+                                                    <th><span>{{ 'SUPPLIER' | translate}}</span>
                                                         <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"PURCHASE_PRICE" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                    <th class="w-150px"><span>{{"GROSS_PROFIT" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nProfit.toFixed(2) }}
                                                         </h4>
                                                     </th>
@@ -760,25 +760,25 @@
                                             <thead>
                                                 <tr>
                                                     <th>
-                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <span>{{ 'ARTICLE' | translate}}</span>
                                                         <h4 class="text-black">-</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <span>{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">
                                                             {{aStatistic[0]?.overall[0]?.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
+                                                        <span>{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
                                                         <h4 class="text-black">
                                                             {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <span>{{"GROSS_PROFIT" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit.toFixed(2)}}</h4>
                                                     </th>
 
@@ -836,23 +836,23 @@
                                             <thead>
                                                 <tr>
                                                     <th>
-                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <span>{{ 'ARTICLE' | translate}}</span>
                                                         <h4 class="text-black">-</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <span>{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
+                                                        <span>{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <span>{{"GROSS_PROFIT" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit.toFixed(2)}}</h4>
                                                     </th>
 
@@ -927,28 +927,28 @@
                                             <thead>
                                                 <tr>
                                                     <th>
-                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <span>{{ 'ARTICLE' | translate}}</span>
                                                         <h4 class="text-black">-</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <span>{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
                                                         </h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <span>{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">
                                                             {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
                                                             :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
+                                                        <span>{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
                                                         <h4 class="text-black">
                                                             {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
                                                             :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
-                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <span>{{"GROSS_PROFIT" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
                                                             number
                                                             :'1.2-2'}}
@@ -1042,14 +1042,14 @@
                                             class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'VAT_TYPE' | translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "PRICE_WITH_VAT" |
+                                                    <th><span>{{ 'VAT_TYPE' | translate}}</span></th>
+                                                    <th class="w-150px"><span>{{ "PRICE_WITH_VAT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "PURCHASE_PRICE_EX_VAT" |
+                                                    <th class="w-150px"><span>{{ "PURCHASE_PRICE_EX_VAT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
+                                                    <th class="w-150px"><span>{{ "GROSS_PROFIT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" |
+                                                    <th class="w-150px"><span>{{"VAT_AMOUNT" |
                                                             translate}}</span>
                                                     </th>
                                                 </tr>
@@ -1113,9 +1113,9 @@
                     <!-- VAT-RATES TEMPLATE BEGIN -->
                     <ng-template let-data="data" #vatRateTemplates>
                         <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
-                        <td><span class="">{{ data?.sVatMethod }}</span></td>
+                        <td><span>{{ data?.sVatMethod }}</span></td>
                         <td class="w-150px">
-                            <span class="">
+                            <span>
                                 {{ data?.oVatRate[data?.sVatMethod].nTotalRevenue.toFixed(2) }}
                             </span>
                         </td>
@@ -1157,7 +1157,7 @@
                                             <tr>
                                                 <td class="ps-9 d-flex justify-content-between">
                                                     {{oPayment.sMethod}}
-                                                    <div class="">
+                                                    <div>
                                                         <i *ngIf="!oPayment.bIsCollapseItem"
                                                             class="px-sm-2 cursor-pointer bi bi-chevron-down"
                                                             (click)="expandItem(oPayment, oPayment.iStatisticsId, 'payments')">
@@ -1269,7 +1269,7 @@
                                         <thead>
                                             <tr class="fw-bold fs-6 text-gray-900 bg-gray-300">
                                                 <th>
-                                                    <span class="">{{ 'LOCATION_NAME' | translate}}</span>
+                                                    <span>{{ 'LOCATION_NAME' | translate}}</span>
                                                 </th>
                                                 <th class="w-150px">
                                                     {{ 'PURCHASE_PRICE' | translate}} -
@@ -1313,11 +1313,11 @@
                                                             <thead>
                                                                 <tr class="fw-bold fs-6 text-gray-600 bg-gray-100">
                                                                     <th>
-                                                                        <span class="">{{ 'OWNERSHIP' |
+                                                                        <span>{{ 'OWNERSHIP' |
                                                                             translate}}</span>
                                                                     </th>
                                                                     <th class="w-150px">
-                                                                        <span class="">{{"OWNERSHIP_PRICE" |
+                                                                        <span>{{"OWNERSHIP_PRICE" |
                                                                             translate}}</span>
                                                                     </th>
                                                                 </tr>
@@ -1565,19 +1565,48 @@
                             <div class="earnings-section">
                                 <div>
                                     <label>{{ "CASH_LEFTOVER" | translate}}</label>
-                                    <label class="">{{ (oCountings.nCashAtStart + oHelperDetails.oStartAmountIncorrect.nAmount) | currency:
-                                        auditService.currency }}</label>
+                                    <label>
+                                        {{ oCountings.nCashAtStart + ((oHelperDetails.bSaved) ? oHelperDetails.oStartAmountIncorrect.nAmount : 0) | currency:auditService.currency }}
+                                    </label>
                                 </div>
-                                <div>
-                                    <label>{{ "CASH_MUTATION" | translate}}</label>
-                                    <label class="">{{ '0.00' | currency: auditService.currency }}</label>
+                                <!-- COMMENTED THIS BECAUSE NOT USING BELOW FIELD CURRENTLY
+                                    <div>
+                                        <label>{{ "CASH_MUTATION" | translate}}</label>
+                                        <label>{{ '0.00' | currency: auditService.currency }}</label>
+                                    </div> 
+                                -->
+                                <div *ngIf="!oHelperDetails.bSaved && oHelperDetails.aReasons?.length"
+                                    class="border-top border-bottom ps-5 py-3 d-block">
+                                    <label class="bold">{{ 'CORRECTIONS' | translate }}</label>
+                                
+                                    <div *ngIf="oHelperDetails.oStartAmountIncorrect.bChecked">
+                                        <label>{{ 'ADJUSTED_START_AMOUNT' | translate}}</label>
+                                        <span class="text-end">
+                                            {{ oHelperDetails.oStartAmountIncorrect.nAmount | currency: auditService.currency }}
+                                        </span>
+                                    </div>
+                                
+                                    <ng-container *ngFor="let oReason of oHelperDetails.aReasons">
+                                        <div *ngIf="oReason.nAmount">
+                                            <label>{{ oReason?.oExpense?.oExpenseType?.title | translate}}</label>
+                                            <span class="text-end">
+                                                {{ oReason.nAmount | currency: auditService.currency }}
+                                            </span>
+                                        </div>
+                                    </ng-container>
+                                    <div>
+                                        <label class="bold">{{'TOTAL' | translate}}</label>
+                                        <label class="bold">{{ (oHelperDetails.nAmountToAdd - oHelperDetails.nAmountToDeduct) | currency:
+                                            auditService.currency}} </label>
+                                    </div>
                                 </div>
                                 <div>
                                     <label>{{ "CASH_IN_TILL" | translate}}</label>
-                                    <label class="">
+                                    <label>
                                         {{ oCountings.nCashInTill | currency: auditService.currency }}
                                     </label>
                                 </div>
+                                
                                 <div>
                                     <label>{{ "CASH_COUNTED" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
@@ -1585,43 +1614,30 @@
                                         (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
                                         [disabled]="bDayStateClosed">
                                 </div>
-                                <div *ngIf="!oHelperDetails.bSaved && oHelperDetails.aReasons?.length" class="border ps-5 py-3 d-block">
-                                    <label class="bold">{{ 'CORRECTIONS' | translate }}</label>
-                                    <ng-container *ngFor="let oReason of oHelperDetails.aReasons">
-                                        <div *ngIf="oReason.nAmount">
-                                            <label>{{ oReason.sTitle | translate}}</label>
-                                            <span class="text-end">
-                                                {{ oReason.nAmount | currency: auditService.currency }}
-                                            </span>
-                                        </div>
-                                    </ng-container>
-                                </div>
                                 <div>
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
                                     <label class="d-flex flex-column">
                                         <ng-container *ngIf="bDayStateClosed">
-                                            {{ oCountings.nCashDifference | currency:
-                                            auditService.currency }}
+                                            {{ oCountings.nCashDifference | currency: auditService.currency }}
                                         </ng-container>
                                         <ng-container *ngIf="!bDayStateClosed">
-                                            <span class="bold text-end">
-                                                {{ oCountings.nCashCounted - 
+                                            <ng-template #t [ngTemplateOutlet]="t" let-nDifference [ngTemplateOutletContext]="{ $implicit: 
+                                                +(oCountings.nCashCounted - 
                                                     (
-                                                        oCountings.nCashAtStart + oCountings.nCashInTill + 
-                                                        oHelperDetails.oStartAmountIncorrect.nAmount +
-                                                        (oHelperDetails.nAmountToDeduct || 0)
-                                                    ) | currency: auditService.currency }}
-                                            </span>
-                                            <span *ngIf="oCountings.nCashCounted - 
-                                                    (
-                                                        oCountings.nCashAtStart + oCountings.nCashInTill + 
-                                                        oHelperDetails.oStartAmountIncorrect.nAmount +
-                                                        (oHelperDetails.nAmountToDeduct || 0)
-                                                    ) != 0" 
+                                                        oCountings.nCashAtStart
+                                                        + oCountings.nCashInTill
+                                                        + oHelperDetails.nAmountToAdd
+                                                        - oHelperDetails.nAmountToDeduct
+                                                    )
+                                                ).toFixed(2)}">
+                                            <span class="bold text-end">{{ nDifference  | currency: auditService.currency }}</span>
+                                            <span *ngIf="oCountings.nCashCounted > 0 && nDifference != 0" 
                                                 class="badge badge-warning cursor-pointer" 
                                                 (click)="openDayClosureHelpModal()">
                                                 {{ 'CLICK_TO_JUSTIFY_DIFFERENCE' | translate }}
                                             </span>
+
+                                            </ng-template>
                                         </ng-container>
                                     </label>
                                 </div>
@@ -1643,9 +1659,12 @@
                                 <div class="d-flex justify-content-start" *ngIf="oStatisticsDocument?.bIsDayState">
                                     <div *ngIf="!oHelperDetails.bSaved" class="d-flex flex-column align-items-start">
                                         <span class="err-msg">{{'YOU_MUST_SAVE_CHANGES_BEFORE_CLOSE_DAY_STATE' | translate }}</span>
-                                        <button class="btn btn-primary btn-sm" (click)="saveHelperDetails()">
-                                            {{ 'SAVE_AND_RELOAD' | translate }}
-                                        </button>
+                                        <div class="d-flex">
+                                            <button class="btn btn-primary btn-sm" (click)="saveHelperDetails()" [disabled]="bSavingHelperDetails">
+                                                {{ 'SAVE_AND_RELOAD' | translate }}
+                                            </button>
+                                            <div *ngIf="bSavingHelperDetails" class="spinner-border mx-5"></div>
+                                        </div>
                                     </div>
 
                                     <button type="button" class="btn btn-primary me-2" data-kt-roles-modal-action="submit" *ngIf="oHelperDetails.bSaved"
@@ -1661,9 +1680,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4">
+                    <div class="col-4 offset-8">
                         <div class="d-flex justify-content-start" *ngIf="bDayStateClosed">
                             <button type="button" class="btn btn-secondary" data-kt-roles-modal-action="submit"
                                 [disabled]="bStatisticLoading || bReCalculateLoading" (click)="reCalculateDayClosure()">
