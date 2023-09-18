@@ -197,6 +197,33 @@
                                     </ng-select>
                                 </div>            
                             </div>
+                            <div class="col-12 mt-2" *ngIf="selectedArticleGroup === 'stock' || selectedArticleGroup === 'other'">
+                                <div class="col-12 mb-3 d-flex align-items-center justify-content-between">
+                                    <label class="form-check form-switch form-check-custom form-check-solid w-50" *ngIf="!bNewArticlegroup">
+                                        {{"SELECT_ARTICLE_GROUP" | translate}}
+                                    </label>
+                                    <label class="form-check form-switch form-check-custom form-check-solid w-50" *ngIf="bNewArticlegroup">
+                                        {{"CREATE_ARTICLE_GROUP" | translate}}
+                                    </label>
+                                    <ng-select [(ngModel)]="oNewProduct.iArticleGroupId" class="form-control p-0 ms-5" [clearable]="false" name="article_group"  *ngIf="!bNewArticlegroup">
+                                        <ng-container *ngIf="oStaticData?.articleGroupsList?.length">
+                                          <ng-option *ngFor="let oArticleGroup of oStaticData?.articleGroupsList" [value]="oArticleGroup._id">
+                                            <p class="m-0 text-truncate">{{ oArticleGroup.sArticleGroupName }}</p>
+                                          </ng-option>
+                                        </ng-container>
+                                    </ng-select>
+                                    <input type="text" class="form-control" id="article_group_name" [(ngModel)]="sNewArticlegroupName" name="artg_name" *ngIf="bNewArticlegroup">
+                                </div>
+                                <div class="col-12 mb-3 d-flex align-items-center justify-content-between text-muted">
+                                    <label class="form-check form-check-sm form-check-custom fs-8 w-50">
+                                        <input class="form-check-input w-15px h-15px" type="checkbox" [checked]="bNewArticlegroup" (change)="bNewArticlegroup = !bNewArticlegroup; oNewProduct.iArticleGroupId = ''; sNewArticlegroupName = '';">
+                                        <span class="form-check-label"> {{"CREATE_ARTICLE_GROUP" | translate}}</span>
+                                    </label>
+                                    <p class="text-warning fs-8" *ngIf="bNewArticlegroup">
+                                        {{"THE_ARTICLE_GROUP_DEFAULT_SETTINGS"|translate}}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

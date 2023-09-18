@@ -9,7 +9,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TransactionAuditComponent } from './transaction-audit.component';
 import { FormsModule } from '@angular/forms';
 
-
 @NgModule({
   declarations: [
     TransactionAuditComponent

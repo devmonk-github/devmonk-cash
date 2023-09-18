@@ -50,13 +50,23 @@
                 </label>
             </div>
         </diV>
-        <diV class="row mt-3">
+        <diV class="row d-flex align-items-center mt-3">
             <div class="col-10">
                 <label class="form-label">{{ 'ASSIGN_SAVING_POINTS' | translate }}</label>
             </div>
             <div class="col-2">
                 <label class="form-check form-switch form-check-custom form-check-solid">
                     <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bAssignSavingPoints"> 
+                </label>
+            </div>
+        </diV>
+        <diV class="row d-flex align-items-center mt-3">
+            <div class="col-10">
+                <label class="form-label m-0">{{ 'USE_TERMINAL' | translate}}</label>
+            </div>
+            <div class="col-2">
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bUseTerminal"> 
                 </label>
             </div>
         </diV>

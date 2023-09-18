@@ -71,7 +71,7 @@ export class CustomersComponent implements OnInit {
     skip: 0,
     limit: 10,
     sortBy: '_id',
-    sortOrder: -1,
+    sortOrder: 'desc',
     searchValue: '',
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
@@ -215,7 +215,7 @@ export class CustomersComponent implements OnInit {
       skip: 0,
       limit: 10,
       sortBy: '_id',
-      sortOrder: -1,
+      sortOrder: 'desc',
       searchValue: '',
       aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
         'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
@@ -245,6 +245,7 @@ export class CustomersComponent implements OnInit {
   
   //  Function for set sort option on customer table
   setSortOption(sortHeader: any) {
+    console.log(sortHeader.sort)
     if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
       this.sortAndLoadCustomers(sortHeader)
@@ -485,8 +486,8 @@ export class CustomersComponent implements OnInit {
               customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             }
 
-            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, true, this.bNormalOrder);
-            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, true, this.bNormalOrder);
+            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false, this.bNormalOrder);
+            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false, this.bNormalOrder);
             customer['EMAIL'] = customer.sEmail;
             customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
           }

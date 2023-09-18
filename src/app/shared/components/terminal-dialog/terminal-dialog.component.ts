@@ -59,8 +59,12 @@ export class TerminalDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
-    this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
+    // OLD APPROACH
+    // this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
+    // this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
+    
+    this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.bUseTerminal && o.amount);
+    this.otherPayments = this.dialogRef.context.payments.filter((o: any) => !o.bUseTerminal && o.amount);
     if (this.dialogRef.context.changeAmount > 0) {
       this.changeAmount = -this.dialogRef.context.changeAmount
     } else if (this.dialogRef.context.changeAmount < 0) {

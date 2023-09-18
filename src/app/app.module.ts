@@ -17,7 +17,6 @@ import { BarcodeComponent } from './barcode/barcode.component';
 import { TranslationsService } from 'src/app/shared/service/translation.service';
 import { AppInitService } from './shared/service/app-init.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,

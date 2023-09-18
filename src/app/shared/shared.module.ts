@@ -26,6 +26,8 @@ import { ExportsComponent } from './components/exports/exports.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
 
+import { FullCalendarModule } from '@fullcalendar/angular';
+
 // ---------------- Material -----------------------
 import { MaterialModule } from './material.module';  // common material design module
 
@@ -67,6 +69,7 @@ import { BankConfirmationDialogComponent } from './components/bank-confirmation-
 import { ClosingDaystateDialogComponent } from "./components/closing-daystate-dialog/closing-daystate-dialog.component";
 import { SetPaymentMethodSequenceComponent } from "./components/set-payment-method-sequence-dialog/set-payment-method-sequence.component";
 import { ClosingDaystateHelperDialogComponent } from "./components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component";
+import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +117,8 @@ import { ClosingDaystateHelperDialogComponent } from "./components/closing-dayst
     BankConfirmationDialogComponent,
     ClosingDaystateDialogComponent,
     SetPaymentMethodSequenceComponent,
-    ClosingDaystateHelperDialogComponent
+    ClosingDaystateHelperDialogComponent,
+    CalendarGanttViewDialogComponent
   ],
   imports: [
     CommonModule,
@@ -130,7 +134,8 @@ import { ClosingDaystateHelperDialogComponent } from "./components/closing-dayst
     FileSaverModule,
     NgApexchartsModule,
     NgxPaginationModule,
-    JsonEditorModule
+    JsonEditorModule,
+    FullCalendarModule
   ],
   exports: [
     DialerComponent,
@@ -159,7 +164,8 @@ import { ClosingDaystateHelperDialogComponent } from "./components/closing-dayst
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
     ClosingDaystateDialogComponent,
-    ClosingDaystateHelperDialogComponent
+    ClosingDaystateHelperDialogComponent,
+    CalendarGanttViewDialogComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })

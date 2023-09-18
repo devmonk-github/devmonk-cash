@@ -17,6 +17,7 @@ import * as moment from 'moment';
 import { TransactionDetailsComponent } from '../transactions/components/transaction-details/transaction-details.component';
 import { ReceiptService } from '../shared/service/receipt.service';
 import { ClosingDaystateHelperDialogComponent } from '../shared/components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component';
+import { CalendarGanttViewDialogComponent } from '../shared/components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -125,6 +126,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oCurrentEmployee: any;
   aPrintSettings: any;
   bOpeningDrawer: boolean = false;
+  aCalendarEvent: any = []; /* to show the data in calendar */
+  bIsCalendarOpen: boolean = false;
   oHelperDetails: any = {
     oStartAmountIncorrect: {
       bChecked: false,
@@ -236,6 +239,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       MenuComponent.bootstrap();
     }, 200);
+   
   }
 
   fetchBusinessPartners() {
@@ -764,6 +768,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aLocation = [this.oStatisticsData.iLocationId];
       iWorkstationId = [this.oStatisticsData.iWorkstationId]
     }
+    const isMigrationChosen = this.statisticFilter.eChosenStateCreationType == 'migration' ? true : false;
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
@@ -778,6 +783,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: this.bIsSupplierMode,
+        isMigrationChosen: isMigrationChosen /* to pass into back-end to fetch dynamic data of PN1 */
       }
     }
 
@@ -1620,7 +1626,14 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
+          
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
+            this.aCalendarEvent.push({
+              title: oDayClosure?.sWorkStationName,
+              start: oDayClosure?.dOpenDate,
+              end: oDayClosure?.dCloseDate,
+              customProperty: { oDayClosure },
+            })
             return {
               _id: oDayClosure?._id,
               dOpenDate: oDayClosure?.dOpenDate,
@@ -1630,7 +1643,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               eCreationType: oDayClosure?.eCreationType
             }
           });
-          
+          // this.calendarOptions.events = aCalendarEvent;
         }
       }, (error) => {
         console.log('error: ', error);
@@ -1638,6 +1651,33 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.log('error: ', error);
     }
+  }
+
+  async openCalendar() {
+    this.bIsCalendarOpen = true;
+    if (!this.aCalendarEvent?.length) {
+      this.toastService.show({ type: 'warning', text: `There is no data available` });
+      return;
+    }
+    this.dialogService.openModal(CalendarGanttViewDialogComponent, {
+      cssClass: "modal-lg",
+      context: { aCalendarEvent: this.aCalendarEvent },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe((result: any) => {
+      this.bIsCalendarOpen = false;
+      if (result?.isChosen) {
+        const _oDayClosure = result?.oData?.extendedProps?.customProperty?.oDayClosure;
+        this.onStateChange(_oDayClosure, true);
+        this.onStateChange(_oDayClosure, false);
+        // console.log('result: ', result?.oData);
+        // console.log('oData clicked:', result?.oData?.title);
+        // console.log('Start:', result?.oData?.start);
+        // console.log('End:', result?.oData?.end);
+        // console.log('_oDayClosure:', _oDayClosure);
+      }
+    });
   }
 
   /* we are only enabling the [sales->article-group->compcat] mode when migration date chosen */
@@ -1677,7 +1717,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   onStateChange(_oDayClosure: any, isOpenDate: boolean) {
     if (_oDayClosure?.eCreationType) this.statisticFilter.eChosenStateCreationType = _oDayClosure.eCreationType;
-
+    console.log('_oDayClosure.dOpenDate: ', _oDayClosure.dOpenDate, _oDayClosure.dCloseDate);
+    
     if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
     else this.statisticFilter.dToState = _oDayClosure.dCloseDate
 
@@ -1690,7 +1731,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.aDayClosure.forEach((oDayClosure: any) => {
       oDayClosure.isDisable = false;
       const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
-      if (dFromStateTime > dDayClosureDateTime || oDayClosure.eCreationType !== _oDayClosure.eCreationType) oDayClosure.isDisable = true;
+      if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true; // || oDayClosure.eCreationType !== _oDayClosure.eCreationType
 
       const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
       const dToTime = new Date(oDayClosure.dCloseDate).getTime();

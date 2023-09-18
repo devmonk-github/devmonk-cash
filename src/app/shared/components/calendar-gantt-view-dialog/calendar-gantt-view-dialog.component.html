@@ -1,0 +1,24 @@
+<div class="card shadow-sm">
+
+    <!-- Header -->
+    <div class="card-header">
+        <h3 class="card-title">{{ 'CHOOSE_THE_STAGE' | translate}}</h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light" (click)="close({isClose: true})">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+        <div class="text-end">
+            <button class="btn btn-secondary" (click)="close({isClose: true})">{{ 'CANCEL' | translate}}</button>
+        </div>
+    </div>
+</div>

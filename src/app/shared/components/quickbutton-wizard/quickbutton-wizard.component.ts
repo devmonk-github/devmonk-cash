@@ -60,6 +60,8 @@ export class QuickbuttonWizardComponent implements OnInit {
     nVat: 21
   };
 
+  oStaticData: any = {};
+
   selectedProduct: any = {
     sName: '',
     nPrice: '',
@@ -94,6 +96,8 @@ export class QuickbuttonWizardComponent implements OnInit {
   @ViewChildren('searchField') searchField!: QueryList<ElementRef>;
   translate: any;
   product: any;
+  bNewArticlegroup: boolean = false;
+  sNewArticlegroupName: string =  '';
   
   constructor(
     private viewContainer: ViewContainerRef,
@@ -113,7 +117,7 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.iLocationId = localStorage.getItem('currentLocation');
     this.taxes = this.tillService.taxes;
 
-    const translate=['PRODUCT_ADDED_SUCCESSFULLY' , 'GROUPS_UPDATE_SUCCESSFULLY'];
+    const translate=['PRODUCT_ADDED_SUCCESSFULLY' , 'GROUPS_UPDATE_SUCCESSFULLY', 'FILL_REQUIRED_FIELDS'];
     this.translateService.get(translate).subscribe((res:any)=>{
         this.translate = res;
     })
@@ -139,6 +143,7 @@ export class QuickbuttonWizardComponent implements OnInit {
         this.clearAll();
         break;
       case 2:
+        this.getArticleGroups();
         this.oNewProduct.sName =  this.searchKeyword;
         break;
       case 3: 
@@ -149,7 +154,25 @@ export class QuickbuttonWizardComponent implements OnInit {
     }
   }
 
+  getArticleGroups(){
+    const data = {
+      iBusinessId: this.iBusinessId,
+    };
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result: any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length){
+        this.oStaticData.articleGroupsList = result.data[0].result;
+        this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+          el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
+        });
+      }
+    });
+    if(this.oStaticData?.articleGroupsList?.length == 0) this.bNewArticlegroup = true; 
+  }
+
   clearAll(){
+    this.bNewArticlegroup = false;
+    this.sNewArticlegroupName = '';
+    this.showLoader = false;
     this.searchKeyword = '';
     this.bSearchingProduct = false;
     this.oNewProduct = {
@@ -274,21 +297,30 @@ export class QuickbuttonWizardComponent implements OnInit {
 
     //STEP 2: CHECK ARTICLE GROUP
     let result: any;
-    let rand = Math.floor(Math.random() * 900);
+    let rand = Math.floor(Math.random() * 99);
     if(this.selectedArticleGroup == 'stock' || this.selectedArticleGroup == 'other'){
 
-      let data = {
-        name: 'QB.'+this.oNewProduct.sName?.toUpperCase().slice(0, 5)+'.'+rand,
-        iBusinessId: this.iBusinessId,
-        nMargin: 0,
-        aBusinessPartner: [{
-            iBusinessPartnerId: supplier._id,
-            nMargin: supplier.nPurchaseMargin || 0
-          }]
-      };
-      //console.log(data)
-      result  = await (await this.createArticleGroupService.createNewArticleGroup(data)).toPromise();
-      this.oNewProduct.iArticleGroupId = result?.data?._id;
+      if(this.oNewProduct.iArticleGroupId == '' && this.bNewArticlegroup && this.sNewArticlegroupName != ''){
+        // console.log('im here', this.oNewProduct.iArticleGroupId, this.sNewArticlegroupName)
+        let data = {
+          name: this.sNewArticlegroupName,
+          iBusinessId: this.iBusinessId,
+          nMargin: 0,
+          aBusinessPartner: [{
+              iBusinessPartnerId: supplier._id,
+              nMargin: supplier.nPurchaseMargin || 0
+            }]
+        };
+        //console.log(data)
+        try {
+          result  = await (await this.createArticleGroupService.createNewArticleGroup(data)).toPromise();
+          this.oNewProduct.iArticleGroupId = result?.data?._id;
+        }catch (error) {
+          this.toastService.show({type: 'danger', text:this.translateService.instant('DUPLICATED_ARTICLE_GROUP_NAME')});
+          return;
+        }
+      }
+      
     }else{
       let iArticleGroupId = '';
       result = await this.createArticleGroupService.checkArticleGroups(this.selectedArticleGroup).toPromise();
@@ -297,43 +329,48 @@ export class QuickbuttonWizardComponent implements OnInit {
       }
       this.oNewProduct.iArticleGroupId = iArticleGroupId;
     }
-
-    //STEP 3: Create Product and go to step 3 with data
-    this.oNewProduct.iBusinessId = this.iBusinessId;
-    this.oNewProduct.oName = {
-        nl: this.oNewProduct.sName,
-        en: this.oNewProduct.sName,
-        de: this.oNewProduct.sName,
-        fr: this.oNewProduct.sName,
-        es: this.oNewProduct.sName
-    };
-    this.oNewProduct.iSupplierId = supplier.iSupplierId;
-    this.oNewProduct.iBusinessPartnerId = supplier._id;
-    this.oNewProduct.sBusinessPartnerName = supplier.sName;
-    this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
-    this.oNewProduct.sFunctionName = 'create-business-product';
-    this.oNewProduct.sProductNumber = 'QB-' + rand;
-    this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
-    this.oNewProduct.aLocation = {
-      _id: this.iLocationId,
-      "nStock" : 0,
-      "nPriceIncludesVat" : this.oNewProduct.nSellingPrice,
-      "nMinStock" : 0,
-      "nVatRate" : this.oNewProduct.nVat
-    }
-    this.oNewProduct.nHighestPrice = this.oNewProduct.nSellingPrice;
-    this.oNewProduct.nLowestPrice = this.oNewProduct.nSellingPrice;
-    this.showLoader = true;
-    this.apiService.postNew('core', '/api/v1/business/products', this.oNewProduct).subscribe((result: any) => {
-      if (result && result.message == 'success') {
-          this.toastService.show({type: 'success', text: this.translate['PRODUCT_ADDED_SUCCESSFULLY']});
-          this.showLoader = false;
-          this.moveToStep(3, result.data);
+    let bValidation = this.oNewProduct.iArticleGroupId && this.oNewProduct.iArticleGroupId != '' && this.oNewProduct.sName && this.oNewProduct.sName != '';
+    if(bValidation){
+      // console.log('im here', this.oNewProduct.sName, this.oNewProduct.iArticleGroupId)
+      //STEP 3: Create Product and go to step 3 with data
+      this.oNewProduct.iBusinessId = this.iBusinessId;
+      this.oNewProduct.oName = {
+          nl: this.oNewProduct.sName,
+          en: this.oNewProduct.sName,
+          de: this.oNewProduct.sName,
+          fr: this.oNewProduct.sName,
+          es: this.oNewProduct.sName
+      };
+      this.oNewProduct.iSupplierId = supplier.iSupplierId;
+      this.oNewProduct.iBusinessPartnerId = supplier._id;
+      this.oNewProduct.sBusinessPartnerName = supplier.sName;
+      this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
+      this.oNewProduct.sFunctionName = 'create-business-product';
+      this.oNewProduct.sProductNumber = 'QB-' + this.oNewProduct.sName?.toUpperCase().slice(0, 5) + rand;
+      this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
+      this.oNewProduct.aLocation = {
+        _id: this.iLocationId,
+        "nStock" : 0,
+        "nPriceIncludesVat" : this.oNewProduct.nSellingPrice,
+        "nMinStock" : 0,
+        "nVatRate" : this.oNewProduct.nVat
       }
-    }, error => { 
-      this.toastService.show({type: 'danger', text: error?.error?.message || 'Error while adding new product' });
-    });
-   
+      this.oNewProduct.nHighestPrice = this.oNewProduct.nSellingPrice;
+      this.oNewProduct.nLowestPrice = this.oNewProduct.nSellingPrice;
+      this.showLoader = true;
+      this.apiService.postNew('core', '/api/v1/business/products', this.oNewProduct).subscribe((result: any) => {
+        if (result && result.message == 'success') {
+            this.toastService.show({type: 'success', text: this.translate['PRODUCT_ADDED_SUCCESSFULLY']});
+            this.showLoader = false;
+            this.moveToStep(3, result.data);
+        }
+      }, error => { 
+        this.showLoader = false;
+        this.toastService.show({type: 'danger', text: error?.error?.message || 'Error while adding new product' });
+      });
+    }else{
+      this.toastService.show({type: 'danger', text: this.translate['FILL_REQUIRED_FIELDS'] });
+    }
   }
 
   // Function for creating quick button
@@ -351,7 +388,7 @@ export class QuickbuttonWizardComponent implements OnInit {
     };
 
     if (!data.iLocationId) {
-      this.toastService.show({ type: 'warning', text: this.translateService.instant('PLEASE_SELECT_LOCATION')`Please select a location` });
+      this.toastService.show({ type: 'warning', text: this.translateService.instant('PLEASE_SELECT_LOCATION')});
       return;
     }
 
@@ -388,6 +425,7 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.toastService.show({ type: 'success', text: msg }); //`New Quick Button added successfully`
     } else {
       this.toastService.show({ type: 'success', text: this.translateService.instant('AN_ERROR_OCCURED') });
+      return;
     }
   }
 
