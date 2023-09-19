@@ -421,8 +421,8 @@ export class TillService {
       nAmount: (oExpenseType?.type === 'negative') ? -(nAmount) : nAmount,
       sComment: sDescription
     };
-    const oItem:any = {
-      sProductName: oExpenseType.title,
+    const oItem: any = {
+      sProductName: oExpenseType?.title,
       sComment: sDescription,
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
