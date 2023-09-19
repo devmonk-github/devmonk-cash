@@ -913,7 +913,6 @@ export class PdfService {
 
                 break;
               case 3:
-
                 if (this.isDefined(this.data[parts[0]])) {
                   layer1 = this.data[parts[0]];
                   if (this.isDefined(layer1[parts[1]])) {
@@ -940,15 +939,15 @@ export class PdfService {
                 variableStringFiltered = 'no match';
                 break;
             }
-          } else {
+          } //else {
             // variableStringFiltered = currentMatchClean
-          }
+          //}
 
-          let matched = false;
+          // let matched = false;
           let newText = '';
           if (this.isDefined(providedData)) {
             if (bTesting) console.log(926, 'providedData[variableStringFiltered]',providedData[variableStringFiltered])
-            if (providedData[variableStringFiltered] !== undefined) {
+            if (providedData[variableStringFiltered]) {
               newText = providedData[variableStringFiltered];
               if (bTesting) console.log(928, { newText })
             } else if (variableStringFiltered.startsWith("__")) {
@@ -956,12 +955,13 @@ export class PdfService {
             } else {
               newText = '';
             }
-            
+            if(bTesting) console.log(959, { newText })
             if (this.isDefined(format) && format !== '') {
               newText = this.formatContent(newText, format);
+              if (bTesting) console.log(962, {newText})
             }
             finalString = finalString.replace(currentMatch, newText);
-
+            if (bTesting) console.log(964, { finalString })
             // for (const key of Object.keys(providedData)) {
             //   if (key === variableStringFiltered) {
             //     if (String(providedData[variableStringFiltered]).length > 0) {

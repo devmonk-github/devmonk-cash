@@ -30,8 +30,9 @@ export class PaymentDistributionService {
 
     const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
 
-    transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
+    transactionItems = transactionItems.filter((i: any) => !['loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
+      if(i.type == 'empty-line') return;
       // if (bTesting) console.log(31, i, i.nTotal);
 
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
