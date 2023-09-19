@@ -1008,13 +1008,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           this.distributeAmount();
-          this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
+          // this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
-          const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
+          
+          const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
+            if (item.type == 'custom') context.aInternalGiftcards.push(item);
+            else context.aExternalGiftcards.push(item);
+          }, { aInternalGiftcards: [], aExternalGiftcards: [] });
           
           if (aExternalGiftcards?.length) { // we have some cards by external providers -> we will generate a revenue from it -> so need to process them as payment
             aExternalGiftcards.forEach((oCard:any) => {
@@ -1026,10 +1029,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           }
           if(this.appliedGiftCards?.length) body.giftCards = this.appliedGiftCards;
-          body.oTransaction.iActivityId = this.iActivityId;
-          let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
-          const uniq = [...new Set(_.compact(result))];
           if (aInternalGiftcards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+
+          body.oTransaction.iActivityId = this.iActivityId;
+          const aUniqueBusinessPartnerIds = [...new Set(_.compact(body.transactionItems.map((a: any) => a.iBusinessPartnerId)))];
           // console.log(body);
           // return;
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
@@ -1055,6 +1058,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.saveInProgress = false;
             const { transaction, aTransactionItems, activityItems, activity } = data;
+            this.tillService.adjustEmptyLineItems(aTransactionItems, body.transactionItems)
             transaction.aTransactionItems = aTransactionItems;
             transaction.activity = activity;
             this.transaction = transaction;
@@ -1064,7 +1068,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');
             if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers && bHasRepairOrOrderItems) this.tillService.updateSettings();
 
-            this.transaction.aTransactionItems.map((tItem: any) => {
+            this.transaction.aTransactionItems.forEach((tItem: any) => {
               for (const aItem of this.activityItems) {
                 if (aItem.iTransactionItemId === tItem._id) {
                   tItem.sActivityItemNumber = aItem.sNumber;
@@ -1080,7 +1084,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
             setTimeout(() => {
               this.saveInProgress = false;
-              this.fetchBusinessPartnersProductCount(uniq);
+              this.fetchBusinessPartnersProductCount(aUniqueBusinessPartnerIds);
               this.eKind = 'regular';
             }, 100);
             if (this.selectedTransaction) {
@@ -1318,13 +1322,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
       return;
     }
-    var body = {
+    const body = {
       iBusinessId: this.iBusinessId,
       aBusinessPartnerId
     };
     this.apiService.postNew('core', '/api/v1/business/partners/product-count', body).subscribe(
       (result: any) => {
-        if (result && result.data) {
+        if (result?.data) {
           const urls: any = [];
           result.data.forEach((element: any) => {
             if (element.businessproducts > 10) {
@@ -1590,7 +1594,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: 0,
       description: '',
       open: true,
+      paymentAmount: 0
     });
+    this.distributeAmount();
   }
 
   getParkedTransactionBody(): Object {

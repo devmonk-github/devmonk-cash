@@ -159,21 +159,29 @@ export class TillService {
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
-    const transaction = new Transaction()
-    transaction.iBusinessId =  this.iBusinessId;
-    transaction.iLocationId = iLocationId,
-    transaction.iWorkstationId = this.iWorkstationId
-    transaction.eType = 'cash-register-revenue'
-    transaction.eStatus = 'y'
-    transaction.iEmployeeId = this.getValueFromLocalStorage('currentUser').userId,
-    transaction.sDayClosureMethod = this.settings?.sDayClosureMethod || 'workstation'
+    // const transaction = new Transaction()
+    // transaction.iBusinessId =  this.iBusinessId;
+    // transaction.iLocationId = iLocationId,
+    // transaction.iWorkstationId = this.iWorkstationId
+    // transaction.eType = 'cash-register-revenue'
+    // transaction.eStatus = 'y'
+    // transaction.iEmployeeId = this.getValueFromLocalStorage('currentUser').userId,
+    // transaction.sDayClosureMethod = this.settings?.sDayClosureMethod || 'workstation'
 
-    const body = {
+    const body:any = {
       iBusinessId: this.iBusinessId,
-      iLocationId: iLocationId,
+      iLocationId,
       iWorkstationId: this.iWorkstationId,
-      transactionItems: transactionItems,
-      oTransaction: transaction,
+      // transactionItems,
+      oTransaction: {
+        iBusinessId: this.iBusinessId,
+        iLocationId,
+        iWorkstationId: this.iWorkstationId,
+        eType: 'cash-register-revenue',
+        eStatus: 'y',
+        iEmployeeId: this.getValueFromLocalStorage('currentUser').userId,
+        sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation'
+      },
       payments: payMethods,
       redeemedLoyaltyPoints,
       sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
@@ -181,7 +189,7 @@ export class TillService {
 
     body.payments.forEach((payment: any) => payment.amount = parseFloat(payment.amount.toFixed(2)))
 
-    if (customer && customer._id) {
+    if (customer?._id) {
       body.oTransaction.iCustomerId = customer._id;
       body.oTransaction.oCustomer = {
         _id: customer._id,
@@ -203,173 +211,136 @@ export class TillService {
         oContactPerson: customer?.oContactPerson
       }
     };
-    // console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       // console.log(i)
-      // console.log('i.sSerialNumber: ', i.sSerialNumber);
-      const bRefund =
-        i.oType?.bRefund /* Indication from the User */
-        || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
-        || i.price < 0; /* PriceIncVat is minus; Should we not add the nQuantity as a required the positive number here */
-      const bPrepayment =
-        (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
-        // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
-        // || (availableAMount - this.getTotals('price', transactionItems) < 0)
-        || (i.paymentAmount !== i.amountToBePaid)
+      const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
+      const bPrepayment = (bRefund && i.oType?.bPrepayment) || (i.paymentAmount !== i.amountToBePaid)
 
-      // console.log({ paymentAmount: i.paymentAmount, amountToBePaid: i.amountToBePaid, bRefund: bRefund});
-      // console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods), {availableAMount});
-      // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
-      // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-      i.price = +(Number(String(i.price).replace(',','.')).toFixed(2));
+      i.price = +(Number(String(i.price).replace(',', '.')).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
-      if(bTesting) console.log('before creating item', JSON.parse(JSON.stringify(i)));
+      if (bTesting) console.log('before creating item', JSON.parse(JSON.stringify(i)));
 
-      const oItem = new TransactionItem();
-      oItem.sProductName = i.name;
-      oItem.sComment = i.comment;
-      oItem.sProductNumber = i.sProductNumber;
-      oItem.nPriceIncVat = (i.type === 'gold-purchase') ? - (i.price) : i.price;
-      oItem.nPurchasePrice = i.nPurchasePrice;
-      if (i.type === 'repair' || i.type === 'order') {
-        oItem.nActualCost = oItem.nPurchasePrice;
+      const oItem: any = {
+        sProductName: i.name,
+        sComment: i.comment,
+        sProductNumber: i.sProductNumber,
+        nPriceIncVat: (i.type === 'gold-purchase') ? - (i.price) : i.price,
+        nPurchasePrice: i.nPurchasePrice,
+        nProfit: i.price - i.nPurchasePrice,
+        nVatRate: i.tax,
+        nQuantity: i.quantity,
+        iProductId: i._id,
+        sEan: i.ean,
+        sArticleNumber: i.sArticleNumber,
+        aImage: i.aImage,
+        nMargin: i.nMargin,
+        iBusinessPartnerId: i.iBusinessPartnerId,
+        sBusinessPartnerName: i.sBusinessPartnerName,
+        iBusinessId: this.iBusinessId,
+        iArticleGroupId: i.iArticleGroupId,
+        iArticleGroupOriginalId: i.iArticleGroupOriginalId || i.iArticleGroupId,
+        oArticleGroupMetaData: i?.oArticleGroupMetaData,
+        bPayLater: i?.isExclude,
+        bDeposit: false,
+        sProductCategory: 'CATEGORY',
+        sGiftCardNumber: i?.sGiftCardNumber,
+        nEstimatedTotal: +(i?.nTotal?.toFixed(2)) || 0,
+        nPaidLaterAmount: 0,
+        bDiscount: i.nDiscount.value > 0,
+        bDiscountPercent: i.nDiscount.percent,
+        nDiscountValue: i.nDiscount.value,
+        nRefundAmount: +((i?.nRefundAmount || 0).toFixed(2)),
+        dEstimatedDate: i.dEstimatedDate,
+        iBusinessBrandId: i.iBusinessBrandId,
+        iBusinessProductId: i.iBusinessProductId,
+        oBusinessProductMetaData: i.oBusinessProductMetaData,
+        eStatus: 'y',
+        iWorkstationId: this.iWorkstationId,
+        iEmployeeId: i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId,
+        iAssigneeId: i.iAssigneeId,
+        iLastTransactionItemId: i.iLastTransactionItemId,
+        iLocationId: iLocationId,
+        sBagNumber: i.sBagNumber,
+        iSupplierId: i.iSupplierId, // repairer id
+        oType: {
+          eTransactionType: i.eTransactionType || 'cash-registry',
+          bRefund,
+          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
+          eKind: i.type,
+          bDiscount: i.nDiscount > 0,
+          bPrepayment: bPrepayment
+        },
+        iActivityItemId: i.iActivityItemId,
+        oGoldFor: i.oGoldFor,
+        nDiscount: i.nDiscount,
+        nGiftcardDiscount: i?.nGiftcardDiscount,
+        nRedeemedLoyaltyPoints: i.nRedeemedLoyaltyPoints,
+        sUniqueIdentifier: i.sUniqueIdentifier || uuidv4(),
+        sDescription: i.description,
+        sServicePartnerRemark: i.sServicePartnerRemark,
+        sCommentVisibleServicePartner: i.sCommentVisibleServicePartner,
+        sCommentVisibleColleagues: i.sCommentVisibleColleagues,
+        eEstimatedDateAction: i.eEstimatedDateAction,
+        eActivityItemStatus: i.eActivityItemStatus,
+        bGiftcardTaxHandling: i.bGiftcardTaxHandling,
+        bDiscountOnPercentage: i.bDiscountOnPercentage || false,
+        nSavingsPoints: (this.oSavingPointSettings.bEnabled) ? i.nSavingsPoints : 0,
       }
-      oItem.nProfit = i.price - i.nPurchasePrice;
-      oItem.nVatRate = i.tax;
-      oItem.nQuantity = i.quantity;
-      oItem.iProductId = i._id;
-      oItem.sEan = i.ean;
-      oItem.sArticleNumber = i.sArticleNumber;
-      oItem.aImage = i.aImage;
-      oItem.nMargin = i.nMargin;
-      oItem.iBusinessPartnerId = i.iBusinessPartnerId;
-      oItem.sBusinessPartnerName = i.sBusinessPartnerName;
-      oItem.iBusinessId = this.iBusinessId;
-      oItem.iArticleGroupId = i.iArticleGroupId;
-      oItem.iArticleGroupOriginalId = i.iArticleGroupOriginalId || i.iArticleGroupId;
-      oItem.oArticleGroupMetaData = i?.oArticleGroupMetaData;
-      oItem.bPayLater = i?.isExclude;
-      oItem.bDeposit = false;
-      oItem.sProductCategory = 'CATEGORY';
-      oItem.sGiftCardNumber = i?.sGiftCardNumber;
-      oItem.nEstimatedTotal = +(i?.nTotal?.toFixed(2)) || 0;
+
+      if (i.type === 'repair' || i.type === 'order') oItem.nActualCost = oItem.nPurchasePrice;
+      if (i.bHasStock && i.oCurrentLocation.nStock == 0) oItem.oType.nStockCorrection = 0;
 
       const nTotal = +(i.price.toFixed(2) * i.quantity);
-      if ((nTotal - i.paymentAmount) > 0.05) {
-        oItem.nPaymentAmount = +(i.paymentAmount.toFixed(2));
-      } else {
-        oItem.nPaymentAmount = nTotal;
-      }
-      if (bTesting) console.log(240, {nPaymentAmount: oItem.nPaymentAmount})
-      oItem.nPaidLaterAmount = 0;
-      oItem.bDiscount = i.nDiscount.value > 0;
-      oItem.bDiscountPercent = i.nDiscount.percent;
-      oItem.nDiscountValue = i.nDiscount.value;
-      oItem.nRefundAmount = +((i?.nRefundAmount || 0).toFixed(2));
-      oItem.dEstimatedDate = i.dEstimatedDate;
-      oItem.iBusinessBrandId = i.iBusinessBrandId;
-      oItem.iBusinessProductId = i.iBusinessProductId;
-      oItem.oBusinessProductMetaData = i.oBusinessProductMetaData;
-      oItem.eStatus = 'y';
-      oItem.iWorkstationId = this.iWorkstationId;
-      oItem.iEmployeeId = i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId;
-      oItem.iAssigneeId = i.iAssigneeId;
-      oItem.iLocationId = iLocationId;
-      oItem.sBagNumber = i.sBagNumber;
-      oItem.iSupplierId = i.iSupplierId; // repairer id
-
-      oItem.iLastTransactionItemId = i.iLastTransactionItemId;
-      oItem.oType = {
-        eTransactionType: i.eTransactionType || 'cash-registry',
-        bRefund,
-        nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
-        eKind: i.type,
-        bDiscount: i.nDiscount > 0,
-        bPrepayment: bPrepayment
-      };
-      if (i.bHasStock && i.oCurrentLocation.nStock == 0) {
-        oItem.oType.nStockCorrection = 0;
-      }
-      // console.log(oItem.oType);
-      oItem.iActivityItemId = i.iActivityItemId;
-      oItem.oGoldFor = i.oGoldFor;
-      oItem.nDiscount = i.nDiscount;
-      oItem.nGiftcardDiscount = i?.nGiftcardDiscount;
-      oItem.nRedeemedLoyaltyPoints = i.nRedeemedLoyaltyPoints;
-      oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
-      oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity)); //.toFixed(2)
-      if (bTesting) console.log(275, { nRevenueAmount: oItem.nRevenueAmount })
-      oItem.sDescription = i.description;
-
-      oItem.sServicePartnerRemark = i.sServicePartnerRemark;
-      oItem.sCommentVisibleServicePartner = i.sCommentVisibleServicePartner;
-      oItem.sCommentVisibleColleagues = i.sCommentVisibleColleagues;
-      oItem.eEstimatedDateAction = i.eEstimatedDateAction;
-      if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
+      oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
+      oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity));
+      // console.log(nTotal, oItem.nPaymentAmount, oItem.nRevenueAmount, i.quantity, i.price);
+      if (i.type === 'giftcard') {
         oItem.eActivityItemStatus = 'delivered';
         oItem.nGiftcardRemainingAmount = oItem.nPriceIncVat;
       } else if (i.type === 'repair') {
         oItem.eActivityItemStatus = ((i.amountToBePaid === 0 && i.paymentAmount === 0 && !i?.isExclude) || i.amountToBePaid === i.paymentAmount && !i?.isExclude) ? 'delivered' : i.eActivityItemStatus;
-      } else {
-        oItem.eActivityItemStatus = i.eActivityItemStatus;
       }
-      oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
-      oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
+
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
-      oItem.nSavingsPoints = (this.oSavingPointSettings.bEnabled) ? i.nSavingsPoints : 0;
+
       return oItem;
     });
-    // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
-    const aToBeAddedItems:any = []
-    body.transactionItems.map((i: any) => {
-      // let discountRecords: any = localStorage.getItem('discountRecords');
-      // if (discountRecords) {
-      //   discountRecords = JSON.parse(discountRecords);
-      // }
+    const aToBeAddedItems: any = []
+    
+    body.transactionItems.forEach((i: any) => {
       let _nDiscount = +((i?.bDiscountOnPercentage ? (i.nPriceIncVat * i.nDiscount / 100) : i.nDiscount)); //.toFixed(2)
-      if (bTesting) console.log({ _nDiscount });
-      if (i.oType.bRefund && _nDiscount !== 0) {
-        i.nDiscount = 0;
-      //   i.nPaymentAmount -= _nDiscount * i.nQuantity;
-      //   i.nRevenueAmount = i.nPaymentAmount;
+      if (bTesting) console.log({ _nDiscount }, JSON.parse(JSON.stringify(i)));
+      if (i.oType.bRefund && _nDiscount !== 0) i.nDiscount = 0;
 
-      //   i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
-      //   i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
+      if (_nDiscount && _nDiscount > 0 && !i.iActivityItemId) {
+        if (bTesting) console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
+        i.nPaymentAmount += (_nDiscount * i.nQuantity);
+        i.nRevenueAmount += _nDiscount;
 
-      //   if(bTesting) console.log(305, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
+        if (bTesting) console.log(327, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
+
+        const tItem1 = JSON.parse(JSON.stringify(i));
+        tItem1.iArticleGroupId = discountArticleGroup._id;
+        tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
+        tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
+        tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
+        tItem1.oType.eTransactionType = 'cash-registry';
+        tItem1.oType.eKind = 'discount';
+        tItem1.nPaymentAmount = -1 * _nDiscount * i.nQuantity;
+        tItem1.nRevenueAmount = -1 * _nDiscount;
+        tItem1.nPriceIncVat = tItem1.nPaymentAmount;
+        tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
+        aToBeAddedItems.push(tItem1);
       }
-      // else {
-        if (_nDiscount && _nDiscount > 0 && !i.iActivityItemId) {
-          if (bTesting) console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
-          i.nPaymentAmount += (_nDiscount * i.nQuantity);
-          i.nRevenueAmount += _nDiscount;
-
-          if (bTesting) console.log(327, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
-
-          const tItem1 = JSON.parse(JSON.stringify(i));
-          tItem1.iArticleGroupId = discountArticleGroup._id;
-          tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
-          tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
-          tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
-          tItem1.oType.eTransactionType = 'cash-registry';
-          tItem1.oType.eKind = 'discount';
-          tItem1.nPaymentAmount = -1 * _nDiscount * i.nQuantity;
-          tItem1.nRevenueAmount = -1 * _nDiscount;
-          tItem1.nPriceIncVat = tItem1.nPaymentAmount;
-          tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
-          aToBeAddedItems.push(tItem1);
-        }
-      // }
+      // console.log(324, i.nPaymentAmount)
       i.nPaymentAmount += i?.nGiftcardDiscount || 0;
       i.nRevenueAmount += i?.nGiftcardDiscount || 0;
 
-      if (bTesting) console.log(346, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
+      if (bTesting) console.log(328, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
     });
-    // localStorage.removeItem('discountRecords');
-    if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      // let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
+
+    if (redeemedLoyaltyPoints > 0) {
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
-      // console.log({reedemedTItem})
       body.transactionItems.forEach((i: any) => {
         if (i.oType.eKind !== 'loyalty-points') {
           let nDiscount = i?.nRedeemedLoyaltyPoints || 0;
@@ -379,12 +350,6 @@ export class TillService {
 
           if (bTesting) console.log(362, { nPaymentAmount: i.nPaymentAmount, nRevenueAmount: i.nRevenueAmount })
 
-          // if (nDiscount > redeemedLoyaltyPoints) {
-          //   nDiscount = redeemedLoyaltyPoints;
-          //   redeemedLoyaltyPoints = 0;
-          // } else {
-          //   redeemedLoyaltyPoints = redeemedLoyaltyPoints - nDiscount;
-          // }
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = reedemedTItem.iArticleGroupId;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
@@ -395,11 +360,11 @@ export class TillService {
           tItem1.nRevenueAmount = +((-1 * nDiscount/i.nQuantity).toFixed(2));
           tItem1.nRedeemedLoyaltyPoints = nDiscount / i.nQuantity;
           aToBeAddedItems.push(tItem1);
-          // i.nDiscount += nDiscount;
         }
       });
     }
     body.transactionItems = [...body.transactionItems, ...aToBeAddedItems];
+    
     body.transactionItems.forEach((i: any) => {
       if(this.aDiscountTypes.includes(i.oType.eKind)) i.nSavingsPoints = 0;
       i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
@@ -638,7 +603,7 @@ export class TillService {
     const aToFetchPayments:any = [];
 
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
-
+      if(item.oType.eKind == 'empty-line') return;
       nTotalQty += item?.nQuantity;
       if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
         aToFetchPayments.push(item.iTransactionId);
@@ -715,7 +680,7 @@ export class TillService {
     await Promise.all(relatedItemsPromises).then(result => {
       // console.log(result);
       result.forEach((item: any, index: number) => {
-        transaction.aTransactionItems[index].related = item.data || [];
+        transaction.aTransactionItems[index].related = item?.data || [];
       })
     });
 
@@ -782,7 +747,7 @@ export class TillService {
 
       item.description = description + sRelatedDescription;
       // console.log(item);
-      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
+      item.nPriceIncVatAfterDiscount = +((item?.nPriceIncVatAfterDiscount || 0).toFixed(2));
     })
     if (aToFetchPayments?.length) {
       const oBody = {
@@ -1086,5 +1051,17 @@ export class TillService {
       nAmount
     }
     return { oTransactionItem: this.createExpenseTransactionItem(oBody), ...oBody };
+  }
+
+  adjustEmptyLineItems(aTransactionItems:any, aOriginalTransactionItems:any) {
+    if(aOriginalTransactionItems.some((el:any) => el.oType.eKind == 'empty-line')) {
+      aOriginalTransactionItems.forEach((el:any, index:number) => {
+        if (el.oType.eKind == 'empty-line') {
+          // console.log('empty line adding at', index)
+          aTransactionItems.splice(index, 0, el)
+        }
+      })
+    }
+    // console.log(aTransactionItems);
   }
 }
