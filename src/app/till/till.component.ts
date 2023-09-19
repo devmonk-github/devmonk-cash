@@ -990,13 +990,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         context: {
           payments: this.payMethods,
           changeAmount,
-          nTotalTransactionAmount: this.nItemsTotalToBePaid,
+          nItemsTotalToBePaid: this.nItemsTotalToBePaid,
           totalAmount: this.nTotalPayment
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (payMethods: any) => {
+        console.log({payMethods})
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -1007,7 +1008,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-          this.distributeAmount();
+          this.distributeAmount(payMethods);
           // this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
@@ -1124,12 +1125,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (item.oType.eKind == 'repair') nRepairCount++;
       else if (item.oType.eKind == 'order') nOrderCount++;
     })
-
+    console.log({ oDataSource })
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
-
+    console.log({bRegularCondition})
     const aPromises: any = [];
     aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
@@ -1153,13 +1154,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      nRepairCount: nRepairCount,
-      nOrderCount: nOrderCount,
+      nRepairCount,
+      nOrderCount,
       activityItems: this.activityItems,
       activity: this.activity,
-      aTemplates: aTemplates,
+      aTemplates,
       businessDetails: this.businessDetails,
-      bRegularCondition: bRegularCondition,
+      bRegularCondition
     });
     this.dispatchEvent('startIdle');
 
@@ -2114,9 +2115,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  distributeAmount() {
+  distributeAmount(payMethods:any = []) {
     this.nGiftcardAmount = 0;
-    this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
+    this.availableAmount = +((_.sumBy((payMethods?.length) ? payMethods : this.payMethods , 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
     
     if (this.appliedGiftCards?.length){
       this.nGiftcardAmount = +((_.sumBy(this.appliedGiftCards.filter(el => el.type == 'custom'), 'nAmount') || 0).toFixed(2));

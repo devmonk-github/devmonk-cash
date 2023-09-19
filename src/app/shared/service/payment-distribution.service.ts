@@ -25,7 +25,7 @@ export class PaymentDistributionService {
 
   distributeAmount(oData: any) {
     let { transactionItems, availableAmount, nGiftcardAmount = 0, nRedeemedLoyaltyPoints = 0, payMethods }:any = oData;
-    const bTesting = false;
+    const bTesting = true;
     if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems))})
 
     const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro

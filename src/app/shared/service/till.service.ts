@@ -288,7 +288,7 @@ export class TillService {
       }
 
       if (i.type === 'repair' || i.type === 'order') oItem.nActualCost = oItem.nPurchasePrice;
-      if (i.bHasStock && i.oCurrentLocation.nStock == 0) oItem.oType.nStockCorrection = 0;
+      if (i.bHasStock && (i.oCurrentLocation?.nStock == 0 || !i.oCurrentLocation?.nStock) ) oItem.oType.nStockCorrection = 0;
 
       const nTotal = +(i.price.toFixed(2) * i.quantity);
       oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
@@ -577,7 +577,7 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction: any) {
-    const bTesting = false;
+    const bTesting = true;
     if(bTesting) console.log('processTransactionForPdfReceipt original', JSON.parse(JSON.stringify(transaction)));
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
@@ -824,7 +824,7 @@ export class TillService {
     }
   }
   calculateVat(item:any) {
-    const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
+    const vat = (item.nVatRate * item.totalPaymentAmount / (100 + parseFloat(item.nVatRate)));
     item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
   }
 

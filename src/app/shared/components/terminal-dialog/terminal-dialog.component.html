@@ -80,7 +80,7 @@
             </tfoot>
         </table>
 
-        <div class="mt-3" *ngIf="cardPayments.length > 0">
+        <div class="mt-3" *ngIf="cardPayments?.length">
             <div>
                 <span class="text-danger fw-bolder mb-3" *ngIf="!bFetchingPaymentIntegrations && !bEnable">{{"NO_TERMINAL_SET_ON_THIS_WORKSTATION"|translate}}</span>
                 <div *ngIf="bFetchingPaymentIntegrations" class="spinner-border mx-auto"></div>
@@ -99,8 +99,15 @@
             <button type="button" class="btn btn-secondary me-3" *ngIf="!ifCardSuccess"
                 [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer" (click)="close(false)">{{"CANCEL" |
                 translate}}</button>
-            <button type="button" class="btn btn-primary" (click)="continue()"
-                [disabled]="(restartPaymentTimer > 0 && 46 > restartPaymentTimer) || isProceed ">{{"PROCEED" | translate}}</button>
+            
+            <button *ngIf="nTotalPaidUpToNow == nItemsTotalToBePaid" class="btn btn-primary" (click)="continue()"
+                [disabled]="(restartPaymentTimer > 0 && restartPaymentTimer < 46) || isProceed ">
+                {{"PROCEED" | translate}}
+            </button>
+            <button *ngIf="nTotalPaidUpToNow != nItemsTotalToBePaid" class="btn btn-warning" (click)="continue()"
+                [disabled]="(restartPaymentTimer > 0 && restartPaymentTimer < 46) || isProceed ">
+                {{"PROCEED_WITH_PREPAYMENT" | translate}}
+            </button>
         </div>
     </div>
 </div>
