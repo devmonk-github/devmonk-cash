@@ -152,7 +152,7 @@ export class TerminalDialogComponent implements OnInit {
       .subscribe((res) => {
         paymentInfo.paymentReference = res.paymentReference;
         console.log('response from paynl', res)
-        this.checkTerminalStatus(res.terminalStatusUrl, this.amount == 0.02);
+        this.checkTerminalStatus(res.terminalStatusUrl); //, this.amount == 0.03
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
