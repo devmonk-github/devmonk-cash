@@ -9,11 +9,11 @@ import * as _moment from 'moment';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 const aColorCode = [
-  '#FF5733', // Red
-  '#33FF57', // Green
-  '#3366FF', // Blue
-  '#FF33E9', // Pink
-  '#FF9933', // Orange
+  '#3ba68c', // 
+  '#3b8aa6', // 
+  '#3F4254', // 
+  '#A1A5B7', // 
+  '#F1FAFF', // Green light
 ];
 
 @Component({
