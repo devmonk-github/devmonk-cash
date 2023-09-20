@@ -25,7 +25,7 @@ export class PaymentDistributionService {
 
   distributeAmount(oData: any) {
     let { transactionItems, availableAmount, nGiftcardAmount = 0, nRedeemedLoyaltyPoints = 0, payMethods }:any = oData;
-    const bTesting = true;
+    const bTesting = false;
     if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems))})
 
     const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
@@ -66,7 +66,10 @@ export class PaymentDistributionService {
       if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i)) })
 
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
-      if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+      if (i.paymentAmount > i.amountToBePaid){
+        if (bTesting) console.log('i.paymentAmount > i.amountToBePaid', i.paymentAmount, i.amountToBePaid)
+        i.paymentAmount = i.amountToBePaid;
+      } 
       if (i.paymentAmount < 0 && i.type !== 'gold-purchase') {
         if (bTesting) console.log('payment amount is < 0 so addig that to available amount')
         availableAmount += -i.amountToBePaid;
@@ -83,12 +86,12 @@ export class PaymentDistributionService {
     let nEligibleAmount = _.sumBy(aEligibleForSavingPoints, 'amount');
     if (bTesting) console.log({ nEligibleAmount });
 
-    if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
+    if (bTesting)  console.log({arrToUpdate, arrNotToUpdate})
 
     const assignedAmountToManual = _.sumBy(arrNotToUpdate, 'paymentAmount')
     availableAmount -= assignedAmountToManual;
 
-    if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
+    if (bTesting) console.log({assignedAmountToManual, availableAmount})
 
     if (arrToUpdate?.length) {
       let totalAmountToBePaid = +(_.sumBy(arrToUpdate.filter((el:any) => el.amountToBePaid > 0), 'amountToBePaid').toFixed(2));
@@ -132,7 +135,7 @@ export class PaymentDistributionService {
       if (totalAmountToBePaid !== 0) {
         if(availableAmount > totalAmountToBePaid) availableAmount = totalAmountToBePaid;
         let nAssignedUntillNow = 0;
-
+        if (bTesting) console.log({ availableAmount })
         aItems.forEach((i:any) => {
           if (bTesting) console.log(107, { tType: i.tType, availableAmount });
           if (i.amountToBePaid > 0 && (!i?.tType || i.tType !== 'refund')) {

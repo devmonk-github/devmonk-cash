@@ -290,8 +290,11 @@ export class TillService {
       if (i.type === 'repair' || i.type === 'order') oItem.nActualCost = oItem.nPurchasePrice;
       if (i.bHasStock && (i.oCurrentLocation?.nStock == 0 || !i.oCurrentLocation?.nStock) ) oItem.oType.nStockCorrection = 0;
 
-      const nTotal = +(i.price.toFixed(2) * i.quantity);
-      oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
+      /* COMMENTED BELOW LINE BECAUSE IT IS CALCULATING INCORRECT PAYMENT AMOUNT WHEN DOING SPLIT PAYMENT WITH TERMINALS */
+      // const nTotal = +(i.price.toFixed(2) * i.quantity);
+      // oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
+      
+      oItem.nPaymentAmount = +(i.paymentAmount.toFixed(2));
       oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity));
       // console.log(nTotal, oItem.nPaymentAmount, oItem.nRevenueAmount, i.quantity, i.price);
       if (i.type === 'giftcard') {
