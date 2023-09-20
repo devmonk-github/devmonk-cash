@@ -291,11 +291,11 @@ export class ImportRepairOrderService {
           oData.eEstimatedDateAction = "call_on_ready";
         }
 
-        const formatCdate = new Date(oData?.dCreatedDate.split('-').reverse().join('/'));
+        const formatCdate = new Date(oData?.dCreatedDate?.split('-').reverse().join('/'));
         const dCreatedDate = new Date(formatCdate).setHours(5, 30, 0, 0);
         const finalCdate = new Date(dCreatedDate);
 
-        const formatEdate = new Date(oData?.dEstimatedDate.split('-').reverse().join('/'));
+        const formatEdate = new Date(oData?.dEstimatedDate?.split('-').reverse().join('/'));
         const dEstimatedDate = new Date(formatEdate).setHours(5, 30, 0, 0);
         const finalEdate = new Date(dEstimatedDate);
         

@@ -128,6 +128,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   bOpeningDrawer: boolean = false;
   aCalendarEvent: any = []; /* to show the data in calendar */
   bIsCalendarOpen: boolean = false;
+  oCalendarSelectedData: any = {};
   oHelperDetails: any = {
     oStartAmountIncorrect: {
       bChecked: false,
@@ -1643,7 +1644,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               eCreationType: oDayClosure?.eCreationType
             }
           });
-          // this.calendarOptions.events = aCalendarEvent;
         }
       }, (error) => {
         console.log('error: ', error);
@@ -1653,7 +1653,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openCalendar() {
+  async openCalendar(eType: string) {
     this.bIsCalendarOpen = true;
     if (!this.aCalendarEvent?.length) {
       this.toastService.show({ type: 'warning', text: `There is no data available` });
@@ -1661,7 +1661,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     this.dialogService.openModal(CalendarGanttViewDialogComponent, {
       cssClass: "modal-lg",
-      context: { aCalendarEvent: this.aCalendarEvent },
+      context: {
+        aCalendarEvent: this.aCalendarEvent,
+        eType: eType, /* from-state or to-state */
+        aWorkStation: this.aWorkStation,
+        aLocation: this.aLocation,
+        oCalendarSelectedData: this.oCalendarSelectedData
+      },
       hasBackdrop: true,
       closeOnBackdropClick: false,
       closeOnEsc: false
@@ -1669,13 +1675,27 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.bIsCalendarOpen = false;
       if (result?.isChosen) {
         const _oDayClosure = result?.oData?.extendedProps?.customProperty?.oDayClosure;
+
+        // if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
+        // else this.statisticFilter.dToState = _oDayClosure.dCloseDate
+
+
+        /* for enabling and disabling the date in calendar-view */
+        if (eType === 'FROM_STATE') {
+          this.statisticFilter.dFromState = this.oCalendarSelectedData.dOpenDate = result?.oData?.start;
+          if (!this.oCalendarSelectedData.dCloseDate) this.statisticFilter.dToState = this.oCalendarSelectedData.dCloseDate = result?.oData?.end;
+        } else if (eType === 'TO_STATE') {
+          this.statisticFilter.dToState = this.oCalendarSelectedData.dCloseDate = result?.oData?.end;
+          if (!this.oCalendarSelectedData.dOpenDate) this.statisticFilter.dFromState = this.oCalendarSelectedData.dOpenDate = result?.oData?.start;
+        }
+        console.log('eType:', eType);
+        console.log('oData clicked:', result?.oData?.title);
+        console.log('Start:', result?.oData?.start);
+        console.log('End:', result?.oData?.end);
+        console.log('_oDayClosure:', _oDayClosure);
+
         this.onStateChange(_oDayClosure, true);
         this.onStateChange(_oDayClosure, false);
-        // console.log('result: ', result?.oData);
-        // console.log('oData clicked:', result?.oData?.title);
-        // console.log('Start:', result?.oData?.start);
-        // console.log('End:', result?.oData?.end);
-        // console.log('_oDayClosure:', _oDayClosure);
       }
     });
   }
@@ -1718,9 +1738,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   onStateChange(_oDayClosure: any, isOpenDate: boolean) {
     if (_oDayClosure?.eCreationType) this.statisticFilter.eChosenStateCreationType = _oDayClosure.eCreationType;
     console.log('_oDayClosure.dOpenDate: ', _oDayClosure.dOpenDate, _oDayClosure.dCloseDate);
-    
-    if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
-    else this.statisticFilter.dToState = _oDayClosure.dCloseDate
 
     this.aStatistic = [];
     this.aStatisticsIds = [];
