@@ -13,15 +13,15 @@
                 
                 <div class="row mb-5">
                     <label>{{ "AMOUNT" | translate}}</label>
-                    <input type="number" class="form-control" formControlName="amount">
-                    <div *ngIf="submitted && f.amount.errors">
+                    <input type="number" class="form-control" formControlName="nAmount">
+                    <div *ngIf="submitted && f.nAmount.errors">
                         <span class="text-danger">{{"AMOUNT_SHOULD_BE_GREATER_THAN" | translate}} €1.</span>
                     </div>
                 </div>
                 
                 <div class="row mb-5">
                     <label>{{ "TAX" | translate}}</label>
-                    <ng-select class="" formControlName="tax" [clearable]="false">
+                    <ng-select class="" formControlName="nTax" [clearable]="false">
                         <ng-option *ngFor="let option of taxes" [value]="option.nRate">{{option.sName}} - {{option.nRate}}%
                         </ng-option>
                     </ng-select>
@@ -29,13 +29,13 @@
                 
                 <div class="row mb-5">
                     <label>{{ "LEDGER_NUMBER_DESCRIPTION" | translate}}</label>
-                    <ng-select class="" formControlName="expenseType" [clearable]="false">
-                        <ng-option *ngFor="let option of ledgerDescriptions" [value]="option">{{option.title| titlecase}}
+                    <ng-select class="" formControlName="oExpenseType" [clearable]="false">
+                        <ng-option *ngFor="let option of tillService.ledgerDescriptions" [value]="option">{{option.title| titlecase}}
                         </ng-option>
                     </ng-select>
                 </div>
 
-                <div *ngIf="submitted && f.expenseType.errors">
+                <div *ngIf="submitted && f.oExpenseType.errors">
                     <span class="text-danger">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}} {{ "REQUIRED" |
                         translate}}.</span>
                 </div>
@@ -43,8 +43,8 @@
                 <div class="row mb-5">
                     <label>{{ "DESCRIPTION" | translate}}</label>
                     <textarea class="form-control " placeholder="{{ 'DESCRIPTION' | translate}}"
-                    lines="10" formControlName="description"></textarea>
-                    <div *ngIf="submitted && f.description.errors">
+                    lines="10" formControlName="sDescription"></textarea>
+                    <div *ngIf="submitted && f.sDescription.errors">
                         <span class="text-danger">{{"DESCRIPTION_IS_REQUIRED"}}.</span>
                     </div>
                 </div>

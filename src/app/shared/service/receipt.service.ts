@@ -688,7 +688,12 @@ export class ReceiptService {
                 // console.log('after check conditions', bCheck, html)
             }
 
-            let text = this.pdfService.replaceVariables(html, dataSource) || html;
+            let text = '';
+            if (dataSource?.oType?.eKind == 'empty-line') {
+                text = (html.includes('sProductName') && dataSource?.sProductName?.length) ? dataSource?.sProductName : '\n';
+            } else {
+                text = this.pdfService.replaceVariables(html, dataSource) || '';
+            }
             // console.log({ text }, html);
             let obj: any = { text: text };
             if (text?.indexOf('<strike>') != -1) {

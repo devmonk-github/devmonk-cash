@@ -37,6 +37,7 @@ export class TerminalDialogComponent implements OnInit {
   selectedIndex = 0;
   restartPaymentTimer = 46;
   nItemsTotalToBePaid:number = 0;
+  nTotalPaidUpToNow:number = 0;
   totalAmount:any = 0;
   changeAmount:any = 0;
   isProceed = false;
@@ -62,8 +63,10 @@ export class TerminalDialogComponent implements OnInit {
     // OLD APPROACH
     // this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
     // this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
-    
+    this.nTotalPaidUpToNow = this.nItemsTotalToBePaid;
     this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.bUseTerminal && o.amount);
+    if (this.cardPayments?.length) this.nTotalPaidUpToNow -= this.tillService.getSum(this.cardPayments, 'amount')
+
     this.otherPayments = this.dialogRef.context.payments.filter((o: any) => !o.bUseTerminal && o.amount);
     if (this.dialogRef.context.changeAmount > 0) {
       this.changeAmount = -this.dialogRef.context.changeAmount
@@ -147,9 +150,9 @@ export class TerminalDialogComponent implements OnInit {
     console.log('started terminal payment, amount=', this.amount, this.sSelectedProvider)
     this.terminalService.startTerminalPayment(this.amount, this.sSelectedProvider)
       .subscribe((res) => {
-        paymentInfo.paymentReference = res.paymentReference; 
+        paymentInfo.paymentReference = res.paymentReference;
         console.log('response from paynl', res)
-        this.checkTerminalStatus(res.terminalStatusUrl);
+        this.checkTerminalStatus(res.terminalStatusUrl, this.amount == 0.02);
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });

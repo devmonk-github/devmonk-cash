@@ -990,13 +990,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         context: {
           payments: this.payMethods,
           changeAmount,
-          nTotalTransactionAmount: this.nItemsTotalToBePaid,
+          nItemsTotalToBePaid: this.nItemsTotalToBePaid,
           totalAmount: this.nTotalPayment
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (payMethods: any) => {
+        console.log({payMethods})
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -1007,14 +1008,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-          this.distributeAmount();
-          this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
+          this.distributeAmount(payMethods);
+          // this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
-          const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
+          
+          const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
+            if (item.type == 'custom') context.aInternalGiftcards.push(item);
+            else context.aExternalGiftcards.push(item);
+          }, { aInternalGiftcards: [], aExternalGiftcards: [] });
           
           if (aExternalGiftcards?.length) { // we have some cards by external providers -> we will generate a revenue from it -> so need to process them as payment
             aExternalGiftcards.forEach((oCard:any) => {
@@ -1026,10 +1030,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           }
           if(this.appliedGiftCards?.length) body.giftCards = this.appliedGiftCards;
-          body.oTransaction.iActivityId = this.iActivityId;
-          let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
-          const uniq = [...new Set(_.compact(result))];
           if (aInternalGiftcards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+
+          body.oTransaction.iActivityId = this.iActivityId;
+          const aUniqueBusinessPartnerIds = [...new Set(_.compact(body.transactionItems.map((a: any) => a.iBusinessPartnerId)))];
           // console.log(body);
           // return;
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
@@ -1055,6 +1059,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.saveInProgress = false;
             const { transaction, aTransactionItems, activityItems, activity } = data;
+            this.tillService.adjustEmptyLineItems(aTransactionItems, body.transactionItems)
             transaction.aTransactionItems = aTransactionItems;
             transaction.activity = activity;
             this.transaction = transaction;
@@ -1064,7 +1069,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             const bHasRepairOrOrderItems = this.transaction.aTransactionItemType.includes('repair') || this.transaction.aTransactionItemType.includes('order');
             if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers && bHasRepairOrOrderItems) this.tillService.updateSettings();
 
-            this.transaction.aTransactionItems.map((tItem: any) => {
+            this.transaction.aTransactionItems.forEach((tItem: any) => {
               for (const aItem of this.activityItems) {
                 if (aItem.iTransactionItemId === tItem._id) {
                   tItem.sActivityItemNumber = aItem.sNumber;
@@ -1080,7 +1085,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
             setTimeout(() => {
               this.saveInProgress = false;
-              this.fetchBusinessPartnersProductCount(uniq);
+              this.fetchBusinessPartnersProductCount(aUniqueBusinessPartnerIds);
               this.eKind = 'regular';
             }, 100);
             if (this.selectedTransaction) {
@@ -1120,12 +1125,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (item.oType.eKind == 'repair') nRepairCount++;
       else if (item.oType.eKind == 'order') nOrderCount++;
     })
-
+    console.log({ oDataSource })
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
-
+    console.log({bRegularCondition})
     const aPromises: any = [];
     aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
@@ -1149,13 +1154,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
-      nRepairCount: nRepairCount,
-      nOrderCount: nOrderCount,
+      nRepairCount,
+      nOrderCount,
       activityItems: this.activityItems,
       activity: this.activity,
-      aTemplates: aTemplates,
+      aTemplates,
       businessDetails: this.businessDetails,
-      bRegularCondition: bRegularCondition,
+      bRegularCondition
     });
     this.dispatchEvent('startIdle');
 
@@ -1236,7 +1241,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async sendForReceipt(oDataSource: any, template: any, title: any, eSituation: string = 'is_created', type: any) {
     // console.log('sendForReceipt', eSituation, type)
-    const oPrintActionSettings = this.printActionSettings.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
+    const oPrintActionSettings = this.printActionSettings?.find((pas: any) => pas.eType === type && pas.eSituation === eSituation);
     // console.log({oPrintActionSettings});
     if (oPrintActionSettings) {
       const aActionToPerform = oPrintActionSettings.aActionToPerform;
@@ -1318,13 +1323,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
       return;
     }
-    var body = {
+    const body = {
       iBusinessId: this.iBusinessId,
       aBusinessPartnerId
     };
     this.apiService.postNew('core', '/api/v1/business/partners/product-count', body).subscribe(
       (result: any) => {
-        if (result && result.data) {
+        if (result?.data) {
           const urls: any = [];
           result.data.forEach((element: any) => {
             if (element.businessproducts > 10) {
@@ -1590,7 +1595,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: 0,
       description: '',
       open: true,
+      paymentAmount: 0
     });
+    this.distributeAmount();
   }
 
   getParkedTransactionBody(): Object {
@@ -1688,17 +1695,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openExpenses() {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
-    this.dialogService.openModal(AddExpensesComponent,
-      {
-        cssClass: 'modal-m',
-        context: {
-          paymentMethod,
-          taxes: this.tillService.taxes
-        },
-        hasBackdrop: true,
-        closeOnBackdropClick: false,
-        closeOnEsc: false
-      }).instance.close.subscribe(result => { });
+    this.dialogService.openModal(AddExpensesComponent, {
+      cssClass: 'modal-m',
+      context: {
+        paymentMethod,
+      },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe(result => { });
   }
 
   openCardsModal(mode: string = 'new', oGiftcard?: any) {
@@ -2110,9 +2115,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  distributeAmount() {
+  distributeAmount(payMethods:any = []) {
     this.nGiftcardAmount = 0;
-    this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
+    this.availableAmount = +((_.sumBy((payMethods?.length) ? payMethods : this.payMethods , 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
     
     if (this.appliedGiftCards?.length){
       this.nGiftcardAmount = +((_.sumBy(this.appliedGiftCards.filter(el => el.type == 'custom'), 'nAmount') || 0).toFixed(2));
