@@ -27,8 +27,12 @@
                 <div class="w-100" *ngIf="aLocation?.length">
                     <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                         [(ngModel)]="aSelectedLocation" (change)="onChangeDropdown('location')" [clearable]="false">
-                        <ng-option *ngFor="let location of aLocation"
-                            [value]="location._id">{{location.sName}}</ng-option>
+                        <ng-option *ngFor="let location of aLocation" [value]="location._id">
+                            {{location.sName}}
+                            <div *ngIf="sDayClosureMethod != 'workstation'"
+                                [ngStyle]="{'background-color': location.backgroundColor, 'width': '10px', 'height': '10px', 'border': '1px solid black' }">
+                            </div>
+                        </ng-option>
                     </ng-select>
                 </div>
             </div>
@@ -39,8 +43,11 @@
                     {{'WORK_STATION' | translate}}
                 </label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                    [(ngModel)]="aSelectedWorkStation" (change)="onChangeDropdown('workstation')" [clearable]="false">
+                    [(ngModel)]="selectedWorkStation" (change)="onChangeDropdown('workstation')" [clearable]="false">
                     <ng-option *ngFor="let workstation of aWorkStation" [value]="workstation._id">{{workstation.sName}}
+                        <div *ngIf="sDayClosureMethod == 'workstation'"
+                            [ngStyle]="{'background-color': workstation.backgroundColor, 'width': '10px', 'height': '10px', 'border': '1px solid black' }">
+                        </div>
                     </ng-option>
                 </ng-select>
             </div>

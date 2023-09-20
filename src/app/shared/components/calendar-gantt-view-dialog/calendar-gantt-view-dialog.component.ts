@@ -26,8 +26,9 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   faTimes = faTimes;
   aWorkStation: any;
   aLocation: any;
-  aSelectedWorkStation: any = [];
-  aSelectedLocation: any = [];
+  selectedWorkStation: any;
+  aSelectedLocation: any;
+  sDayClosureMethod: string;
 
   aCalendarEvent: any;
   oCalendarSelectedData: any;
@@ -38,28 +39,20 @@ export class CalendarGanttViewDialogComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
-    // eventContent: function () {
-    //   return {
-    //     html: '<button>' + 'BUTTON CUSTOM' + '</button>', // Custom HTML content
-    //     // classNames: ['custom-event'], // Custom CSS class
-    //   };
-    // },
-    // customButtons: {
-    //   customButton: {
-    //     text: 'Custom Button', // Button text
-    //     click: function () {
-    //       // Custom action when the button is clicked
-    //     },
-    //   },
-    // },
     validRange: {
       end: new Date()
     },
     initialView: 'dayGridMonth',
     firstDay: 1,
     plugins: [dayGridPlugin],
-    // weekends: true,
     events: [],
+    displayEventTime: false,
+    // eventTimeFormat: { // like '14:30:00'
+    //   hour: '2-digit',
+    //   minute: '2-digit',
+    //   second: '2-digit',
+    //   hour12: false
+    // },
     eventClick: this.handleEventClick.bind(this),
   };
 
@@ -71,11 +64,15 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // console.log('before validRange: ', this.calendarOptions.validRange);
+    let nColorIndex = 0;
+    const aArray = this.sDayClosureMethod == 'workstation' ? this.aWorkStation : this.aLocation;
+    aArray.map((oElement: any) => {
+      const sColor = aColorCode[nColorIndex];
+      nColorIndex = (nColorIndex + 1) % aColorCode.length;
+      oElement.backgroundColor = sColor
+      return;
+    })
     if (this.aCalendarEvent?.length) this.processingTheEvent();
-    // console.log('after validRange: ', this.calendarOptions.validRange);
-    // if (this.oCalendarSelectedData?.dOpenDate) this.calendarOptions.validRange.start = this.oCalendarSelectedData?.dOpenDate;
-    // this.calendarOptions.validRange.end = this.oCalendarSelectedData?.dCloseDate || new Date();
   }
 
   getRandomColor() {
@@ -84,9 +81,9 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   }
 
   processingTheEvent(__aCalendarEvent?: any) {
-    // console.log('processingTheEvent: ', __aCalendarEvent);
     const _aCalendarEvent = __aCalendarEvent ? __aCalendarEvent : JSON.parse(JSON.stringify(this.aCalendarEvent));
-
+    // const _sDayClosureMethod = this.sDayClosureMethod || 'workstation';
+    const aArray = this.sDayClosureMethod == 'workstation' ? this.aWorkStation : this.aLocation;
     /* FROM-STATE */
     if (this.eType === 'FROM_STATE') {
       this.calendarOptions.validRange.start = undefined;
@@ -94,9 +91,10 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
       this.calendarOptions.events = _aCalendarEvent?.filter((oEvent: any) => oEvent?.start)?.map((oEvent: any) => {
         const dOpenDate = oEvent.customProperty?.oDayClosure?.dOpenDate;
-        oEvent.backgroundColor = this.getRandomColor();
-        oEvent.textColor = '#FFFFFF';
-        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('DD-MM-yyyy hh:mm'))})`
+        let iId = oEvent.customProperty?.oDayClosure?.iWorkstationId
+        if (this.sDayClosureMethod != 'workstation') iId = oEvent.customProperty?.oDayClosure?.iLocationId;
+        oEvent.backgroundColor = (aArray.find((oElement: any) => oElement._id == iId))?.backgroundColor || this.getRandomColor();
+        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('DD-MM-yyyy HH:mm'))})`
         return oEvent;
       })
     } else {
@@ -107,8 +105,8 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
       this.calendarOptions.events = _aCalendarEvent?.filter((oEvent: any) => oEvent?.end)?.map((oEvent: any) => {
         const dCloseDate = oEvent.customProperty?.oDayClosure?.dCloseDate;
-        oEvent.backgroundColor = this.getRandomColor();
-        oEvent.textColor = '#FFFFFF';
+        // oEvent.backgroundColor = this.getRandomColor();
+        oEvent.backgroundColor = (this.aWorkStation.find((oWorkstation: any) => oWorkstation._id == oEvent.customProperty?.oDayClosure?.iWorkstationId))?.backgroundColor || this.getRandomColor();
         oEvent.title = `${oEvent.title} (${(moment(dCloseDate).format('DD-MM-yyyy hh:mm'))})`
         return oEvent;
       })
@@ -118,26 +116,16 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
   handleEventClick(info: any): void {
     const oData = info.event; /* title, start, end, extendedProps.customProperty */
+    oData.selectedWorkStation = this.selectedWorkStation;
+    oData.aSelectedLocation = this.aSelectedLocation;
     this.close({ isChosen: true, oData });
   }
 
   onChangeDropdown(eType: string) {
     let _aCalendarEvent = JSON.parse(JSON.stringify(this.aCalendarEvent))
-    // console.log('Total length: ', _aCalendarEvent?.length);
-    if (this.aSelectedWorkStation?.length) _aCalendarEvent = _aCalendarEvent.filter((oEvent: any) => this.aSelectedWorkStation.includes(oEvent?.customProperty?.oDayClosure?.iWorkstationId?.toString()))
-    // console.log('After workstation selection: ', _aCalendarEvent?.length);
+    if (this.selectedWorkStation?.length) _aCalendarEvent = _aCalendarEvent.filter((oEvent: any) => this.selectedWorkStation.includes(oEvent?.customProperty?.oDayClosure?.iWorkstationId?.toString()))
     if (this.aSelectedLocation?.length) _aCalendarEvent = _aCalendarEvent.filter((oEvent: any) => this.aSelectedLocation.includes(oEvent?.customProperty?.oDayClosure?.iLocationId?.toString()))
-    // console.log('after location selection: ', _aCalendarEvent?.length);
     this.processingTheEvent(_aCalendarEvent);
-
-    // if (eType === 'workstation' && !this.aSelectedLocation?.length) {
-    //   console.log('workstation: ', _aCalendarEvent, this.aSelectedWorkStation);
-
-
-    // } else if (eType == 'location' && !this.aSelectedWorkStation?.length) {
-
-    //   // console.log('location: ', _aCalendarEvent, this.aSelectedLocation);
-    // }
   }
 
   close(oData?: any): void {

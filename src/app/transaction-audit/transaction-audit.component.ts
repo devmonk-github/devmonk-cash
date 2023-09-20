@@ -1666,7 +1666,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         eType: eType, /* from-state or to-state */
         aWorkStation: this.aWorkStation,
         aLocation: this.aLocation,
-        oCalendarSelectedData: this.oCalendarSelectedData
+        oCalendarSelectedData: this.oCalendarSelectedData,
+        aSelectedLocation: this.aSelectedLocation,
+        sDayClosureMethod: this.sDayClosureMethod
       },
       hasBackdrop: true,
       closeOnBackdropClick: false,
@@ -1674,6 +1676,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }).instance.close.subscribe((result: any) => {
       this.bIsCalendarOpen = false;
       if (result?.isChosen) {
+        
+        this.selectedWorkStation = result?.oData?.selectedWorkStation;
+        this.aSelectedLocation = result?.oData?.aSelectedLocation;
+
         const _oDayClosure = result?.oData?.extendedProps?.customProperty?.oDayClosure;
 
         // if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
