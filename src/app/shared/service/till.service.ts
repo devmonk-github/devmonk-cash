@@ -288,8 +288,9 @@ export class TillService {
       }
 
       if (i.type === 'repair' || i.type === 'order') oItem.nActualCost = oItem.nPurchasePrice;
-      if (i.bHasStock && (i.oCurrentLocation?.nStock == 0 || !i.oCurrentLocation?.nStock) ) oItem.oType.nStockCorrection = 0;
-
+      /*Commented because need to create stock correction always.*/
+      // if (i.bHasStock && (i.oCurrentLocation?.nStock == 0 || !i.oCurrentLocation?.nStock) ) oItem.oType.nStockCorrection = 0; 
+     
       const nTotal = +(i.price.toFixed(2) * i.quantity);
       oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
       oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity));
