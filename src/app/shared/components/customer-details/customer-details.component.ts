@@ -1102,7 +1102,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.aTransactions.forEach(transaction => {
           transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
-            transaction.sTotal += parseFloat(item.nPaymentAmount);
+            
+            if((item.bIsImported && !item.nPaymentAmount) || item.bMigrate)
+              transaction.sTotal += parseFloat(item.nPriceIncVat);
+            else 
+              transaction.sTotal += parseFloat(item.nPaymentAmount);
+
             const count = this.totalActivities;
             if (item?.oType?.eKind && this.activityTitlesEkind.includes(item?.oType?.eKind)) this.totalActivities = count + item.nQuantity || 0;
             switch (item?.oType?.eKind) {
