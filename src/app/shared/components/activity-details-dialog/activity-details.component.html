@@ -615,15 +615,15 @@
                                                                 {{ "PHOTO" |translate}}
                                                         </button>
                                                         <div class="d-flex align-items-center mb-3">
-                                                            <p class="fw-bolder text-warning m-0" *ngIf="!activity?.aImage?.length" >
+                                                            <p class="fw-bolder text-warning m-0" *ngIf="!activity?.aImage?.length || activity?.aImage[0] == ''" >
                                                                 {{"NO_IMAGE" | translate}}
                                                             </p>
-                                                            <p class="fw-bolder m-0" *ngIf="activity?.aImage?.length">
+                                                            <p class="fw-bolder m-0" *ngIf="activity?.aImage?.length && activity?.aImage[0] != ''">
                                                                 {{'IMAGES' | translate}}
                                                             </p>
                                                         </div>
 
-                                                        <div [class]="activity.oType.eKind == 'order'? 'd-flex my-3 pb-7' : 'd-flex my-3 flex-wrap'" [style]="activity.oType.eKind == 'order'? 'overflow-y: auto;': 'overflow-y: unset; row-gap: 15px;'" *ngIf="activity?.aImage?.length">
+                                                        <div [class]="activity.oType.eKind == 'order'? 'd-flex my-3 pb-7' : 'd-flex my-3 flex-wrap'" [style]="activity.oType.eKind == 'order'? 'overflow-y: auto;': 'overflow-y: unset; row-gap: 15px;'" *ngIf="activity?.aImage?.length  && activity?.aImage[0] != ''">
                                                             <div class="image-input p-0 me-5"
                                                                 *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                                 data-kt-image-input="true"
