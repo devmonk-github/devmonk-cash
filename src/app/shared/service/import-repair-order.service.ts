@@ -240,7 +240,6 @@ export class ImportRepairOrderService {
           imageArray = oData?.aImage.split(";");
         }
 
-
         oData.nPriceIncVat = parseFloat((oData?.nPriceIncVat)?.replace(/,/g, '.'));
         oData.nActualCost = parseFloat((oData?.nActualCost)?.replace(/,/g, '.'));
         oData.nTotalAmount = parseFloat((oData?.nTotalAmount)?.replace(/,/g, '.'));
@@ -250,8 +249,13 @@ export class ImportRepairOrderService {
            oData.eActivityItemStatus = 'inspection';
         }
         
-        
+        // function convertToPlain(rtf) {
+        //   rtf = rtf.replace(/\\par[d]?/g, "");
+        //   return rtf.replace(/\{\*?\\[^{}]+}|[{}]|\\\n?[A-Za-z]+\n?(?:-?\d+)?[ ]?/g, "").trim();
+        // }
+
         if (oData?.sDescription) {
+          // oData.sDescription = this.processRTFData(oData?.sDescription);
           oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
         }
 
@@ -440,4 +444,60 @@ export class ImportRepairOrderService {
 
     return aPayment;
   }
+
+  /* RTF PROCESS START */
+
+  isRtfText(text: string): any {
+    const lowercaseText = text.toLowerCase(); // Convert the text to lowercase for case-insensitive comparison
+    return (
+        lowercaseText.includes('rtf') ||
+        lowercaseText.includes('{\\') ||
+        lowercaseText.includes('\\par')
+    );
+  }
+
+  convertRtfToPlainText(rtf: string): any {
+    // Remove invalid Unicode escape sequences
+    const cleanedRtf = rtf.replace(/\\[a-zA-Z]+\d*/, '');
+
+    // Remove RTF control words and tags
+    const plainText = cleanedRtf.replace(/\\[^\\]*|{[^}]*}/g, '');
+
+    // Remove line breaks and newline characters
+    const withoutLineBreaks = plainText.replace(/\\par/g, '\n');
+
+    // Trim leading and trailing whitespace
+    const trimmedText = withoutLineBreaks.trim();
+
+    console.log('convertRtfToPlainText PLAIN TEXT: ', trimmedText);
+    return trimmedText;
+  }
+
+  processRTFData(input: any): any {
+    if (typeof input === 'string') {
+      // Check if the input string contains RTF data
+      if (this.isRtfText(input)) {
+        return this.convertRtfToPlainText(input);
+      } else {
+        return input; // Return the input as is if it's not RTF
+      }
+    } else if (Array.isArray(input)) {
+      // log.cyan('is any array?', input);
+      // If the input is an array, recursively process each item
+      return input.map(item => this.processRTFData(item));
+    } else if (typeof input === 'object' && input !== null) {
+      // If the input is an object, recursively process its properties
+      const result: any = {};
+      for (const key in input) {
+        if (input.hasOwnProperty(key)) {
+          result[key] = this.processRTFData(input[key]);
+        }
+      }
+      return result;
+    } else {
+      // If the input is neither a string nor an object, return it as is
+      return input;
+    }
+  }
+  /* RTF PROCESS END */
 }

@@ -9,11 +9,11 @@ import * as _moment from 'moment';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 const aColorCode = [
-  '#3ba68c', // 
-  '#3b8aa6', // 
-  '#3F4254', // 
-  '#A1A5B7', // 
-  '#F1FAFF', // Green light
+  '#3ba68c',
+  '#3b8aa6',
+  '#3F4254',
+  '#A1A5B7',
+  '#F1FAFF',
 ];
 
 @Component({
@@ -33,7 +33,7 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   aCalendarEvent: any;
   oCalendarSelectedData: any;
   eType: string; /* from-state or to-state */
-  calendarOptions: any = {
+  calendarOptions: any /* CalendarOptions */ = {
     headerToolbar: {
       left: 'prev,today,next',
       center: 'title',
@@ -47,12 +47,6 @@ export class CalendarGanttViewDialogComponent implements OnInit {
     plugins: [dayGridPlugin],
     events: [],
     displayEventTime: false,
-    // eventTimeFormat: { // like '14:30:00'
-    //   hour: '2-digit',
-    //   minute: '2-digit',
-    //   second: '2-digit',
-    //   hour12: false
-    // },
     eventClick: this.handleEventClick.bind(this),
   };
 
@@ -82,7 +76,6 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
   processingTheEvent(__aCalendarEvent?: any) {
     const _aCalendarEvent = __aCalendarEvent ? __aCalendarEvent : JSON.parse(JSON.stringify(this.aCalendarEvent));
-    // const _sDayClosureMethod = this.sDayClosureMethod || 'workstation';
     const aArray = this.sDayClosureMethod == 'workstation' ? this.aWorkStation : this.aLocation;
     /* FROM-STATE */
     if (this.eType === 'FROM_STATE') {
@@ -105,7 +98,6 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
       this.calendarOptions.events = _aCalendarEvent?.filter((oEvent: any) => oEvent?.end)?.map((oEvent: any) => {
         const dCloseDate = oEvent.customProperty?.oDayClosure?.dCloseDate;
-        // oEvent.backgroundColor = this.getRandomColor();
         oEvent.backgroundColor = (this.aWorkStation.find((oWorkstation: any) => oWorkstation._id == oEvent.customProperty?.oDayClosure?.iWorkstationId))?.backgroundColor || this.getRandomColor();
         oEvent.title = `${oEvent.title} (${(moment(dCloseDate).format('DD-MM-yyyy hh:mm'))})`
         return oEvent;

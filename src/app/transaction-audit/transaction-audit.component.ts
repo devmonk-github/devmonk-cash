@@ -142,6 +142,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     nAmountToDeduct: 0,
   };
   bSavingHelperDetails:boolean = false;
+  bDayClosureLoading: boolean = false;
+  bBusinessLocationLoading: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -683,6 +685,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   fetchBusinessLocation() {
     if (!this.oUser?.userId) return;
+    this.bBusinessLocationLoading = true;
     this.listBusinessSubscription = this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId, }).subscribe((result: any) => {
       if (result?.data?.aLocation?.length) {
         this.aLocation = result.data.aLocation;
@@ -696,8 +699,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           }
         });
       }
+      this.bBusinessLocationLoading = false;
     },
       (error) => {
+        this.bBusinessLocationLoading = false;
         console.log('error: ', error);
       }
     );
@@ -832,7 +837,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   handleModifiedCashAtStart() {
     for(const el of this.aStatistic[0].individual){
-      const oModifiedRecord = el.aArticleGroups.find((el: any) => ['MODIFIED_START_AMOUNT', 'ADD_CASH_WITHOUT_REVENUE'].includes(el.sName));
+      const oModifiedRecord = el?.aArticleGroups?.find((el: any) => ['MODIFIED_START_AMOUNT', 'ADD_CASH_WITHOUT_REVENUE'].includes(el.sName));
       if (oModifiedRecord) {
         let nRevenue = 0;
         if (oModifiedRecord.sName == 'MODIFIED_START_AMOUNT') {
@@ -1615,6 +1620,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* For FROM State and TO State */
   fetchDayClosureList() {
     try {
+      this.bDayClosureLoading = true;
       this.aDayClosure = [];
       const oBody = {
         iBusinessId: this.iBusinessId,
@@ -1627,7 +1633,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
-          
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
             this.aCalendarEvent.push({
               title: oDayClosure?.sWorkStationName,
@@ -1645,10 +1650,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             }
           });
         }
+        this.bDayClosureLoading = false;
       }, (error) => {
+        this.bDayClosureLoading = false;
         console.log('error: ', error);
       })
     } catch (error) {
+      this.bDayClosureLoading = false;
       console.log('error: ', error);
     }
   }

@@ -57,9 +57,10 @@ export class ImportRepairOrderComponent implements OnInit {
       this.stepperInstance.goNext();
     }
   }
-
+  
   async importRepairOrder() {
     try {
+
       this.importInprogress = true;
       const oData = {
         parsedRepairOrderData: this.parsedRepairOrderData,
