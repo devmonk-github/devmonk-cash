@@ -303,8 +303,8 @@ export class ExportsComponent implements OnInit {
     var body = this.requestParams;
     this.apiService.postNew('customer', '/api/v1/customer/exports', body).subscribe(
       (result: any) => {
-        if (result && result.data && result.data.length) {
-          this.dataForCSV = result.data[0].result;
+        if (result?.data?.length) {
+          this.dataForCSV = result?.data;
         }
         for (const customer of this.dataForCSV) {
           if (customer.dDateOfBirth) customer.dDateOfBirth = moment(customer.dDateOfBirth).format('DD-MM-yyyy');
