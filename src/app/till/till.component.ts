@@ -1492,8 +1492,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
+    // console.log(this.tillService.settings, {currentLocation});
     const name = this.tillService.getNameWithPrefillingSettings(product, this.language);
-    const sDescription = this.tillService.getDescriptionWithGemDetails(product);
+
+    let sDescription = '';
+    const sSetting = this.tillService.settings.sDescriptionFieldToPrefill;
+    if(sSetting) {
+      if (sSetting == 'oShortDescription') sDescription = product.oShortDescription[this.language] || '';
+      else if (sSetting == 'sInternalDescription'){
+        sDescription = product.aLocation.find((el: any) => el._id == this.iLocationId)?.sInternalDescription || '';
+      } 
+    } else {
+      sDescription = this.tillService.getDescriptionWithGemDetails(product);
+    }
     // console.log({product});
     this.transactionItems.push({
       name,

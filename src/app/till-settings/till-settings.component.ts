@@ -398,9 +398,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       } 
       this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];
     }
-
-   
-    
     const body = {
       nLastInvoiceNumber: this.settings?.nLastInvoiceNumber || 0,
       nLastReceiptNumber: this.settings?.nLastReceiptNumber || 0 ,
@@ -416,7 +413,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair || null ,
       bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
       bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
-      bShowForm: this.settings?.bShowForm  
+      bShowForm: this.settings?.bShowForm,
+      sDescriptionFieldToPrefill: this.settings?.sDescriptionFieldToPrefill  
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

@@ -292,6 +292,13 @@
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
             </label>
           </div>
+          <div class="col-12 d-flex align-items-center justify-content-between mb-5">
+            <label class="form-check form-switch form-check-custom form-check-solid">{{"DESCRIPTION_FIELD" | translate}}</label>
+            <ng-select class="w-100 ms-5" [clearable]="true" [(ngModel)]="settings.sDescriptionFieldToPrefill" placeholder="{{ 'SELECT' | translate }}">
+              <ng-option value="sInternalDescription">{{ 'INTERNAL_DESCRIPTION' | translate}} </ng-option>
+              <ng-option value="oShortDescription">{{ 'SHORT_DESCRIPTION' | translate}} </ng-option>
+            </ng-select>
+          </div>
           <!-- <div class="col-3 mb-5">
             <label class="form-check form-switch form-check-custom form-check-solid">
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
