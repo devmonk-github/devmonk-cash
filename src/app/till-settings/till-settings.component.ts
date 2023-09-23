@@ -99,6 +99,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   
   bUpdateNclientID: boolean = false;
   oldNlastnClientID: number = 0;
+  
+  bDefaultPayMethodsLoading: boolean = false;
+  aDefaultPaymentMethods: any = [];
+  aAllPaymentMethods: any = [];
 
   constructor(
     private apiService: ApiService,
@@ -107,15 +111,15 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     public tillService: TillService
   ) { }
-
+  
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.selectedLanguage = localStorage.getItem('language');
     this.getSettings();
     this.fetchQuickButtons();
     this.getArticleGroups();
-    this.getPaymentMethods();
     this.getBookkeepingSetting();
+    
   }
 
   getArticleGroups() {
@@ -146,7 +150,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   deleteMethod(method: any) {
     const buttons = [
-      { text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
+      { text: "YES", value: true, status: 'success', class: 'btn-primary me-2' },
       { text: "NO", value: false, class: 'btn-warning' }
     ]
     this.deleteMethodModalSub = this.dialogService.openModal(ConfirmationDialogComponent, {
@@ -214,6 +218,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         this.settings.currentLocation = oMergedSettings;
       }
       this.getCustomerSettings();
+      this.getPaymentMethods();
     }, (error) => {
       console.log(error);
     })
@@ -314,8 +319,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
 
   createPaymentMethod() {
-    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => {
-      if (result.action) this.getPaymentMethods();
+    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create', visiblePayMethods: this.aAllPaymentMethods.filter((el: any) => el.bShowInCashRegister) }, hasBackdrop: true }).instance.close.subscribe(async result => {
+      if (result.action){
+        this.getPaymentMethods();
+      } 
     });
   }
 
@@ -325,23 +332,44 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   getPaymentMethods() {
     this.payMethodsLoading = true;
+    this.bDefaultPayMethodsLoading = true;
     this.payMethods = []
-    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => { //'?type=custom'
+    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe(async (result: any) => { //'?type=custom'
       if (result?.data?.length) {
-        this.payMethods = result.data;
-        const oGiftcardMethod = this.payMethods.find((oMethod: any) => oMethod.sName == 'Giftcards');
+        this.aAllPaymentMethods = result.data;
+        const oGiftcardMethod = this.aAllPaymentMethods.find((oMethod: any) => oMethod.sName == 'Giftcards');
         if (oGiftcardMethod) oGiftcardMethod.bIsDefaultPaymentMethod = true;
+        this.payMethods = this.aAllPaymentMethods.filter((oMethod: any) => !oMethod.bIsDefaultPaymentMethod);
+        this.payMethodsLoading = false;
+
+        this.aDefaultPaymentMethods = this.aAllPaymentMethods.filter((oMethod: any) => oMethod.bIsDefaultPaymentMethod);
+        for(let oMethod of this.aDefaultPaymentMethods){
+          let setting = await this.settings?.aDefaultPayMethodSettings?.find((el:any) => el._id == oMethod._id)
+          if(setting){
+            //console.log('im inside here')
+            oMethod.bShowInCashRegister = setting.bShowInCashRegister;
+            oMethod.bStockReduction = setting.bStockReduction;
+            oMethod.bInvoice = setting.bInvoice;
+            oMethod.bAssignSavingPoints = setting.bAssignSavingPoints;
+            oMethod.bAssignSavingPointsLastPayment = setting.bAssignSavingPointsLastPayment;
+          }
+        }
+        this.bDefaultPayMethodsLoading = false;
         for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
-      this.payMethodsLoading = false;
+     
     }, (error) => {
       this.payMethodsLoading = false;
     })
   }
 
+
   viewDetails(method: any) {
-    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method }, hasBackdrop: true }).instance.close.subscribe(result => {
-      if (result.action) this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
+    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method, settings: this.settings , visiblePayMethods: this.aAllPaymentMethods.filter((el: any) => el.bShowInCashRegister)}, hasBackdrop: true }).instance.close.subscribe(async result => {
+      if (result.action){
+        this.getSettings(); 
+        this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
+      }
     });
   }
 
@@ -437,7 +465,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     // });
 
     this.createFavouriteModalSub = this.dialogService.openModal(QuickbuttonWizardComponent, { 
-      context: { mode: 'create' }, 
+      context: { mode: 'create', aQuickButtons:  this.quickButtons}, 
       cssClass: "modal-lg", 
       hasBackdrop: true, 
       closeOnBackdropClick: true, 
@@ -548,7 +576,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   setSequenceForCashRegister(){
     this.dialogService.openModal(SetPaymentMethodSequenceComponent, { 
       context: { 
-        payMethods: this.payMethods.filter((el: any) => el.bShowInCashRegister),
+        payMethods: this.aAllPaymentMethods.filter((el: any) => el.bShowInCashRegister),
         aPaymentMethodSequence: this.settings?.aPaymentMethodSequence || []
       }, 
       cssClass: "modal-m", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {

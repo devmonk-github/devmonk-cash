@@ -1,8 +1,9 @@
 <div class="card">
-    <div class="card-header align-items-center" style="margin-top: 20px;">
+    <div class="card-header align-items-center py-4">
         <div class="col-10">
             <h4 class="m-0" *ngIf="mode === 'create'">{{ 'CREATE_PAYMENT_METHOD' | translate}}</h4>
-            <h4 class="m-0" *ngIf="mode === 'details'">{{ 'UPDATE_PAYMENT_METHOD' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'details' && customMethod.bIsDefaultPaymentMethod">{{ 'CREATE_COPY_OF_DEFAULT_PAYMENT_METHOD' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'details' && !customMethod.bIsDefaultPaymentMethod">{{ 'UPDATE_PAYMENT_METHOD' | translate}}</h4>
         </div>
         <div>
             <a class="cancel my-auto" (click)="close()">
@@ -14,9 +15,9 @@
         <diV class="row">
             <div class="col-12">
                 <label class="form-label form-control-solid m-0">{{ 'NAME' | translate }}:</label>
-                <input class="form-control form-control-solid" [readonly]="customMethod.bIsDefaultPaymentMethod" (value)="customMethod.sName" [(ngModel)]="customMethod.sName"/>
+                <input class="form-control form-control-solid" [readonly]="customMethod.sName == 'Cash' || customMethod.bIsDefaultPaymentMethod" (value)="customMethod.sName" [(ngModel)]="customMethod.sName"/>
                 <span *ngIf="customMethod.bIsDefaultPaymentMethod"> 
-                    <label class="required"></label>{{ 'YOU_CANNOT_UPDATE_NAME_OF_THE_DEFAULT_PAYMENT_METHOD' | translate }}
+                    <label class="required"></label> {{ 'YOU_CANNOT_UPDATE_NAME_OF_THE_DEFAULT_PAYMENT_METHOD' | translate }}
                 </span>
             </div>
         </diV>
