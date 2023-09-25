@@ -715,6 +715,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* Countings Code (KK) */
   processCounting() {
     this.oCountings = this.oStatisticsDocument?.oCountings;
+    console.log('processCounting', JSON.parse(JSON.stringify(this.oCountings)))
     // this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
     // this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
     // this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
@@ -814,20 +815,21 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               }
               this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
               this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
-              this.handleModifiedCashAtStart();
             }
 
             this.aStatisticsDocuments = oData.aStaticDocument;
             // console.log(this.aStatisticsDocuments)
-            if (this.iStatisticId) {
+            if (this.iStatisticId && this.aStatisticsDocuments?.length) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
             } else {
               this.oStatisticsDocument = this.auditService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
+            if (this.bOpeningHistoricalDayState) this.handleCashMutations();
             this.checkShowDownload();
           }
+          console.log(JSON.parse(JSON.stringify(this.oCountings)));
         }
       }, (error) => {
         this.bStatisticLoading = false;
@@ -835,22 +837,45 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       });
   }
 
-  handleModifiedCashAtStart() {
-    for(const el of this.aStatistic[0].individual){
-      const oModifiedRecord = el?.aArticleGroups?.find((el: any) => ['MODIFIED_START_AMOUNT', 'ADD_CASH_WITHOUT_REVENUE'].includes(el.sName));
-      if (oModifiedRecord) {
-        let nRevenue = 0;
-        if (oModifiedRecord.sName == 'MODIFIED_START_AMOUNT') {
-          nRevenue = -(oModifiedRecord.nTotalRevenue);
-          this.oHelperDetails.oStartAmountIncorrect.nAmount = oModifiedRecord.nTotalRevenue;
-          
-          if (this.bOpeningDayClosure || this.IsDynamicState) {
-            this.oCountings.nCashInTill += nRevenue;
-            this.oCountings.nCashInTill = +(this.oCountings.nCashInTill.toFixed(2))
-          }        
-        } 
+  handleCashMutations() {
+    this.oHelperDetails.nAmountToAdd = 0;
+    this.oHelperDetails.nAmountToDeduct = 0;
+    // console.log('handleCashMutations', this.aStatistic, JSON.parse(JSON.stringify(this.oHelperDetails)))
+    for (const el of this.aStatistic[0].individual) {
+      const aModifiedRecord = el?.aArticleGroups?.filter((el: any) => ['MODIFIED_START_AMOUNT', 'ADD_CASH_WITHOUT_REVENUE'].includes(el.sName));
+      if (aModifiedRecord?.length) {
+        // console.log({ aModifiedRecord })
+        aModifiedRecord.forEach((oModifiedRecord: any) => {
+          if (oModifiedRecord.sName == 'MODIFIED_START_AMOUNT') {
+            // nRevenue = oModifiedRecord.nTotalRevenue;
+            this.oHelperDetails.oStartAmountIncorrect.nAmount = oModifiedRecord.nTotalRevenue;
+            this.oHelperDetails.oStartAmountIncorrect.bChecked = true;
+            // console.log('MODIFIED_START_AMOUNT, adding revenue before',this.oHelperDetails.nAmountToAdd )
+            this.oHelperDetails.nAmountToAdd += oModifiedRecord.nTotalRevenue;
+            // console.log('MODIFIED_START_AMOUNT, adding revenue after', this.oHelperDetails.nAmountToAdd)
+
+            // if (this.bOpeningDayClosure || this.IsDynamicState) {
+            //   console.log('handleCashMutations modifying 848', 'before cash in till', this.oCountings.nCashInTill)
+            //   this.oCountings.nCashInTill += nRevenue;
+            //   this.oCountings.nCashInTill = +(this.oCountings.nCashInTill.toFixed(2))
+            //   console.log('after', this.oCountings.nCashInTill)
+            //   console.log('after', { nRevenue })
+            // }        
+          } else if (oModifiedRecord.sName == 'ADD_CASH_WITHOUT_REVENUE') {
+            // console.log({oModifiedRecord})
+            // console.log('ADD_CASH_WITHOUT_REVENUE, adding revenue before', this.oHelperDetails.nAmountToAdd)
+            this.oHelperDetails.nAmountToAdd += oModifiedRecord.nTotalRevenue;
+            // console.log('ADD_CASH_WITHOUT_REVENUE, adding revenue after', this.oHelperDetails.nAmountToAdd)
+            const oReason = this.oHelperDetails.aReasons[0];
+            oReason.nAmount = oModifiedRecord.nTotalRevenue;
+            oReason.oExpense = {
+              oExpenseType: { title: oModifiedRecord.sName }
+            }
+          }
+        });
       }
     }
+    if(this.bOpeningDayClosure) this.oCountings.nCashInTill -= this.oHelperDetails.nAmountToAdd
   }
 
   getUniqueArticleGroupIds() {
@@ -985,12 +1010,16 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
-              if (item?.sMethod === 'cash') this.oCountings.nCashInTill = +((item?.nAmount || 0).toFixed(2));
+              if (item?.sMethod === 'cash') {
+                // console.log('before adjusting cash payment method', this.oCountings.nCashInTill, item)
+                this.oCountings.nCashInTill = +((item?.nAmount || 0).toFixed(2));
+                // console.log('after adjusting cash payment method', this.oCountings.nCashInTill)
+              }
             });
-            this.handleModifiedCashAtStart();
             if (this.IsDynamicState) this.nPaymentMethodTotal = this.tillService.getSum(this.aPaymentMethods, 'nAmount')
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-            this.filterDuplicatePaymentMethods();
+          this.filterDuplicatePaymentMethods();
+          this.handleCashMutations();
           }
           this.checkShowDownload();
         }
@@ -1469,8 +1498,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.auditService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     
     this.oCountings.nCashDifference = +(this.oCountings.nCashCounted - (
-      this.oCountings.nCashAtStart + this.oCountings.nCashInTill + this.oHelperDetails.oStartAmountIncorrect.nAmount + (this.oHelperDetails.nAmountToDeduct || 0))
-    ).toFixed(2);
+      this.oCountings.nCashAtStart + this.oCountings.nCashInTill + this.oHelperDetails.nAmountToAdd + this.oHelperDetails.nAmountToDeduct
+    )).toFixed(2);
     
     const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
     let oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
@@ -1508,7 +1537,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     const org = localStorage.getItem('org');
     if(org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
-
+    // return;
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: this.translateService.instant('DAY_STATE_IS_CLOSED_NOW')});
       this.closingDayState = false;

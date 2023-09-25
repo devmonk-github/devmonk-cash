@@ -1564,8 +1564,8 @@
                             <div class="earnings-section">
                                 <div>
                                     <label>{{ "CASH_LEFTOVER" | translate}}</label>
-                                    <label>
-                                        {{ oCountings.nCashAtStart + ((oHelperDetails.bSaved) ? oHelperDetails.oStartAmountIncorrect.nAmount : 0) | currency:auditService.currency }}
+                                    <label><!-- + ((oHelperDetails.bSaved) ? oHelperDetails.oStartAmountIncorrect.nAmount : 0) -->
+                                        {{ oCountings.nCashAtStart  | currency:auditService.currency }}
                                     </label>
                                 </div>
                                 <!-- COMMENTED THIS BECAUSE NOT USING BELOW FIELD CURRENTLY
@@ -1574,7 +1574,13 @@
                                         <label>{{ '0.00' | currency: auditService.currency }}</label>
                                     </div> 
                                 -->
-                                <div *ngIf="!oHelperDetails.bSaved && oHelperDetails.aReasons?.length"
+                                <div>
+                                    <label>{{ "CASH_IN_TILL" | translate}}</label>
+                                    <label>
+                                        {{ oCountings.nCashInTill | currency: auditService.currency }}
+                                    </label>
+                                </div>
+                                <div *ngIf="oHelperDetails.nAmountToAdd || oHelperDetails.nAmountToDeduct"
                                     class="border-top border-bottom ps-5 py-3 d-block">
                                     <label class="bold">{{ 'CORRECTIONS' | translate }}</label>
                                 
@@ -1599,13 +1605,6 @@
                                             auditService.currency}} </label>
                                     </div>
                                 </div>
-                                <div>
-                                    <label>{{ "CASH_IN_TILL" | translate}}</label>
-                                    <label>
-                                        {{ oCountings.nCashInTill | currency: auditService.currency }}
-                                    </label>
-                                </div>
-                                
                                 <div>
                                     <label>{{ "CASH_COUNTED" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"

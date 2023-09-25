@@ -359,16 +359,34 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = [];
-    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe(async (result: any) => {
       if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-        const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister)
+        //console.log('im here 1',  this.allPaymentMethod);
+        if(this.tillService?.settings?.aDefaultPayMethodSettings?.length){
+          for(let oMethod of this.allPaymentMethod){
+            let setting = await this.tillService?.settings?.aDefaultPayMethodSettings?.find((el:any) => el._id == oMethod._id)
+            if(setting){
+              //console.log('im inside here')
+              oMethod.bShowInCashRegister = setting.bShowInCashRegister;
+              oMethod.bStockReduction = setting.bStockReduction;
+              oMethod.bInvoice = setting.bInvoice;
+              oMethod.bAssignSavingPoints = setting.bAssignSavingPoints;
+              oMethod.bAssignSavingPointsLastPayment = setting.bAssignSavingPointsLastPayment;
+            }
+          }
+        }
+       
+        const aVisibleMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister);
         if (this.tillService?.settings?.aPaymentMethodSequence?.length) {
           this.tillService.settings.aPaymentMethodSequence.forEach((iPaymentMethodId: any) =>
             this.payMethods.push(aVisibleMethods.find((el: any) => el._id == iPaymentMethodId))
           );
         } else {
-          this.payMethods = aVisibleMethods;
+          if(aVisibleMethods.length)
+            this.payMethods = aVisibleMethods;
+          else
+            this.payMethods = result.data.filter((el: any) => el.bShowInCashRegister);
         }
       }
       this.aInitialPaymentMethods = this.payMethods;
@@ -1492,8 +1510,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
+    // console.log(this.tillService.settings, {currentLocation});
     const name = this.tillService.getNameWithPrefillingSettings(product, this.language);
-    const sDescription = this.tillService.getDescriptionWithGemDetails(product);
+
+    let sDescription = '';
+    const sSetting = this.tillService.settings.sDescriptionFieldToPrefill;
+    if(sSetting) {
+      if (sSetting == 'oShortDescription') sDescription = product.oShortDescription[this.language] || '';
+      else if (sSetting == 'sInternalDescription'){
+        sDescription = product.aLocation.find((el: any) => el._id == this.iLocationId)?.sInternalDescription || '';
+      } 
+    } else {
+      sDescription = this.tillService.getDescriptionWithGemDetails(product);
+    }
     // console.log({product});
     this.transactionItems.push({
       name,
