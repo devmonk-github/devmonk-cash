@@ -37,7 +37,7 @@ export class CalendarGanttViewDialogComponent implements OnInit {
     headerToolbar: {
       left: 'prev,today,next',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      right: 'dayGridMonth'
     },
     validRange: {
       end: new Date()

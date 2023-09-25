@@ -24,8 +24,6 @@ export class FileImportComponent implements OnInit, OnDestroy {
   @Output() parsedCustomerDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
 
-  
-  
   constructor(
     private csvParser: NgxCsvParser,
     private toasterService : ToastService ,
