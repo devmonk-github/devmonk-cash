@@ -14,7 +14,7 @@
           <div class="row">
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.02
+                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.05
               </label>
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
@@ -293,8 +293,10 @@
             </label>
           </div>
           <div class="col-12 d-flex align-items-center justify-content-between mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{"DESCRIPTION_FIELD" | translate}}</label>
-            <ng-select class="w-100 ms-5" [clearable]="true" [(ngModel)]="settings.sDescriptionFieldToPrefill" placeholder="{{ 'SELECT' | translate }}">
+            <label class="form-check form-switch form-check-custom form-check-solid">{{"DESCRIPTION_FIELD" |
+              translate}}</label>
+            <ng-select class="w-100 ms-5" [clearable]="true" [(ngModel)]="settings.sDescriptionFieldToPrefill"
+              placeholder="{{ 'SELECT' | translate }}">
               <ng-option value="sInternalDescription">{{ 'INTERNAL_DESCRIPTION' | translate}} </ng-option>
               <ng-option value="oShortDescription">{{ 'SHORT_DESCRIPTION' | translate}} </ng-option>
             </ng-select>
@@ -443,12 +445,27 @@
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
             <thead>
               <tr>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'NAME' | translate}}</p></th>
-                <th *ngIf="bookKeepingMode"><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'LEDGER_NUMBER' | translate}}</p></th>
-                <th *ngIf="!bookKeepingMode"><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'DEFAULT_OR_CUSTOM' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'SHOW_IN_CASH_REGISTER' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'EARN_LOYALTY_POINTS' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'ACTION' | translate}}</p></th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'NAME' | translate}}</p>
+                </th>
+                <th *ngIf="bookKeepingMode">
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'LEDGER_NUMBER' | translate}}</p>
+                </th>
+                <th *ngIf="!bookKeepingMode">
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'DEFAULT_OR_CUSTOM' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'SHOW_IN_CASH_REGISTER' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'EARN_LOYALTY_POINTS' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'ACTION' | translate}}</p>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -460,19 +477,25 @@
                   </span>
                 </td>
                 <td *ngIf="bookKeepingMode">
-                  <input type="number" class="form-control form-control-solid w-125px" [(ngModel)]="method.sLedgerNumber"
-                    (focusout)="updateLedgerNumber(method)" />
+                  <input type="number" class="form-control form-control-solid w-125px"
+                    [(ngModel)]="method.sLedgerNumber" (focusout)="updateLedgerNumber(method)" />
                 </td>
-                <td class="text-center" *ngIf="!bookKeepingMode"><span class="w-80px badge bg-info">{{ "CUSTOM" | translate }}</span></td>
-                <td class="text-center"><span class="w-80px" [ngClass]="method.bShowInCashRegister?'badge bg-success':'badge bg-danger'">{{ (method.bShowInCashRegister ? 'YES' : 'NO') | translate }}</span></td>
-                <td class="text-center"><span class="w-80px" [ngClass]="method.bAssignSavingPoints?'badge bg-success':'badge bg-danger'">{{ (method.bAssignSavingPoints ? 'YES' : 'NO') | translate }}</span></td>
+                <td class="text-center" *ngIf="!bookKeepingMode"><span class="w-80px badge bg-info">{{ "CUSTOM" |
+                    translate }}</span></td>
+                <td class="text-center"><span class="w-80px"
+                    [ngClass]="method.bShowInCashRegister?'badge bg-success':'badge bg-danger'">{{
+                    (method.bShowInCashRegister ? 'YES' : 'NO') | translate }}</span></td>
+                <td class="text-center"><span class="w-80px"
+                    [ngClass]="method.bAssignSavingPoints?'badge bg-success':'badge bg-danger'">{{
+                    (method.bAssignSavingPoints ? 'YES' : 'NO') | translate }}</span></td>
                 <td>
                   <div class="d-flex">
                     <button class="btn p-3 hover" (click)="viewDetails(method)">
-                      <span  *ngIf="!method.bIsDefaultPaymentMethod"><i class="fa fa-edit"></i></span>
-                      <span  *ngIf="method.bIsDefaultPaymentMethod"><i class="fa fa-copy"></i></span>
+                      <span *ngIf="!method.bIsDefaultPaymentMethod"><i class="fa fa-edit"></i></span>
+                      <span *ngIf="method.bIsDefaultPaymentMethod"><i class="fa fa-copy"></i></span>
                     </button>
-                    <button class="btn p-3 hover text-danger" (click)="deleteMethod(method)" *ngIf="!method.bIsDefaultPaymentMethod">
+                    <button class="btn p-3 hover text-danger" (click)="deleteMethod(method)"
+                      *ngIf="!method.bIsDefaultPaymentMethod">
                       <i class="fa fa-trash"></i>
                     </button>
                   </div>
@@ -494,34 +517,55 @@
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
             <thead>
               <tr>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'NAME' | translate}}</p></th>
-                <th *ngIf="bookKeepingMode"><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'LEDGER_NUMBER' | translate}}</p></th>
-                <th *ngIf="!bookKeepingMode"><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'DEFAULT_OR_CUSTOM' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'SHOW_IN_CASH_REGISTER' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'EARN_LOYALTY_POINTS' | translate}}</p></th>
-                <th><p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'ACTION' | translate}}</p></th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'NAME' | translate}}</p>
+                </th>
+                <th *ngIf="bookKeepingMode">
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'LEDGER_NUMBER' | translate}}</p>
+                </th>
+                <th *ngIf="!bookKeepingMode">
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'DEFAULT_OR_CUSTOM' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'SHOW_IN_CASH_REGISTER' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700 text-center">{{ 'EARN_LOYALTY_POINTS' |
+                    translate}}</p>
+                </th>
+                <th>
+                  <p class="fw-bolder text-uppercase mb-0 fs-6 text-gray-700">{{ 'ACTION' | translate}}</p>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let method of aDefaultPaymentMethods">
                 <td class="w-200px">
-                  <span class="text-dark fs-8" *ngIf="bookKeepingMode && method.bIsDefaultPaymentMethod">({{"DEFAULT" | translate}})</span>
+                  <span class="text-dark fs-8" *ngIf="bookKeepingMode && method.bIsDefaultPaymentMethod">({{"DEFAULT" |
+                    translate}})</span>
                   <br>{{method.sName}}<br>
                   <span class="badge bg-info text-bg-light mt-2" *ngIf="method.bUseTerminal">
                     {{"USE_TERMINAL" | translate }}
                   </span>
                 </td>
                 <td *ngIf="bookKeepingMode">
-                  <input type="number" class="form-control form-control-solid w-125px" [(ngModel)]="method.sLedgerNumber"
-                    (focusout)="updateLedgerNumber(method)" />
+                  <input type="number" class="form-control form-control-solid w-125px"
+                    [(ngModel)]="method.sLedgerNumber" (focusout)="updateLedgerNumber(method)" />
                 </td>
-                <td class="text-center" *ngIf="!bookKeepingMode"><span class="w-80px badge bg-dark">{{ "DEFAULT" | translate }}</span></td>
-                <td class="text-center"><span class="w-80px" [ngClass]="method.bShowInCashRegister?'badge bg-success':'badge bg-danger'">{{ (method.bShowInCashRegister ? 'YES' : 'NO') | translate }}</span></td>
-                <td class="text-center"><span class="w-80px" [ngClass]="method.bAssignSavingPoints?'badge bg-success':'badge bg-danger'">{{ (method.bAssignSavingPoints ? 'YES' : 'NO') | translate }}</span></td>
-                <td  class="text-center">
+                <td class="text-center" *ngIf="!bookKeepingMode"><span class="w-80px badge bg-dark">{{ "DEFAULT" |
+                    translate }}</span></td>
+                <td class="text-center"><span class="w-80px"
+                    [ngClass]="method.bShowInCashRegister?'badge bg-success':'badge bg-danger'">{{
+                    (method.bShowInCashRegister ? 'YES' : 'NO') | translate }}</span></td>
+                <td class="text-center"><span class="w-80px"
+                    [ngClass]="method.bAssignSavingPoints?'badge bg-success':'badge bg-danger'">{{
+                    (method.bAssignSavingPoints ? 'YES' : 'NO') | translate }}</span></td>
+                <td class="text-center">
                   <div class="d-flex justify-content-center">
                     <button class="btn p-3  hover" (click)="viewDetails(method)">
-                      <span  *ngIf="method.bIsDefaultPaymentMethod"><i class="fa fa-cog"></i></span>
+                      <span *ngIf="method.bIsDefaultPaymentMethod"><i class="fa fa-cog"></i></span>
                     </button>
                   </div>
                 </td>
