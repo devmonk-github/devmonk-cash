@@ -170,7 +170,8 @@ export class TransactionActionDialogComponent implements OnInit {
         pdfContent: response,
         iTransactionId: this.transaction._id,
         receiptType: 'purchase-receipt',
-        sCustomerEmail: oDataSource.oCustomer.sEmail
+        sCustomerEmail: oDataSource.oCustomer.sEmail,
+        businessDetails: this.businessDetails
       }
 
       this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe((result: any) => {

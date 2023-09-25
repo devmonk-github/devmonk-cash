@@ -294,7 +294,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         pdfContent: response,
         iTransactionId: this.transaction._id,
         receiptType: 'purchase-receipt',
-        sCustomerEmail: this.transaction?.oCustomer?.sEmail
+        sCustomerEmail: this.transaction?.oCustomer?.sEmail,
+        businessDetails: this.businessDetails
       }
       this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
         (result: any) => {

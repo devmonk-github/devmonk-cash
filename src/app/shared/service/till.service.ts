@@ -880,7 +880,7 @@ export class TillService {
       bIncludeGiftcards:true,
       bIncludeGoldpurchase:true,
     }
-
+    if (!this.settings) this.settings = { ...oBagNumberSettings, ...oPrefillSettings, ...oStatisticsSettings };
     let oMergedSettings: any = {};
     if (!this.settings?.aBagNumbers?.length) {
       oMergedSettings = { ...oBagNumberSettings };
