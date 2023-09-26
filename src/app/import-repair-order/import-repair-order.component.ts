@@ -26,6 +26,8 @@ export class ImportRepairOrderComponent implements OnInit {
   referenceObj: any = {};
   iWorkStationId: any;
   iEmployeeId: any;
+  bShowError: boolean = false;
+
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
@@ -100,8 +102,8 @@ export class ImportRepairOrderComponent implements OnInit {
       this.parsedRepairOrderData = [];
     } catch (error) {
       this.parsedRepairOrderData = [];
-      console.log('Import Repair Order error', error);
       this.importInprogress = false;
+      this.bShowError = true;
     }
   }
 
