@@ -21,6 +21,8 @@ export class CustomerImportComponent implements OnInit {
   businessDetails: any = {};
   stepperInstatnce: any;
   translate:any =[];
+  bShowError: boolean = false;
+  
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
@@ -95,9 +97,8 @@ export class CustomerImportComponent implements OnInit {
         this.toastService.show({type:'success' , text:this.translate['SUCCESSFULLY_IMPORTED']})
       }
     }, (error) => {
-      console.log(error);
       this.parsedCustomerData = [];
-      this.toastService.show({type:'warning' , text:error.message});
+      this.bShowError = true;
     });
   }
 
