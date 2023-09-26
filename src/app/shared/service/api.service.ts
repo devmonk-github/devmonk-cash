@@ -24,6 +24,7 @@ export class ApiService {
   public businessDetails: BehaviorSubject<any> = new BehaviorSubject<any>({});
   public activityItemDetails:BehaviorSubject<any> = new BehaviorSubject<any>({});
   toastService:ToastService;
+  bSuppressFurtherToast: boolean = false;
 
   constructor(
     private httpClient: HttpClient,
@@ -51,12 +52,15 @@ export class ApiService {
       //Server side error
       msg = error?.error?.message
     }
-
     if(Number(error.status) == 0) {
       let url = error.url.match('.*/v1/(.*)/') || ''
       this.toastService.show({type: 'danger', text: `Something went wrong while executing this url '${url[1]}'` })
     } else {
-      this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
+      if(error.status == 498) {
+        if (!this.bSuppressFurtherToast) this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
+        this.bSuppressFurtherToast = true;
+      }
+      if (!this.bSuppressFurtherToast) this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
     }
     return throwError(new Error(msg))
   }

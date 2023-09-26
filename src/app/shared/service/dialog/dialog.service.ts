@@ -34,6 +34,11 @@ export class DialogService {
       this.applicationRef.detachView(dialogComponentRef.hostView);
     });
 
+    document.addEventListener('token-expired', () => {
+      if (document.body.contains(popup)) document.body.removeChild(popup);
+      this.applicationRef.detachView(dialogComponentRef.hostView);
+    });
+
     // Set the message
     dialogComponentRef.instance.template = templateRef;
     dialogComponentRef.instance.context = userConfig.context;
