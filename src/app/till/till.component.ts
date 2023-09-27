@@ -1033,11 +1033,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.bHasIActivityItemId = true
           }
           
-          const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
-            if (item.type == 'custom') context.aInternalGiftcards.push(item);
-            else context.aExternalGiftcards.push(item);
-          }, { aInternalGiftcards: [], aExternalGiftcards: [] });
-          
+          //console.log('here', this.appliedGiftCards)
+          // OLD VERSION - working
+          const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
+          const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
+         
+          // NEW VERSION - not working
+          // const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
+          //   if (item.type == 'custom') context.aInternalGiftcards.push(item);
+          //   else context.aExternalGiftcards.push(item);
+          // }, { aInternalGiftcards: [], aExternalGiftcards: [] });
+          // console.log('here', this.appliedGiftCards)
+
           if (aExternalGiftcards?.length) { // we have some cards by external providers -> we will generate a revenue from it -> so need to process them as payment
             aExternalGiftcards.forEach((oCard:any) => {
               body.payments.push({
