@@ -54,8 +54,8 @@ export class QuickbuttonWizardComponent implements OnInit {
   oNewProduct: any = {
     sName: '',
     iArticleGroupId: '',
-    nPurchasePrice: 0,
-    nSellingPrice: 0,
+    nPurchasePrice: 1,
+    nSellingPrice: 1,
     nMargin: 1,
     nVat: 21
   };
@@ -65,13 +65,22 @@ export class QuickbuttonWizardComponent implements OnInit {
   selectedProduct: any = {
     sName: '',
     nPrice: '',
+    oType: {
+      bRefund: false
+    },
     oKeyboardShortcut: {
       sKey1: '',
       sKey2: ''
     }
   };
-  
-  limit: number = 20;
+  limit: number = 20; 
+
+  aTypes: any = [
+    { value: false, key: 'REGULAR' },
+    { value: true, key: 'REFUND' }
+  ];
+
+  aQuickButtons: any;
 
   aFunctionKeys:any = [
     { title: '' },
@@ -178,14 +187,17 @@ export class QuickbuttonWizardComponent implements OnInit {
     this.oNewProduct = {
       sName: '',
       iArticleGroupId: '',
-      nPurchasePrice: 0,
-      nSellingPrice: 0,
+      nPurchasePrice: 1,
+      nSellingPrice: 1,
       nMargin: 1,
       nVat: 21
     };
     this.selectedProduct = {
       name: '',
       nSellingPrice: '',
+      oType: {
+        bRefund: false
+      },
       oKeyboardShortcut: {
         sKey1: '',
         sKey2: ''
@@ -264,6 +276,7 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.selectedProduct.sNewArticleNumber = product.sArticleNumber?.split('*/*')[0];
       this.selectedProduct.iBusinessProductId = product._id;
       this.selectedProduct.aImage = product.aImage;
+      this.selectedProduct.sProductNumber = product.sProductNumber;
       //console.log('aLocation ', product?.aLocation);
       if (product?.aLocation?.length) {
         this.selectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0;
@@ -276,12 +289,17 @@ export class QuickbuttonWizardComponent implements OnInit {
     switch(object){
       case 'purchasePrice':
         this.oNewProduct.nPurchasePrice = this.oNewProduct.nSellingPrice / this.oNewProduct.nMargin;
+        if(this.oNewProduct.nPurchasePrice == 0 || this.oNewProduct.nMargin == 0 || !this.oNewProduct.nPurchasePrice || !this.oNewProduct.nPurchasePrice){
+          this.toastService.show({type: 'danger', text: this.translateService.instant('PURCHASE_PRICE_MORE_THAN_0')});
+          this.oNewProduct.nPurchasePrice = 1;
+          this.oNewProduct.nMargin = 1;
+        }
         break;
       case 'margin':
         let margin = this.oNewProduct.nSellingPrice / this.oNewProduct.nPurchasePrice;
         this.oNewProduct.nMargin = Number(margin.toFixed(2));
         break;
-      default: 
+      default:
         break;
     }
   }
@@ -297,7 +315,6 @@ export class QuickbuttonWizardComponent implements OnInit {
 
     //STEP 2: CHECK ARTICLE GROUP
     let result: any;
-    let rand = Math.floor(Math.random() * 99);
     if(this.selectedArticleGroup == 'stock' || this.selectedArticleGroup == 'other'){
 
       if(this.oNewProduct.iArticleGroupId == '' && this.bNewArticlegroup && this.sNewArticlegroupName != ''){
@@ -346,7 +363,7 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.oNewProduct.sBusinessPartnerName = supplier.sName;
       this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
       this.oNewProduct.sFunctionName = 'create-business-product';
-      this.oNewProduct.sProductNumber = 'QB-' + this.oNewProduct.sName?.toUpperCase().slice(0, 5) + rand;
+      this.oNewProduct.sProductNumber = 'QB-' + (this.aQuickButtons.length + 1).toString().padStart(3, '0');
       this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
       this.oNewProduct.aLocation = {
         _id: this.iLocationId,
@@ -407,11 +424,13 @@ export class QuickbuttonWizardComponent implements OnInit {
       let margin = Number((newPriceIncVat / this.product.nPurchasePrice).toFixed(2));
       let newPurchasePrice = this.selectedProduct.nPrice / margin;
      
-      let data = {
-        iLocationId: this.iLocationId,
-        nPurchasePrice: newPurchasePrice
+      if(newPurchasePrice){
+        let data = {
+          iLocationId: this.iLocationId,
+          nPurchasePrice: newPurchasePrice
+        }
+        await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
       }
-      await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
     }
 
     let _result: any, msg:string = '';    
@@ -424,7 +443,7 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.close(true);
       this.toastService.show({ type: 'success', text: msg }); //`New Quick Button added successfully`
     } else {
-      this.toastService.show({ type: 'success', text: this.translateService.instant('AN_ERROR_OCCURED') });
+      this.toastService.show({ type: 'danger', text: this.translateService.instant('AN_ERROR_OCCURED') });
       return;
     }
   }

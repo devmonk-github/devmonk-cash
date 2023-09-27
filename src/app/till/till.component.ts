@@ -1533,7 +1533,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nMargin: 1,
       nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
-      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
+      oType: { 
+        bRefund: isFrom === 'quick-button'? selectedQuickButton.oType?.bRefund : false, 
+        bDiscount: false, 
+        bPrepayment: false 
+      },
       nDiscount: product.nDiscount || 0,
       bDiscountOnPercentage: product.bDiscountOnPercentage || false,
       tax: nVatRate,

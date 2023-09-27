@@ -43,6 +43,7 @@ export class ProductComponent implements OnInit{
     ngOnInit(): void {
       this.fetchArticleGroupInfo();
       this.iSelectedLocationId = this.item.oCurrentLocation?._id;
+      if(this.item.bQuickButton && this.item.bQuickButton) this.changeTypeArray();
     }
 
   fetchArticleGroupInfo() {

@@ -597,16 +597,23 @@
         <div class="table-responsive" *ngIf="quickButtons.length && !quickButtonsLoading">
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
             <thead>
-              <tr class="text-center">
-                <th>{{ 'PRODUCT' | translate}}</th>
-                <th>{{ 'PRICE' | translate}}</th>
-                <th>{{ 'KEYBOARD_SHORTCUT' | translate}}</th>
-                <th>{{ 'ACTION' | translate}}</th>
+              <tr class="text-uppercase text-gray-700 fs-6">
+                <th><p class="m-0 fw-bolder">{{ 'PRODUCT' | translate}}</p></th>
+                <th><p class="m-0 fw-bolder">{{ 'TYPE' | translate}}</p></th>
+                <th><p class="m-0 fw-bolder">{{ 'PRICE' | translate}}</p></th>
+                <th><p class="m-0 fw-bolder">{{ 'KEYBOARD_SHORTCUT' | translate}}</p></th>
+                <th><p class="m-0 fw-bolder">{{ 'ACTION' | translate}}</p></th>
               </tr>
             </thead>
             <tbody>
-              <tr class="text-center" *ngFor="let button of quickButtons; let i = index">
+              <tr class="" *ngFor="let button of quickButtons; let i = index">
                 <td>{{button.sName}}</td>
+                <td>
+                  <span class="badge" [ngClass]="button.oType.bRefund ? 'badge-danger':'badge-success'">
+                    <p class="m-0" *ngIf="button.oType.bRefund">{{ 'REFUND' | translate}}</p>
+                    <p class="m-0" *ngIf="!button.oType.bRefund">{{ 'REGULAR' | translate}}</p>
+                  </span>
+                </td>
                 <td>{{button.nPrice | currency: tillService.currency}}</td>
                 <td>
                   <p class="m-0" [ngClass]="button.bIsDuplicateHK? 'badge bg-danger p-3' : ''">

@@ -122,7 +122,7 @@
             <div class="col-md-6 p-0 ms-auto">
                 <div class="mb-5">
                     <label class="fw-bolder"> {{ "PRODUCT_NAME" | translate}}</label>
-                    <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
+                    <input type="text" class="form-control"
                         [(ngModel)]="newSelectedProduct.sName" (ngModelChange)="validate()">
                     <!-- <span class="err-msg" *ngIf="newSelectedProduct.sName?.length > limit && mode != 'assign'">
                         {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
@@ -130,7 +130,7 @@
                 </div>
                 <div class="mb-5">
                     <label class="fw-bolder"> {{ "PRICE" | translate}}</label>
-                    <input type="text" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" disabled
+                    <input type="text" class="form-control" disabled
                         [(ngModel)]="newSelectedProduct.nPrice">
                 </div>
                 <!-- <div class="row mb-5" *ngIf="mode != 'assign'">
@@ -150,19 +150,22 @@
         </div>
         <div class="col-12 d-flex bg-light p-5 flex-wrap" *ngIf="mode === 'edit'">
             <div class="col-md-12">
-                <div class="mb-3 border-bottom border-dark pb-2 d-flex">
+                <div class="mb-3 border-bottom border-dark pb-3 d-flex">
                     <div class="w-50">
                         <p class="fw-bolder text-uppercase text-primary mb-1">{{"PRODUCT_DETAILS" | translate}}</p>
                         <p class="mb-1">
                             {{"ARTICLE_NUMBER" | translate}}:
                             <span class="text-muted">
                                 {{newSelectedProduct?.sNewArticleNumber ? newSelectedProduct?.sNewArticleNumber : (newSelectedProduct?.sArticleNumber || '-') }}
-                                <i class="fa fa-info-circle text-normal" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="{{newSelectedProduct.sArticleNumber}}"></i>
                             </span>
+                            <i class="fa fa-info-circle text-normal" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="{{newSelectedProduct.sArticleNumber}}"></i>
+                        </p>
+                        <p class="mb-1">
+                            {{"NAME" | translate}}: <span class="text-muted">{{newSelectedProduct.sNameOriginal}}</span>
                         </p>
                         <p class="m-0">
-                            {{"NAME" | translate}}: <span class="text-muted">{{newSelectedProduct.sNameOriginal}}</span>
+                            {{"PRODUCT_NUMBER" | translate}}: <span class="text-muted">{{newSelectedProduct.sProductNumber}}</span>
                         </p>
                     </div>
                     <div class="w-50 ms-2">
@@ -173,32 +176,56 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-5 d-flex flex-wrap">
-                    <div class="col-12 alert alert-danger mt-2" role="alert" *ngIf="newSelectedProduct.sName?.length > limit" >
-                        <p class="m-0 text-danger">
-                            {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
-                        </p>
+                <div class="d-flex">
+                    <div class="col-2 me-auto bg-white d-flex justify-content-center align-items-center flex-column">
+                        <p class="fw-bolder mb-2">{{"PREVIEW" | translate}}</p>
+                        <ul id="quick-buttons" class="nav nav-pills nav-pills-custom align-items-center">
+                            <li class="nav-item">
+                              <div>
+                                <button
+                                  class="pe-none nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4 position-relative">
+                                  <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{newSelectedProduct.sName}}</h4>
+                                  <span class="text-gray-600">{{newSelectedProduct.nPrice | currency: tillService.currency}}</span>
+                                </button>
+                              </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="col-7 me-auto">
-                        <label> {{ "QUICK_BUTTON_NAME" | translate}}</label>
-                        <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
-                            [(ngModel)]="newSelectedProduct.sName" name="quickbutton_name">
-                    </div>
-                    <div class="col-4">
-                        <label> {{ "PRICE" | translate}}</label>
-                        <input type="number" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" [(ngModel)]=" newSelectedProduct.nPrice" name="quickbutton_price">
-                    </div>
-                </div>
-                <div class="">
-                    <label> {{ "SHORTCUT_KEY" | translate}}</label>
-                    <div class="d-flex align-items-center">
-                        <div class="col-5">
-                            <ng-select [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
-                                [clearable]="false" placeholder="{{'SELECT_FUNCTION_KEY' | translate }}" name="quickbutton_sKey1"></ng-select>
+                    <div class="col-9">
+                        <div class="mb-5 d-flex flex-wrap">
+                            <div class="col-12 alert alert-danger mt-2" role="alert" *ngIf="newSelectedProduct.sName?.length > limit" >
+                                <p class="m-0 text-danger">
+                                    {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
+                                </p>
+                            </div>
+                            <div class="col-5">
+                                <label> {{ "QUICK_BUTTON_NAME" | translate}}</label>
+                                <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
+                                    [(ngModel)]="newSelectedProduct.sName" name="quickbutton_name">
+                            </div>
+                            <div class="col-3 mx-auto">
+                                <label> {{ "PRICE" | translate}}</label>
+                                <input type="number" class="form-control" placeholder="{{'ENTER_PRICE' |translate}}" [(ngModel)]=" newSelectedProduct.nPrice" name="quickbutton_price">
+                            </div>
+                            <div class="col-3">
+                                <label> {{ "TYPE" | translate}}</label>
+                                <ng-select class="form-control p-0" [(ngModel)]="newSelectedProduct.oType.bRefund" [clearable]="false" name="type">
+                                    <ng-option *ngFor="let item of aTypes" [value]="item.value">{{item.key | translate}}</ng-option>
+                                </ng-select>
+                            </div>
                         </div>
-                        <div class="col-6 ms-auto" *ngIf="newSelectedProduct.oKeyboardShortcut.sKey1 && !newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F')">
-                            <input type="text" class="form-control" placeholder="{{'SELECT_NUMBER' | translate}}"
-                                [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey2"  name="quickbutton_sKey2">
+                        <div class="">
+                            <label> {{ "SHORTCUT_KEY" | translate}}</label>
+                            <div class="d-flex align-items-center">
+                                <div class="col-5">
+                                    <ng-select [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey1" [items]="aFunctionKeys" bindLabel="title" bindValue="title"
+                                        [clearable]="false" placeholder="{{'SELECT_FUNCTION_KEY' | translate }}" name="quickbutton_sKey1"></ng-select>
+                                </div>
+                                <div class="col-6 ms-auto" *ngIf="newSelectedProduct.oKeyboardShortcut.sKey1 && !newSelectedProduct.oKeyboardShortcut.sKey1.startsWith('F')">
+                                    <input type="text" class="form-control" placeholder="{{'SELECT_NUMBER' | translate}}"
+                                        [(ngModel)]="newSelectedProduct.oKeyboardShortcut.sKey2"  name="quickbutton_sKey2">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

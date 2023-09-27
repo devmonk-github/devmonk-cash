@@ -19,6 +19,9 @@ export class AddFavouritesComponent implements OnInit {
   shopProducts: any;
   mode: string = '';
   newSelectedProduct: any = {
+    oType: {
+      bRefund: false
+    },
     oKeyboardShortcut: {
       sKey1: '',
       sKey2: ''
@@ -67,7 +70,11 @@ export class AddFavouritesComponent implements OnInit {
     totalItems: 0
   };
 
-  
+  aTypes: any = [
+    { value: false, key: 'REGULAR' },
+    { value: true, key: 'RETURN' }
+  ];
+
   aFunctionKeys:any = [
     { title: '' },
     { title: 'Control' },
@@ -91,7 +98,7 @@ export class AddFavouritesComponent implements OnInit {
     private apiService: ApiService,
     private toastService: ToastService,
     private translateService: TranslateService,
-    private tillService: TillService
+    public tillService: TillService
 
   ) {
     const _injector = this.viewContainer.parentInjector;
@@ -105,6 +112,7 @@ export class AddFavouritesComponent implements OnInit {
       this.newSelectedProduct.nPrice = this.button?.nPrice || 0;
       this.newSelectedProduct.sName = this.button?.sName || 'No name';
       this.newSelectedProduct._id = this.button?._id;
+      this.newSelectedProduct.oType.bRefund = this.button?.oType?.bRefund;
       if (this.button?.oKeyboardShortcut) this.newSelectedProduct.oKeyboardShortcut = this.button?.oKeyboardShortcut;
       this.validate();
     }
@@ -118,6 +126,7 @@ export class AddFavouritesComponent implements OnInit {
       this.newSelectedProduct.sNameOriginal = this.product.oName ? this.product.oName[this.currentLanguage] : 'NO NAME';
       this.newSelectedProduct.sArticleNumber = this.product.sArticleNumber;
       this.newSelectedProduct.sNewArticleNumber = this.product.sArticleNumber?.split('*/*')[0];
+      this.newSelectedProduct.sProductNumber = this.product.sProductNumber;
       if (this.product?.aLocation?.length) {
         this.product.nPrice = this.product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
       }
@@ -125,6 +134,7 @@ export class AddFavouritesComponent implements OnInit {
   }
 
   async search() {
+    if(this.searchKeyword < 3) return;
     this.shopProducts = [];
     let data = {
       iBusinessId: this.iBusinessId,
@@ -213,7 +223,7 @@ export class AddFavouritesComponent implements OnInit {
     let data = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oQuickButton: this.newSelectedProduct,
+      oQuickButton: this.newSelectedProduct
     };
 
     if (!data.iLocationId) {
@@ -238,11 +248,13 @@ export class AddFavouritesComponent implements OnInit {
       let margin = Number((newPriceIncVat / this.product.nPurchasePrice).toFixed(2));
       let newPurchasePrice = this.newSelectedProduct.nPrice / margin;
      
-      let data = {
-        iLocationId: this.iLocationId,
-        nPurchasePrice: newPurchasePrice
+      if(newPurchasePrice){
+        let data = {
+          iLocationId: this.iLocationId,
+          nPurchasePrice: newPurchasePrice
+        }
+        await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
       }
-      await this.apiService.putNew('core', `/api/v1/business/products/purchase-price/${this.product._id}?iBusinessId=${this.iBusinessId}`, data).toPromise();
     }
     
     _result = await this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${this.newSelectedProduct._id}`, data).toPromise();
@@ -264,6 +276,7 @@ export class AddFavouritesComponent implements OnInit {
     
     /*Create new quick button validation (to create qb, products needs to be created/selected first)*/
     if(this.mode != 'assign' && (!this.newSelectedProduct._id || this.newSelectedProduct.sName.length > this.limit || this.newSelectedProduct.sName.length == 0)){
+      console.log(this.newSelectedProduct._id)
       this.bValid = false;
     }else if(this.mode === 'assign' && (!this.newSelectedProduct._id || this.newSelectedProduct.sName.length == 0)){
       /*Assign product to existing AI/A validation*/
