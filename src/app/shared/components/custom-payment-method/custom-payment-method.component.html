@@ -31,7 +31,7 @@
                 </label>
             </div>
         </diV>
-        <diV class="row d-flex align-items-center">
+        <!-- <diV class="row d-flex align-items-center">
             <div class="col-10">
                 <label class="form-label m-0">{{ 'INVOICE' | translate}}</label>
             </div>
@@ -40,14 +40,14 @@
                     <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bInvoice"> 
                 </label>
             </div>
-        </diV>
+        </diV> -->
         <diV class="row d-flex align-items-center mt-3">
             <div class="col-10">
                 <label class="form-label m-0">{{ 'SHOW_IN_CASH_REGISTER' | translate}}</label>
             </div>
             <div class="col-2">
                 <label class="form-check form-switch form-check-custom form-check-solid">
-                    <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bShowInCashRegister"> 
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bShowInCashRegister" [disabled]="customMethod.sName == 'Cash'">
                 </label>
             </div>
         </diV>
