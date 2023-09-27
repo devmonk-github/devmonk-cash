@@ -1495,6 +1495,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         return;
       }
     }
+    if(!this.oCountings?.oCountingsCashDetails) this.oCountings.oCountingsCashDetails = {};
     this.auditService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     
     this.oCountings.nCashDifference = +(this.oCountings.nCashCounted - (
