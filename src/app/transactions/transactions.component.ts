@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewContainerRef,QueryList, ViewChildren, ViewChild, Compiler, Injector, NgModuleRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 import { BankConfirmationDialogComponent } from '../shared/components/bank-confirmation-dialog/bank-confirmation-dialog.component';
@@ -116,8 +116,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private barcodeService: BarcodeService,
     public tillService: TillService,
     private compiler: Compiler,
-    private injector: Injector
-    
+    private injector: Injector,
+    private route: ActivatedRoute
   ) {}
   
 
@@ -129,6 +129,11 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
+    //Needed to open transaction details from Business Product page
+    if(this.route.snapshot.queryParamMap.get('sNumber')){
+      this.openModal(this.route.snapshot.queryParamMap.get('sNumber'), true);
+    }
+    
     // this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     // this.loadTransaction();
@@ -455,12 +460,13 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openModal(barcode: any) {
+  async openModal(barcode: any, isQparam?: boolean) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
       
     if (barcode.startsWith("T")) {
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      if(!isQparam)
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, {iBusinessId: this.iBusinessId}).toPromise();
       if (result?.data?._id) {
         this.showTransaction(result?.data);
@@ -469,7 +475,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       this.requestParams.searchValue = barcode;
       this.loadTransaction();
     } else {
-      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
+      if(!isQparam)
+        this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
 
   }
