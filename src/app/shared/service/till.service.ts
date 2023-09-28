@@ -581,7 +581,7 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction: any) {
-    const bTesting = true;
+    const bTesting = false;
     if(bTesting) console.log('processTransactionForPdfReceipt original', JSON.parse(JSON.stringify(transaction)));
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')

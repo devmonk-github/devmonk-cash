@@ -1015,7 +1015,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (payMethods: any) => {
-        console.log({payMethods})
+        // console.log({payMethods})
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -1035,14 +1035,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           
           //console.log('here', this.appliedGiftCards)
           // OLD VERSION - working
-          const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
-          const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
+          // const aInternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type == 'custom');
+          // const aExternalGiftcards = this.appliedGiftCards.filter((item: any) => item.type != 'custom');
          
           // NEW VERSION - not working
-          // const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
-          //   if (item.type == 'custom') context.aInternalGiftcards.push(item);
-          //   else context.aExternalGiftcards.push(item);
-          // }, { aInternalGiftcards: [], aExternalGiftcards: [] });
+          const { aInternalGiftcards, aExternalGiftcards } = this.appliedGiftCards.reduce((context: any, item: any) => {
+            if (item.type == 'custom') context.aInternalGiftcards.push(item);
+            else context.aExternalGiftcards.push(item);
+            return context;
+          }, { aInternalGiftcards: [], aExternalGiftcards: [] });
           // console.log('here', this.appliedGiftCards)
 
           if (aExternalGiftcards?.length) { // we have some cards by external providers -> we will generate a revenue from it -> so need to process them as payment
@@ -1150,12 +1151,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (item.oType.eKind == 'repair') nRepairCount++;
       else if (item.oType.eKind == 'order') nOrderCount++;
     })
-    console.log({ oDataSource })
+    // console.log({ oDataSource })
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
-    console.log({bRegularCondition})
+    // console.log({bRegularCondition})
     const aPromises: any = [];
     aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))

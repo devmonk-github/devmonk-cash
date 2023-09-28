@@ -829,7 +829,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             if (this.bOpeningHistoricalDayState) this.handleCashMutations();
             this.checkShowDownload();
           }
-          console.log(JSON.parse(JSON.stringify(this.oCountings)));
+          // console.log(JSON.parse(JSON.stringify(this.oCountings)));
         }
       }, (error) => {
         this.bStatisticLoading = false;
