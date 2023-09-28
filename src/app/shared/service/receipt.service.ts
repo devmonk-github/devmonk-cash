@@ -120,6 +120,12 @@ export class ReceiptService {
     exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, sAction, sApiKey }: any): Observable<any> {
         return new Observable<any>((observer: any) => {
             // console.log({ oDataSource, templateData, printSettings, printActionSettings, sAction, sApiKey });
+            if(oDataSource.oCustomer && oDataSource.oCustomer?.sSalutation){
+                this.translateService.get(oDataSource.oCustomer?.sSalutation?.toUpperCase()).subscribe((res) => {
+                    if(res != oDataSource.oCustomer?.sSalutation?.toUpperCase())
+                        oDataSource.oCustomer.sSalutation = res;
+                });
+            }
             this.oOriginalDataSource = oDataSource;
             const oCurrentLocation = oDataSource?.currentLocation || oDataSource?.businessDetails?.currentLocation;
             if (oCurrentLocation?.eCurrency) this.pdfService.currency = oCurrentLocation.eCurrency;
