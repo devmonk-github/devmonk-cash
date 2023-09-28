@@ -91,6 +91,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
         this.allFields['all'].filter((field: any) => {
           if (this.headerOptions.indexOf(field.sKey) > -1) {
             this.customerDetailsForm[field.sKey] = field.sKey;
+            this.updateTemplateForm[field.sKey] = 'overwrite';
           }
         });
       }

@@ -11,6 +11,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
 import { faLongArrowAltDown, faLongArrowAltUp } from '@fortawesome/free-solid-svg-icons';
 @Component({
@@ -59,8 +60,8 @@ export class CustomersComponent implements OnInit {
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [...this.defaultColumns];  
   customerMenu = [
-    { key: 'MERGE' }
-    
+    { key: 'MERGE' },
+    { key: 'DELETE' }
   ];
   options = [
     { key: 'SHOW_DELETED_CUSTOMERS' },
@@ -150,6 +151,10 @@ export class CustomersComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getSettings();
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED', 'LOYALITY_POINTS_ADDED', 'LOYALITY_POINTS_NOT_ADDED', 'REDUCING_MORE_THAN_AVAILABLE', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED', 'CUSTOMER_NOT_CREATED', 'LASTNAME_REQUIRED']
+    this.translateService.get(translations).subscribe(
+      result => this.translations = result
+    )
     this.translateService.onTranslationChange.subscribe((result:any) => {
     this.translateService.get(this.aPlaceHolder).subscribe((result:any) => {
       this.aPlaceHolder.forEach((el:any, index:any) => {
@@ -420,7 +425,32 @@ export class CustomersComponent implements OnInit {
       case "MERGE":
         this.openCustomerDialog(customer,customer?._id,null,key);
         break;
+      case "DELETE":
+        this.deleteCustomer(customer);
+        break;
     }
+  }
+
+  deleteCustomer(customer: any) {
+    let confirmBtnDetails = [
+      { text: "CANCEL", value: 'close', class: 'btn btn-warning me-2' },
+      { text: "YES", value: 'remove', status: 'success', class: 'btn btn-success' }
+    ];
+    this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: this.translations[`ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER`], buttonDetails: confirmBtnDetails } })
+      .instance.close.subscribe(
+        (status: any) => {
+          if (status == 'remove') {
+            this.apiService.postNew('customer', '/api/v1/customer/delete', { iCustomerId: customer._id, iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+              if (res?.message == 'success') {
+                this.getCustomers();
+                this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_DELETED`] })
+              } else {
+                this.toastService.show({ type: 'warning', text: 'Internal Server Error' });
+              }
+            })
+
+          }
+        })
   }
 
   openCustomerDialog(customer: any, Id: any, iSearchedCustomerId: any, key: any): void {
