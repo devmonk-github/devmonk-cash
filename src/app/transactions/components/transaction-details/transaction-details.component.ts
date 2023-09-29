@@ -266,7 +266,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async sendEmail() {
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-
+    oDataSource.bForMail = true;
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();

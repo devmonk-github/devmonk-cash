@@ -472,6 +472,13 @@ export class ReceiptService {
     processColumns(row: any, styles?: any) {
         // console.log('processColumns', row)
         let columns: any = [];
+        if(row?.if) {
+            const bTestResult = row.if.every((rule: any) => {
+                let field = this.oOriginalDataSource[rule.field];
+                return (field)? this.commonService.comparators[rule.compare](field, rule.target) : false;
+            })
+            if (!bTestResult) return;
+        }
         row.forEach((el: any) => {
             let columnData: any;
             if (el?.type === 'image') {
@@ -551,8 +558,8 @@ export class ReceiptService {
                     }
                     columnData = { text: text };
                 }
-                if (el?.width) columnData.width = el?.width;
-                if (el?.alignment) columnData.alignment = el?.alignment;
+                if (columnData && el?.width) columnData.width = el?.width;
+                if (columnData && el?.alignment) columnData.alignment = el?.alignment;
             }
             if(columnData) {
                 if (el?.alignment) columnData.alignment = el?.alignment;
