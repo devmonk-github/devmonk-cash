@@ -621,7 +621,7 @@
                 <td>
                   <span class="badge" [ngClass]="button.oType.bRefund ? 'badge-danger':'badge-success'">
                     <p class="m-0" *ngIf="button.oType.bRefund">{{ 'REFUND' | translate}}</p>
-                    <p class="m-0" *ngIf="!button.oType.bRefund">{{ 'REGULAR' | translate}}</p>
+                    <p class="m-0" *ngIf="!button.oType.bRefund">{{ 'RETURN' | translate}}</p>
                   </span>
                 </td>
                 <td>{{button.nPrice | currency: tillService.currency}}</td>

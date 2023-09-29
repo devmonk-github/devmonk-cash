@@ -24,6 +24,8 @@ export class CustomerImportComponent implements OnInit {
   bShowError: boolean = false;
   
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
+  created: any;
+  failed: any;
 
   constructor(
     private importService: ImportService,
@@ -93,6 +95,8 @@ export class CustomerImportComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
       if(result?.message == 'success'){
+        this.created = result?.data?.created || [];
+        this.failed = result?.data?.failed || [];
         this.parsedCustomerData = [];
         this.toastService.show({type:'success' , text:this.translate['SUCCESSFULLY_IMPORTED']})
       }

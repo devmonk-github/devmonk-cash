@@ -59,7 +59,7 @@ export class CountryListComponent implements OnInit , OnChanges{
     }
 
     this.filteredOptions$ = this.countryListByLang;
-
+    if(this.country == 'UK') this.country = 'GB';
     const country = _.find(this.countryListByLang, {key: this.country});
     if (country) {
       this.value = country.value;
