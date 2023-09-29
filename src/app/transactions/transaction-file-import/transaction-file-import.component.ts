@@ -38,29 +38,51 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
   private subscription!: Subscription;
 
   public readonly control = new FileUploadControl(
-      { listVisible: true, accept: ['text/JSON'], discardInvalid: true, multiple: false },
-      FileUploadValidators.filesLimit(1)
+    { listVisible: true, accept: ['text/csv'], discardInvalid: true, multiple: false },
+    FileUploadValidators.filesLimit(1)
+    //  OLD JSON 
+    // { listVisible: true, accept: ['text/JSON'], discardInvalid: true, multiple: false },
+    // FileUploadValidators.filesLimit(1)
   );
 
   ngOnInit(): void {
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
       if(values && values.length > 0){
-        let reader : any = new FileReader();
-        let data : Array<any> = [];
-        let self = this;
-        reader.onload = function(){
-          data = JSON.parse(reader.result);
-          if (data.length) {
-            self.parsedTransactionData = data;
-            self.parsedTransactionDataChange.emit(self.parsedTransactionData);
-          }
-        }
-        reader.readAsText(values[0]);
-        this.bDelimiter = true;
+        this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
+          .pipe().subscribe((result: any) => {
+            if (result.length) {
+              this.parsedTransactionData = result;
+              this.parsedTransactionDataChange.emit(this.parsedTransactionData);
+              this.bDelimiter = true;
+            }
+          }, (error: NgxCSVParserError) => {
+            this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
+            this.parsedTransactionData = [];
+            this.parsedTransactionDataChange.emit(this.parsedTransactionData);
+          });
       } else {
         this.parsedTransactionData = [];
         this.parsedTransactionDataChange.emit(this.parsedTransactionData);
-      }  
+      } 
+
+      //OLD JSON
+      //   let reader : any = new FileReader();
+      //   let data : Array<any> = [];
+      //   let self = this;
+      //   reader.onload = function(){
+      //     data = JSON.parse(reader.result);
+      //     if (data.length) {
+      //       self.parsedTransactionData = data;
+      //       self.parsedTransactionDataChange.emit(self.parsedTransactionData);
+      //     }
+      //   }
+      //   reader.readAsText(values[0]);
+      //   this.bDelimiter = true;
+      // } else {
+      //   this.parsedTransactionData = [];
+      //   this.parsedTransactionDataChange.emit(this.parsedTransactionData);
+      // }
+
     });
   }
 

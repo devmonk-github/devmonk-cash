@@ -57,7 +57,8 @@ export class TransactionImportComponent implements OnInit {
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
 
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/import', data).subscribe((result: any) => {
+    //TODO: CHANGE BACKEND API CALL ? 
+    this.apiService.postNew('cashregistry', ' /api/v1/transaction/import', data).subscribe((result: any) => {
       this.importInprogress = false;
       this.parsedTransactionData = [];
     }, (error) => {

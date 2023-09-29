@@ -20,19 +20,28 @@
             <div class="col-md-3 no-padding-left">
                 <h5>{{ "FOUND_COLUMN(CSV_HEADERS)" | translate}}</h5>
             </div>
-            <div class="col-md-4 no-padding-left">
+            <div class="col-md-3 no-padding-left">
                 <h5> {{ "ATTRIBUTE_TO_SET" | translate}}</h5>
+            </div>
+            <div class="col-md-5 no-padding-right">
+                <h5 class="text-muted fw-bolder m-0">{{ "UPDATE_TEMPLATE" | translate}}</h5>
             </div>
         </div>
         <div class="row mb-4" *ngFor="let option of headerOptions">
             <div class="col-md-3 no-padding-left">
                 {{option | translate}}
             </div>
-            <div class="col-md-4 no-padding-left">
+            <div class="col-md-3 no-padding-left">
                 <ng-select class="form-control form-control-solid p-0" [clearable]="false"
                     [(ngModel)]="transactionDetailsForm[option]">
                     <ng-option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value |
                         translate}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-md-5 no-padding-left flex">
+                <ng-select class="form-control form-control-solid p-0" [clearable]="false" id="customer-update-template"
+                    [(ngModel)]="updateTemplateForm[option]">
+                    <ng-option *ngFor="let oActionHeader of aActionHeaders" [value]="oActionHeader.value">{{oActionHeader.key | translate}}</ng-option>
                 </ng-select>
             </div>
         </div>

@@ -46,6 +46,13 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
     { name: 'SPANISH', key: 'es' }
   ]
 
+  aActionHeaders: Array<any> = [
+    { key: 'DO_NOTHING', value: 'do-nothing' },
+    { key: 'OVERWRITE', value: 'overwrite' },
+    { key: 'ADD_IF_UNDEFINED', value: 'add-if-undefined' },
+    { key: 'APPEND', value: 'append' }
+  ]
+
   constructor(
     private apiService: ApiService,
     private toasterService: ToastService
@@ -71,16 +78,15 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
+      iBusinessId: this.iBusinessId,
       oFilterBy: {
-        "sName": "import transaction details"
-      },
-      "iBusinessId": this.iBusinessId,
-      "iLocationId": this.iLocationId
+        "sName": "IMPORT_TRANSACTION_DETAILS"
+      }
     };
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
       if (result && result.data && result.data.length > 0) {
-        this.allFields['all'] = result.data[0].aOptions;
+        this.allFields['all'] = result.data[0].result[0].aOptions;
         if (isResetAttributes) {
           this.transactionDetailsForm = {};
           this.updateTemplateForm = {};
@@ -88,6 +94,7 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
         this.allFields['all'].filter((field: any) => {
           if (this.headerOptions.indexOf(field.sKey) > -1) {
             this.transactionDetailsForm[field.sKey] = field.sKey;
+            this.updateTemplateForm[field.sKey] = 'overwrite';
           }
         });
       }

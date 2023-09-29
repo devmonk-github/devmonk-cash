@@ -10,11 +10,11 @@
         <input id="delimiter" type="text" placeholder="{{ 'SEPARATOR' | translate}}" [disabled]="bDelimiter" [(ngModel)]="delimiter" class="form-control w-100">
     </div>
     <div class="col-md-9" *ngIf="delimiter != ''">
-        <file-upload [control]="control" accept=".json" class="business-logo-uploader cursor-pointer" id="productCSVUploader">
+        <file-upload [control]="control" accept=".csv" class="business-logo-uploader cursor-pointer" id="productCSVUploader">
             <ng-template let-isFileDragDropAvailable="isFileDragDropAvailable" #placeholder>
                 <div *ngIf="control.size === 0">            
                     <div class="upload-text">
-                        <b>{{"SELECT_JSON_FILE" | translate}}</b>
+                        <b>{{"SELECT_CSV_FILE" | translate}}</b>
                     </div>
                 </div>
             </ng-template>
