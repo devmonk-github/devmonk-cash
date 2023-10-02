@@ -98,6 +98,7 @@ export class ReceiptService {
     pageSize: any = 'A5';
     orientation: string = 'portrait';
     translations: any;
+    bRemoveTopMargin: boolean = false;
 
     // pn2escposService: any;
     constructor(
@@ -136,6 +137,8 @@ export class ReceiptService {
             this.content = [];
             this.processTemplate(templateData.layout);
             // console.log(this.content)
+            const pageMargins = this.commonService.oCommonParameters.pageMargins;
+            if(this.bRemoveTopMargin) pageMargins[1] = 5;
             this.pdfServiceNew.getPdfData({
                 styles: this.styles,
                 content: this.content,
@@ -143,7 +146,7 @@ export class ReceiptService {
                 pageSize: this.commonService.oCommonParameters.pageSize,
                 pdfTitle: this.commonService.pdfTitle,
                 footer: this.commonService.footer,
-                pageMargins: this.commonService.oCommonParameters.pageMargins,
+                pageMargins,
                 defaultStyle: this.commonService.oCommonParameters.defaultStyle,
                 printSettings,
                 printActionSettings,
@@ -163,7 +166,7 @@ export class ReceiptService {
     processTemplate(layout: any) {
         for (const item of layout) {
             if (item.type === 'columns') {
-                this.processColumns(item.row, item?.styles);
+                this.processColumns(item.row, item?.styles, item);
             } else if (item.type === 'simple') {
                 this.processSimpleData(item.row, item?.object);
             } else if (item.type === 'table') {
@@ -475,13 +478,16 @@ export class ReceiptService {
         }
     }
 
-    processColumns(row: any, styles?: any) {
-        // console.log('processColumns', row)
+    processColumns(row: any, styles?: any, item?:any) {
         let columns: any = [];
-        if(row?.if) {
-            const bTestResult = row.if.every((rule: any) => {
-                let field = this.oOriginalDataSource[rule.field];
-                return (field)? this.commonService.comparators[rule.compare](field, rule.target) : false;
+        if(item?.if) {
+            const bTestResult = item.if.every((rule: any) => {
+                if (this.oOriginalDataSource.bForMail && rule?.field == 'bForMail' && row?.some((el: any) => el?.url == "sBusinessLogoUrl")){
+                    this.bRemoveTopMargin = true;
+                } 
+                const field = this.oOriginalDataSource[rule.field];
+                const value = rule.target;
+                return (field) ? this.commonService.comparators[rule.compare](field, value) : false;
             })
             if (!bTestResult) return;
         }
