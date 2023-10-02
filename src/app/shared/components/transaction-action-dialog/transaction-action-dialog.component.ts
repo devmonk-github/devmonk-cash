@@ -22,7 +22,7 @@ export class TransactionActionDialogComponent implements OnInit {
   faCheck = faCheck;
   loading = false;
   showLoader = false;
-  transaction: any = undefined;
+  oDataSource: any = undefined;
   transactionDetail:any =undefined;
   activityItems: any;
   activity: any;
@@ -40,7 +40,7 @@ export class TransactionActionDialogComponent implements OnInit {
   aRepairAlternativeActionSettings: any;
   usedActions: boolean = false;
   businessDetails: any;
-  bRegularCondition: boolean = false;
+  bRegularCondition: boolean;
   bOrderCondition: boolean = false;
   
   bProcessingTransaction: boolean = false;
@@ -67,24 +67,23 @@ export class TransactionActionDialogComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {  
+  ngOnInit() {  
     this.dialogRef.contextChanged.subscribe((context: any) => {
-      this.transaction = context.transaction;
+      this.oDataSource = context.oDataSource;
       this.transactionDetail = context.transactionDetail;
       this.aTemplates = context.aTemplates;
       this.activityItems = context.activityItems;
       this.activity = context.activity;
-      this.businessDetails = context.businessDetails;
       this.nOrderCount = context.nOrderCount;
       this.nRepairCount = context.nRepairCount;
-      this.printActionSettings = context.printActionSettings;
-      this.printSettings = context.printSettings;
-
+      this.bRegularCondition = context.bRegularCondition;
+      
       this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair' || item.oType.eKind === 'order');
       this.aGiftcardItems = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard');
-      
-      this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
+      console.log(this.aRepairItems)
+      // this.bRegularCondition = this.oDataSource.total > 0.02 || this.oDataSource.total < -0.02 || this.oDataSource.totalGiftcardDiscount || this.oDataSource.totalRedeemedLoyaltyPoints;
       this.bOrderCondition = this.nOrderCount >= 1; //this.nOrderCount === 1 || this.nRepairCount >= 1 || // && this.nRepairCount === 1
+
     })
     this.listEmployee();
   }
@@ -113,27 +112,27 @@ export class TransactionActionDialogComponent implements OnInit {
       
       if(type == 'repair') this.bRepairDisabled = true;
       else if(type == 'repair_alternative') this.bRepairAlternativeDisabled = true;
-      oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems[index], this.transaction, null);
+      oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems[index], this.oDataSource, null);
       pdfTitle = oDataSource.sNumber;
       sThermalTemplateType = type;
     
     } else if (type === 'regular') {
-      oDataSource = this.transaction;
-      pdfTitle = this.transaction.sNumber;
+      oDataSource = this.oDataSource;
+      pdfTitle = this.oDataSource.sNumber;
       sThermalTemplateType = 'business-receipt';
     
     } else if (type === 'giftcard') {
       
       oDataSource = { ...this.aGiftcardItems[index] };
-      oDataSource.businessDetails = this.transaction.businessDetails;
+      oDataSource.businessDetails = this.oDataSource.businessDetails;
       oDataSource.nTotal = oDataSource.nPaidAmount;
-      oDataSource.sReceiptNumber = this.transaction.sReceiptNumber;
+      oDataSource.sReceiptNumber = this.oDataSource.sReceiptNumber;
       oDataSource.sBarcodeURI = this.tillService.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
       pdfTitle = oDataSource.sGiftCardNumber;
     
     } else if (type === 'order') {
 
-      oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, this.transaction); 
+      oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, this.oDataSource); 
       pdfTitle = oDataSource.sActivityNumber;
     }
 
@@ -149,7 +148,7 @@ export class TransactionActionDialogComponent implements OnInit {
         oDataSource: oDataSource,
         printSettings: this.printSettings,
         apikey: this.businessDetails.oPrintNode.sApiKey,
-        title: this.transaction.sNumber,
+        title: this.oDataSource.sNumber,
         sType: type,
         sTemplateType: sThermalTemplateType
       }).toPromise();
@@ -168,7 +167,7 @@ export class TransactionActionDialogComponent implements OnInit {
 
       const body = {
         pdfContent: response,
-        iTransactionId: this.transaction._id,
+        iTransactionId: this.oDataSource._id,
         receiptType: 'purchase-receipt',
         sCustomerEmail: oDataSource.oCustomer.sEmail,
         businessDetails: this.businessDetails
@@ -202,7 +201,7 @@ export class TransactionActionDialogComponent implements OnInit {
       { 
         cssClass: "w-fullscreen mt--5", 
         context: { 
-          transaction: this.transaction, 
+          transaction: this.oDataSource, 
           businessDetails: this.businessDetails, 
           eType: this.eType, 
           from: 'transactions-action',
@@ -221,10 +220,10 @@ export class TransactionActionDialogComponent implements OnInit {
 
 
   updateCustomer() {
-    let customerDetails = JSON.parse(JSON.stringify(this.transaction.oCustomer));
+    let customerDetails = JSON.parse(JSON.stringify(this.oDataSource.oCustomer));
     customerDetails.bNewsletter = this.bReceiveNewsletter;
     customerDetails.iBusinessId = this.businessDetails._id;
-    this.apiService.putNew('customer', `/api/v1/customer/update/${this.businessDetails._id}/${this.transaction.iCustomerId}`, customerDetails).subscribe(
+    this.apiService.putNew('customer', `/api/v1/customer/update/${this.businessDetails._id}/${this.oDataSource.iCustomerId}`, customerDetails).subscribe(
       (result: any) => {
         if (result?.message == "success") {
           this.toastService.show({ type: 'success', text: 'Customer details updated.' });

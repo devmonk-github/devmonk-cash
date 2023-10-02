@@ -1067,7 +1067,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               cssClass: 'modal-lg',
               hasBackdrop: true,
               closeOnBackdropClick: false,
-              closeOnEsc: false
+              closeOnEsc: false,
+              context: {
+                printActionSettings: this.printActionSettings,
+                printSettings: this.printSettings,
+                businessDetails: this.businessDetails,
+              }
             }).instance;
 
           if (this.bIsFiscallyEnabled) {
@@ -1156,7 +1161,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.totalGiftcardDiscount ||
       oDataSource.totalRedeemedLoyaltyPoints ||
       oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
-    // console.log({bRegularCondition})
+    // console.log({ bRegularCondition }, oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund))
     const aPromises: any = [];
     aPromises.push(this.getTemplate())
     aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
@@ -1175,17 +1180,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const aTemplates = aResult[0].data;
-
     oDialogComponent.contextChanged.next({
-      transaction: oDataSource,
-      printActionSettings: this.printActionSettings,
-      printSettings: this.printSettings,
+      oDataSource,
       nRepairCount,
       nOrderCount,
       activityItems: this.activityItems,
       activity: this.activity,
       aTemplates,
-      businessDetails: this.businessDetails,
       bRegularCondition
     });
     this.dispatchEvent('startIdle');
