@@ -442,7 +442,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
       bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
       bShowForm: this.settings?.bShowForm,
-      sDescriptionFieldToPrefill: this.settings?.sDescriptionFieldToPrefill  
+      aDescriptionFieldToPrefill: this.settings?.aDescriptionFieldToPrefill  
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

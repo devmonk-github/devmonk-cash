@@ -1522,16 +1522,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const name = this.tillService.getNameWithPrefillingSettings(product, this.language);
 
     let sDescription = '';
-    const sSetting = this.tillService.settings.sDescriptionFieldToPrefill;
-    if(sSetting) {
-      if (sSetting == 'oShortDescription') sDescription = product.oShortDescription[this.language] || '';
-      else if (sSetting == 'sInternalDescription'){
-        sDescription = product.aLocation.find((el: any) => el._id == this.iLocationId)?.sInternalDescription || '';
-      } 
-    } else {
-      sDescription = this.tillService.getDescriptionWithGemDetails(product);
+    const aSetting = this.tillService.settings.aDescriptionFieldToPrefill;
+    // console.log(aSetting);
+    if(aSetting?.length) {
+      aSetting.forEach((sSetting:any) =>{
+        // console.log(sSetting);
+        if (sSetting == 'oShortDescription') sDescription += ' ' + product.oShortDescription[this.language] || '';
+        if (sSetting == 'sInternalDescription') sDescription += ' ' + product.aLocation.find((el: any) => el._id == this.iLocationId)?.sInternalDescription || ''; 
+        if (sSetting == 'sDiamond') sDescription += ' ' + this.tillService.getDescriptionWithGemDetails(product);
+      })
     }
-    // console.log({product});
     this.transactionItems.push({
       name,
       eTransactionItemType: 'regular',
