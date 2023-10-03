@@ -652,10 +652,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'settingsChanged':
-        //console.log('Here', event.data);
-        this.checkBagNumber(event.data)
-        let number = event.data.match(/\d+/g);
-        this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
+        if(event.data) {
+          this.checkBagNumber(event.data)
+          let number = event.data.match(/\d+/g);
+          this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
+        }
         break;
       default:
         this.transactionItems[index] = event.data;
@@ -1910,7 +1911,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
         if (this.bIsDayStateOpened) {
-          this.tillService.iStatisticsId = result.data.oStatisticDetail._id;
+          this.tillService.iStatisticsId = result.data?.oStatisticDetail?._id;
           this.bIsTransactionLoading = true;
           this.fetchQuickButtons();
         }
