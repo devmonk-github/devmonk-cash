@@ -253,6 +253,14 @@
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bDiamondDetails">
             </label>
           </div>
+          
+          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
+            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'BAG_NUMBERS' |
+              translate}}</label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bPrefillBagNumbers">
+            </label>
+          </div>
           <!-- <div class="col-3">
             <label class="form-check form-switch form-check-custom form-check-solid">
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">

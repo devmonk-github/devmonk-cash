@@ -1,9 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp, faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faAt, faMinus, faPhone, faPlus, faTimes, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 import { TillService } from 'src/app/shared/service/till.service';
@@ -46,7 +45,7 @@ export class RepairComponent implements OnInit {
   showDeleteBtn: boolean = false;
   collapsedBtn: Boolean = false;
   repairer: any = null;
-  iBusinessId:any;
+  iBusinessId: any = localStorage.getItem('currentBusiness');
   oRepairer: any = {
     sName: '',
     _id: ''
@@ -79,29 +78,23 @@ export class RepairComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+    this.oStaticData?.articleGroupsList?.forEach((el: any) => {
       el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
     })
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
-    // this.checkArticleGroups();
     this.getProperties();
     if (this.item.new) {
       this.selectArticleGroup();
-      // this.item.new = false;
     }
 
-    if(!this.oStaticData?.articleGroupsList.length){
-      let data = {
-        // iBusinessPartnerId:this.item.iBusinessPartnerId,
-         iBusinessId: localStorage.getItem('currentBusiness'),
-       };
+    if(!this.oStaticData?.articleGroupsList?.length){
+      const data = { iBusinessId: this.iBusinessId };
       const result: any = await this.getAllArticleGroupList(data);
       if(result.data?.length && result.data[0]?.result?.length){
-        //if(!this.oStaticData?.articleGroupsList.length)
         this.oStaticData.articleGroupsList = result.data[0].result;
-        this.oStaticData.articleGroupsList.forEach((el: any, index: any) => {
+        this.oStaticData.articleGroupsList.forEach((el: any) => {
           el.sArticleGroupName = (el?.oName) ? el?.oName[this.language] || el?.oName['en'] || '' : '';
         })
       }
@@ -123,23 +116,16 @@ export class RepairComponent implements OnInit {
   }
   getProperties() {
     this.selectedProperties = [];
-    let data = {
-      skip: 0,
-      limit: 500,
-      sortBy: '',
-      sortOrder: '',
-      searchValue: '',
-      oFilterBy: {},
-      iBusinessId: localStorage.getItem('currentBusiness'),
+    const data = {
+      iBusinessId: this.iBusinessId,
     };
 
-    this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
-      (result: any) => {
-        if (result.data && result.data.length > 0) {
-          result.data[0].result.map((property: any) => {
+    this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe((result: any) => {
+        if (result?.data?.length && result?.data[0]?.result?.length) {
+          result.data[0].result.forEach((property: any) => {
             if (!this.propertyOptions[property._id]) {
               this.propertyOptions[property._id] = [];
-              property.aOptions.map((option: any) => {
+              property.aOptions.forEach((option: any) => {
                 if (option?.sCode?.trim() != '') {
                   let opt: any = {
                     iPropertyId: property._id,
@@ -154,8 +140,8 @@ export class RepairComponent implements OnInit {
                   };
                   opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);
-                  const proprtyIndex = this.aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
-                  if (proprtyIndex === -1) {
+                  const proprty = this.aProperty.find((prop: any) => prop.iPropertyId == property._id);
+                  if (proprty) {
                     this.aProperty.push(opt);
                   }
                 }
@@ -163,7 +149,7 @@ export class RepairComponent implements OnInit {
             }
           });
 
-          if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
+          if (!this.item.oArticleGroupMetaData.aProperty?.length) {
             this.item.oArticleGroupMetaData.aProperty = this.aProperty
           };
           const data = this.item.oArticleGroupMetaData.aProperty.filter(
@@ -188,7 +174,7 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    if (this.settings?.bAutoIncrementBagNumbers) {
+    if (this.settings?.bAutoIncrementBagNumbers && this.settings?.currentLocation?.bPrefillBagNumbers) {
       this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
     this.dialogService.openModal(SelectArticleDialogComponent,
@@ -236,13 +222,13 @@ export class RepairComponent implements OnInit {
       });
   }
 
-  settingsChanged(event?:any){
-    if (this.settings?.bAutoIncrementBagNumbers && this.item.sBagNumber != '') {
+  settingsChanged(){
+    if (this.settings?.bAutoIncrementBagNumbers && this.item.sBagNumber != '' && this.settings?.currentLocation?.bPrefillBagNumbers) {
       this.item.sBagNumber = this.item.sBagNumber ? this.item.sBagNumber : (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
-      this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
+    this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
   }
-
+  
   changeInMargin() {
     const nPrice:number = +(String(this.item.price).replace(',','.'));
     this.item.nPurchasePrice = nPrice / (this.item.nMargin || 1);

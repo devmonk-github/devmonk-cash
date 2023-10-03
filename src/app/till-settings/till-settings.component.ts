@@ -200,6 +200,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
           bProductName: true,
           bLabelDescription: true,
           bDiamondDetails: true,
+          bPrefillBagNumbers: true
         }
         let oMergedSettings: any = {};
         if (!this.settings?.aBagNumbers?.length) {
@@ -423,6 +424,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         bProductName: this.settings.currentLocation.bProductName,
         bLabelDescription: this.settings.currentLocation.bLabelDescription,
         bDiamondDetails: this.settings.currentLocation.bDiamondDetails,
+        bPrefillBagNumbers: this.settings.currentLocation.bPrefillBagNumbers,
       } 
       this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];
     }
