@@ -6,6 +6,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as _moment from 'moment';
+import { TillService } from '../../service/till.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 const aColorCode = [
@@ -52,6 +53,7 @@ export class CalendarGanttViewDialogComponent implements OnInit {
 
   constructor(
     private viewContainerRef: ViewContainerRef,
+    private tillService: TillService
   ) {
     const _injector = this.viewContainerRef.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -87,7 +89,8 @@ export class CalendarGanttViewDialogComponent implements OnInit {
         let iId = oEvent.customProperty?.oDayClosure?.iWorkstationId
         if (this.sDayClosureMethod != 'workstation') iId = oEvent.customProperty?.oDayClosure?.iLocationId;
         oEvent.backgroundColor = (aArray.find((oElement: any) => oElement._id == iId))?.backgroundColor || this.getRandomColor();
-        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('DD-MM-yyyy HH:mm'))})`
+        const nTotalRevenue = this.tillService.getSum(oEvent.customProperty?.oDayClosure?.aRevenuePerArticleGroupAndProperty, 'nTotalRevenue');
+        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('DD-MM-yyyy HH:mm'))}) | ${this.tillService.currency + nTotalRevenue}`
         return oEvent;
       })
     } else {

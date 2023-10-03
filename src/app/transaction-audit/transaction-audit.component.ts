@@ -1701,7 +1701,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       cssClass: "modal-lg",
       context: {
         aCalendarEvent: this.aCalendarEvent,
-        eType: eType, /* from-state or to-state */
+        eType, /* from-state or to-state */
         aWorkStation: this.aWorkStation,
         aLocation: this.aLocation,
         oCalendarSelectedData: this.oCalendarSelectedData,
