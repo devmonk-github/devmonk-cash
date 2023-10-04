@@ -71,8 +71,9 @@ export class PaymentDistributionService {
         i.paymentAmount = i.amountToBePaid;
       } 
       if (i.paymentAmount < 0 && i.type !== 'gold-purchase') {
-        if (bTesting) console.log('payment amount is < 0 so addig that to available amount')
+        if (bTesting) console.log('payment amount is < 0 so addig that to available amount before', {availableAmount})
         availableAmount += -i.amountToBePaid;
+        if (bTesting) console.log('after', { availableAmount })
       }
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
@@ -99,7 +100,7 @@ export class PaymentDistributionService {
       if (bTesting) console.log({totalAmountToBePaid})
 
       const aGiftcards = arrToUpdate.filter((el: any) => el.type === 'giftcard');
-      const aItems = arrToUpdate.filter((el: any) => el.type !== 'giftcard');
+      const aItems = arrToUpdate.filter((el: any) => el.type !== 'giftcard' && !el.oType.bRefund);
 
       if (bTesting) console.log({ aGiftcards })
       if (aGiftcards?.length) {
@@ -112,7 +113,7 @@ export class PaymentDistributionService {
           }
         });
         const { nAvailable, nPoints }:any = this.assignPaymentToGiftcardFirst(aGiftcards, availableAmount, totalAmountToBePaid, bTesting, nRedeemedLoyaltyPoints);
-        if (bTesting) console.log({ nAvailable, nPoints })
+        if (bTesting) console.log({ nAvailable, nPoints, aItems })
         availableAmount = nAvailable;
         nRedeemedLoyaltyPoints = nPoints;
 
