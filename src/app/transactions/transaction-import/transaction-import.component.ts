@@ -19,6 +19,8 @@ export class TransactionImportComponent implements OnInit {
   workstation: any = {};
   currentEmployeeId: string = '';
   stepperInstatnce: any;
+  bShowError: boolean = true;
+
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
@@ -169,6 +171,7 @@ export class TransactionImportComponent implements OnInit {
       this.importInprogress = false;
       this.parsedTransactionData = [];
     }, (error) => {
+      this.bShowError = true
       this.parsedTransactionData = [];
       console.error(error);
     });
