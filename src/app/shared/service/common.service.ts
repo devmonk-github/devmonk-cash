@@ -32,7 +32,7 @@ export class CommonService {
             return this.file;
           }
         } else {
-          this.toastService.show({ type: 'warning', text: 'Image size must be 33 kb to 2 mb' });
+          this.toastService.show({ type: 'warning', text: 'Image size must be 4kb to 2 mb' });
         }
 
       } else {

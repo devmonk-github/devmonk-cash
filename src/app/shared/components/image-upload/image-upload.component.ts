@@ -87,7 +87,7 @@ export class ImageUploadComponent implements OnInit {
           this.webcamImage = URL.createObjectURL(event.target.files[0]);
         }else{
           this.isImageValid = true;
-          this.toastService.show({ type: 'warning', text: 'Image size must be 100 kb to 2 mb' });
+          this.toastService.show({ type: 'warning', text: 'Image size must be 4kb to 2 mb' });
         }
       }else{
         this.isImageValid= true;
