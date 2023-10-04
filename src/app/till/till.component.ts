@@ -521,6 +521,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkout() {
+    this.bAllGiftcardPaid = this.transactionItems.filter((v: any) => v.type == 'giftcard' && !v.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid);
+
     this.bDisableCheckout = true;
     this.bShowOverassignedWarning = false;
     if (this.transactionItems?.length) {
@@ -860,8 +862,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.payMethods.forEach(o => o.isDisabled = true);
     }
 
-    const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
-    this.bAllGiftcardPaid = aGiftcard.filter((el: any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
+    // const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
+    // this.bAllGiftcardPaid = aGiftcard.filter((el: any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     this.transactionItems = [...this.transactionItems]
     this.updateAmountVariables();
@@ -883,6 +885,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customer = null;
     this.saveInProgress = false;
     this.clearPaymentAmounts();
+    this.bAllGiftcardPaid = true;
+    this.bShowOverassignedWarning = false;
     // localStorage.removeItem('fromTransactionPage');
   }
 

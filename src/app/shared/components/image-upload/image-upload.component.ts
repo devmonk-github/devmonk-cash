@@ -81,13 +81,13 @@ export class ImageUploadComponent implements OnInit {
     this.isImageValid = false;
     if (event.target.files.length > 0) {
       if(event.target.files[0].type == 'image/png' || event.target.files[0].type == 'image/jpeg' || event.target.files[0].type == 'image/jpg'){
-        if(event.target.files[0].size > 102400 && event.target.files[0].size <= 2097152){
+        if(event.target.files[0].size > 4000 && event.target.files[0].size <= 2097152){
           this.isImageValid = false;
           this.file = event.target.files[0];
           this.webcamImage = URL.createObjectURL(event.target.files[0]);
         }else{
           this.isImageValid = true;
-          this.toastService.show({ type: 'warning', text: 'Image size must be 100 kb to 2 mb' });
+          this.toastService.show({ type: 'warning', text: 'Image size must be 4kb to 2 mb' });
         }
       }else{
         this.isImageValid= true;
