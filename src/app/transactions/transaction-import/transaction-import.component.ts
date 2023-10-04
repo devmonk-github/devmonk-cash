@@ -79,7 +79,7 @@ export class TransactionImportComponent implements OnInit {
         }
 
         const oCustomer = {
-          nClientId: data?.nClientId['oCustomer.nClientId'],
+          nClientId: data['oCustomer.nClientId'],
           sFirstName: data['oCustomer.sFirstName'],
           sLastName: data['oCustomer.sLastName']
         }
