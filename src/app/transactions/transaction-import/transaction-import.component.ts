@@ -19,6 +19,8 @@ export class TransactionImportComponent implements OnInit {
   workstation: any = {};
   currentEmployeeId: string = '';
   stepperInstatnce: any;
+  bShowError: boolean = true;
+
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
@@ -79,7 +81,7 @@ export class TransactionImportComponent implements OnInit {
         }
 
         const oCustomer = {
-          nClientId: data?.nClientId['oCustomer.nClientId'],
+          nClientId: data?.nClientId,
           sFirstName: data['oCustomer.sFirstName'],
           sLastName: data['oCustomer.sLastName']
         }
@@ -127,7 +129,7 @@ export class TransactionImportComponent implements OnInit {
 
         aTransactionItems.push(oTransactionItemData);
 
-        let oTransaction = await aNewTransaction.find((el: any) => el.sNumber == data.sNumber);
+        let oTransaction = await aNewTransaction.find((el: any) => (el.sNumber).toUpperCase() == (data?.sNumber).toUpperCase());
         if(oTransaction){
           oTransaction?.transactionItems?.push(oTransactionItemData);
         }else{
@@ -169,6 +171,7 @@ export class TransactionImportComponent implements OnInit {
       this.importInprogress = false;
       this.parsedTransactionData = [];
     }, (error) => {
+      this.bShowError = true
       this.parsedTransactionData = [];
       console.error(error);
     });
