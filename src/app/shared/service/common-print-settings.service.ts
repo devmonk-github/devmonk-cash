@@ -38,6 +38,9 @@ export class CommonPrintSettingsService {
     };
 
     layouts: any = {
+        noDefaultBorders: {
+            defaultBorder: false
+        },
         onlyHorizontalLineLayout: {
             hLineWidth: function (i: number, node: any) {
                 // return (i === node.table.body.length ) ? 0 : 1;
@@ -47,6 +50,16 @@ export class CommonPrintSettingsService {
                 return 0;
             },
         },
+        horizontalLinesSlimWithTotal: {
+            hLineWidth: (i: any, node: any) => {
+                return (i === 1 || i === node.table.body.length - 1) ? 1 : 0;
+            },
+            vLineWidth: () => {
+                return 0
+            },
+            // defaultBorder: false,
+        },
+
         onlyHorizontalLineLayoutExceptFirst: {
             hLineWidth: function (i: number, node: any) {
                 return (i === 0 ) ? 0 : 0.5;
