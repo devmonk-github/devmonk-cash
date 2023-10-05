@@ -720,7 +720,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (data) => {
-        // console.log('response of transaction search component', data)
+        // console.log('response of transaction search component', JSON.parse(JSON.stringify(data)));
         if (data?.transaction) {
           this.bIsTransactionLoading = true;
           // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
@@ -2063,7 +2063,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
-    // console.log('handleTransactionResponse', data)
+    // console.log('handleTransactionResponse', JSON.parse(JSON.stringify(data)))
     // this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems.push(...transactionItems);

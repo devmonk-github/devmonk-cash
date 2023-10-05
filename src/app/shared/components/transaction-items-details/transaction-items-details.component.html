@@ -139,9 +139,10 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="">{{transactionItem.nPaidAmount | currency: tillService.currency}}</td>
-                                <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :'NO') | translate }}</td>
-                                <td class="">{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
+                                <td>{{transactionItem.nDiscountToShow | currency: tillService.currency}}</td>
+                                <td>{{transactionItem.nPaidAmount | currency: tillService.currency}}</td>
+                                <td>{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :'NO') | translate }}</td>
+                                <td>{{ transactionItem.dCreatedDate | date:'dd-MM-YYYY HH:mm'}}</td>
                                 <td> 
                                     <div class="form-check-custom d-flex flex-column" [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
                                         <div class="form-check form-check-solid mb-4">

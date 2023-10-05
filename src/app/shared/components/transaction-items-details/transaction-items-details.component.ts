@@ -23,7 +23,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   showLoader = false;
   translation :any =[];
   transactionColumns :any= []
-  activityColumns: any = ['ACTIVITY_ITEM_NUMBER', 'PRODUCT_NAME', 'BAG_NUMBER', 'TOTAL_AMOUNT', 'PAID_AMOUNT', 'IS_PREPAYMENT', 'CREATED_ON', 'ACTIONS']
+  activityColumns: any = ['ACTIVITY_ITEM_NUMBER', 'PRODUCT_NAME', 'BAG_NUMBER', 'TOTAL_AMOUNT', 'TOTAL_DICOUNT', 'PAID_AMOUNT', 'IS_PREPAYMENT', 'CREATED_ON', 'ACTIONS']
   transactionItems: Array<any> = [];
   faTimes = faTimes;
   itemType = 'transaction';
@@ -112,7 +112,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
-      // console.log('orignal items', this.transactionItems)
+      // console.log('orignal items', JSON.parse(JSON.stringify(this.transactionItems)))
       this.bIsAnyGiftCardDiscount = this.transactionItems.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => !this.tillService.aDiscountTypes.includes(o.oType?.eKind));
       this.transactionItems.forEach(element => {
@@ -155,8 +155,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // console.log({ nDiscountAmount, nDiscountToShow: element.nDiscountToShow })
         element.nPaymentAmount -= element.nDiscountToShow;
         element.nPaidAmount -= element.nDiscountToShow;
-        element.nPriceIncVat -= nDiscountAmount;
-        element.nRevenueAmount -= element.nDiscountToShow;
+        // element.nPriceIncVat -= nDiscountAmount;
+        // element.nRevenueAmount -= element.nDiscountToShow;
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
@@ -165,7 +165,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       });
       // this.transactionItems = this.transactionItems.map(v => ({ ...v }));
       if(this.transactionItems.every((item:any)=> item.isSelected)) this.bAllSelected = true;
-      // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
+      // console.log('this.transactionItems 168: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
         // console.log(168, {item})
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity)
@@ -173,8 +173,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
         //                         + (item?.nRedeemedGiftcardAmount || 0);
         // console.log('total amount', item.nTotalAmount, 'priceIncVat', item.nPriceIncVat, 'discount to show', item.nDiscountToShow, 'paid amount', item.nPaidAmount)
         item.sNumber = item.sNumber?.split('-')[0];
-        const nTotalAmount = +((item.nPriceIncVat * item.nQuantity).toFixed(2));
-        // console.log(174, {nTotalAmount})
+        const nTotalAmount = +(((item.nPriceIncVat * item.nQuantity) - item.nDiscountToShow).toFixed(2));
+        item.nTotalAmount = nTotalAmount;
+        // console.log(174, {nTotalAmount}, item.nTotalAmount)
         if (nTotalAmount == 0){
           // console.log('173 tType = empty')
           item.tType = '';

@@ -129,6 +129,7 @@ export class ProductComponent implements OnInit{
     if (this.item.oType.bRefund) {
       this.item.tType = 'refund';
       this.item.eTransactionItemType = 'return'
+      if(this.item.new) this.item.nDiscount = 0; // NOTE: removing discount when toggling to return for new items
     } else {
       this.item.tType = 'pay';
       this.item.eTransactionItemType = 'regular'
