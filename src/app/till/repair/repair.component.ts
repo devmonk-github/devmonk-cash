@@ -174,7 +174,7 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    if (this.settings?.bAutoIncrementBagNumbers && this.settings?.currentLocation?.bPrefillBagNumbers) {
+    if (this.settings?.bAutoIncrementBagNumbers && this.settings?.bPrefillBagNumbers) {
       this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
     this.dialogService.openModal(SelectArticleDialogComponent,
@@ -223,7 +223,7 @@ export class RepairComponent implements OnInit {
   }
 
   settingsChanged(){
-    if (this.settings?.bAutoIncrementBagNumbers && this.item.sBagNumber != '' && this.settings?.currentLocation?.bPrefillBagNumbers) {
+    if (this.settings?.bAutoIncrementBagNumbers && this.item.sBagNumber != '' && this.settings?.bPrefillBagNumbers) {
       this.item.sBagNumber = this.item.sBagNumber ? this.item.sBagNumber : (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
     this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
