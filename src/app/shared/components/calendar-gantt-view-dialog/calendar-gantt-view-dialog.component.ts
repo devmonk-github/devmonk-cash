@@ -4,6 +4,7 @@ import { DialogComponent } from "../../service/dialog";
 /* Range-wise calendar depedency */
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import allLocales from '@fullcalendar/core/locales-all';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as _moment from 'moment';
 import { TillService } from '../../service/till.service';
@@ -30,6 +31,7 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   selectedWorkStation: any;
   aSelectedLocation: any;
   sDayClosureMethod: string;
+  sSelectedLanguage: string = 'nl';
 
   aCalendarEvent: any;
   oCalendarSelectedData: any;
@@ -48,6 +50,13 @@ export class CalendarGanttViewDialogComponent implements OnInit {
     plugins: [dayGridPlugin],
     events: [],
     displayEventTime: false,
+    locales: allLocales,
+    locale: this.sSelectedLanguage,
+    // themeSystem: 'standard',
+    // buttonIcons: {
+    //   prev: 'fas fa-chevron-left',
+    //   next: 'chevron-right fas fa-chevron-right',
+    // },
     eventClick: this.handleEventClick.bind(this),
   };
 
@@ -57,6 +66,8 @@ export class CalendarGanttViewDialogComponent implements OnInit {
   ) {
     const _injector = this.viewContainerRef.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+    this.sSelectedLanguage = localStorage.getItem('language') || 'nl';
+    this.calendarOptions.locale = this.sSelectedLanguage;
   }
 
   ngOnInit(): void {
@@ -90,7 +101,7 @@ export class CalendarGanttViewDialogComponent implements OnInit {
         if (this.sDayClosureMethod != 'workstation') iId = oEvent.customProperty?.oDayClosure?.iLocationId;
         oEvent.backgroundColor = (aArray.find((oElement: any) => oElement._id == iId))?.backgroundColor || this.getRandomColor();
         const nTotalRevenue = this.tillService.getSum(oEvent.customProperty?.oDayClosure?.aRevenuePerArticleGroupAndProperty, 'nTotalRevenue');
-        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('DD-MM-yyyy HH:mm'))}) | ${this.tillService.currency + nTotalRevenue}`
+        oEvent.title = `${oEvent.title} (${(moment(dOpenDate).format('HH:mm'))}) | ${this.tillService.currency + nTotalRevenue}`
         return oEvent;
       })
     } else {
@@ -102,7 +113,10 @@ export class CalendarGanttViewDialogComponent implements OnInit {
       this.calendarOptions.events = _aCalendarEvent?.filter((oEvent: any) => oEvent?.end)?.map((oEvent: any) => {
         const dCloseDate = oEvent.customProperty?.oDayClosure?.dCloseDate;
         oEvent.backgroundColor = (this.aWorkStation.find((oWorkstation: any) => oWorkstation._id == oEvent.customProperty?.oDayClosure?.iWorkstationId))?.backgroundColor || this.getRandomColor();
-        oEvent.title = `${oEvent.title} (${(moment(dCloseDate).format('DD-MM-yyyy hh:mm'))})`
+
+        const nTotalRevenue = this.tillService.getSum(oEvent.customProperty?.oDayClosure?.aRevenuePerArticleGroupAndProperty, 'nTotalRevenue');
+        oEvent.title = `${oEvent.title} (${(moment(dCloseDate).format('HH:mm'))}) | ${this.tillService.currency} ${nTotalRevenue}`
+        // oEvent.title = `${oEvent.title} (${(moment(dCloseDate).format('DD-MM-yyyy hh:mm'))})`
         return oEvent;
       })
     }

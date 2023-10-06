@@ -1042,8 +1042,9 @@ export class TillService {
     }
   }
 
-  getSum(aArray:any, key:string) {
-    return _.sumBy(aArray, key)
+  getSum(aArray: any, key: string) {
+    const nSum = _.sumBy(aArray, key) || 0;
+    return +(nSum?.toFixed(2));
   }
 
   prepareExpenseBody(oArticleGroup: any, oCashPaymentMethod: any, oExpenseType:any, nAmount:number, nTax:number) {

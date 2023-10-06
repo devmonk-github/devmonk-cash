@@ -14,7 +14,7 @@
           <div class="row">
             <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.09
+                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.10
               </label>
               <label class="form-check form-switch form-check-custom form-check-solid">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
@@ -253,7 +253,7 @@
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bDiamondDetails">
             </label>
           </div>
-          
+
           <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
             <label class="form-check form-switch form-check-custom form-check-solid">{{ 'BAG_NUMBERS' |
               translate}}</label>
@@ -303,8 +303,8 @@
           <div class="col-12 d-flex align-items-center justify-content-between mb-5">
             <label class="form-check form-switch form-check-custom form-check-solid">{{"DESCRIPTION_FIELD" |
               translate}}</label>
-            <ng-select class="w-100 ms-5" [multiple]="true" [clearable]="true" [(ngModel)]="settings.aDescriptionFieldToPrefill"
-              placeholder="{{ 'SELECT' | translate }}">
+            <ng-select class="w-100 ms-5" [multiple]="true" [clearable]="true"
+              [(ngModel)]="settings.aDescriptionFieldToPrefill" placeholder="{{ 'SELECT' | translate }}">
               <ng-option value="sInternalDescription">{{ 'INTERNAL_DESCRIPTION' | translate}} </ng-option>
               <ng-option value="oShortDescription">{{ 'SHORT_DESCRIPTION' | translate}} </ng-option>
               <ng-option value="sDiamond">{{ 'DIAMOND' | translate}} </ng-option>
