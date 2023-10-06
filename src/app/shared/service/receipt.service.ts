@@ -91,6 +91,9 @@ export class ReceiptService {
         property: {
             // color: "#ccc",
         },
+        border_bottom: [false, false, false, true],
+        border_top: [false, true, false, false],
+        border_top_bottom: [false, true, false, true],
     };
 
     oOriginalDataSource: any;
@@ -733,8 +736,11 @@ export class ReceiptService {
             }
             // console.log(533, {styles})
             if (row?.alignment) obj.alignment = row.alignment;
+            if(row?.styles && row?.styles.border) {
+                obj = { ...obj, border: this.styles.border_bottom}
+                delete row.styles.border;
+            }
             obj = { ...obj, ...row?.styles, ...styles };
-            // console.log(obj)
             dataRow.push(obj);
         } else if (row?.type) {
             if (row?.type === 'stack') {
@@ -826,6 +832,10 @@ export class ReceiptService {
         };
         if (item?.width) obj.width = item.width;
         if (item?.alignment) obj.alignment = item.alignment;
+        if (item?.styles && item?.styles.border) {
+            obj = { ...obj, border: this.styles.border_bottom }
+            delete item.styles.border;
+        }
         return obj;
     }
 

@@ -54,7 +54,8 @@ export class PaymentDistributionService {
           i.paymentAmount = i.amountToBePaid;
           if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid, 'paymentAmount', i.paymentAmount)
         } else {
-          i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
+          // i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
+          i.amountToBePaid = -i.nRefundAmount.toFixed(2);//-(i.nTotal);
           this.calculateSavingsPoints(i, nSavingsPointRatio);
         }
         if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
