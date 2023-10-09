@@ -11,343 +11,276 @@
 
       <div class="row d-flex justify-content-between">
         <div class="col-6 d-flex flex-column justify-content-between">
-          <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.11
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
-                  (click)="bookKeepingMode = !bookKeepingMode; updateBookkeepingSetting(bookKeepingMode)">
-              </label>
-            </div>
-            <!-- <div class="col-3 mb-5">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
-                  (click)="bookKeepingMode = !bookKeepingMode; updateBookkeepingSetting(bookKeepingMode)">
-              </label>
-            </div> -->
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'OPEN_DRAWER_ON_CASH_PAYMENT'|translate}}
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bOpenCashDrawer">
-              </label>
-            </div>
-
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'LOCK_CASH_REGISTER_AFTER_EACH_TRANSACTION' | translate}}
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input"
-                  [(ngModel)]="settings.bLockCashRegisterAfterTransaction">
-              </label>
-            </div>
-
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'ENABLE_CASH_REGISTER_FOR_GENERAL_PROFILE' | translate}}
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bEnableCashRegisterForGeneral">
-              </label>
-            </div>
-
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'OPEN_FORM_WHEN_SELECTING_PRODUCT' | translate}}
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowForm">
-              </label>
-            </div>
-            <!-- <div class="col-3 mb-5">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bOpenCashDrawer">
-              </label>
-            </div> -->
+          <div class="form-field">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              {{ 'BOOK_KEEPING_MODE' | translate}} - CV1.3.11
+            </label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode"
+                (click)="bookKeepingMode = !bookKeepingMode; updateBookkeepingSetting(bookKeepingMode)">
+            </label>
           </div>
 
-          <div class="row mb-5" *ngIf="settings?.currentLocation">
-            <div class="col-12  mb-3">
-              <h4 class="fw-bolder mb-0">{{'BAG_NUMBERS' | translate}}</h4>
-            </div>
-            <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                {{ 'AUTO_INCREMENT_BAG_NUMBERS' | translate}}
-              </label>
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input"
-                  [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
-              </label>
-            </div>
-            <!-- <div class="col-3">
-              <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input"
-                  [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
-              </label>
-            </div> -->
+          <div class="form-field">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              {{ 'OPEN_DRAWER_ON_CASH_PAYMENT'|translate}}
+            </label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bOpenCashDrawer">
+            </label>
+          </div>
 
-            <div class="col-12 d-flex align-items-center">
-              <label class="col-2 me-2">{{"PREFIX" | translate}}</label>
-              <input type="text" class="form-control" [(ngModel)]="settings.currentLocation.sPrefix">
-              <label class="col-3 mx-2">{{"LAST_BAG_NUMBER" | translate}}</label>
-              <input type="number" class="form-control" [(ngModel)]="settings.currentLocation.nLastBagNumber">
-              <!-- <div class="col-2">
-                <input type="text" class="form-control" [(ngModel)]="settings.currentLocation.sPrefix">
-              </div> 
-              <label class="col-4">{{"LAST_BAG_NUMBER" | translate}}</label>
-              <div class="col-4">
-                <input type="number" class="form-control" [(ngModel)]="settings.currentLocation.nLastBagNumber">
-              </div>-->
-            </div>
+          <div class="form-field">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              {{ 'LOCK_CASH_REGISTER_AFTER_EACH_TRANSACTION' | translate}}
+            </label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bLockCashRegisterAfterTransaction">
+            </label>
+          </div>
+
+          <div class="form-field">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              {{ 'ENABLE_CASH_REGISTER_FOR_GENERAL_PROFILE' | translate}}
+            </label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bEnableCashRegisterForGeneral">
+            </label>
+          </div>
+
+          <div class="form-field">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              {{ 'OPEN_FORM_WHEN_SELECTING_PRODUCT' | translate}}
+            </label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowForm">
+            </label>
           </div>
         </div>
 
         <div class="col-6">
           <div class="row">
             <div class="m-0">
-              <form name="thermalPrinterForm">
-                <div class="row">
-                  <div class="col-6 mb-5">
-                    <label>{{"LAST_RECEIPT_NUMBER" | translate}}</label>
-                    <input type="number" id="line_n" name="line_n" class="form-control"
-                      [(ngModel)]="settings.nLastReceiptNumber"
-                      oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1').replace(/^0[^.]/, '0');">
-                  </div>
-                  <div class="col-6 mb-5">
-                    <label for="line_l">{{"LAST_INVOICE_NUMBER" | translate}}</label>
-                    <input type="number" id="line_l" name="line_l" class="form-control"
-                      [(ngModel)]="settings.nLastInvoiceNumber"
-                      oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1').replace(/^0[^.]/, '0');">
-                  </div>
+              <div class="row">
+                <div class="col-6 mb-5">
+                  <label>{{"LAST_RECEIPT_NUMBER" | translate}}</label>
+                  <input type="number" id="line_n" name="line_n" class="form-control"
+                    [(ngModel)]="settings.nLastReceiptNumber"
+                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1').replace(/^0[^.]/, '0');">
                 </div>
-
-                <div class="row mb-5">
-                  <p>{{"I_WANT_TO_CLOSE_MY_CASHR_BY" | translate}}</p>
-                  <div class="col-6">
-                    <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                      data-kt-button="true" [ngClass]="{'active': settings.sDayClosurePeriod == 'week'}">
-                      <!--begin::Radio button-->
-                      <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                        <input class="form-check-input" type="radio" name="sDayClosurePeriod" value="week"
-                          [(ngModel)]="settings.sDayClosurePeriod" />
-                      </span>
-                      <!--end::Radio button-->
-                      <span class="ms-5">
-                        <span class="fs-6 fw-bolder mb-1 d-block">{{"WEEK" | translate}}</span>
-                        <!-- <span class="fw-bold fs-7 text-gray-600"></span> -->
-                      </span>
-                    </label>
-                  </div>
-
-                  <div class="col-6">
-                    <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                      data-kt-button="true" [ngClass]="{'active': settings.sDayClosurePeriod == 'day'}">
-                      <!--begin::Radio button-->
-                      <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                        <input class="form-check-input" type="radio" name="sDayClosurePeriod" value="day"
-                          [(ngModel)]="settings.sDayClosurePeriod" />
-                      </span>
-                      <!--end::Radio button-->
-                      <span class="ms-5">
-                        <span class="fs-6 fw-bolder mb-1 d-block">{{"DAY" | translate}}</span>
-                        <!-- <span class="fw-bold fs-7 text-gray-600"></span> -->
-                      </span>
-                    </label>
-                  </div>
+                <div class="col-6 mb-5">
+                  <label for="line_l">{{"LAST_INVOICE_NUMBER" | translate}}</label>
+                  <input type="number" id="line_l" name="line_l" class="form-control"
+                    [(ngModel)]="settings.nLastInvoiceNumber"
+                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1').replace(/^0[^.]/, '0');">
                 </div>
-
-                <div class="row mb-5">
-                  <p>{{"I_WANT_TO_CLOSE_MY_CASHR_METHOD" | translate}}</p>
-                  <div class="col-6">
-                    <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                      data-kt-button="true" [ngClass]="{'active': settings.sDayClosureMethod == 'location'}">
-                      <!--begin::Radio button-->
-                      <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                        <input class="form-check-input" type="radio" name="sDayClosureMethod" value="location"
-                          [(ngModel)]="settings.sDayClosureMethod" (change)="onChangeDayClosureMethod('workstation')" />
-                      </span>
-                      <!--end::Radio button-->
-                      <span class="ms-5">
-                        <span class="fs-6 fw-bolder mb-1 d-block">{{"LOCATION" | translate}}</span>
-                      </span>
-                    </label>
-                  </div>
-
-                  <div class="col-6">
-                    <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                      data-kt-button="true" [ngClass]="{'active': settings.sDayClosureMethod == 'workstation'}">
-                      <!--begin::Radio button-->
-                      <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                        <input class="form-check-input" type="radio" name="sDayClosureMethod" value="workstation"
-                          [(ngModel)]="settings.sDayClosureMethod" (change)="onChangeDayClosureMethod('location')" />
-                      </span>
-                      <!--end::Radio button-->
-                      <span class="ms-5">
-                        <span class="fs-6 fw-bolder mb-1 d-block">{{"WORKSTATION" | translate}}</span>
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <div class="row mb-5" *ngIf="settings?.currentLocation">
+
+        <div class="col-6">
+          <div class="box">
+            <h4 class="fw-bolder">{{'BAG_NUMBER' | translate}}</h4>
+
+            <div class="d-flex align-items-center mb-3">
+              <label class="col-2 me-2">{{"PREFIX" | translate}}</label>
+              <input type="text" class="form-control" [(ngModel)]="settings.currentLocation.sPrefix">
+              <label class="col-3 mx-2">{{"LAST_BAG_NUMBER" | translate}}</label>
+              <input type="number" class="form-control" [(ngModel)]="settings.currentLocation.nLastBagNumber">
+            </div>
+
+            <div class="form-field">
+              <label>{{ 'AUTO_INCREMENT' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input"
+                  [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <label>{{ 'PREFILL_IN_CASH_REGISTER' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input"
+                  [(ngModel)]="settings.currentLocation.bPrefillBagNumbers">
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="box">
+            <h4 class="fw-bolder">{{'SHOW_IN_CASH_REGISTER' | translate}}</h4>
+
+            <div class="form-field">
+              <label>{{"ORDER" | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOrder">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"GOLD_PURCHASE" |
+                translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowGoldPurchase">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"OPEN_DRAWER" |
+                translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
       <div class="row mt-3" *ngIf="settings?.currentLocation">
-        <div class="col-12">
-          <h4 class="fw-bolder mb-1">{{'CASH_REGISTER_PREFILL' | translate}}</h4>
-          <label class="fs-7 form-label fw-bolder text-dark">{{'FIELDS' | translate}}</label>
+        <div class="col-6">
+          <div class="box h-100">
+            <h4 class="fw-bolder">{{'PREFILL' | translate}}</h4>
+            <div class="form-field">
+              <label>{{ 'ARTICLE_GROUP_NAME' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bArticleGroup">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>{{ 'LABEL_DESCRIPTION' | translate }}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input"
+                  [(ngModel)]="settings.currentLocation.bLabelDescription">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>{{ 'PRODUCT_NUMBER' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>{{ 'PRODUCT_NAME' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductName">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>{{ 'DIAMOND_DETAILS' | translate}}</label>
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bDiamondDetails">
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>{{"DESCRIPTION_FIELD" | translate}}</label>
+              <ng-select class="w-100 ms-5" [multiple]="true" [clearable]="true"
+                [(ngModel)]="settings.aDescriptionFieldToPrefill" placeholder="{{ 'SELECT' | translate }}">
+                <ng-option value="sInternalDescription">{{ 'INTERNAL_DESCRIPTION' | translate}} </ng-option>
+                <ng-option value="oShortDescription">{{ 'SHORT_DESCRIPTION' | translate}} </ng-option>
+                <ng-option value="sDiamond">{{ 'DIAMOND' | translate}} </ng-option>
+              </ng-select>
+            </div>
+          </div>
         </div>
         <div class="col-6">
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'ARTICLE_GROUP_NAME' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bArticleGroup">
-            </label>
-          </div>
-          <!-- <div class="col-3">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bArticleGroup">
-            </label>
-          </div> -->
+          <div class="box mb-5">
+            <h4 class="fw-bolder">{{'DEFAULT_ARTICLE_GROUP' | translate}}</h4>
 
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'LABEL_DESCRIPTION' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bLabelDescription">
-            </label>
-          </div>
-          <!-- <div class="col-3">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bLabelDescription" disabled>
-            </label>
-          </div> -->
+            <div class="form-field">
+              <label class="w-50">{{ "ORDER" | translate }}</label>
+              <ng-select class="form-control form-control-solid p-0" [clearable]="false"
+                [(ngModel)]="settings.iDefaultArticleGroupForOrder">
+                <ng-option *ngFor="let article of articleGroupList" [value]="article._id">
+                  {{article?.oName[selectedLanguage]}} </ng-option>
+              </ng-select>
+            </div>
 
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'PRODUCT_NUMBER' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">
-            </label>
+            <div class="form-field">
+              <label class="w-50">{{"REPAIR" | translate}}</label>
+              <ng-select class="form-control form-control-solid p-0" [clearable]="false"
+                [(ngModel)]="settings.iDefaultArticleGroupForRepair">
+                <ng-option *ngFor="let article of articleGroupList" [value]="article._id">
+                  {{article?.oName[selectedLanguage]}} </ng-option>
+              </ng-select>
+            </div>
           </div>
+          <div class="box">
+            <h4 class="fw-bolder">{{'CLOSING_CASH_REGISTER' | translate}}</h4>
+            <div class="row mb-5">
+              <p>{{"I_WANT_TO_CLOSE_MY_CASHR_BY" | translate}}</p>
+              <div class="col-6">
+                <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                  data-kt-button="true" [ngClass]="{'active': settings.sDayClosurePeriod == 'week'}">
+                  <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                    <input class="form-check-input" type="radio" name="sDayClosurePeriod" value="week"
+                      [(ngModel)]="settings.sDayClosurePeriod" />
+                  </span>
+                  <span class="ms-5">
+                    <span class="fs-6 fw-bolder mb-1 d-block">{{"WEEK" | translate}}</span>
+                  </span>
+                </label>
+              </div>
 
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'PRODUCT_NAME' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductName">
-            </label>
-          </div>
+              <div class="col-6">
+                <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                  data-kt-button="true" [ngClass]="{'active': settings.sDayClosurePeriod == 'day'}">
+                  <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                    <input class="form-check-input" type="radio" name="sDayClosurePeriod" value="day"
+                      [(ngModel)]="settings.sDayClosurePeriod" />
+                  </span>
+                  <span class="ms-5">
+                    <span class="fs-6 fw-bolder mb-1 d-block">{{"DAY" | translate}}</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <p>{{"I_WANT_TO_CLOSE_MY_CASHR_METHOD" | translate}}</p>
+              <div class="col-6">
+                <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                  data-kt-button="true" [ngClass]="{'active': settings.sDayClosureMethod == 'location'}">
+                  <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                    <input class="form-check-input" type="radio" name="sDayClosureMethod" value="location"
+                      [(ngModel)]="settings.sDayClosureMethod" (change)="onChangeDayClosureMethod('workstation')" />
+                  </span>
+                  <span class="ms-5">
+                    <span class="fs-6 fw-bolder mb-1 d-block">{{"LOCATION" | translate}}</span>
+                  </span>
+                </label>
+              </div>
 
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'DIAMOND_DETAILS' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bDiamondDetails">
-            </label>
+              <div class="col-6">
+                <label class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                  data-kt-button="true" [ngClass]="{'active': settings.sDayClosureMethod == 'workstation'}">
+                  <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                    <input class="form-check-input" type="radio" name="sDayClosureMethod" value="workstation"
+                      [(ngModel)]="settings.sDayClosureMethod" (change)="onChangeDayClosureMethod('location')" />
+                  </span>
+                  <span class="ms-5">
+                    <span class="fs-6 fw-bolder mb-1 d-block">{{"WORKSTATION" | translate}}</span>
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
-
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'BAG_NUMBERS' |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bPrefillBagNumbers">
-            </label>
-          </div>
-          <!-- <div class="col-3">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">
-            </label>
-          </div> -->
-        </div>
-        <div class="col-6">
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{"ORDER" | translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOrder">
-            </label>
-          </div>
-          <!-- <div class="col-3 mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOrder">
-            </label>
-          </div> -->
-
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{"GOLD_PURCHASE" |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowGoldPurchase">
-            </label>
-          </div>
-          <!-- <div class="col-3 mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowGoldPurchase">
-            </label>
-          </div> -->
-
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{"OPEN_DRAWER" |
-              translate}}</label>
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
-            </label>
-          </div>
-          <div class="col-12 d-flex align-items-center justify-content-between mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">{{"DESCRIPTION_FIELD" |
-              translate}}</label>
-            <ng-select class="w-100 ms-5" [multiple]="true" [clearable]="true"
-              [(ngModel)]="settings.aDescriptionFieldToPrefill" placeholder="{{ 'SELECT' | translate }}">
-              <ng-option value="sInternalDescription">{{ 'INTERNAL_DESCRIPTION' | translate}} </ng-option>
-              <ng-option value="oShortDescription">{{ 'SHORT_DESCRIPTION' | translate}} </ng-option>
-              <ng-option value="sDiamond">{{ 'DIAMOND' | translate}} </ng-option>
-            </ng-select>
-          </div>
-          <!-- <div class="col-3 mb-5">
-            <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
-            </label>
-          </div> -->
         </div>
 
-        <div class="col-12 mb-6 d-flex align-items-center justify-content-between">
-          <label
-            class="col-6 form-check form-switch form-check-custom form-check-solid">{{"DEFAULT_ARTICLE_GROUP_FOR_ORDER"
-            | translate}}</label>
-          <ng-select class="form-control form-control-solid p-0" [clearable]="false"
-            [(ngModel)]="settings.iDefaultArticleGroupForOrder">
-            <ng-option *ngFor="let article of articleGroupList" [value]="article._id">
-              {{article?.oName[selectedLanguage]}} </ng-option>
-          </ng-select>
-        </div>
-        <!-- <div class="col-6 mb-6">
-          <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="settings.iDefaultArticleGroupForOrder">
-            <ng-option *ngFor="let article of articleGroupList" [value]="article._id">{{article?.oName[selectedLanguage]}} </ng-option>
-          </ng-select>
-        </div> -->
 
-        <div class="col-12 mb-6 d-flex align-items-center justify-content-between">
-          <label
-            class="col-6 form-check form-switch form-check-custom form-check-solid">{{"DEFAULT_ARTICLE_GROUP_FOR_REPAIR"
-            | translate}}</label>
-          <ng-select class="form-control form-control-solid p-0" [clearable]="false"
-            [(ngModel)]="settings.iDefaultArticleGroupForRepair">
-            <ng-option *ngFor="let article of articleGroupList" [value]="article._id">
-              {{article?.oName[selectedLanguage]}} </ng-option>
-          </ng-select>
-        </div>
-        <!-- <div class="col-6 mb-6">
-          <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="settings.iDefaultArticleGroupForRepair">
-            <ng-option *ngFor="let article of articleGroupList" [value]="article._id">{{article?.oName[selectedLanguage]}} </ng-option>
-          </ng-select>
-        </div> -->
+
+
       </div>
       <div class="d-flex justify-content-end align-items-center">
         <div *ngIf="updatingSettings" class="spinner-border mx-2"></div>
