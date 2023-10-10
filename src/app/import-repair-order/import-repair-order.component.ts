@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
 import { ImportRepairOrderService } from '../shared/service/import-repair-order.service';
 import { StepperComponent } from '../shared/_layout/components/common';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'import-repair-order',
@@ -75,6 +76,7 @@ export class ImportRepairOrderComponent implements OnInit {
       const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
       this.parsedRepairOrderData = parsedRepairOrderData;
       const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
+
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
         oBody.oTransaction.iCustomerId = aTransactionItem[i].iCustomerId;
@@ -83,9 +85,10 @@ export class ImportRepairOrderComponent implements OnInit {
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
 
-        let oCopy = { ...oBody }
+        let oCopy =_.cloneDeep(oBody);
         aAllRecords.push(oCopy);
       }
+
       const aCloseTransaction: any = [];
       const aOpenTransaction: any = [];
       for (const oRecord of aAllRecords) {
