@@ -784,13 +784,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.customer.oInvoiceAddress.sPostalCode = oInvoiceAddressPostalCode;
     }
 
+    if (this.customer?.oPhone?.sMobile == "") this.customer.oPhone.sPrefixMobile = "";
+    if (this.customer?.oPhone?.sLandLine == "") this.customer.oPhone.sPrefixLandline = "";
+    
     /* We are updating the current customer [T, A, AI] and Not the System customer */
     if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
       this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
       return;
     }
-    if (this.customer?.oPhone?.sMobile == "") this.customer.oPhone.sPrefixMobile = "";
-    if (this.customer?.oPhone?.sLandLine == "") this.customer.oPhone.sPrefixLandline = "";
+
     if (this.mode == 'create') {
       const addressBody = {
         iBusinessId: this.requestParams.iBusinessId,
