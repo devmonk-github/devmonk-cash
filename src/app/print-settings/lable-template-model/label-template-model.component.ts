@@ -8,27 +8,24 @@ import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
 export const makeDataObjectForProduct = (product: any) => {
 
   const dataObject = {
-    "%%PRODUCT_NAME%%": product.sProductNumber,
-    "%%SELLING_PRICE%%": product.nPriceIncVat,
-    "%%PRODUCT_NUMBER%%": product.sProductNumber,
-    "%%ARTICLE_NUMBER%%": product.sArticleNumber,
-    "%%BRAND_NAME%%": product.brandName,
+    "%%PRODUCT_NAME%%": product?.sProductName,
+    "%%SELLING_PRICE%%": product?.nPriceIncVat,
+    "%%PRODUCT_NUMBER%%": product?.sProductNumber,
+    "%%ARTICLE_NUMBER%%": product?.sArticleNumber,
+    "%%BRAND_NAME%%": product?.oBusinessBrand?.sAlias || product?.oBusinessBrand?.sName,
     "%%QUANTITY%%": 1,
     "%%EAN%%": "",
-    "%%DIAMONDINFO%%": "",
-    "%%PRODUCT_WEIGHT%%": "",
-    "%%DESCRIPTION%%": product.sComment,
+    "%%DIAMONDINFO%%": product?.sDiamondInfo,
+    "%%PRODUCT_WEIGHT%%": 12.32,
+    "%%DESCRIPTION%%": product?.sComment || product?.sLabelDescription,
     "%%MY_OWN_COLLECTION%%": product?.sArticleGroupName || '',
-    "%%VARIANTS_COLLECTION%%": "",
-    "%%BRAND_COLLECTION1%%": "",
-    "%%BRAND_COLLECTION2%%": "",
-    "%%TOTALCARATWEIGHT%%": 0.08,
+    "%%TOTALCARATWEIGHT%%": 0.65,
     "%%LAST_DELIVERY_DATE%%": product.dDateLastPurchased,
-    "%%SUPPLIER_NAME%%": product.sBusinessPartnerName,
-    "%%SUPPLIER_CODE%%": "",
+    "%%SUPPLIER_NAME%%": product.oBusinessPartner?.sBusinessPartnerName,
+    "%%SUPPLIER_CODE%%": product.oBusinessPartner?.sBusinessCode,
     "%%SUGGESTED_RETAIL_PRICE%%": "0,00",
     "%%PRODUCT_CATEGORY%%": "",
-    "%%PRODUCT_SIZE%%": "",
+    "%%PRODUCT_SIZE%%": 30,
     "%%JEWEL_TYPE%%": "",
     "%%JEWEL_MATERIAL%%": "",
   }
@@ -134,13 +131,22 @@ export class LabelTemplateModelComponent implements OnInit {
     const Product = makeDataObjectForProduct({
       nPriceIncVat: 100,
       nReceivedQuantity: 0,
-      sArticleNumber: "article number",
-      sProductNumber: "product number",
-      sComment: "description",
-      brandName: "Brand Name",
-      dLastDeliveryDate: "dDateLastPurchased",
-      sBusinessPartnerName: "sBusinessPartnerName",
-
+      sArticleNumber: "00000000000",
+      sProductNumber: "PN-12345",
+      sComment: "Description",
+      dLastDeliveryDate: "01/01/2023",
+      sBusinessPartnerName: "Supplier",
+      sProductName: 'Name',
+      oBusinessBrand: {
+        sAlias: 'Brand alias',
+        sName: 'Brand name'
+      },
+      oBusinessPartner: {
+        sBusinessCode: 'SCODE',
+        sName: 'Supplier Name'
+      },
+      sArticleGroupName: 'Article group',
+      sDiamondInfo: 'Diamond information'
     })
     const JsonTemplate = JSON.parse(JSON.stringify(this.jsonEditor.jsonData));
 
