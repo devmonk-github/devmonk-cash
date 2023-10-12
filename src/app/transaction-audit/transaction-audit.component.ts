@@ -226,10 +226,14 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchBusinessDetails();
     this.getEmployees();
     this.getWorkstations();
+
+    // if (this.iLocationId != this.tillService?.settings?.currentLocation?.iLocationId) {
+    //   this.tillService.settings = null;
+    //   await this.tillService.fetchSettings();
+    // }
+
     this.fetchBusinessPartners();
     this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
-
-    // this.fetchBusinessLocation();
     this.getProperties();
     this.getPaymentMethods();
     const transactionAudits = localStorage.getItem('transactionAuditPdfService.aAmount');
@@ -681,31 +685,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (sLevelFilter) {
       this.bIsArticleGroupLevel = sLevelFilter === "articleGroup"
     }
-  }
-
-  fetchBusinessLocation() {
-    if (!this.oUser?.userId) return;
-    this.bBusinessLocationLoading = true;
-    this.listBusinessSubscription = this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId, }).subscribe((result: any) => {
-      if (result?.data?.aLocation?.length) {
-        this.aLocation = result.data.aLocation;
-        this.fetchStockValuePerLocation();
-        this.sCurrentLocation = result?.data?.sName;
-        this.aLocation.forEach((oLocation: any) => {
-          if (oLocation._id === this.iLocationId) {
-            this.auditService.selectCurrency(oLocation);
-            this.sCurrentLocation += " (" + oLocation?.sName + ")";
-            this.aSelectedLocation.push(oLocation._id);
-          }
-        });
-      }
-      this.bBusinessLocationLoading = false;
-    },
-      (error) => {
-        this.bBusinessLocationLoading = false;
-        console.log('error: ', error);
-      }
-    );
   }
 
   displayMethodChange() {
@@ -1187,18 +1166,20 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result:any) => {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
       this.businessDetails = result.data;
       this.aLocation = this.businessDetails.aLocation;
       this.fetchStockValuePerLocation();
       let oLocation;
-      if (this.bOpeningDayClosure) { // opened closing cash register
-        oLocation = this.aLocation.find((el: any) => el._id === this.iLocationId);
-      } else if(this.bOpeningHistoricalDayState){
+ 
+      if (this.bOpeningHistoricalDayState) {
         oLocation = this.aLocation.find((el: any) => el._id === this.oStatisticsData.iLocationId);
+      } else {
+        oLocation = this.aLocation.find((el: any) => el._id === this.iLocationId);
       }
-      if(oLocation) {
-        this.auditService.selectCurrency(oLocation);
+
+      if (oLocation) {
+        this.tillService.selectCurrency(oLocation);
         this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
         this.aSelectedLocation.push(oLocation._id);
       }

@@ -67,8 +67,8 @@ export class TillService {
       }, 1000);
     }
   }
+
   selectCurrency(oLocation: any) {
-    // console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
       switch (oLocation?.eCurrency) {
         case 'pound':
@@ -82,7 +82,6 @@ export class TillService {
           break;
       }
     }
-    // console.log('this.currency succesfully selected', this.currency)
   }
 
 
