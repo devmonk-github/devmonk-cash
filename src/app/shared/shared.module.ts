@@ -165,7 +165,8 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     SelectPrintPaperDialogComponent,
     ClosingDaystateDialogComponent,
     ClosingDaystateHelperDialogComponent,
-    CalendarGanttViewDialogComponent
+    CalendarGanttViewDialogComponent,
+    TranslateModule,
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })

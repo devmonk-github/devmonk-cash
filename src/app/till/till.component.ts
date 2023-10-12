@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrash, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Observable, Subscription } from 'rxjs';
@@ -42,7 +42,8 @@ import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialo
         animate('0ms', style({ opacity: 0 }))
       ])
     ])
-  ]
+  ],
+  // encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -54,6 +55,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faTimes = faTimes;
   faTimesCircle = faTimesCircle;
   faTrashAlt = faTrashAlt;
+  faTrash = faTrash;
   faRing = faRing;
   faCoins = faCoins;
   faCalculator = faCalculator;

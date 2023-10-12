@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoginCashRegisterComponent } from './login-cash-register/login-cash-register.component';
+import { AppComponent } from './app.component';
 
 const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./home/home.module').then(module => module.HomeModule)
   },
-  {
-    path: 'till',
-    loadChildren: () => import('./till/till.module').then(module => module.TillModule)
-  },
+  // {
+  //   path: 'till',
+  //   loadChildren: () => import('./till/till.module').then(module => module.TillModule)
+  // },
   {
     path: 'till-settings',
     loadChildren: () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
@@ -82,7 +84,7 @@ const routes: Routes = [
     path: 'day-closure',
     loadChildren: () => import('./day-closure/day-closure.module').then(module => module.DayClosureModule)
   },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  // { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'customers-group', loadChildren: () => import('./customers-group/customers-group.module').then(m => m.CustomersGroupModule) },
   {
     path: 'gift-card',
@@ -92,6 +94,7 @@ const routes: Routes = [
     path: 'repair-order',
     loadChildren: () => import('./import-repair-order/import-repair-order.module').then(module => module.ImportRepairOrderModule)
   },
+  { path: '', pathMatch: 'full', component: LoginCashRegisterComponent },
 ];
 
 @NgModule({

@@ -1,0 +1,60 @@
+<div class="login-page bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="bg-white shadow rounded">
+                    <div class="row">
+                        <div class="col-md-7 pe-0">
+                            <div class="form-left h-100 py-5 px-5">
+                                <form action="" class="row g-4">
+
+                                    <div class="col-12">
+                                        <label>{{'ORGANIZATION' | translate}}</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+                                            <input type="text" class="form-control"
+                                                placeholder="{{'ORGANIZATION' | translate}}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label>{{'INPUT_EMAILADRESS' | translate}}</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+                                            <input type="text" class="form-control"
+                                                placeholder="{{'INPUT_EMAILADRESS' | translate}}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label>{{'PASSWORD' | translate}}</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+                                            <input type="text" class="form-control"
+                                                placeholder="{{ 'PASSWORD' | translate }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 offset-6">
+                                        <button type="submit" class="btn btn-success px-4 float-end">{{
+                                            'LOGIN_TO_YOUR_ORGANIZATION' | translate }}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="d-flex flex-column text-center align-items-center justify-content-center h-100">
+                                <img src="https://lirp.cdn-website.com/f2520664/dms3rep/multi/opt/cropped-retailgear-logo-web-260w.jpg"
+                                    alt="" srcset="">
+                                <button class="btn btn-secondary fs-6 mt-4" routerLink="/home">
+                                    {{'SKIP_LOGIN_AND_GO_TO_CASH_REGISTER' | translate}}
+                                    <i class="fa fa-arrow-right fs-6 ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
