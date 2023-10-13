@@ -60,7 +60,7 @@ export class TransactionImportComponent implements OnInit {
     for (let j = 0; j < this.parsedTransactionData?.length; j++) {
         // console.log('im here', this.parsedTransactionData[j])
         let data = this.parsedTransactionData[j];
-
+        
         let finalCdate = new Date();
         if(data?.dCreationDate?.includes('-')){
           const formatCdate = new Date(data?.dCreationDate?.split('-').reverse().join('/'));
@@ -106,7 +106,7 @@ export class TransactionImportComponent implements OnInit {
             'bDiscount': false,
             "bPrepayment": false
           },
-          "sProductName": data?.sProductName ? data?.sProductName : data?.sArticleNumber +" / "+ data?.sProductNumber,
+          "sProductName": data?.sProductName ? data?.sProductName : data?.sArticleNumber,
           "sTransactionNumber": data?.sNumber,
           "sDescription": data?.sDescription ? data?.sDescription : '',
           "sComment": data?.sDescription ? data?.sDescription :'',
@@ -116,10 +116,10 @@ export class TransactionImportComponent implements OnInit {
           "nVatRate": data?.nVatRate ? data?.nVatRate : 21,
           "nDiscount": data?.nDiscount ? data?.nDiscount : 0, 
           "bDiscountOnPercentage": data?.bDiscountOnPercentage ? data?.bDiscountOnPercentage : false,
-          "nQuantity": data?.nQuantity ? data?.nQuantity : 1,
-          "nPurchasePrice": data?.purchasePrice ? data?.nPurchasePrice : 0,
-          'nPriceIncVat': data?.nPriceIncVat ? data?.nPriceIncVat : 0,
-          "nPaidAmount": data?.nPaymentAmount ?  data?.nPaymentAmount : data?.nPriceIncVat,
+          "nQuantity": data?.nQuantity ? Number(data?.nQuantity) : 1,
+          "nPurchasePrice": data?.purchasePrice ? Number(data?.nPurchasePrice) : 0,
+          'nPriceIncVat': data?.nPriceIncVat ? Number(data?.nPriceIncVat) : 0,
+          "nPaidAmount": data?.nPaymentAmount ?  Number(data?.nPaymentAmount) : Number(data?.nPriceIncVat),
           "nPaymentAmount": data?.nPaymentAmount ?  data?.nPaymentAmount : data?.nPriceIncVat,
           "eSource":"import-csv",
           "bImported": true,
