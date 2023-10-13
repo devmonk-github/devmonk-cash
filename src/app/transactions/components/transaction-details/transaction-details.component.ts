@@ -262,9 +262,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
   }
   
-  printLabel(item: any){
-    console.log('im here and this is item -> ', item)
-  }
 
   async sendEmail() {
     const template = await this.getTemplate('regular').toPromise();
@@ -314,7 +311,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   syncCustomerData(currenCustomer: any, systemCustomer: any) {
-    //TODO: if user added few things which were empty before we will just update the system
     this.dialogService.openModal(CustomerSyncDialogComponent,
       {
         cssClass: "modal-md",

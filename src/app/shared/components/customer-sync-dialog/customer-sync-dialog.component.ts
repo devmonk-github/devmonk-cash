@@ -41,7 +41,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
   customer: any = {
     _id: '',
     bNewsletter: true,
-    sSalutation: '',
+    sSalutation: 'Mr',
     sEmail: '',
     sFirstName: '',
     sPrefix: '',
@@ -59,7 +59,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
       documentName: '',
       documentNumber: '',
     },
-    sGender: '',
+    sGender: 'male',
     oInvoiceAddress: {
       sCountry: 'Netherlands',
       sCountryCode: 'NL',
@@ -123,14 +123,11 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.activityItems = this.dialogRef?.context?.activityItems;
+    this.customer = { ... this.customer, ... this.dialogRef?.context?.currenCustomer };
     this.systemCustomer = this.dialogRef?.context?.systemCustomer;
-    this.customer = { ... this.systemCustomer, ... this.dialogRef?.context?.currentCustomer };
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
-    console.log('SYSTEM CUSTOMER --- ', this.systemCustomer);
-    console.log('CURRENT CUSTOMER --- ', this.customer);
-
-    console.log('SELECTED CUSTOMER --- ', this.selectedCustomer);
+    
   }
 
   
@@ -143,7 +140,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
     }
     
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      this.close({ action: true, currentCustomer: this.systemCustomer });
+      this.close({ action: true, currentCustomer:this.systemCustomer });
       this.toastService.show({ type: "success", text: 'SUCCESSFULLY_UPDATED' });
     }, (error) => {
       console.log('update customer error: ', error);
@@ -165,8 +162,9 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
         (result: any) => {
           if (result?.message === 'success') {
             this.toastService.show({ type: 'success', text:`SUCCESSFULLY_UPDATED` });
-            this.close({ action: true,  systemCustomer: this.customer});
-          } else{
+            this.close({ action: true,  systemCustomer:this.customer});
+          }
+          else{
              let errorMessage = "";
              this.translateService.get(result.message).subscribe((res:any)=>{
               errorMessage = res;
