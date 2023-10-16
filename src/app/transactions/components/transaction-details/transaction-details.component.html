@@ -321,9 +321,15 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <h3 class="fw-bolder mb-3">
-                    <span>{{ "ITEMS" | translate }}</span>
-                </h3>
+                <div class="d-flex align-items-center my-3">
+                    <h3 class="fw-bolder mb-0 me-auto">
+                        <span>{{ "ITEMS" | translate }}</span>
+                    </h3>
+                    <button class="ms-3 btn btn-secondary btn-sm" (click)="printLabel('no-product')">
+                        {{"PRINT_LABEL_WITHOUT_PRODUCT" | translate}}
+                    </button>
+                </div>
+               
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
                         <table class="table table-hover table-rounded table-striped border gy-3 gs-7"
@@ -445,7 +451,7 @@
                                                     (click)="showActivityItem(item,$event)" [disabled]="item?.eKind == 'regular' && item?.bMigrate">
                                                     <i class="fa fa-eye"></i>
                                                 </button>
-                                                <button class="ms-3 btn btn-secondary btn-sm" *ngIf="item?.oType?.bRefund" (click)="printLabel(item)">
+                                                <button class="ms-3 btn btn-secondary btn-sm" *ngIf="item?.oType?.bRefund && item.sArticleNumber" (click)="printLabel(item)">
                                                     <i class="fa fa-print"></i>
                                                 </button>
                                             </div>

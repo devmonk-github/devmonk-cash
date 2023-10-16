@@ -1,4 +1,4 @@
-import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef, Compiler, Injector, NgModuleRef} from '@angular/core';
 import { faAt, faClipboard, faDownload, faEnvelope, faFileInvoice, faPrint, faReceipt, faSync, faTimes, faTrashAlt, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as JsBarcode from 'jsbarcode';
@@ -19,6 +19,8 @@ import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { FiskalyService } from 'src/app/shared/service/fiskaly.service';
 import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
+import { environment } from 'src/environments/environment';
+import { loadRemoteModule } from '@angular-architects/module-federation';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -109,7 +111,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private taxService: TaxService,
     private fiskalyService: FiskalyService,
     private createArticleGroupService: CreateArticleGroupService,
-    private customerStructureService: CustomerStructureService
+    private customerStructureService: CustomerStructureService,
+    private compiler: Compiler,
+    private injector: Injector
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -263,7 +267,53 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
   
   printLabel(item: any){
-    console.log('im here and this is item -> ', item)
+    let context = {};
+    switch (item){
+      case 'no-product':
+        context = {
+          toastService: this.toastService,
+          businessDetails: this.businessDetails,
+          dialogType: 'no-product',
+          bAssignDialogRef: true
+        }
+        break;
+      default: 
+      console.log('im here and this is item -> ', item);
+        context = {
+          product: JSON.parse(JSON.stringify(item)),
+          toastService: this.toastService,
+          businessDetails: this.businessDetails,
+          dialogType: 'single',
+          bAssignDialogRef: true
+        }
+        break;
+    }
+
+    try {
+      loadRemoteModule({
+        remoteEntry: `${environment.webpackUrl}/directive/printLabel.js`,
+        remoteName: "printLabel",
+        exposedModule: "./PrintLabelModule"
+      }).then(({ PrintLabelModule }) => {
+        this.compiler.compileModuleAsync(PrintLabelModule).then(moduleFactory => {
+          const moduleRef: NgModuleRef<typeof PrintLabelModule> = moduleFactory.create(this.injector);
+          const componentFactory = moduleRef.instance.resolveComponent();
+          const component = componentFactory.componentType;
+          this.dialogService.openModal(component,
+            {
+              cssClass: "modal-lg",
+              context: context,
+              hasBackdrop: true,
+              closeOnBackdropClick: true,
+              closeOnEsc: false
+            }).instance.close.subscribe(result => {
+            });
+        });
+      });
+    } catch (error) {
+      console.log("Error in customer: ", error);
+      this.toastService.show({ type: "warning", text: `Something went wrong` });
+    }
   }
 
   async sendEmail() {
