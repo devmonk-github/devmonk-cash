@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ViewContainerRef,QueryList, ViewChildren, ViewChild, Compiler, Injector, NgModuleRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef, QueryList, ViewChildren, ViewChild, Compiler, Injector, NgModuleRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
@@ -16,7 +16,7 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
-  styleUrls: ['./transactions.component.sass'],
+  styleUrls: ['./transactions.component.scss'],
   providers: [BarcodeService]
 })
 export class TransactionsComponent implements OnInit, OnDestroy {
@@ -36,7 +36,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   selectedCity: string = '';
   transactions: any = [];
   TIEkinds: Array<any> = ['regular', 'giftcard', 'repair', 'order', 'gold-purchase', 'gold-sell', 'discount', 'offer', 'refund'];
-  paymentMethods:  Array<any> =  [];
+  paymentMethods: Array<any> = [];
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
@@ -52,7 +52,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     searchValue: '',
     sortBy: 'dCreatedDate',
     sortOrder: 'desc',
-    bankConfirmedStatus:'all'
+    bankConfirmedStatus: 'all'
   };
   showLoader: boolean = false;
   widgetLog: string[] = [];
@@ -71,12 +71,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     //{ key: 'PREPAYMENT' },
     { key: 'MARK_CONFIRMED' },
   ];
-  
-  iBusinessId:any = localStorage.getItem('currentBusiness');
-  iLocationId:any = localStorage.getItem('currentLocation');
+
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
 
   // Advance search fields 
-  
+
   filterDates: any = {
     startDate: '',//new Date((new Date()).setDate(new Date().getDate() - 7)),
     endDate: ''//new Date(new Date().setHours(23, 59, 59)),
@@ -99,7 +99,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     { key: 'METHOD', disabled: true },
     { key: 'TOTAL', disabled: true },
     // { key: 'TYPE', disabled: true },
-    {key:'ACTION' , disabled:true }
+    { key: 'ACTION', disabled: true }
   ]
 
   @ViewChildren('transactionItems') things: QueryList<any>;
@@ -118,26 +118,26 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private compiler: Compiler,
     private injector: Injector,
     private route: ActivatedRoute
-  ) {}
-  
+  ) { }
+
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
     this.userType = localStorage.getItem("type");
-    
+
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
     else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
     //Needed to open transaction details from Business Product page
-    if(this.route.snapshot.queryParamMap.get('sNumber')){
+    if (this.route.snapshot.queryParamMap.get('sNumber')) {
       this.openModal(this.route.snapshot.queryParamMap.get('sNumber'), true);
     }
-    
+
     // this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     // this.loadTransaction();
-  
+
     this.listEmployee();
     this.getWorkstations();
     // this.getLocations();
@@ -149,12 +149,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.initSlider();
   }
 
-  
+
 
   // Function for reset selected filters
   resetFilters() {
     this.requestParams.searchValue = "";
-    
+
     this.requestParams = {
       methods: [],
       TIEKinds: [],
@@ -166,14 +166,14 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       skip: 0,
       limit: 10,
       searchValue: '',
-      iEmployeeId:'',
+      iEmployeeId: '',
       sortBy: 'dCreatedDate',
       sortOrder: 'desc'
     };
     this.employee = [];
     this.showAdvanceSearch = false;
     this.loadTransaction();
-   
+
   }
 
   fetchBusinessDetails() {
@@ -194,7 +194,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        this.paymentMethods = [ ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
+        this.paymentMethods = [...result.data.map((v: any) => ({ ...v, isDisabled: false }))]
         this.paymentMethods.forEach((element: any) => {
           element.sName = element.sName.toLowerCase();
         });
@@ -206,7 +206,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   toolTipData(item: any) {
     var itemList = []
     var returnArr = [];
-   
+
     if (item.aTransactionItems && item.aTransactionItems.length > 0) {
       for (var i = 0; i < item.aTransactionItems.length; i++) {
         itemList.push(item.aTransactionItems[i].sProductName)
@@ -236,18 +236,18 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
-        this.transactions.forEach((transaction:any) => {
+        this.transactions.forEach((transaction: any) => {
           const aTemp = transaction.aPayments.filter((payment: any) => payment.sRemarks !== 'CHANGE_MONEY')
-          const bankPaymentIndex = transaction.aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');
-          if(bankPaymentIndex != -1){
+          const bankPaymentIndex = transaction.aPayments.findIndex((payment: any) => payment.sMethod == 'bankpayment');
+          if (bankPaymentIndex != -1) {
             transaction.bConfirmed = transaction.aPayments[bankPaymentIndex].bConfirmed;
             transaction.paymentType = 'bankpayment';
           }
-          transaction.sMethods = aTemp.map((m:any) => m.sMethod).join(',');
+          transaction.sMethods = aTemp.map((m: any) => m.sMethod).join(',');
           transaction.nTotal = 0;
           aTemp.forEach((m: any) => transaction.nTotal += m.nAmount)
           const oLocation = this.businessDetails.aLocation.find((el: any) => el._id == transaction.iLocationId);
-          if(oLocation)  transaction.sLocationName = oLocation?.sName;
+          if (oLocation) transaction.sLocationName = oLocation?.sName;
         })
         this.paginationConfig.totalItems = result.data.totalCount;
       }
@@ -270,14 +270,14 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   getWorkstations() {
     this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-        if (result && result.data) {
-          this.workstations = result.data;
-        }
-      });
+      if (result && result.data) {
+        this.workstations = result.data;
+      }
+    });
   }
 
   listEmployee() {
-    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.length) {
         this.employees = this.employees.concat(result.data[0].result);
       }
@@ -300,7 +300,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         this.bankConfirmation(transaction._id);
         break
       case 'REST_PAYMENT':
-        this.openTransaction(transaction,'activity');
+        this.openTransaction(transaction, 'activity');
         break
       default:
         break;
@@ -317,23 +317,23 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         }
       });
   }
-  
+
   bankConfirmation(transactionId: any) {
     const transactionIndex = this.transactions.findIndex((transaction: any) => transaction._id == transactionId);
     // console.log("transaction index" , this.transactions[transactionIndex]._id)
     this.dialogService.openModal(BankConfirmationDialogComponent, {
       cssClass: "modal-lg",
       context: {
-        transaction:this.transactions[transactionIndex]
+        transaction: this.transactions[transactionIndex]
       },
       hasBackdrop: true,
       closeOnBackdropClick: false,
       closeOnEsc: false
     }).instance.close.subscribe((result: any) => {
-      if(result?.res){
+      if (result?.res) {
         this.transactions[transactionIndex].aPayments = result?.res;
-        const bankPaymentIndex = this.transactions[transactionIndex].aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');
-        if(bankPaymentIndex != -1){
+        const bankPaymentIndex = this.transactions[transactionIndex].aPayments.findIndex((payment: any) => payment.sMethod == 'bankpayment');
+        if (bankPaymentIndex != -1) {
           this.transactions[transactionIndex].bConfirmed = this.transactions[transactionIndex].aPayments[bankPaymentIndex].bConfirmed;
         }
       }
@@ -372,7 +372,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   resetThePagination() {
     this.requestParams.skip = 0;
-    this.paginationConfig.currentPage = 1; 
+    this.paginationConfig.currentPage = 1;
     this.requestParams.limit = parseInt(this.paginationConfig.itemsPerPage);
   }
 
@@ -388,47 +388,47 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.loadTransaction(true);
   }
 
-  
+
 
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionDetailsComponent, 
-      { 
-        cssClass: "w-fullscreen mt--5", 
-        context: { 
-          transaction: transaction, 
-          businessDetails: this.businessDetails, 
-          eType: this.eType, 
+    const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionDetailsComponent,
+      {
+        cssClass: "w-fullscreen mt--5",
+        context: {
+          transaction: transaction,
+          businessDetails: this.businessDetails,
+          eType: this.eType,
           from: 'transactions',
           employeesList: this.employees
-        }, 
-        hasBackdrop: true, 
-        closeOnBackdropClick: false, 
-        closeOnEsc: false 
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
       }).instance;
-      
+
     oDialogComponent.close.subscribe(async (result) => {
-      if (result)transaction.sInvoiceNumber = result?.sInvoiceNumber;
+      if (result) transaction.sInvoiceNumber = result?.sInvoiceNumber;
       if (result?.oData?.oCurrentCustomer) {
         transaction.oCustomer._id = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.oCustomer._id;
         transaction.iCustomerId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.iCustomerId;
-        transaction.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany:false;
-        transaction.oCustomer.sFirstName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sFirstName ? result.oData.oCurrentCustomer.sFirstName:"";
-        transaction.oCustomer.sLastName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sLastName ? result.oData.oCurrentCustomer.sLastName:"";
-        transaction.oCustomer.sSalutation = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sSalutation ? result.oData.oCurrentCustomer.sSalutation:"";
-        transaction.oCustomer.sPrefix = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sPrefix ? result.oData.oCurrentCustomer.sPrefix:"";
-        transaction.oCustomer.sEmail = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sEmail ? result.oData.oCurrentCustomer.sEmail:"";
-        transaction.oCustomer.sGender = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sGender ? result.oData.oCurrentCustomer.sGender:"";
-        transaction.oCustomer.sVatNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sVatNumber ? result.oData.oCurrentCustomer.sVatNumber:"";
-        transaction.oCustomer.sCocNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCocNumber ? result.oData.oCurrentCustomer.sCocNumber:"";
-        transaction.oCustomer.nClientId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.nClientId ? result.oData.oCurrentCustomer.nClientId:"";
-        transaction.oCustomer.oContactPerson = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oContactPerson ? result.oData.oCurrentCustomer.oContactPerson:"";
-        transaction.oCustomer.sCompanyName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCompanyName ? result.oData.oCurrentCustomer.sCompanyName:"";
-        transaction.oCustomer.oShippingAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oShippingAddress ? result.oData.oCurrentCustomer.oShippingAddress:"";
-        transaction.oCustomer.oInvoiceAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oInvoiceAddress ? result.oData.oCurrentCustomer.oInvoiceAddress:"";
-        transaction.oCustomer.oPhone = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oPhone ? result.oData.oCurrentCustomer.oPhone:"";
-        transaction.oCustomer.bCounter = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bCounter ? result.oData.oCurrentCustomer.bCounter:false;
+        transaction.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany : false;
+        transaction.oCustomer.sFirstName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sFirstName ? result.oData.oCurrentCustomer.sFirstName : "";
+        transaction.oCustomer.sLastName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sLastName ? result.oData.oCurrentCustomer.sLastName : "";
+        transaction.oCustomer.sSalutation = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sSalutation ? result.oData.oCurrentCustomer.sSalutation : "";
+        transaction.oCustomer.sPrefix = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sPrefix ? result.oData.oCurrentCustomer.sPrefix : "";
+        transaction.oCustomer.sEmail = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sEmail ? result.oData.oCurrentCustomer.sEmail : "";
+        transaction.oCustomer.sGender = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sGender ? result.oData.oCurrentCustomer.sGender : "";
+        transaction.oCustomer.sVatNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sVatNumber ? result.oData.oCurrentCustomer.sVatNumber : "";
+        transaction.oCustomer.sCocNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCocNumber ? result.oData.oCurrentCustomer.sCocNumber : "";
+        transaction.oCustomer.nClientId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.nClientId ? result.oData.oCurrentCustomer.nClientId : "";
+        transaction.oCustomer.oContactPerson = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oContactPerson ? result.oData.oCurrentCustomer.oContactPerson : "";
+        transaction.oCustomer.sCompanyName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCompanyName ? result.oData.oCurrentCustomer.sCompanyName : "";
+        transaction.oCustomer.oShippingAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oShippingAddress ? result.oData.oCurrentCustomer.oShippingAddress : "";
+        transaction.oCustomer.oInvoiceAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oInvoiceAddress ? result.oData.oCurrentCustomer.oInvoiceAddress : "";
+        transaction.oCustomer.oPhone = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oPhone ? result.oData.oCurrentCustomer.oPhone : "";
+        transaction.oCustomer.bCounter = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bCounter ? result.oData.oCurrentCustomer.bCounter : false;
       }
       if (result?.action) this.routes.navigate(['business/till']);
     }, (error) => {
@@ -436,7 +436,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     });
 
     oDialogComponent.triggerEvent.subscribe(res => {
-      if(res?.type === 'open-slider' && res?.data) {
+      if (res?.type === 'open-slider' && res?.data) {
         this.SupplierStockProductSliderData.next(res.data);
       }
     })
@@ -463,19 +463,19 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   async openModal(barcode: any, isQparam?: boolean) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
-      
+
     if (barcode.startsWith("T")) {
-      if(!isQparam)
+      if (!isQparam)
         this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, {iBusinessId: this.iBusinessId}).toPromise();
+      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, { iBusinessId: this.iBusinessId }).toPromise();
       if (result?.data?._id) {
         this.showTransaction(result?.data);
       }
-    } else if (barcode.startsWith("A") || barcode.startsWith("AI")){
+    } else if (barcode.startsWith("A") || barcode.startsWith("AI")) {
       this.requestParams.searchValue = barcode;
       this.loadTransaction();
     } else {
-      if(!isQparam)
+      if (!isQparam)
         this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode!' })
     }
 
