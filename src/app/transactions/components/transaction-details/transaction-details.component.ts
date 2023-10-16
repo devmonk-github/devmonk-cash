@@ -19,6 +19,8 @@ import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { FiskalyService } from 'src/app/shared/service/fiskaly.service';
 import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
+import { saveAs } from 'file-saver';
+import { PdfService } from 'src/app/shared/service/pdf2.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -109,7 +111,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private taxService: TaxService,
     private fiskalyService: FiskalyService,
     private createArticleGroupService: CreateArticleGroupService,
-    private customerStructureService: CustomerStructureService
+    private customerStructureService: CustomerStructureService,
+    private pdfServiceNew : PdfService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -264,34 +267,42 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   
 
   async sendEmail() {
-    const template = await this.getTemplate('regular').toPromise();
+    // const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     oDataSource.bForMail = true;
     oDataSource.sBusinessLogoUrl = '';
-    try {
-      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
-      if (_result?.data) {
-        oDataSource.sBusinessLogoUrl = _result?.data;
-      }
-    } catch (e) { }
+    // try {
+    //   const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+    //   if (_result?.data) {
+    //     oDataSource.sBusinessLogoUrl = _result?.data;
+    //   }
+    // } catch (e) { }
     if (oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
-    oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    })
-    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+    // oDataSource?.aPayments?.forEach((payment: any) => {
+    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // })
+    // const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    const response = await this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: oDataSource.sNumber,
-      templateData: template.data,
-      printSettings: oSettings,
-      sAction: 'sentToCustomer'
-    }).toPromise();
+    // const response = await this.receiptService.exportToPdf({
+    //   oDataSource: oDataSource,
+    //   pdfTitle: oDataSource.sNumber,
+    //   templateData: template.data,
+    //   printSettings: oSettings,
+    //   sAction: 'sentToCustomer'
+    // }).toPromise();
+    const oBody = {
+      transaction: oDataSource,
+      sType: 'regular',
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId
+    }
+    const response:any = await this.apiService.postNew('cashregistry', `/api/v1/till/generate-pdf`, oBody).toPromise()
     if (this.transaction?.oCustomer?.sEmail) {
       const body = {
-        pdfContent: response,
+        pdfContent: response.data,
         iTransactionId: this.transaction._id,
         receiptType: 'purchase-receipt',
         sCustomerEmail: this.transaction?.oCustomer?.sEmail,
@@ -403,15 +414,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
-    const template = await this.getTemplate('regular').toPromise();
+    // const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     if (type == 1 && !this.transaction.sInvoiceNumber) {
       const result: any = await this.updateInvoiceNumber();
-      /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = result?.data?.sInvoiceNumber;
       this.transaction.sInvoiceNumber = result?.data?.sInvoiceNumber;
     } else if (type == 1) {
-      /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = this.transaction.sInvoiceNumber;
       if (print)
         this.printInvoiceLoading = true;
@@ -425,40 +434,57 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.downloadWithVATLoading = true;
     }
 
-    oDataSource.sBusinessLogoUrl = '';
-    try {
-      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
-      if (_result?.data) {
-        oDataSource.sBusinessLogoUrl = _result?.data;
-      }
-    } catch (e) { }
-    if (oDataSource?.oCustomer?.bCounter === true) {
-      oDataSource.oCustomer = {};
-    }
+    // oDataSource.sBusinessLogoUrl = '';
+    // try {
+    //   const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+    //   if (_result?.data) {
+    //     oDataSource.sBusinessLogoUrl = _result?.data;
+    //   }
+    // } catch (e) { }
+    // if (oDataSource?.oCustomer?.bCounter === true) {
+    //   oDataSource.oCustomer = {};
+    // }
     // oDataSource?.aPayments?.forEach((payment: any) => {
     //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     // })
-    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-
+    
     // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    await this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: oDataSource.sNumber,
-      templateData: template.data,
-      printSettings: oSettings,
-      eSituation: 'is_created',
+    const oBody = {
+      transaction: oDataSource,
+      sType: 'regular',
       sAction: (print) ? 'print' : 'download',
-      sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    }).toPromise();
-    if (print) {
-      this.printWithVATLoading = false
-      this.printInvoiceLoading = false
-    } else {
-      this.downloadWithVATLoading = false;
-      this.downloadInvoiceLoading = false;
-    }
-  }
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
 
+    }
+
+    this.apiService.postNew('cashregistry', `/api/v1/till/generate-pdf`, oBody).subscribe(async (result:any) => {
+      if(print) {
+        const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+        await this.pdfServiceNew.sendToPrint(result.data, oSettings, this.transaction.sNumber, this.businessDetails.oPrintNode.sApiKey).toPromise();
+      } else {
+        saveAs(this.tillService.dataURItoBlob(result.data), this.transaction.sNumber);
+      }
+      if (print) {
+        this.printWithVATLoading = false
+        this.printInvoiceLoading = false
+      } else {
+        this.downloadWithVATLoading = false;
+        this.downloadInvoiceLoading = false;
+      }
+    });
+    // await this.receiptService.exportToPdf({
+    //   oDataSource,
+    //   pdfTitle: oDataSource.sNumber,
+    //   templateData: template.data,
+    //   printSettings: oSettings,
+    //   eSituation: 'is_created',
+    //   sAction: (print) ? 'print' : 'download',
+    //   sApiKey: this.businessDetails.oPrintNode.sApiKey,
+    // }).toPromise();
+
+  }
 
   getBase64FromUrl(url: any): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
