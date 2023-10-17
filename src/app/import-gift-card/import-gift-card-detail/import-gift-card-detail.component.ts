@@ -82,9 +82,9 @@ export class ImportGiftCardDetailComponent implements OnInit {
       this.updateTemplateForm = {};
     }
     this.allFields['all'].map((field: any) => {
-      const index = this.headerOptions.indexOf(field.sColumnHeader);
+      const index = this.headerOptions.indexOf(field.sName);
       if (index > -1) {
-        this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
+        this.giftCardDetailsForm[field.sName] = field.sColumnHeader;
         if (!this.referenceObj) this.referenceObj = {};
         this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
         this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
@@ -92,13 +92,15 @@ export class ImportGiftCardDetailComponent implements OnInit {
     });
 
     /* For making, de-selection works in drop-down */
-    this.allFields['all'].unshift({
-      eFormField: "input",
-      sColumnHeader: "",
-      sDataBaseFieldName: "EMPTY",
-      sName: "EMPTY",
-      aOptions: []
-    })
+    if(this.allFields['all'].filter((item :any ) => item.sDataBaseFieldName == "EMPTY")?.length == 0){
+      this.allFields['all'].unshift({
+        eFormField: "input",
+        sColumnHeader: "",
+        sDataBaseFieldName: "EMPTY",
+        sName: "EMPTY",
+        aOptions: []
+      })
+    }
 
     this.headerOptions.filter((option: any) => {
       if (!this.giftCardDetailsForm[option]) {

@@ -59,13 +59,13 @@ export class PrintSettingsEditorComponent implements OnInit {
       aValues: [0, 0, 0, 0],
       eType: 'textArray'
     },
-    // {
-    //   sTitle: 'Font',
-    //   sParameter: 'font',
-    //   value: 'MyCustom',
-    //   eOptions: ['MyCustom'],
-    //   eType: 'dropdown'
-    // },
+    {
+      sTitle: 'Font',
+      sParameter: 'font',
+      value: 'Default',
+      eOptions: ['Roboto', 'Times New Roman'],
+      eType: 'dropdown'
+    },
     {
       sTitle: 'Font size',
       sParameter: 'fontSize',

@@ -62,7 +62,7 @@ export class ImportService {
                 sCountry: customer?.['sCountry'] ? customer['sCountry'] : "overwrite",
                 sCountryCode: customer?.['sCountryCode'] ? customer['sCountryCode'] : "overwrite"
             },
-
+            nPoints: customer?.['nPoints'] ? customer['nPoints'] : "do-nothing",
             sComment: customer?.['sComment'] ? customer['sComment'] : "do-nothing",
             sNote: customer?.['sNote'] ? customer['sNote'] : "do-nothing",
             nMatchingCode: customer?.['nMatchingCode'] ? customer['nMatchingCode'] : "do-nothing",

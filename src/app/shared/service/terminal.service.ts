@@ -8,12 +8,20 @@ import { ApiService } from './api.service';
 })
 export class TerminalService {
   iBusinessId = localStorage.getItem('currentBusiness');
+  iLocationId = localStorage.getItem('currentLocation');
   iWorkstationId = localStorage.getItem('currentWorkstation');
   
   constructor(private apiService: ApiService) { }
 
+  refetchId() {
+    this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation');
+    this.iWorkstationId = localStorage.getItem('currentWorkstation');
+  }
+
   getTerminals(): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pin-terminal/get-terminals?iBusinessId=${this.iBusinessId}`).pipe(retry(1));
+    this.refetchId();
+    return this.apiService.getNew('cashregistry', `/api/v1/pin-terminal/get-terminals?iBusinessId=${this.iBusinessId}&iLocationId=${this.iLocationId}`);
   }
 
   startTerminalPayment(amount: number, sProvider?:string): Observable<any> {

@@ -14,7 +14,8 @@
             </ng-container>
         </div>
         <div *ngIf="mode === 'details'" class="card-toolbar d-flex align-items-center justify-content-end">
-            <button class="btn btn-secondary mx-2" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
+            <button class="btn btn-secondary mx-2" *ngIf="bIsCurrentCustomer"
+                (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
             </button>
             <div *ngIf="!editProfile" class="d-flex align-items-center">
@@ -54,7 +55,7 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center mb-5">
                                 <i [class]="customer?.bIsCompany ? 'fa fa-building fs-1' : 'fa fa-user fs-1'"></i>
-                                <h2 class="fw-bolder mx-5 mb-0 nameText">
+                                <h2 class="fw-bolder mx-5 mb-0">
                                     <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">{{
                                         customer.sSalutation | translate }} {{ customer.sFirstName }} {{
                                         customer.sLastName}} </span>
@@ -641,8 +642,10 @@
                                                 <td>{{activity?.sNumber}}</td>
                                                 <td>{{activity?.sBagNumber || '-'}}</td>
                                                 <td>{{activity?.oType?.eTransactionType}}</td>
-                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
-                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd, yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dCreatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
+                                                <td scope="row">{{activity?.dEstimatedDate | date:'MMM dd,
+                                                    yyyy,HH:mm:ss'}}</td>
                                                 <td>
                                                     <div *ngFor="let status of repairStatuses">
                                                         <div *ngIf="activity.eActivityItemStatus == status.value">
@@ -1048,8 +1051,7 @@
                                         (keydown)="onlyLetters($event)" />
                                 </div>
                                 <div class="col-3 custom-number" [ngClass]="bNormalOrder ? 'order-2' : 'order-1'">
-                                    <input class="form-control" type="text"
-                                        placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                    <input class="form-control" type="text" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2" [ngClass]="bNormalOrder ? 'order-3' : 'order-2'">

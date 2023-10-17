@@ -111,47 +111,47 @@
                     <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
                       <thead>
                         <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                          <th class="mw-100px sorting" tabindex="0">#</th>
-                          <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
-                          <th class="mw-100px sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
+                          <th class="w-30px sorting" tabindex="0">#</th>
+                          <th class="w-240px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                          <th class="sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
                         </tr>
                       </thead>
                       <tbody class="fw-bold text-gray-600">
                         <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
                           <tr *ngFor='let label of aZplTemplates; let i = index'>
-                            <td class="mw-100px text-truncate">
+                            <td class="text-truncate align-middle">
                               {{i+1}}
                             </td>
-                            <td class="mw-200px text-truncate" [title]="label.name || ''">
+                            <td class="w-240px text-truncate align-middle" [title]="label.name || ''">
                               {{label.name || ''}}
                             </td>
           
                             <td>
-                              <div class="d-flex">
-                                <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary btn-sm">
-                                  <i class="fa fa-edit"> </i>
+                              <div class="d-flex align-items-center">
+                                <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-icon btn-info btn-sm">
+                                  <i class="fa fa-edit"></i>
                                   <!-- {{'EDIT'| translate}} -->
                                 </button>
           
-                                <button class="btn btn-icon btn-secondary btn-sm mx-2" (click)="deleteLabelTemplate(label._id)">
+                                <button class="btn btn-icon btn-danger btn-sm mx-2" (click)="deleteLabelTemplate(label._id)">
                                   <i class="fa fa-trash"></i>
                                 </button>
           
-                                <button (click)="printSample(label)" class="btn btn-primary btn-sm mx-2">
-                                  <i class="fa fa-print"> </i>
+                                <button (click)="printSample(label)" class="btn btn-icon btn-primary btn-sm ">
+                                  <i class="fa fa-print"></i>
                                   <!-- {{'PRINT_SAMPLE'| translate}} -->
                                 </button>
           
-                                <button (click)="sentToLayout(label)" class="btn btn-primary btn-sm mx-2">
+                                <button (click)="sentToLayout(label)" class="btn btn-light-primary btn-sm mx-2">
                                   {{'SENT_TO_LAYOUT'| translate}}
                                 </button>
           
-                                <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm mx-2 w-25">
+                                <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm me-auto">
                                   {{'DEFAULT' | translate}}
                                 </button>
           
                                 <button *ngIf="!label?.bDefault" (click)="markDefault(label)"
-                                  class="btn btn-primary btn-sm mx-2 w-25">
+                                  class="btn btn-primary btn-sm me-auto">
                                   {{'MARK_AS_DEFAULT' | translate}}
                                 </button>
           
@@ -213,7 +213,6 @@
           
                             <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary btn-sm">
                               {{'CREATE'| translate}}
-          
                             </button>
           
                           </td>
