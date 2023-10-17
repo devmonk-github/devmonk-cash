@@ -1079,7 +1079,7 @@
                                                             }}</span>
                                                     </button>
                                                 </div>
-                                                <div class="btn-group me-4 w-100 mb-4">
+                                                <div class="btn-group me-4 w-100 mb-4" *ngIf="false">
                                                     <button class="btn btn-secondary fs-bold"
                                                         (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt', 'print')"
                                                         [disabled]="bDownloadCustomerReceipt">
@@ -1106,6 +1106,37 @@
                                                         </div>
                                                     </span>
                                                 </div>
+
+                                                    <!-- STart -->
+                                                    <div class="btn-group btn_group_container rounded mb-4" role="group" aria-label="Button group with nested dropdown">
+                                                        <button class="btn btn-secondary fs-bold"
+                                                            (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt', 'print')"
+                                                            [disabled]="bDownloadCustomerReceipt">
+                                                            <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
+                                                            <span class="indicator-label">{{
+                                                                "PRINT_VOUCHER" |translate}}</span>
+                                                        </button>
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn px-3 py-2 dropdown_toggle_btn">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                    <path
+                                                                        d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                        fill="black"></path>
+                                                                </svg>
+                                                            </button>
+                                                            <ul class="dropdown_menu">
+                                                                <li>
+                                                                    <div class="dropdown_item py-2 text-center" (click)="printThermalReceipt(activity, 'giftcard')">
+                                                                        <div class="menu-link px-3">{{ 'PRINT_THERMAL' |
+                                                                            translate}}</div>
+                                                                    </div>
+                                                    
+                                                                </li>
+                                                    
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <!-- END -->
 
                                                 <div class="btn-group me-4 w-100 mb-4">
                                                     <span class="btn btn-secondary fs-bold"

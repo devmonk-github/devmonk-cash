@@ -68,3 +68,25 @@ a.cancel
 
     input[type=number]
         -moz-appearance: textfield /* Firefox */
+
+.nav-tabs li.nav-item:after
+    display: block
+    content: ''
+    border-bottom: solid 3px #3ba68c
+    transform: scaleX(0)
+    transition: color .2s ease,background-color .2s ease
+
+.nav-tabs li.nav-item
+    .nav-link:focus, .nav-link:hover
+        border-bottom: 3px solid #3ba68c !important
+
+
+.nav-tabs li.nav-item button.nav-link
+    border: none !important
+    color: #a1a5b7 !important
+
+.nav-tabs li.nav-item button.nav-link.active
+    border-bottom: 3px solid #3ba68c !important
+
+h2.nameText
+    font-size: 1.5rem !important

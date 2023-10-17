@@ -307,4 +307,10 @@ ul.dropdown_menu {
 .btn_group_container {
   background: #e4e6ef;
   border-radius: 8px !important;
+  width: 100%;
+  
+    button {
+      display: flex;
+      align-items: center;
+    }
 }

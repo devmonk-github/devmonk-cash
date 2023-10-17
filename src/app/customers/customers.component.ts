@@ -17,7 +17,7 @@ import { faLongArrowAltDown, faLongArrowAltUp } from '@fortawesome/free-solid-sv
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.sass'],
+  styleUrls: ['./customers.component.scss'],
   animations: [trigger('openClose', [
     state('open', style({
       height: '*',
