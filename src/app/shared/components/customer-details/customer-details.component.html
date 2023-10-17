@@ -55,9 +55,9 @@
                             <div class="d-flex align-items-center mb-5">
                                 <i [class]="customer?.bIsCompany ? 'fa fa-building fs-1' : 'fa fa-user fs-1'"></i>
                                 <h2 class="fw-bolder mx-5 mb-0">
-                                    <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">{{
-                                        customer.sSalutation | translate }} {{ customer.sFirstName }} {{
-                                        customer.sLastName}} </span>
+                                    <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">
+                                        {{customer.sSalutation | translate }} {{ customer.sFirstName }} {{customer.sPrefix}} {{customer.sLastName}} 
+                                    </span>
                                     <span *ngIf="customer?.bIsCompany"
                                         style="text-transform: capitalize;">{{customer.sCompanyName}}</span>
                                     <span *ngIf="customer?.nClientId">({{nClientId}}) <i *ngIf="nClientId != '-'"

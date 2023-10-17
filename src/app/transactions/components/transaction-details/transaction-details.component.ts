@@ -1,4 +1,4 @@
-import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef, Compiler, Injector, NgModuleRef} from '@angular/core';
 import { faAt, faClipboard, faDownload, faEnvelope, faFileInvoice, faPrint, faReceipt, faSync, faTimes, faTrashAlt, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as JsBarcode from 'jsbarcode';
@@ -19,12 +19,16 @@ import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { FiskalyService } from 'src/app/shared/service/fiskaly.service';
 import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
+import { saveAs } from 'file-saver';
+import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { environment } from 'src/environments/environment';
+import { loadRemoteModule } from '@angular-architects/module-federation';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
-  styleUrls: ['./transaction-details.component.scss']
+  styleUrls: ['./transaction-details.component.sass']
 })
 export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   componentRef: any;
@@ -109,7 +113,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private taxService: TaxService,
     private fiskalyService: FiskalyService,
     private createArticleGroupService: CreateArticleGroupService,
-    private customerStructureService: CustomerStructureService
+    private customerStructureService: CustomerStructureService,
+    private pdfServiceNew : PdfService,
+    private compiler: Compiler,
+    private injector: Injector
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -140,14 +147,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.loading = false;
     }
     // console.log(this.transaction)
-    if (this.from != 'audit') {
-      if (!this.transaction?.bMigrate) {
+    if(this.from != 'audit'){
+      if(!this.transaction?.bMigrate){
         this.fetchActivityItem();
-      } else {
-        this.toastService.show({ type: "warning", title: this.translation['WARNING'], text: this.translation[`THIS_IS_AN_IMPORTED_OR_MIGRATED_TRANSACTION`] });
+      }else{
+        this.toastService.show({ type: "warning", title:  this.translation['WARNING'] , text: this.translation[`THIS_IS_AN_IMPORTED_OR_MIGRATED_TRANSACTION`] });
       }
     }
-
+   
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
@@ -157,14 +164,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       /*Needed to change fields order*/
       this.sBusinessCountry = this.businessDetails.currentLocation?.oAddress?.countryCode;
       // console.log(this.sBusinessCountry);
-      if (this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB' || this.sBusinessCountry == 'FR') {
+      if(this.sBusinessCountry == 'UK' || this.sBusinessCountry == 'GB'|| this.sBusinessCountry == 'FR'){
         this.bNormalOrder = false;
       }
     }
 
-    if (this.transaction?.oCustomer) {
-      this.transaction.oCustomer['shipping'] = this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, true, this.bNormalOrder);
-      this.transaction.oCustomer['invoice'] = this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, true, this.bNormalOrder);
+    if(this.transaction?.oCustomer){
+      this.transaction.oCustomer['shipping'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, true, this.bNormalOrder);
+      this.transaction.oCustomer['invoice'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, true, this.bNormalOrder);
     }
 
   }
@@ -193,7 +200,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         await this.startFiskalyTransaction();
       }
       const result = await this.fiskalyService.updateFiskalyTransaction(this.transaction.aPayments, pay, state);
-
+     
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
       } else {
@@ -215,9 +222,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     try {
       _fiscallyData = await this.fiskalyService.getTSSList();
     } catch (err) {
-      console.log('error while executing fiskaly service', err)
+       console.log('error while executing fiskaly service', err)
     }
-
+    
     if (_fiscallyData) {
       this.businessDetails.aLocation.forEach((location: any) => {
         const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
@@ -261,37 +268,94 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
     }
   }
+  
+  printLabel(item: any){
+    let context = {};
+    switch (item){
+      case 'no-product':
+        context = {
+          toastService: this.toastService,
+          businessDetails: this.businessDetails,
+          dialogType: 'no-product',
+          bAssignDialogRef: true
+        }
+        break;
+      default: 
+      console.log('im here and this is item -> ', item);
+        context = {
+          product: JSON.parse(JSON.stringify(item)),
+          toastService: this.toastService,
+          businessDetails: this.businessDetails,
+          dialogType: 'single',
+          bAssignDialogRef: true
+        }
+        break;
+    }
 
+    try {
+      loadRemoteModule({
+        remoteEntry: `${environment.webpackUrl}/directive/printLabel.js`,
+        remoteName: "printLabel",
+        exposedModule: "./PrintLabelModule"
+      }).then(({ PrintLabelModule }) => {
+        this.compiler.compileModuleAsync(PrintLabelModule).then(moduleFactory => {
+          const moduleRef: NgModuleRef<typeof PrintLabelModule> = moduleFactory.create(this.injector);
+          const componentFactory = moduleRef.instance.resolveComponent();
+          const component = componentFactory.componentType;
+          this.dialogService.openModal(component,
+            {
+              cssClass: "modal-lg",
+              context: context,
+              hasBackdrop: true,
+              closeOnBackdropClick: true,
+              closeOnEsc: false
+            }).instance.close.subscribe(result => {
+            });
+        });
+      });
+    } catch (error) {
+      console.log("Error in customer: ", error);
+      this.toastService.show({ type: "warning", text: `Something went wrong` });
+    }
+  }
 
   async sendEmail() {
-    const template = await this.getTemplate('regular').toPromise();
+    // const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     oDataSource.bForMail = true;
     oDataSource.sBusinessLogoUrl = '';
-    try {
-      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
-      if (_result?.data) {
-        oDataSource.sBusinessLogoUrl = _result?.data;
-      }
-    } catch (e) { }
+    // try {
+    //   const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+    //   if (_result?.data) {
+    //     oDataSource.sBusinessLogoUrl = _result?.data;
+    //   }
+    // } catch (e) { }
     if (oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
-    oDataSource?.aPayments?.forEach((payment: any) => {
-      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    })
-    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+    // oDataSource?.aPayments?.forEach((payment: any) => {
+    //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
+    // })
+    // const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
     oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    const response = await this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: oDataSource.sNumber,
-      templateData: template.data,
-      printSettings: oSettings,
-      sAction: 'sentToCustomer'
-    }).toPromise();
+    // const response = await this.receiptService.exportToPdf({
+    //   oDataSource: oDataSource,
+    //   pdfTitle: oDataSource.sNumber,
+    //   templateData: template.data,
+    //   printSettings: oSettings,
+    //   sAction: 'sentToCustomer'
+    // }).toPromise();
+    const oBody = {
+      transaction: oDataSource,
+      sType: 'regular',
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId
+    }
+    const response:any = await this.apiService.postNew('cashregistry', `/api/v1/till/generate-pdf`, oBody).toPromise()
     if (this.transaction?.oCustomer?.sEmail) {
       const body = {
-        pdfContent: response,
+        pdfContent: response.data,
         iTransactionId: this.transaction._id,
         receiptType: 'purchase-receipt',
         sCustomerEmail: this.transaction?.oCustomer?.sEmail,
@@ -311,6 +375,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   syncCustomerData(currenCustomer: any, systemCustomer: any) {
+    //TODO: if user added few things which were empty before we will just update the system
     this.dialogService.openModal(CustomerSyncDialogComponent,
       {
         cssClass: "modal-md",
@@ -403,15 +468,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
-    const template = await this.getTemplate('regular').toPromise();
+    // const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     if (type == 1 && !this.transaction.sInvoiceNumber) {
       const result: any = await this.updateInvoiceNumber();
-      /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = result?.data?.sInvoiceNumber;
       this.transaction.sInvoiceNumber = result?.data?.sInvoiceNumber;
     } else if (type == 1) {
-      /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = this.transaction.sInvoiceNumber;
       if (print)
         this.printInvoiceLoading = true;
@@ -425,40 +488,57 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.downloadWithVATLoading = true;
     }
 
-    oDataSource.sBusinessLogoUrl = '';
-    try {
-      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
-      if (_result?.data) {
-        oDataSource.sBusinessLogoUrl = _result?.data;
-      }
-    } catch (e) { }
-    if (oDataSource?.oCustomer?.bCounter === true) {
-      oDataSource.oCustomer = {};
-    }
+    // oDataSource.sBusinessLogoUrl = '';
+    // try {
+    //   const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+    //   if (_result?.data) {
+    //     oDataSource.sBusinessLogoUrl = _result?.data;
+    //   }
+    // } catch (e) { }
+    // if (oDataSource?.oCustomer?.bCounter === true) {
+    //   oDataSource.oCustomer = {};
+    // }
     // oDataSource?.aPayments?.forEach((payment: any) => {
     //   payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
     // })
-    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-
+    
     // oDataSource.dCreatedDate = moment(oDataSource.dCreatedDate).format('DD-MM-yyyy HH:mm:ss');
-    await this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: oDataSource.sNumber,
-      templateData: template.data,
-      printSettings: oSettings,
-      eSituation: 'is_created',
+    const oBody = {
+      transaction: oDataSource,
+      sType: 'regular',
       sAction: (print) ? 'print' : 'download',
-      sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    }).toPromise();
-    if (print) {
-      this.printWithVATLoading = false
-      this.printInvoiceLoading = false
-    } else {
-      this.downloadWithVATLoading = false;
-      this.downloadInvoiceLoading = false;
-    }
-  }
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
 
+    }
+
+    this.apiService.postNew('cashregistry', `/api/v1/till/generate-pdf`, oBody).subscribe(async (result:any) => {
+      if(print) {
+        const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+        await this.pdfServiceNew.sendToPrint(result.data, oSettings, this.transaction.sNumber, this.businessDetails.oPrintNode.sApiKey).toPromise();
+      } else {
+        saveAs(this.tillService.dataURItoBlob(result.data), this.transaction.sNumber);
+      }
+      if (print) {
+        this.printWithVATLoading = false
+        this.printInvoiceLoading = false
+      } else {
+        this.downloadWithVATLoading = false;
+        this.downloadInvoiceLoading = false;
+      }
+    });
+    // await this.receiptService.exportToPdf({
+    //   oDataSource,
+    //   pdfTitle: oDataSource.sNumber,
+    //   templateData: template.data,
+    //   printSettings: oSettings,
+    //   eSituation: 'is_created',
+    //   sAction: (print) ? 'print' : 'download',
+    //   sApiKey: this.businessDetails.oPrintNode.sApiKey,
+    // }).toPromise();
+
+  }
 
   getBase64FromUrl(url: any): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
@@ -522,7 +602,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     event.target.disabled = false;
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
-        if (result?.action == 'openTransaction') {
+        if(result?.action == 'openTransaction'){
           this.close(true);
         }
       });
@@ -531,7 +611,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async getThermalReceipt(type: string) {
     this.transaction.nTotalSavedPoints = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.transaction.iCustomerId}`).toPromise();
     this.transaction.currentLocation.currency = this.tillService.currency;
-    if (this.transaction.oCustomer.bCounter) this.transaction.oCustomer = {};
+    if(this.transaction.oCustomer.bCounter) this.transaction.oCustomer = {};
     await this.receiptService.printThermalReceipt({
       currency: this.tillService.currency,
       oDataSource: this.transaction,
@@ -544,13 +624,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   addRow() {
-    this.aNewSelectedPaymentMethods.push({ nAmount: 0 })
+    this.aNewSelectedPaymentMethods.push({nAmount: 0})
     this.filterDuplicatePaymentMethods()
   }
 
   async toggleEditPaymentMode() {
     this.paymentEditMode = !this.paymentEditMode;
-    if (this.paymentEditMode) this.mapFiscallyData();
+    if(this.paymentEditMode) this.mapFiscallyData();
     if (!this.bIsDayStateOpened) {
       const oBody = {
         iBusinessId: this.iBusinessId,
@@ -597,7 +677,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   filterDuplicatePaymentMethods() {
     const aPresent: any = [
-      ...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId && item?.sRemarks != 'CHANGE_MONEY'),
+      ...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId && item?.sRemarks != 'CHANGE_MONEY'), 
       ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)
     ];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
@@ -619,7 +699,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     const _result = await this.createArticleGroupService.checkArticleGroups('payment-method-change').toPromise()
     const oArticleGroup = _result.data;
     const aPayments = this.transaction.aPayments.filter((payments: any) => !payments?.bIgnore);
-    const aPromises: any = [];
+    const aPromises:any = [];
     // console.log({ taPayments: this.transaction.aPayments, aPayments, aNewSelectedPaymentMethods: this.aNewSelectedPaymentMethods })
     // return;
     aPayments.forEach((item: any) => {
@@ -640,9 +720,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         }));
       }
     });
+  
 
-
-    this.aNewSelectedPaymentMethods.forEach((item: any) => {
+    this.aNewSelectedPaymentMethods.forEach((item:any) => {
       if (item.nAmount) {
         aPromises.push(this.addExpenses({
           amount: +(item.nAmount.toFixed(2)),
@@ -660,7 +740,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         }));
       }
     });
-
+    
     await Promise.all(aPromises);
 
     this.paymentEditMode = false;
@@ -670,7 +750,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.close({ action: false });
 
     if (this.bIsFiscallyEnabled) {
-      const result: any = await this.fiskalyService.updateFiskalyTransaction(this.aNewSelectedPaymentMethods, this.aNewSelectedPaymentMethods, 'FINISHED');
+      const result: any = await this.fiskalyService.updateFiskalyTransaction(this.aNewSelectedPaymentMethods,this.aNewSelectedPaymentMethods, 'FINISHED');
       if (result) {
         localStorage.removeItem('fiskalyTransaction');
       }
@@ -730,7 +810,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
     })
 
-    if (!systemCustomer?.bCounter) {
+    if(!systemCustomer?.bCounter){
       for (const [key, value] of Object.entries(currentCustomerData)) {
         if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
           //console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
@@ -755,9 +835,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       this.transaction.oCustomer = oBody?.oCustomer;
       this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.transaction.oCustomer);
-      if (this.transaction?.oCustomer) {
-        this.transaction.oCustomer['shipping'] = this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, false, this.bNormalOrder);
-        this.transaction.oCustomer['invoice'] = this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, false, this.bNormalOrder);
+      if(this.transaction?.oCustomer){
+        this.transaction.oCustomer['shipping'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oShippingAddress, false, this.bNormalOrder);
+        this.transaction.oCustomer['invoice'] =  this.customerStructureService.makeCustomerAddress(this.transaction?.oCustomer.oInvoiceAddress, false, this.bNormalOrder);
       }
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {

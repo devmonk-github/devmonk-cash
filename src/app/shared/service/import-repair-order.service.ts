@@ -245,7 +245,7 @@ export class ImportRepairOrderService {
         oData.nTotalAmount = parseFloat((oData?.nTotalAmount)?.replace(/,/g, '.'));
 
         if(!this.aActivityItemStatus.includes(oData?.eActivityItemStatus)){
-           oData.sCommentVisibleColleagues += 'Status: '+ oData?.eActivityItemStatus + '\n';
+           oData.sCommentVisibleColleagues = (oData.sCommentVisibleColleagues || "") + 'Status: '+ oData?.eActivityItemStatus + '\n';
            oData.eActivityItemStatus = 'inspection';
         }
         
@@ -256,7 +256,7 @@ export class ImportRepairOrderService {
 
         if (oData?.sDescription) {
           // oData.sDescription = this.processRTFData(oData?.sDescription);
-          oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
+          oData.sDescription = oData?.sDescription?.replace(/\\"/g, '');
         }
 
         if (oData?.iCustomerId == "") {

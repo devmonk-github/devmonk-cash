@@ -1535,7 +1535,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if(aSetting?.length) {
       aSetting.forEach((sSetting:any) =>{
         // console.log(sSetting);
-        if (sSetting == 'oShortDescription') sDescription += ' ' + (product.oShortDescription[this.language] || '');
+        if (sSetting == 'oShortDescription') sDescription += ' ' + (product.oShortDescription[this.language] || '').replace(/<\/?[^>]+(>|$)/g, "");
         if (sSetting == 'sInternalDescription') sDescription += ' ' + (product.aLocation.find((el: any) => el._id == this.iLocationId)?.sInternalDescription || ''); 
         if (sSetting == 'sDiamond') sDescription += ' ' + this.tillService.getDescriptionWithGemDetails(product);
       })

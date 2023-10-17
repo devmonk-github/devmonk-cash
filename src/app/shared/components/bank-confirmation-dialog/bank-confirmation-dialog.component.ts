@@ -51,7 +51,8 @@ export class BankConfirmationDialogComponent implements OnInit {
       for (let paymentConfirmation of bankPayment[0]?.aBankConfirmation) {
         nTotalBankConfirmedPayment = nTotalBankConfirmedPayment + Number(paymentConfirmation?.nAmount);
       }
-      if (nTotalBankConfirmedPayment < nTotalBankPayment) {
+      // Transform negatives to positive number, only for the below condition.
+      if (Math.abs(nTotalBankConfirmedPayment) < Math.abs(nTotalBankPayment)) {
         bankPayment[0].aBankConfirmation.push(this.bankConfirmation);
         const oBody = {
           iBusinessId: this.iBusinessId,

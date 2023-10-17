@@ -363,7 +363,7 @@ export class QuickbuttonWizardComponent implements OnInit {
       this.oNewProduct.sBusinessPartnerName = supplier.sName;
       this.oNewProduct.iEmployeeId = this.iEmployeeId?.userId;
       this.oNewProduct.sFunctionName = 'create-business-product';
-      this.oNewProduct.sProductNumber = 'QB-' + (this.aQuickButtons.length + 1).toString().padStart(3, '0');
+      this.oNewProduct.sProductNumber = (this.aQuickButtons.length + 1).toString().padStart(3, '0');
       this.oNewProduct.sSelectedLanguage = this.currentLanguage || 'en';
       this.oNewProduct.aLocation = {
         _id: this.iLocationId,

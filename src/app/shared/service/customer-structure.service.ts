@@ -37,8 +37,7 @@ export class CustomerStructureService {
     return result;
   }
 
-  /* TODO: change order based on business country */
-makeCustomerAddress(address: any, includeCountry: boolean, order: any) {
+  makeCustomerAddress(address: any, includeCountry: boolean, order: any) {
     if (_.isEmpty(address)) {
       return '';
     }
