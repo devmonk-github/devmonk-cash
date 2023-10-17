@@ -189,6 +189,7 @@ export class ActivityDetailsComponent implements OnInit {
   sMessage:any;
   aArticleGroup: any;
   bShowWarning: boolean = false;
+  aCustomerDifferences:  any = [];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -242,7 +243,7 @@ export class ActivityDetailsComponent implements OnInit {
         this.fetchActivity(this.activityItems[0].iActivityId);
       }
       this.fetchTransactionItems(this.activityItems[0]._id);
-      if(this.activityItems[0]?.iCustomerId)this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
+      if(this.activityItems[0]?.iCustomerId) this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
 
     this.getBusinessLocations();
@@ -285,11 +286,12 @@ export class ActivityDetailsComponent implements OnInit {
       console.log(error);
     })
   }
+  
   getSystemCustomer(iCustomerId: string) {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.customer = result?.data;
-        // this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+        this.matchSystemAndCurrentCustomer(this.customer, this.oCurrentCustomer);
       }
     })
   }
@@ -635,7 +637,6 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
-
     if (!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
@@ -649,17 +650,70 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
+    /**
+     * IF SYSTEM CUSTOMER PROPERTY IS EMPTY THEN I WANT TO UPDATE SYSTEM CUSTOMER WITH CURRENT CUSTOMER
+     * OTHERWISE I WANT TO SEE THE DIFFERENCE BETWEEN DATA
+    */
     this.showSystemCustomer = false;
+    this.aCustomerDifferences = [];
     if (systemCustomer && currentCustomer) {
       let currentCustomerData: any;
-      const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId', 'sSalutation', 'oShippingAddress'];
+      const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId', 'sSalutation', 'oShippingAddress'];
       aCurrentCustomerKeys.forEach((keys: any) => {
         currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
       })
 
       if (this.from == 'activity-items' && !systemCustomer?.bCounter) {
-        for (const [key, value] of Object.entries(currentCustomerData)) {
-          if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+        for (const key of Object.keys(currentCustomerData)) {
+
+          //If key is invoice address, shipping address or phone iterate the object to check the value
+          if(key == 'oInvoiceAddress' || key == 'oShippingAddress' || key == 'oPhone' || key == 'oContactPerson'){
+            Object.keys(currentCustomer[key]).forEach(prop => {
+              // Uppdate the system customer with current customer data if system data is empty/undefined
+             
+              if((currentCustomer[key][prop] && currentCustomer[key][prop] != "") && (systemCustomer[key][prop] == "" || !systemCustomer[key][prop])){
+                this.aCustomerDifferences.push('UPDATE');
+                systemCustomer[key][prop] = currentCustomer[key][prop];
+              }
+            });
+
+            if (systemCustomer[key] != "" && (currentCustomer[key] != undefined ||  currentCustomer[key] == "") && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+
+              this.aCustomerDifferences.push({
+                key,
+                "valueSystem":  systemCustomer[key],
+                "valueCurrent": currentCustomer[key]
+              })
+            }
+
+          }else{
+            //If value of system customer is not empty and current customer value is empty or not empty I want to show warning.
+            if ( systemCustomer[key] != "" && systemCustomer[key] && (currentCustomer[key] != undefined ||  currentCustomer[key] == "") &&  !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+              this.aCustomerDifferences.push({
+                key,
+                "valueSystem":  systemCustomer[key],
+                "valueCurrent": currentCustomer[key]
+              })
+
+            }else if((currentCustomer[key] && currentCustomer[key] != "") && (systemCustomer[key] == "" || !systemCustomer[key])){
+
+              this.aCustomerDifferences.push('UPDATE');
+              systemCustomer[key] = currentCustomer[key];
+
+            }
+          }
+        }
+
+        if(this.aCustomerDifferences.length > 0){
+          if(this.aCustomerDifferences.every((el:any) => el==='UPDATE')){
+            this.apiService.putNew('customer', '/api/v1/customer/update/' + this.iBusinessId + '/' + systemCustomer._id, systemCustomer).subscribe(
+              (result: any) => {
+                this.getSystemCustomer(systemCustomer._id);
+              },
+              (error: any) => {console.log(error.message);}
+            );
+            this.showSystemCustomer = false;
+          }else{
             this.showSystemCustomer = true;
           }
         }
@@ -673,7 +727,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.processDiscounts(this.activityItems);
     // console.log(749, this.activityItems);
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
-    this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+    //this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
     this.transactions = [];
     for (const obj of this.activityItems) {
@@ -929,9 +983,8 @@ export class ActivityDetailsComponent implements OnInit {
       iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      this.oCurrentCustomer = oBody?.oCustomer;
-      this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
-
+      this.oCurrentCustomer = oData?.oCustomer;
+      this.getSystemCustomer(oData?.oCustomer?._id);
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);
@@ -968,34 +1021,36 @@ export class ActivityDetailsComponent implements OnInit {
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
         }
       }).instance.close.subscribe(result => {
-        if (result?.bChangeCustomer) this.selectCustomer();
-        else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
-
+        if (result?.bChangeCustomer){
+          this.selectCustomer();
+        }else if (result?.bShouldUpdateCustomer){
+          this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
+        }
       }, (error) => {
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
       });
   }
 
-  syncCustomerData(currenCustomer: any, systemCustomer: any) {
+  syncCustomerData(currentCustomer: any, systemCustomer: any) {
+
     this.dialogService.openModal(CustomerSyncDialogComponent,
       {
         cssClass: "modal-md",
         context: {
           activityItems: this.activityItems,
-          currenCustomer: currenCustomer,
+          aCustomerDifference: this.aCustomerDifferences,
+          currentCustomer: currentCustomer,
           systemCustomer: systemCustomer
         }
       }).instance.close.subscribe(result => {
         if (result) {
           if(result?.currentCustomer){
             this.oCurrentCustomer = result?.currentCustomer;
+            this.getSystemCustomer(result?.currentCustomer?._id);
+          }else if(result?.systemCustomer){
+            this.getSystemCustomer(result?.systemCustomer?._id)
           }
-          if(result?.systemCustomer){
-            this.customer = result?.systemCustomer;
-          }
-
-          this.matchSystemAndCurrentCustomer(this.customer, this.oCurrentCustomer);
         }
       }, (error) => {
         console.log("Error in customer: ", error);
@@ -1045,7 +1100,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   removeSpaces(string: string){
-    return string.replace(/\s/g, '');
+    return string?.replace(/\s/g, '');
   }
 
   updatePriceIncVatWithoutDiscount(oActivity:any){

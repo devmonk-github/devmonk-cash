@@ -54,10 +54,10 @@
                                         <p  class="m-0 fs-7"
                                             *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                             <span>
-                                                {{oCurrentCustomer?.oPhone.sPrefixMobile}}
+                                                {{oCurrentCustomer?.oPhone?.sPrefixMobile}}
                                                 {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
-                                                    target="_blank" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone.sPrefixMobile">
+                                                <a href="https://wa.me/{{customer?.oPhone?.sPrefixMobile}}{{removeSpaces(customer?.oPhone?.sMobile)}}"
+                                                    target="_blank" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone?.sPrefixMobile">
                                                     <i class="fab fa-whatsapp ms-1 ml-2" style="color: #1CB39B;"></i>
                                                 </a>
                                             </span>
@@ -70,7 +70,7 @@
                                         <p class="m-0 fs-7"
                                             *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
                                             <span>
-                                                {{oCurrentCustomer?.oPhone.sPrefixLandline}}
+                                                {{oCurrentCustomer?.oPhone?.sPrefixLandline}}
                                                 {{oCurrentCustomer?.oPhone?.sLandLine}}
                                             </span>
                                         </p>
@@ -84,10 +84,10 @@
                                     *ngIf="showSystemCustomer && !customer?.bCounter">
                                     <p class="m-0">{{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}</p>
                                     <div class="d-flex flex-wrap">
-                                        <button class="btn btn-info w-100 my-3 btn-sm" *ngIf="customer?.bCounter==false"
+                                        <!-- <button class="btn btn-info w-100 my-3 btn-sm" *ngIf="customer?.bCounter==false"
                                             (click)="openCustomer(customer)">
                                             {{'VIEW'|translate}}
-                                        </button>
+                                        </button> -->
                                         <button class="btn btn-light-warning w-100 btn-sm"
                                             *ngIf="customer?.bCounter==false"
                                             (click)="syncCustomerData(oCurrentCustomer,customer)">

@@ -52,6 +52,7 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.context && Object.keys(this.context).length > 0) {
           Object.keys(this.context).forEach(key => {
             this.componentRef.instance[key] = this.context[key];
+            if (key == 'bAssignDialogRef' && this.context[key]) this.componentRef.instance.dialogRef = this;
           });
         }
         if (this.cssClass) {
