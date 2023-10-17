@@ -12,6 +12,7 @@ $mode: default;
 // @import "./core/components/components";
 @import "components/components";
 
+
 // Layout
 // @import "layout/layout";
 
@@ -24,3 +25,7 @@ $mode: default;
 // @import "~animate.css/animate.css";
 // @import "./core/vendors/plugins/prismjs";
 // @import "./core/vendors/plugins/formvalidation";
+
+// ng-select styling
+@import "~@ng-select/ng-select/themes/default.theme.css";
+// @import "./ng-select.dark.scss";

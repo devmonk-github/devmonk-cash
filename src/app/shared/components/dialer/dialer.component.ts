@@ -13,7 +13,7 @@ import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 @Component({
   selector: 'app-dialer',
   templateUrl: './dialer.component.html',
-  styleUrls: ['./dialer.component.sass'],
+  styleUrls: ['./dialer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DialerComponent implements OnChanges, OnInit {
