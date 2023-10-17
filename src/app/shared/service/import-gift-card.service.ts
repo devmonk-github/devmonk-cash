@@ -32,8 +32,8 @@ export class ImportGiftCardService {
       },
       {
         sColumnHeader: "REMAINING_VALUE",
-        sDataBaseFieldName: "nRemainingValue",
-        sName: "nRemainingValue",
+        sDataBaseFieldName: "nGiftcardRemainingAmount",
+        sName: "nGiftcardRemainingAmount",
       },
       {
         sColumnHeader: "GIFT_CARD_NUMBER",
@@ -41,7 +41,7 @@ export class ImportGiftCardService {
         sName: "sGiftCardNumber",
       },
       {
-        sColumnHeader: "PRICE_INC_VAT",
+        sColumnHeader: "VALUE",
         sDataBaseFieldName: "nPriceIncVat",
         sName: "nPriceIncVat",
       },
@@ -49,6 +49,11 @@ export class ImportGiftCardService {
         sColumnHeader: "TAX",
         sDataBaseFieldName: "nVatRate",
         sName: "nVatRate",
+      },
+      {
+        sColumnHeader: "DESCRIPTION",
+        sDataBaseFieldName: "sDescription",
+        sName: "sDescription",
       }
     ]
 
@@ -57,8 +62,10 @@ export class ImportGiftCardService {
 
   async processTransactionItem(oData: any) {
     let { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
-    let _customer: any;
-    let iCustomerId :any ;
+
+    // let _customer: any;
+    // let iCustomerId :any ;
+
     /* mapping the file's field with database name */
     parsedGiftCardData = parsedGiftCardData.map((oGiftCard: any) => {
       if (Object.keys(oGiftCard).length) {
@@ -74,37 +81,44 @@ export class ImportGiftCardService {
 
     const sProductName = this.translateService.instant('GIFTCARD');
 
-    if(parsedGiftCardData[0].nMatchingCode || parsedGiftCardData[0].nClientId){
-      let requestParams = {
-        iBusinessId: iBusinessId,
-        searchValue:  parsedGiftCardData[0].nClientId ?  parsedGiftCardData[0].nClientId : parsedGiftCardData[0].nMatchingCode,
-        skip:0 , 
-        limit:10,
-        sortBy: '_id',
-        sortOrder: -1,
-        aProjection: ['_id'],
-        oFilterBy: {
-          aSearchField: parsedGiftCardData[0].nClientId ? ['nClientId']: ['nMatchingCode'],
-          aSelectedGroups: []
-        },
-        customerType: 'all'
-      }
+    // if(parsedGiftCardData[0].nMatchingCode || parsedGiftCardData[0].nClientId){
+    //   let requestParams = {
+    //     iBusinessId: iBusinessId,
+    //     searchValue:  parsedGiftCardData[0].nClientId ?  parsedGiftCardData[0].nClientId : parsedGiftCardData[0].nMatchingCode,
+    //     skip:0 , 
+    //     limit:10,
+    //     sortBy: '_id',
+    //     sortOrder: -1,
+    //     aProjection: ['_id'],
+    //     oFilterBy: {
+    //       aSearchField: parsedGiftCardData[0].nClientId ? ['nClientId']: ['nMatchingCode'],
+    //       aSelectedGroups: []
+    //     },
+    //     customerType: 'all'
+    //   }
       
-      _customer = await this.getCustomer(requestParams);
-      if(_customer.data.length && _customer.data[0].result.length){
-        iCustomerId = _customer.data[0].result[0]._id;
-      }
+    //   _customer = await this.getCustomer(requestParams);
+    //   if(_customer.data.length && _customer.data[0].result.length){
+    //     iCustomerId = _customer.data[0].result[0]._id;
+    //   }
 
-    }
+    // }
 
     /* processing Transaction-Item */
     const aTransactionItem = [];
     for (const oData of parsedGiftCardData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
+
+      oData.nPriceIncVat = parseFloat((oData?.nPriceIncVat)?.replace(/,/g, '.'));
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
       const formatdate = new Date(oData?.dCreatedDate.split('/').reverse().join('/'));
       const dCreatedDate = new Date(formatdate).setHours(0, 0, 0, 0);
       const finaldate = new Date(dCreatedDate);
+      
+      let oCustomer = {
+        _id: oData?.iCustomerId,
+        nClientId: oData?.nClientId
+      }
 
       const oTransactionItem = {
         iBusinessId: iBusinessId,
@@ -122,8 +136,8 @@ export class ImportGiftCardService {
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
         /*No nPaidAmount in TI schema */
-        nPaidAmount: oData?.nRemainingValue,
-        nRemainingValue: oData?.nRemainingValue,
+        nPaidAmount: oData?.nPriceIncVat,
+        nGiftcardRemainingAmount: parseFloat((oData?.nGiftcardRemainingAmount)?.replace(/,/g, '.')) || oData?.nPriceIncVat,
         /* calculated */
         nPurchasePrice: nPurchasePrice,
         nProfit: oData?.nPriceIncVat - nPurchasePrice,
@@ -131,7 +145,9 @@ export class ImportGiftCardService {
         iArticleGroupId: '', /* giftcard */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
-        iCustomerId:iCustomerId ? iCustomerId : '', //oData?.nMatchingCode 
+        iCustomerId: oData?.iCustomerId,
+        oCustomer: oCustomer,
+        // iCustomerId:iCustomerId ? iCustomerId : '', //oData?.nMatchingCode 
         //oCustomer: '', //NOT NEEDED IN TRANSACTION ITEM
         /* default */
         sProductName: sProductName,
@@ -161,7 +177,7 @@ export class ImportGiftCardService {
           bPrepayment: false
         },
         nDiscount: 0,
-        sDescription: "Imported Giftcard",
+        sDescription: "Imported Giftcard" + "\n" + (oData?.sDescription || ""),
         sServicePartnerRemark: "",
         eEstimatedDateAction: "call_on_ready",
         eActivityItemStatus: "delivered",

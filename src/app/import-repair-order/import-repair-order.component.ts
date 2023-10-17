@@ -72,6 +72,7 @@ export class ImportRepairOrderComponent implements OnInit {
         iWorkStationId: this.iWorkStationId,
         iEmployeeId: this.iEmployeeId
       }
+      
       let aAllRecords = [];
       const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
       this.parsedRepairOrderData = parsedRepairOrderData;
