@@ -18,7 +18,7 @@
 
 a
     color: var(--bs-primary)
-    
+
 .accordion-button:not(.collapsed)
     color: var(--bs-primary) !important
 
@@ -71,6 +71,15 @@ a.cancel
 .modal-content
     border-radius: 0.8rem
     top: 6px
+
+.badge
+    font-size: .85rem
+    font-weight: 600
+    line-height: 1
+    text-align: center
+    white-space: nowrap
+    vertical-align: initial
+    border-radius: 0.475rem
 
 .badge-info
     background: #3b8aa6
@@ -212,3 +221,85 @@ table
 
 .h-200px
     height: 200px
+
+.searchBoxConatiner
+    position: relative !important
+    width: 60%
+
+    input
+        padding-left: 40px
+
+.card.card-dashed
+    padding: 1.5rem
+    box-shadow: none
+    border: 1px dashed #e4e6ef
+
+
+.btnGroupContainer
+  position: relative
+  .dropdownBtnContainer
+    .btn-icon
+      display: grid !important
+      justify-content: center
+      margin: -8px -20px
+    
+
+    .menu.menu-sub.menu-sub-dropdown
+      display: none
+      background: #fff
+      width: 300px
+      position: absolute
+      right: 0
+      z-index: 99
+      top: 35px
+      text-align: left
+      border-radius: 8px
+      box-shadow: 3px 5px 7px rgba(0, 0, 0, 0.1)
+
+      .menu-item
+        padding: 8px
+        text-align: left !important
+
+        &:hover
+          transition: color 0.2s ease, background-color 0.2s ease
+          background-color: #f1faff
+          color: var(--bs-primary)
+
+      &:hover 
+        display: block
+    
+
+  .dropdownBtnContainer:hover+.menu.menu-sub.menu-sub-dropdown,
+  .btn-icon:hover+.menu.menu-sub.menu-sub-dropdown
+    display: block
+  
+
+.alert
+    position: relative
+    padding: 1rem
+    margin-bottom: 1rem
+    border: 1px solid #0000
+    border-radius: 0.475rem
+
+.alert.alert-info
+    color: #235364
+    background-color: #d8e8ed
+    border-color: #c4dce4
+
+.bg-gray-300
+    background-color: #e4e6ef!important
+
+.w-80px
+    width: 80px
+
+.bg-danger
+    background-color: #a63b55 !important
+
+.bg-success
+    background-color: #52c2a7 !important
+
+.bg-info
+    background-color: #3b8aa6 !important
+
+.border-secondary
+    border-color: #e4e6ef!important

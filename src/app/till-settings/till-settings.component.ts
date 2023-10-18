@@ -4,13 +4,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { CustomPaymentMethodComponent } from '../shared/components/custom-payment-method/custom-payment-method.component';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faSearch, faSync } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
 import { SetPaymentMethodSequenceComponent } from '../shared/components/set-payment-method-sequence-dialog/set-payment-method-sequence.component';
 import { TillService } from '../shared/service/till.service';
 import { QuickbuttonWizardComponent } from '../shared/components/quickbutton-wizard/quickbutton-wizard.component';
+
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -19,6 +20,8 @@ import { QuickbuttonWizardComponent } from '../shared/components/quickbutton-wiz
 export class TillSettingsComponent implements OnInit, OnDestroy {
 
   faTrash = faTrash;
+  faSearch = faSearch;
+  faSync = faSync;
   payMethodsLoading: boolean = false;
   payMethods: Array<any> = [];
   aCustomerSearch: Array<any> = [];

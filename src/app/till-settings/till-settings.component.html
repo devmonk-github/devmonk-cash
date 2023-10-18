@@ -1,15 +1,15 @@
-<div class="container">
-  <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="cash-settings">
-    <div class="card-header row">
+<div class="container p-4">
+  <div class="card py-2 mb-5" data-kt-scroll-section="cash-settings">
+    <div class="card-header bg-white py-3 px-4">
       <div class="card-title">
         <div class="col-md-9">
           <h2 class="fw-bolder m-0">{{ 'CASH_REGISTER' | translate}}</h2>
         </div>
       </div>
     </div>
-    <div class="card-body border-bottom">
+    <div class="card-body">
 
-      <div class="row d-flex justify-content-between">
+      <div class="row d-flex justify-content-between px-2">
         <div class="col-6 d-flex flex-column justify-content-between">
           <div class="form-field">
             <label class="form-check form-switch form-check-custom form-check-solid">
@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <div class="row mb-5" *ngIf="settings?.currentLocation">
+      <div class="row mb-5 px-5" *ngIf="settings?.currentLocation">
 
         <div class="col-6">
           <div class="box">
@@ -144,7 +144,7 @@
 
       </div>
 
-      <div class="row mt-3" *ngIf="settings?.currentLocation">
+      <div class="row mt-3 px-5" *ngIf="settings?.currentLocation">
         <div class="col-6">
           <div class="box h-100">
             <h4 class="fw-bolder">{{'PREFILL' | translate}}</h4>
@@ -282,7 +282,7 @@
 
 
       </div>
-      <div class="d-flex justify-content-end align-items-center">
+      <div class="d-flex justify-content-end align-items-center px-5">
         <div *ngIf="updatingSettings" class="spinner-border mx-2"></div>
         <button type="submit" class="btn btn-primary mt-4 float-end" (click)="UpdateSettings()"
           [disabled]="updatingSettings">
@@ -290,7 +290,7 @@
         </button>
       </div>
 
-      <div class="row mt-5 py-3 border border-secondary" *ngIf="settings?.currentLocation">
+      <div class="row mt-5 py-3 border border-secondary mx-4" *ngIf="settings?.currentLocation">
         <h4 class="fw-bolder mb-3">{{'CUSTOMERS_SETTINGS' | translate}}</h4>
 
         <div class="col-5 d-flex align-items-center justify-content-between mb-3">
@@ -355,9 +355,9 @@
     </div>
   </div>
 
-  <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="payment-methods">
-    <div class="card-header row py-3">
-      <div class="card-title">
+  <div class="card py-2 mb-5" data-kt-scroll-section="payment-methods">
+    <div class="card-header bg-white py-3 px-4">
+      <div class="card-title d-flex justify-content-between align-items-center">
         <div class="col-4">
           <h2 class="fw-bolder m-0">{{ 'PAYMENT_METHODS' | translate}}</h2>
         </div>
@@ -376,7 +376,7 @@
         </div>
       </div>
     </div>
-    <div class="card-body p-9 border-bottom">
+    <div class="card-body px-5">
       <div class="d-flex">
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
@@ -448,7 +448,7 @@
         </div>
       </div>
     </div>
-    <div class="card-body p-9 border-bottom">
+    <div class="card-body px-5">
       <div class="d-flex">
         <h5 *ngIf='!aDefaultPaymentMethods.length && !aDefaultPaymentMethods'>{{ 'NO_DATA_FOUND' | translate}}</h5>
         <div *ngIf="bDefaultPayMethodsLoading" class="spinner-border mx-auto"></div>
@@ -519,9 +519,9 @@
     </div>
   </div>
 
-  <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="quick-buttons">
-    <div class="card-header row py-3">
-      <div class="card-title">
+  <div class="card py-2 mb-5" data-kt-scroll-section="quick-buttons">
+    <div class="card-header bg-white py-3 px-4">
+      <div class="card-title d-flex justify-content-between align-items-center">
         <div class="col-4">
           <h2 class="fw-bolder m-0">{{ 'QUICK_BUTTONS' | translate}}</h2>
         </div>
@@ -532,7 +532,7 @@
         </div>
       </div>
     </div>
-    <div class="card-body">
+    <div class="card-body px-5">
       <div class="">
         <div *ngIf="quickButtonsLoading" class="spinner-border mx-auto"></div>
         <h5 *ngIf='!quickButtons.length && !quickButtonsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
@@ -599,23 +599,23 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="bookKeepingMode">
-    <div class="card-header row mt-4">
+  <div class="card py-2 mb-5" *ngIf="bookKeepingMode">
+    <div class="card-header bg-white py-3 px-5">
       <div class="col-md-4">
         <div class="d-flex align-items-center position-relative my-2">
           <span class="svg-icon svg-icon-4 position-absolute ms-4">
-            <fa-icon icon="search"></fa-icon>
+            <fa-icon [icon]="faSearch"></fa-icon>
           </span>
-          <input type="text" class="form-control form-control-solid w-250px ps-14" (value)="searchValue"
+          <input type="text" class="form-control form-control-solid w-250px ps-5" (value)="searchValue"
             [(ngModel)]="searchValue" (change)="getGeneralLedgerNumber()" placeholder="SEARCH">
           <button class="btn btn-primary ms-xl-1" title="{{'RELOAD_THIS_PAGE' | translate}}">
-            <fa-icon icon="sync"></fa-icon>
+            <fa-icon [icon]="faSync"></fa-icon>
           </button>
         </div>
       </div>
       <div class="col-md-8"></div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body px-5">
       <table class="table-fixed w-100">
         <thead>
           <tr>

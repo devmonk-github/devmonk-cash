@@ -1,12 +1,13 @@
-<div class="card mb-5 mb-xl-10 d-flex">
-    <div class="card-header row">
+<div class="container p-4">
+    <div class="card py-2">
+        <div class="card-header bg-white py-3 px-4">
         <div class="card-title">
             <span>{{'FISKALY_SETTINGS' | translate}}</span>
         </div>
     </div>
 
-    <td class="card-body">
-        <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+    <td class="card-body px-5">
+        <table class="table table-hover dataTable">
             <thead class="fw-bold">
                 <tr>
                     <th class="col-3 fw-bold">{{ 'LOCATION' | translate}}</th>
@@ -17,14 +18,14 @@
                 </tr>
             </thead>
             <tbody class="fw-bold">
-                <tr>
+                <tr *ngIf="fetchingTss">
                     <td colspan="4" class="text-center">
-                        <div class="spinner-border" *ngIf="fetchingTss"></div>
+                        <div class="spinner-border"></div>
                     </td>
                 </tr>
                 <ng-container *ngIf="businessDetails?.aLocation?.length && !fetchingTss">
-                    <tr class="bg-hover-secondary" *ngFor="let location of businessDetails.aLocation; index as i"
-                        [ngClass]="{'opacity-50': location.bUpdatingState}">                       
+                    <tr class="cursor-pointer" *ngFor="let location of businessDetails.aLocation; index as i"
+                        [ngClass]="{'opacity-50': location.bUpdatingState}">
                         <td class="col-3">
                             <label>{{location.sName}}</label>
                         </td>
@@ -32,11 +33,13 @@
                             <label>{{location.tssInfo ?location.tssInfo._id: 'NA'}}</label>
                         </td>
                         <td class="col-3">
-                            <label *ngIf="location.tssInfo else na">{{ (location.tssEnabled) ? location.tssInfo.state : 'DISABLED' }}</label>
+                            <label *ngIf="location.tssInfo else na">{{ (location.tssEnabled) ? location.tssInfo.state :
+                                'DISABLED' }}</label>
                         </td>
                         <td class="col-3">
                             <div *ngIf="!location.tssInfo">
-                                <button class="btn btn-primary" (click)="createTSS(location, i)">{{"CREATE_TSS" |translate}}</button>
+                                <button class="btn btn-primary" (click)="createTSS(location, i)">{{"CREATE_TSS"
+                                    |translate}}</button>
                             </div>
                             <div class="d-flex" *ngIf="location.tssInfo">
                                 <label class="form-check form-switch form-check-custom form-check-solid">
@@ -45,10 +48,10 @@
                                 </label>
                                 <button class="btn btn-danger btn-sm ms-3" (click)="removeTSS(location)"><i class="fa fa-trash"></i></button>
                             </div>
-                        
+
                         </td>
-                        <div class="center-row-abs">
-                            <div *ngIf="location.bUpdatingState" class="spinner-border"></div>
+                        <div class="center-row-abs" *ngIf="location.bUpdatingState">
+                            <div class="spinner-border"></div>
                         </div>
                     </tr>
                     <ng-template #na>{{'NA'}}</ng-template>
@@ -56,4 +59,4 @@
             </tbody>
         </table>
 </div>
-
+</div>
