@@ -236,15 +236,15 @@ a.cancel {
 }
 .contact_btn-group {
   button {
-    color: #3ba68c;
+    color: var(--bs-primary);
     background-color: #f1faff;
     &:hover {
-      background: #3ba68c;
+      background: var(--bs-primary);
       color: #fff;
     }
   }
   button.active {
-    background: #3ba68c;
+    background: var(--bs-primary);
     color: #fff;
   }
 }
@@ -290,7 +290,7 @@ ul.dropdown_menu {
           color 0.2s ease,
           background-color 0.2s ease;
         background-color: #f1faff;
-        color: #3ba68c;
+        color: var(--bs-primary);
       }
     }
   }

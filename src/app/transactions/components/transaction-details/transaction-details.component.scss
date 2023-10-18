@@ -94,9 +94,9 @@ ul.list_group {
             }
 
             &:hover {
-                color: #3ba68c;
+                color: var(--bs-primary);
                 fa-icon {
-                    color: #3ba68c;
+                    color: var(--bs-primary);
                 }
                 background: #f1faff !important;
             }

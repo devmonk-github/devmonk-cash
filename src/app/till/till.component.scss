@@ -300,11 +300,11 @@ a.cancel{
 }
 
 .btn.btn-color-primary, .btn.btn-color-primary i {
-    color: #3ba68c;
+	color: var(--bs-primary);
 }
 
 .text-primary {
-    color: #3ba68c!important;
+	color: var(--bs-primary) !important;
 }
 
 #quick-buttons{

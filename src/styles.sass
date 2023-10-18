@@ -2,12 +2,33 @@
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
 
 
+:root
+    --bs-primary: #3ba68c !important
+
 *
-    font-size: 13px!important
+    font-size: 12px!important
+
+    &::-webkit-scrollbar, &::-webkit-scrollbar-track
+        background: transparent !important
+        width: 5px
+        height: 5px
+
+    &::-webkit-scrollbar-thumb
+        background: #eff2f5
+
+a
+    color: var(--bs-primary)
+    
+.accordion-button:not(.collapsed)
+    color: var(--bs-primary) !important
+
+a.cancel
+    i.fa
+        font-size: 2rem !important
 
 .btn-primary 
-    background-color: #3ba68c !important
-    border-color: #3ba68c !important
+    background-color: var(--bs-primary) !important
+    border-color: var(--bs-primary) !important
 
 .btn-secondary 
     background-color: #e4e6ef !important
@@ -96,13 +117,13 @@ ng-select .ng-select-container
 
 
 .btn-check:active+.btn.btn-outline.btn-outline-dashed.btn-outline-default, .btn-check:checked+.btn.btn-outline.btn-outline-dashed.btn-outline-default, .btn.btn-outline.btn-outline-dashed.btn-outline-default.active, .btn.btn-outline.btn-outline-dashed.btn-outline-default.show, .btn.btn-outline.btn-outline-dashed.btn-outline-default:active:not(.btn-active), .btn.btn-outline.btn-outline-dashed.btn-outline-default:focus:not(.btn-active), .btn.btn-outline.btn-outline-dashed.btn-outline-default:hover:not(.btn-active), .show>.btn.btn-outline.btn-outline-dashed.btn-outline-default
-    color: #3ba68c
-    border-color: #3ba68c
+    color: var(--bs-primary)
+    border-color: var(--bs-primary)
     background-color: #f1faff!important
 
 .form-check-input:checked 
-    background-color: #3ba68c !important
-    border-color: #3ba68c !important
+    background-color: var(--bs-primary) !important
+    border-color: var(--bs-primary) !important
 
 .btn.btn-outline.btn-outline-dashed.btn-outline-default 
     color: #7e8299 !important
@@ -129,9 +150,10 @@ input.form-control, textarea.form-control
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out
     
 .btn-light-primary
-    color: #3ba68c
-    border-color: #f1faff
-    background-color: #f1faff
+    color: var(--bs-primary) !important
+    border-color: #f1faff !important
+    font-weight: 500 !important
+    background-color: #f1faff !important
 
 .btn-danger
     color: #fff
@@ -149,4 +171,44 @@ input.form-control, textarea.form-control
     background-color: #f5f8fa
         
 		
+.search_box input
+    outline: none
+
+
+table
+    thead
+        tr
+            th
+                color: #bcbcc3
+                font-weight: 500 !important
+            th.fw-bolder
+                font-weight: 700 !important
+
+    tbody
+        tr
+            line-height: 4
+            td
+                color: #7e8299
+                font-weight: 400 !important
+
+
+.nav_group
+    display: flex
+    align-items: center
+    border-radius: 0.475rem
+    background-color: #f5f8fa
 	
+    label
+        span
+            color: #a1a5b7
+		
+    
+    label.active
+        background: #3ca68c
+        border-radius: 0.475rem
+        font-weight: 600 !important
+        span
+            color: #fff
+
+.h-200px
+    height: 200px
