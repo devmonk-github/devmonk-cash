@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslationsService } from './shared/service/translation.service';
+import { ToastService } from './shared/components/toast';
 
 @Component({
   selector: 'body[root]',
@@ -7,7 +10,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
 
-  constructor() {
+  translation: any = [];
+
+  constructor(
+    private translateService: TranslateService,
+    private customTranslationService: TranslationsService,
+    private toastService: ToastService) {
     localStorage.setItem('currentBusiness', '6182a52f1949ab0a59ff4e7b')
     localStorage.setItem('currentLocation', '623b6d840ed1002890334456')
     localStorage.setItem('org', '{"aLanguage":["en","nl","fr","es","de","da","ar","da","sv","nb","fi","pl","it","ms"],"_id":"62defbfc9585fbe5d0fbba6c","sName":"Prismanote2","sIndustry":"jewellery_and_watches","sBackgroundColor":"#b45f5f","bDisableFreeTier":true,"bEnableFrontendCodeAccess":true,"sLogo":"https://prismanote.s3.amazonaws.com/prismanote-logo-groen.png","ssupportemail":"info@prismanote2.com"}')
@@ -18,6 +26,54 @@ export class AppComponent implements OnInit {
     localStorage.setItem('language', 'en');
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    const org = JSON.parse(localStorage.org);
+    this.fetchTranslation(org)
+  }
+
+  fetchTranslation(oOrganization: any) {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        let defaultLanguage = navigator.language.substring(0, 2);
+        let currentLang: any;
+        if (localStorage.getItem('language')) {
+          currentLang = localStorage.getItem('language');
+        } else {
+          localStorage.setItem('language', defaultLanguage);
+          currentLang = defaultLanguage;
+        }
+        this.translateService.use(currentLang);
+
+        this.customTranslationService.getTranslations({ sOrganizationName: oOrganization?.sName, aLanguage: oOrganization?.aLanguage }).then((translations: any) => {
+          const langs = Object.keys(translations);
+          this.translateService.addLangs(langs);
+          langs.map((language: any) => {
+            this.translateService.setTranslation(language, {
+              ...translations[language]
+            });
+          })
+          this.translateService.setDefaultLang('none');
+
+          const translate = ['PLATFORM_UPDATE']
+          this.translateService.get(translate).subscribe((res: any) => {
+            this.translation = res;
+          })
+          // if (this.swUpdate.isEnabled) {
+          //   this.swUpdate.available.subscribe(() => {
+          //     this.globalService.updateAvailable();
+          //   });
+          // }
+
+          resolve();
+        }).catch(((error: any) => {
+          console.log(error)
+          this.toastService.show({ type: 'warning', text: 'Translation not loaded properly' });
+        }))
+      } catch (error) {
+        console.log('error here: ', error);
+        this.toastService.show({ type: 'warning', text: 'Translation not loaded properly' });
+      }
+    })
+  }
 
 }

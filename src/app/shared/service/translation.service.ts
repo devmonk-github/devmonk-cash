@@ -48,44 +48,58 @@ export class TranslationsService {
     return this.translationsObject;
   }
   
-  getTranslations() {
+  getTranslations(oBody?: any) {
+    const aLanguage = oBody?.aLanguage;
+    this.languages = this.languages.filter((l: any) => aLanguage.includes(l))
     const getLanguageTranslations = (lang: string, translations: any[]) => {
       return new Promise((resolve, reject) => {
-        const translationsObject: any = {
-          en: {},
-          nl: {},
-          de: {},
-          fr: {},
-          es: {},
-          da: {},
-        }
-        for (let i = 0; i < translations.length; i++) {
-          const element = translations[i];
-          if (!element.aLanguageWiseTrans) continue;
-          let languages = Object.entries(element.aLanguageWiseTrans)
-          for (let j = 0; j < languages.length; j++) {
-            const lang = languages[j];
-            if (!translationsObject?.[lang[0]]) translationsObject[lang[0]] = {}
-            translationsObject[lang[0]][element.sKeyword] = lang[1]
+        try {
+          let translationsObject: any = {};
+          this.languages.forEach((lang: any) => {
+            translationsObject[lang] = {}
+          })
+
+          for (let i = 0; i < translations.length; i++) {
+            const element = translations[i];
+            if (!element.aLanguageWiseTrans) continue;
+            // let languages = Object.entries(element.aLanguageWiseTrans)
+            let languages = Object.entries(element.aLanguageWiseTrans).filter((entry: any) => this.languages.includes(entry[0]))
+            // if (i == 0) console.log(Object.entries(element.aLanguageWiseTrans))
+            for (let j = 0; j < languages?.length; j++) {
+              const lang = languages[j];
+              if (!translationsObject?.[lang[0]]) translationsObject[lang[0]] = {}
+              translationsObject[lang[0]][element.sKeyword] = lang[1]
+            }
           }
+          resolve(translationsObject);
+        } catch (error) {
+          console.log('error 56: ', error);
+          reject(error);
         }
-        resolve(translationsObject);
       })
     }
     return new Promise((resolve, reject) => {
-      this.apiService.getNew('core', `/api/v1/translation/all`).subscribe({
-        next: async (translations: any) => {
-          if (translations.message !== 'success') {
-            reject({ message: 'Error in getting translations' });
+      try {
+        this.apiService.getNew('core', `/api/v1/translation/all/?sOrganizationName=${oBody?.sOrganizationName}`).subscribe({
+          next: async (translations: any) => {
+            if (translations.message !== 'success') {
+              reject({ message: 'Error in getting translations', });
+            }
+            let data = await getLanguageTranslations('en', translations.data);
+            // this.bTranslationsFetched = true;
+            // this.translationsObject = data;
+            // this.translationsFetched.next(data)
+            // console.log(80, 'resolve data',data);
+            resolve(data);
+          }, error: (error: any) => {
+            reject(error);
+            console.log(error);
           }
-          let data = await getLanguageTranslations('en', translations.data)
-          resolve(data);
-        },
-        error: (error: any) => {
-          reject(error);
-          console.log(error);
-        }
-      })
+        })
+      } catch (error) {
+        console.log('error: ', error);
+        reject(error);
+      }
     })
   }
 
