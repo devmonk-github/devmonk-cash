@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { TranslateService } from '@ngx-translate/core';
+import * as data from 'src/assets/json/country-list-lang.json'
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -11,10 +12,13 @@ export class HomeComponent {
   localData : any;
   @Output() checkUpdate : EventEmitter<any> = new EventEmitter();
 
+  selectedLanguage: string = 'en';
+  languageList: Array<any> = (data as any).default;;
+
 
   aHeaderMenu = [
     {
-      title: 'CASH_REGISTER',
+      title: 'HOME',
       path: '/home'
     },
     {
@@ -34,19 +38,19 @@ export class HomeComponent {
       path: '/home/customers'
     },
     {
-      title: 'Devices',
+      title: 'DEVICES',
       path: '/home/devices'
     },
     {
-      title: 'Statistics Settings',
+      title: 'STATISTICS_SETTINGS',
       path: '/home/statistics-settings'
     },
     {
-      title: 'Fiskaly Settings',
+      title: 'FISKALY_SETTINGS',
       path: '/home/fiskaly-settings'
     },
     {
-      title: 'Saving Points',
+      title: 'LOYALITY_POINTS',
       path: '/home/saving-points'
     },
     {
@@ -54,7 +58,7 @@ export class HomeComponent {
       path: '/home/payment-account-management'
     },
     {
-      title: 'Print Settings',
+      title: 'PRINT_SETTINGS',
       path: '/home/print-settings'
     },
     {
@@ -62,11 +66,21 @@ export class HomeComponent {
       path: '/home/workstations'
     },
     {
-      title: 'till-settings',
+      title: 'CASH_REGISTER',
       path: '/home/till-settings'
     },
   ]
 
-  constructor() { }
+  constructor(private translateService: TranslateService) {
+    const aEnabledLanguages = JSON.parse(localStorage.org).aLanguage;
+    this.languageList = this.languageList.filter((item: any) => aEnabledLanguages.includes(item.lang_code));
+    console.log(this.languageList)
+  }
 
+  onChangeLanguage(event: any) {
+    const lang_code = event.target.value;
+    this.selectedLanguage = lang_code;
+    localStorage.setItem('language', lang_code || 'en');
+    this.translateService.use(lang_code);
+  }
 }
