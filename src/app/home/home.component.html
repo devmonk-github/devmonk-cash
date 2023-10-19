@@ -10,7 +10,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item" *ngFor="let menu of aHeaderMenu">
-              <a class="nav-link" [routerLink]="menu.path">{{ menu.title | translate }}</a>
+              <a class="nav-link" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" [routerLink]="menu.path">{{
+                menu.title | translate }}</a>
             </li>
           </ul>
         </div>
