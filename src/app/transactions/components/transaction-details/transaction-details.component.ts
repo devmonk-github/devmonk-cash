@@ -346,7 +346,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     //   sAction: 'sentToCustomer'
     // }).toPromise();
     const oBody = {
-      transaction: oDataSource,
+      oTransaction: oDataSource,
       sType: 'regular',
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,

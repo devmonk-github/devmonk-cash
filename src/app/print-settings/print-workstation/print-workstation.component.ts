@@ -382,7 +382,7 @@ export class PrintWorkstationComponent implements OnInit {
             result?.oSelectedPrinter,
             result?.sPrinterPageFormat,
             result?.sPaperTray,
-            result?.nRotation);
+            result?.nRotation || 0);
         }
       });
   }
