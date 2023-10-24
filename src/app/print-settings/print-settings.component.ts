@@ -16,7 +16,7 @@ import { PrintService } from '../shared/service/print.service';
 @Component({
   selector: 'app-print-settings',
   templateUrl: './print-settings.component.html',
-  styleUrls: ['./print-settings.component.sass']
+  styleUrls: ['./print-settings.component.scss']
 })
 export class PrintSettingsComponent implements OnInit, AfterViewInit {
 

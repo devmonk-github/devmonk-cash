@@ -14,7 +14,7 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
 @Component({
   selector: 'app-activity-items',
   templateUrl: './activity-items.component.html',
-  styleUrls: ['./activity-items.component.sass'],
+  styleUrls: ['./activity-items.component.scss'],
   providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit, OnDestroy {

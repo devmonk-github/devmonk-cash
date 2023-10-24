@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 @Component({
   selector: 'coupon-service',
   templateUrl: './coupon-service.component.html',
-  styleUrls: ['./coupon-service.component.sass']
+  styleUrls: ['./coupon-service.component.scss']
 })
 export class CouponServiceComponent implements OnInit {
   faPlus = faPlus;

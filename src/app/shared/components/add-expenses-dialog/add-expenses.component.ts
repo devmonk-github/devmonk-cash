@@ -11,7 +11,7 @@ import { TillService } from '../../service/till.service';
 @Component({
   selector: 'app-add-expenses',
   templateUrl: './add-expenses.component.html',
-  styleUrls: ['./add-expenses.component.sass']
+  styleUrls: ['./add-expenses.component.scss']
 })
 export class AddExpensesComponent implements OnInit {
 

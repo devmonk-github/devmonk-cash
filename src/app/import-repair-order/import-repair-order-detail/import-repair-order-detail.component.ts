@@ -6,7 +6,7 @@ import { ImportRepairOrderService } from 'src/app/shared/service/import-repair-o
 @Component({
   selector: 'import-repair-order-detail',
   templateUrl: './import-repair-order-detail.component.html',
-  styleUrls: ['./import-repair-order-detail.component.sass']
+  styleUrls: ['./import-repair-order-detail.component.scss']
 })
 export class ImportRepairOrderDetailComponent implements OnInit {
 

@@ -8,7 +8,7 @@ import { TillService } from '../../service/till.service';
 @Component({
   selector: 'app-favourites',
   templateUrl: './favourites.component.html',
-  styleUrls: ['./favourites.component.sass']
+  styleUrls: ['./favourites.component.scss']
 })
  
 export class AddFavouritesComponent implements OnInit {

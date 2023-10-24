@@ -13,7 +13,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
-  styleUrls: ['./services.component.sass'],
+  styleUrls: ['./services.component.scss'],
   providers: [BarcodeService]
 })
 export class ServicesComponent implements OnInit, OnDestroy {

@@ -21,7 +21,7 @@ const aColorCode = [
 @Component({
   selector: 'app-calendar-gantt-view-dialog',
   templateUrl: './calendar-gantt-view-dialog.component.html',
-  styleUrls: ['./calendar-gantt-view-dialog.component.sass']
+  styleUrls: ['./calendar-gantt-view-dialog.component.scss']
 })
 export class CalendarGanttViewDialogComponent implements OnInit {
   dialogRef: DialogComponent;

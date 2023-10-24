@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-workstation',
   templateUrl: './workstation.component.html',
-  styleUrls: ['./workstation.component.sass']
+  styleUrls: ['./workstation.component.scss']
 })
 export class WorkstationComponent implements OnInit {
 

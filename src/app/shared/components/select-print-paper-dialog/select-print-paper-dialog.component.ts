@@ -7,7 +7,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-select-print-paper-dialog',
   templateUrl: './select-print-paper-dialog.component.html',
-  styleUrls: ['./select-print-paper-dialog.component.sass']
+  styleUrls: ['./select-print-paper-dialog.component.scss']
 })
 export class SelectPrintPaperDialogComponent implements OnInit {
 

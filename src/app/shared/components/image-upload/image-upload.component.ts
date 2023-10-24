@@ -13,7 +13,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-image-upload',
   templateUrl: './image-upload.component.html',
-  styleUrls: ['./image-upload.component.sass']
+  styleUrls: ['./image-upload.component.scss']
 })
 export class ImageUploadComponent implements OnInit {
   faTimes = faTimes;

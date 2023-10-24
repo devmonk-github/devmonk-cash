@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 @Component({
   selector: 'import-gift-card-file',
   templateUrl: './import-gift-card-file.component.html',
-  styleUrls: ['./import-gift-card-file.component.sass']
+  styleUrls: ['./import-gift-card-file.component.scss']
 })
 
 export class GiftCardFileImportComponent implements OnInit {

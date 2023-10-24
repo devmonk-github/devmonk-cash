@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-customer-dialog',
   templateUrl: './customer-dialog.component.html',
-  styleUrls: ['./customer-dialog.component.sass'],
+  styleUrls: ['./customer-dialog.component.scss'],
   animations: [trigger('openClose', [
     state('open', style({
       height: '*',

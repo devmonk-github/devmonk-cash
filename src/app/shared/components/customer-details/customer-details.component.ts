@@ -70,7 +70,7 @@ export const ChartColors = {
 @Component({
   selector: 'app-customer-details',
   templateUrl: './customer-details.component.html',
-  styleUrls: ['./customer-details.component.sass']
+  styleUrls: ['./customer-details.component.scss']
 })
 
 export class CustomerDetailsComponent implements OnInit, AfterViewInit {

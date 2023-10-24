@@ -9,7 +9,7 @@ import { CustomerGroupDetailComponent } from '../shared/components/customer-grou
 @Component({
   selector: 'app-customers-group',
   templateUrl: './customers-group.component.html',
-  styleUrls: ['./customers-group.component.sass']
+  styleUrls: ['./customers-group.component.scss']
 })
 export class CustomersGroupComponent implements OnInit {
 

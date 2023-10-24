@@ -9,7 +9,7 @@ import { TerminalService } from '../shared/service/terminal.service';
 @Component({
   selector: 'payment-integration',
   templateUrl: './payment-integration.component.html',
-  styleUrls: ['./payment-integration.component.sass'],
+  styleUrls: ['./payment-integration.component.scss'],
   animations: [
     trigger('fade', [
       transition(':enter', [

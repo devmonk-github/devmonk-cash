@@ -6,7 +6,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-action-settings',
   templateUrl: './action-settings.component.html',
-  styleUrls: ['./action-settings.component.sass']
+  styleUrls: ['./action-settings.component.scss']
 })
 export class ActionSettingsComponent implements OnInit {
 

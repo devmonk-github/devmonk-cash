@@ -8,7 +8,7 @@ import { AddExpensesComponent } from '../add-expenses-dialog/add-expenses.compon
 @Component({
   selector: 'app-closing-daystate-helper-dialog',
   templateUrl: './closing-daystate-helper-dialog.component.html',
-  styleUrls: ['./closing-daystate-helper-dialog.component.sass']
+  styleUrls: ['./closing-daystate-helper-dialog.component.scss']
 })
 export class ClosingDaystateHelperDialogComponent implements OnInit {
   dialogRef: DialogComponent

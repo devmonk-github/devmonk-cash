@@ -6,7 +6,7 @@ import { FiskalyService } from '../shared/service/fiskaly.service';
 @Component({
   selector: 'app-fiskaly-settings',
   templateUrl: './fiskaly-settings.component.html',
-  styleUrls: ['./fiskaly-settings.component.sass']
+  styleUrls: ['./fiskaly-settings.component.scss']
 })
 export class FiskalySettingsComponent implements OnInit {
 

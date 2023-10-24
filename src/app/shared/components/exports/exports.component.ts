@@ -13,7 +13,7 @@ import { PdfService } from 'src/app/shared/service/pdf2.service';
 @Component({
   selector: 'app-exports',
   templateUrl: './exports.component.html',
-  styleUrls: ['./exports.component.sass']
+  styleUrls: ['./exports.component.scss']
 })
 export class ExportsComponent implements OnInit {
   @Input() requestParams: any = {};

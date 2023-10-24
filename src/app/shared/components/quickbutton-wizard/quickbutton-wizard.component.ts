@@ -11,7 +11,7 @@ import { CreateArticleGroupService } from '../../service/create-article-groups.s
 @Component({
   selector: 'app-quickbutton-wizard',
   templateUrl: './quickbutton-wizard.component.html',
-  styleUrls: ['./quickbutton-wizard.component.sass']
+  styleUrls: ['./quickbutton-wizard.component.scss']
 })
 
 

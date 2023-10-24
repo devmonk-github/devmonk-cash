@@ -8,7 +8,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-bank-confirmation-dialog',
   templateUrl: './bank-confirmation-dialog.component.html',
-  styleUrls: ['./bank-confirmation-dialog.component.sass']
+  styleUrls: ['./bank-confirmation-dialog.component.scss']
 })
 export class BankConfirmationDialogComponent implements OnInit {
 

@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 @Component({
   selector: 'import-repair-order-file',
   templateUrl: './import-repair-order-file.component.html',
-  styleUrls: ['./import-repair-order-file.component.sass']
+  styleUrls: ['./import-repair-order-file.component.scss']
 })
 export class ImportRepairOrderFileComponent implements OnInit {
 

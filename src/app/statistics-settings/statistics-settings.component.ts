@@ -10,7 +10,7 @@ import { TillService } from '../shared/service/till.service';
 @Component({
   selector: 'app-statistics-settings',
   templateUrl: './statistics-settings.component.html',
-  styleUrls: ['./statistics-settings.component.sass']
+  styleUrls: ['./statistics-settings.component.scss']
 })
 export class StatisticsSettingsComponent implements OnInit {
   dialogRef: DialogComponent;

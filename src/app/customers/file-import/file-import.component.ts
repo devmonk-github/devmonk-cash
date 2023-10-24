@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'import-file-import',
   templateUrl: './file-import.component.html',
-  styleUrls: ['./file-import.component.sass']
+  styleUrls: ['./file-import.component.scss']
 })
 export class FileImportComponent implements OnInit, OnDestroy {
 

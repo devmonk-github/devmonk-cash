@@ -9,7 +9,7 @@ import { StepperComponent } from 'src/app/shared/_layout/components/common';
 @Component({
   selector: 'app-customer-import',
   templateUrl: './customer-import.component.html',
-  styleUrls: ['./customer-import.component.sass']
+  styleUrls: ['./customer-import.component.scss']
 })
 export class CustomerImportComponent implements OnInit {
 

@@ -7,7 +7,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-print-settings-editor',
   templateUrl: './print-settings-editor.component.html',
-  styleUrls: ['./print-settings-editor.component.sass']
+  styleUrls: ['./print-settings-editor.component.scss']
 })
 export class PrintSettingsEditorComponent implements OnInit {
 

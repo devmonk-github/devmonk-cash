@@ -4,7 +4,7 @@ import {BarcodeService} from "../shared/service/barcode.service";
 @Component({
   selector: 'app-barcode',
   templateUrl: './barcode.component.html',
-  styleUrls: ['./barcode.component.sass']
+  styleUrls: ['./barcode.component.scss']
 })
 export class BarcodeComponent implements OnInit {
 

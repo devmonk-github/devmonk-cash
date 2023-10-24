@@ -6,7 +6,7 @@ import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-transaction-details-import',
   templateUrl: './transaction-details-import.component.html',
-  styleUrls: ['./transaction-details-import.component.sass']
+  styleUrls: ['./transaction-details-import.component.scss']
 })
 export class TransactionDetailsImportComponent implements OnInit, OnChanges {
 

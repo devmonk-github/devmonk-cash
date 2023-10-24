@@ -9,7 +9,7 @@ import { TillService } from '../shared/service/till.service';
 @Component({
   selector: 'app-day-closure',
   templateUrl: './day-closure.component.html',
-  styleUrls: ['./day-closure.component.sass']
+  styleUrls: ['./day-closure.component.scss']
 })
 export class DayClosureComponent implements OnInit, OnDestroy {
 

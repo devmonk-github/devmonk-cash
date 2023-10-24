@@ -5,7 +5,7 @@ import { ApiService } from '../../service/api.service';
 @Component({
   selector: 'app-custom-payment-method',
   templateUrl: './custom-payment-method.component.html',
-  styleUrls: ['./custom-payment-method.component.sass']
+  styleUrls: ['./custom-payment-method.component.scss']
 })
 export class CustomPaymentMethodComponent implements OnInit {
 

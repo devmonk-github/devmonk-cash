@@ -6,7 +6,7 @@ import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-customer-details-import',
   templateUrl: './customer-details-import.component.html',
-  styleUrls: ['./customer-details-import.component.sass']
+  styleUrls: ['./customer-details-import.component.scss']
 })
 export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   @Input() customerDetailsForm: any;

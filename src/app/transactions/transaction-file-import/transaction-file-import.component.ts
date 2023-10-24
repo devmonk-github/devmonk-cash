@@ -9,7 +9,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'transaction-import-file-import',
   templateUrl: './transaction-file-import.component.html',
-  styleUrls: ['./transaction-file-import.component.sass']
+  styleUrls: ['./transaction-file-import.component.scss']
 })
 export class TransactionFileImportComponent implements OnInit, OnDestroy {
 

@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 @Component({
   selector: 'import-repair-order',
   templateUrl: './import-repair-order.component.html',
-  styleUrls: ['./import-repair-order.component.sass']
+  styleUrls: ['./import-repair-order.component.scss']
 })
 export class ImportRepairOrderComponent implements OnInit {
 

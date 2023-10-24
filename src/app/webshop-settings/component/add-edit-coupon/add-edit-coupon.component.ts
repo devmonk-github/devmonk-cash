@@ -10,7 +10,7 @@ import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-add-edit-coupon',
   templateUrl: './add-edit-coupon.component.html',
-  styleUrls: ['./add-edit-coupon.component.sass']
+  styleUrls: ['./add-edit-coupon.component.scss']
 })
 export class AddEditCouponComponent implements OnInit {
 

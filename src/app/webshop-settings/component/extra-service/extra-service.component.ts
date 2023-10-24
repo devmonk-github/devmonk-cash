@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'extra-service',
   templateUrl: './extra-service.component.html',
-  styleUrls: ['./extra-service.component.sass']
+  styleUrls: ['./extra-service.component.scss']
 })
 export class ExtraServiceComponent implements OnInit {
 

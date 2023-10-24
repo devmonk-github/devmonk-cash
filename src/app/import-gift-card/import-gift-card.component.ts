@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 @Component({
   selector: 'import-gift-card',
   templateUrl: './import-gift-card.component.html',
-  styleUrls: ['./import-gift-card.component.sass']
+  styleUrls: ['./import-gift-card.component.scss']
 })
 
 export class ImportGiftCardComponent implements OnInit {

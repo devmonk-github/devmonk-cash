@@ -6,7 +6,7 @@ import { ImportGiftCardService } from 'src/app/shared/service/import-gift-card.s
 @Component({
   selector: 'import-gift-card-detail',
   templateUrl: './import-gift-card-detail.component.html',
-  styleUrls: ['./import-gift-card-detail.component.sass']
+  styleUrls: ['./import-gift-card-detail.component.scss']
 })
 export class ImportGiftCardDetailComponent implements OnInit {
 

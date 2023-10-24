@@ -8,7 +8,7 @@ import { PrintService } from 'src/app/shared/service/print.service';
 @Component({
   selector: 'app-printer-tool',
   templateUrl: './printer-tool.component.html',
-  styleUrls: ['./printer-tool.component.sass']
+  styleUrls: ['./printer-tool.component.scss']
 })
 export class PrinterToolComponent implements OnInit {
   dialogRef: DialogComponent;

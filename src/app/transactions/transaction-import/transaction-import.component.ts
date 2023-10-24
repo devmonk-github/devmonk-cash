@@ -5,7 +5,7 @@ import { StepperComponent } from 'src/app/shared/_layout/components/common';
 @Component({
   selector: 'app-transaction-import',
   templateUrl: './transaction-import.component.html',
-  styleUrls: ['./transaction-import.component.sass']
+  styleUrls: ['./transaction-import.component.scss']
 })
 export class TransactionImportComponent implements OnInit {
 

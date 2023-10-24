@@ -11,7 +11,7 @@ import { DialogService } from 'src/app/shared/service/dialog';
 @Component({
   selector: 'print-workstation',
   templateUrl: './print-workstation.component.html',
-  styleUrls: ['./print-workstation.component.sass']
+  styleUrls: ['./print-workstation.component.scss']
 })
 export class PrintWorkstationComponent implements OnInit {
 

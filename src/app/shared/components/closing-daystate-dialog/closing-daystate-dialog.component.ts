@@ -6,7 +6,7 @@ import { TillService } from '../../service/till.service';
 @Component({
   selector: 'app-closing-daystate-dialog',
   templateUrl: './closing-daystate-dialog.component.html',
-  styleUrls: ['./closing-daystate-dialog.component.sass']
+  styleUrls: ['./closing-daystate-dialog.component.scss']
 })
 export class ClosingDaystateDialogComponent implements OnInit {
   dialogRef: DialogComponent

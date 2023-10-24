@@ -9,7 +9,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-set-payment-method-sequence',
   templateUrl: './set-payment-method-sequence.component.html',
-  styleUrls: ['./set-payment-method-sequence.component.sass']
+  styleUrls: ['./set-payment-method-sequence.component.scss']
 })
 export class SetPaymentMethodSequenceComponent implements OnInit {
 

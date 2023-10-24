@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.sass']
+  styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
 

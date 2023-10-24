@@ -63,7 +63,7 @@ export const ChartColors = {
 @Component({
   selector: 'app-customer-address-dialog',
   templateUrl: './customer-address-dialog.component.html',
-  styleUrls: ['./customer-address-dialog.component.sass']
+  styleUrls: ['./customer-address-dialog.component.scss']
 })
 
 export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{

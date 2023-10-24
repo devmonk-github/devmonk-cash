@@ -30,7 +30,7 @@ import { CustomerDialogComponent } from 'src/app/shared/components/customer-dial
 @Component({
   selector: 'app-customer-sync-dialog',
   templateUrl: './customer-sync-dialog.component.html',
-  styleUrls: ['./customer-sync-dialog.component.sass']
+  styleUrls: ['./customer-sync-dialog.component.scss']
 })
 
 export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {

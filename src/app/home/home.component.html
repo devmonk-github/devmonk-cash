@@ -24,9 +24,22 @@
   <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
       <li class="nav-item" *ngFor="let menu of aHeaderMenu">
-        <a class="nav-link" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
-          [routerLink]="menu.path">{{
+      <div class="dropdown mx-3" *ngIf="menu.dropdown && menu.dropdown.length; else href">
+        <button class="btn btn-link dropdown-toggle p-0 mt-2 text-decoration-none" type="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {{ menu.title | translate }}
+        </button>
+        <ul class="dropdown-menu">
+          <li *ngFor="let subMenu of menu.dropdown"><a class="dropdown-item" [routerLinkActiveOptions]="{exact: true}"
+              routerLinkActive="active" [routerLink]="subMenu.path">{{subMenu.title |
+              translate}}</a></li>
+        </ul>
+      </div>
+      <ng-template #href>
+        <a class="nav-link" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" [routerLink]="menu.path">{{
           menu.title | translate }}</a>
+        </ng-template>
+
       </li>
     </ul>
 

@@ -8,7 +8,7 @@ import { TillService } from 'src/app/shared/service/till.service';
 @Component({
   selector: 'app-discount-dialog',
   templateUrl: './discount-dialog.component.html',
-  styleUrls: ['./discount-dialog.component.sass']
+  styleUrls: ['./discount-dialog.component.scss']
 })
 export class DiscountDialogComponent implements OnInit, AfterViewInit {
   @Input() item: any

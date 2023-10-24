@@ -13,7 +13,7 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-image-and-documents-dialog',
   templateUrl: './image-and-documents-dialog.component.html',
-  styleUrls: ['./image-and-documents-dialog.component.sass']
+  styleUrls: ['./image-and-documents-dialog.component.scss']
 })
 export class ImageAndDocumentsDialogComponent implements OnInit {
   faTimes = faTimes;

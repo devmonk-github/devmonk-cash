@@ -15,7 +15,7 @@ import { TillService } from '../shared/service/till.service';
 @Component({
   selector: 'app-testfilter',
   templateUrl: './testfilter.component.html',
-  styleUrls: ['./testfilter.component.sass'],
+  styleUrls: ['./testfilter.component.scss'],
   providers: [BarcodeService]
 })
 export class TestFilterComponent implements OnInit, OnDestroy {

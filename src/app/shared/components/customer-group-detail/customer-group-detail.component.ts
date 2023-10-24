@@ -10,7 +10,7 @@ import { ToastService } from '../toast';
 @Component({
   selector: 'app-customer-group-detail',
   templateUrl: './customer-group-detail.component.html',
-  styleUrls: ['./customer-group-detail.component.sass']
+  styleUrls: ['./customer-group-detail.component.scss']
 })
 export class CustomerGroupDetailComponent implements OnInit {
 

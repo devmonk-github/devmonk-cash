@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-saving-points',
   templateUrl: './saving-points.component.html',
-  styleUrls: ['./saving-points.component.sass']
+  styleUrls: ['./saving-points.component.scss']
 })
 export class SavingPointsComponent implements OnInit {
 

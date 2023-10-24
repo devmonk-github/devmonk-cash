@@ -36,7 +36,7 @@ export const makeDataObjectForProduct = (product: any) => {
 @Component({
   selector: 'app-label-template-model',
   templateUrl: './label-template-model.component.html',
-  styleUrls: ['./label-template-model.component.sass']
+  styleUrls: ['./label-template-model.component.scss']
 })
 export class LabelTemplateModelComponent implements OnInit {
   @ViewChild('jsonEditor') jsonEditor!: any

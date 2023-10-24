@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-webshop-settings',
   templateUrl: './webshop-settings.component.html',
-  styleUrls: ['./webshop-settings.component.sass']
+  styleUrls: ['./webshop-settings.component.scss']
 })
 export class WebshopSettingsComponent implements OnInit {
 

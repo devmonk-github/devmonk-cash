@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 @Component({
   selector: 'dropshipping-service',
   templateUrl: './dropshipping-service.component.html',
-  styleUrls: ['./dropshipping-service.component.sass']
+  styleUrls: ['./dropshipping-service.component.scss']
 })
 
 export class DropshippingServiceComponent implements OnInit {

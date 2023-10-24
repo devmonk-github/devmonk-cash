@@ -8,7 +8,7 @@ import { TransactionsPdfService } from '../../service/transactions-pdf.service';
 @Component({
   selector: 'app-activity-item-export',
   templateUrl: './activity-item-export.component.html',
-  styleUrls: ['./activity-item-export.component.sass']
+  styleUrls: ['./activity-item-export.component.scss']
 })
 export class ActivityItemExportComponent implements OnInit {
 

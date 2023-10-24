@@ -10,7 +10,7 @@ import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-add-edit-dropshipper',
   templateUrl: './add-edit-dropshipper.component.html',
-  styleUrls: ['./add-edit-dropshipper.component.sass']
+  styleUrls: ['./add-edit-dropshipper.component.scss']
 })
 export class AddEditDropshipperComponent implements OnInit {
 

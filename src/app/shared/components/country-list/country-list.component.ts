@@ -10,7 +10,7 @@ import countryList from '../../../../assets/json/list.json'
 @Component({
   selector: 'country-list',
   templateUrl: './country-list.component.html',
-  styleUrls: ['./country-list.component.sass']
+  styleUrls: ['./country-list.component.scss']
 })
 export class CountryListComponent implements OnInit , OnChanges{
 
