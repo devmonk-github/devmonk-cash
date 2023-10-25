@@ -2,7 +2,11 @@ import { ComponentFactoryResolver, ModuleWithProviders, NgModule } from "@angula
 import { CommonModule, CurrencyPipe } from "@angular/common";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+
 import { NgSelectModule } from "@ng-select/ng-select";
 import { PaginatePipe } from 'ngx-pagination';
 import { DialogService } from "./service/dialog";
@@ -167,6 +171,7 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     ClosingDaystateHelperDialogComponent,
     CalendarGanttViewDialogComponent,
     TranslateModule,
+    FontAwesomeModule
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })
@@ -178,7 +183,8 @@ export class SharedModule {
       providers: [DialogService, CurrencyPipe]
     }
   }
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, library: FaIconLibrary) {
+    library.addIconPacks(fas, far);
   }
   public resolveComponent(component: any) {
     return this.componentFactoryResolver.resolveComponentFactory(component);

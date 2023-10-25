@@ -431,9 +431,9 @@
                   <div class="py-3">
                     <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
                       <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
-                        <div>
+                        <div style="height: 100%;">
                           <button
-                            class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4 position-relative"
+                            class="nav-link d-flex justify-content-center flex-column align-items-center flex-center overflow-hidden w-85px h-85px py-4 position-relative"
                             (click)="onSelectProduct(button, 'quick-button', '', button)">
                             <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
                             <span class="text-gray-600">{{button.nPrice | currency: tillService.currency}}</span>
@@ -467,7 +467,7 @@
                   <div class="symbol symbol-40px me-2">
                     <span class="symbol-label">
                       <span class="svg-icon svg-icon-2qx me-0">
-                        <i class="fa fa-user-plus"></i>
+                        <fa-icon icon="user-plus"></fa-icon>
                       </span>
                     </span>
                   </div>
@@ -483,7 +483,7 @@
                     <div class="symbol symbol-40px me-2">
                       <span class="symbol-label">
                         <span class="svg-icon svg-icon-1qx me-0">
-                          <i class="fa fa-user"></i>
+                          <fa-icon icon="user"></fa-icon>
                         </span>
                       </span>
                     </div>
