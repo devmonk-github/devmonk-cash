@@ -1,12 +1,12 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { faTimes, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
-import { TillService } from 'src/app/shared/service/till.service';
-//import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
-import { ImageAndDocumentsDialogComponent } from 'src/app/shared/components/image-and-documents-dialog/image-and-documents-dialog.component';
+import { TillService } from '../../../shared/service/till.service';
+//import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
+import { ImageAndDocumentsDialogComponent } from '../../../shared/components/image-and-documents-dialog/image-and-documents-dialog.component';
 
 import {
   ApexAxisChartSeries,
@@ -27,9 +27,9 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
-import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
-import countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerDialogComponent } from '../../../shared/components/customer-dialog/customer-dialog.component';
+import * as countryPhoneCodeList from '../../../../assets/json/country_phone_code_list.json';
 import { CustomerStructureService } from '../../service/customer-structure.service';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;

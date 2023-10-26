@@ -3,11 +3,11 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } fro
 import { faBan, faCheck, faClone, faMinus, faPlus, faPrint, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
-import { ReceiptService } from 'src/app/shared/service/receipt.service';
-import { TillService } from 'src/app/shared/service/till.service';
+import { ToastService } from '../../shared/components/toast';
+import { ApiService } from '../../shared/service/api.service';
+import { CreateArticleGroupService } from '../../shared/service/create-article-groups.service';
+import { ReceiptService } from '../../shared/service/receipt.service';
+import { TillService } from '../../shared/service/till.service';
 // import { TaxService } from "../../shared/service/tax.service";
 
 @Component({

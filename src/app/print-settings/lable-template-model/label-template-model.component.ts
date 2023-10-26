@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TemplateJSON, TemplateJSONElement } from 'src/app/print-settings/print-settings.component';
-import { ToastService } from 'src/app/shared/components/toast';
-import { DialogComponent } from 'src/app/shared/service/dialog';
-import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
+import { TemplateJSON, TemplateJSONElement } from '../../print-settings/print-settings.component';
+import { ToastService } from '../../shared/components/toast';
+import { DialogComponent } from '../../shared/service/dialog';
+import { Js2zplService } from '../../shared/service/js2zpl.service';
 
 export const makeDataObjectForProduct = (product: any) => {
 

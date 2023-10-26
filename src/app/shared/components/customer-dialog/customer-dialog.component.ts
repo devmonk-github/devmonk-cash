@@ -8,7 +8,7 @@ import { CustomerAddressDialogComponent } from '../customer-address-dialog/custo
 import { ToastService } from '../toast';
 import { PaginatePipe } from 'ngx-pagination';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
+import { CustomerStructureService } from '../../../shared/service/customer-structure.service';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';

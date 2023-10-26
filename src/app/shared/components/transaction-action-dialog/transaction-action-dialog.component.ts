@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faCheck, faRefresh, faSearch, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _moment from 'moment';
-import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
+import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from "../../service/dialog";
 import { ReceiptService } from '../../service/receipt.service';

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { JsonToCsvService } from 'src/app/shared/service/json-to-csv.service';
-import { ExportsService } from 'src/app/shared/service/exports.service';
+import { ApiService } from '../../../shared/service/api.service';
+import { JsonToCsvService } from '../../../shared/service/json-to-csv.service';
+import { ExportsService } from '../../../shared/service/exports.service';
 import * as _moment from 'moment';
 import _, { head } from 'lodash';
 import { DialogService } from '../../service/dialog';
@@ -9,7 +9,7 @@ import { DialogComponent } from '../../service/dialog';
 import { CustomerStructureService } from '../../service/customer-structure.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { PdfService } from '../../../shared/service/pdf2.service';
 @Component({
   selector: 'app-exports',
   templateUrl: './exports.component.html',

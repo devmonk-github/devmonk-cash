@@ -12,7 +12,7 @@ import { PrintComponent } from './print/print.component';
 // Translate imports
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
-import { TranslationsService } from 'src/app/shared/service/translation.service';
+import { TranslationsService } from './shared/service/translation.service';
 import { BarcodeComponent } from './barcode/barcode.component';
 import { AppInitService } from './shared/service/app-init.service';
 import { SharedServiceModule } from './shared/shared-service.module';

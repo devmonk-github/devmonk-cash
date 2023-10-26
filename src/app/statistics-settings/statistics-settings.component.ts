@@ -3,7 +3,7 @@ import { faPencilAlt, faTrash, faArrowDown, faArrowUp, } from '@fortawesome/free
 import { ApiService } from '../shared/service/api.service';
 import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
-import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { Router } from '@angular/router';
 import { TillService } from '../shared/service/till.service';

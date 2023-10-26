@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../service/api.service';
 
 @Injectable({
   providedIn: 'root'

@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild , SimpleChanges} from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -22,8 +22,8 @@ import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
-import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerDialogComponent } from '../../../shared/components/customer-dialog/customer-dialog.component';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;

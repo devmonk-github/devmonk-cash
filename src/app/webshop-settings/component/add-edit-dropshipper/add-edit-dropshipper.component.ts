@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { DialogComponent } from "../../../shared/service/dialog";
 import { ToastService } from '../../../shared/components/toast';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';

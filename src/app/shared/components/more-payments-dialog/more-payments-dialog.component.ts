@@ -6,7 +6,7 @@ import { DialogComponent } from '../../service/dialog';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../toast';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
-import { TransactionItem } from 'src/app/till/models/transaction-item.model';
+import { TransactionItem } from '../../../till/models/transaction-item.model';
 
 @Component({
   selector: 'app-more-payments-dialog',

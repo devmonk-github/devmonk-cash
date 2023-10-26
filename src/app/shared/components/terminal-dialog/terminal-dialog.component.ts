@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, El
 import { HttpClient } from '@angular/common/http';
 import { faTimes, faSearch, faSpinner, faRefresh, faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { DialogComponent } from "../../service/dialog";
 import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';

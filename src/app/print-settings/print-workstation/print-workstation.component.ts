@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { faCopy, faPencilAlt, faSave, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { throwError } from 'rxjs';
-import { AddEditWorkstationComponent } from 'src/app/shared/components/add-edit-workstation/add-edit-workstation.component';
-import { PrintSettingsEditorComponent } from 'src/app/shared/components/print-settings-editor/print-settings-editor.component';
-import { SelectPrintPaperDialogComponent } from 'src/app/shared/components/select-print-paper-dialog/select-print-paper-dialog.component';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { DialogService } from 'src/app/shared/service/dialog';
+import { AddEditWorkstationComponent } from '../../shared/components/add-edit-workstation/add-edit-workstation.component';
+import { PrintSettingsEditorComponent } from '../../shared/components/print-settings-editor/print-settings-editor.component';
+import { SelectPrintPaperDialogComponent } from '../../shared/components/select-print-paper-dialog/select-print-paper-dialog.component';
+import { ToastService } from '../../shared/components/toast';
+import { ApiService } from '../../shared/service/api.service';
+import { DialogService } from '../../shared/service/dialog';
 
 @Component({
   selector: 'print-workstation',

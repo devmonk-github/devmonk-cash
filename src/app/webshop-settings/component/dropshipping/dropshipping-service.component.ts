@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from 'src/app/shared/service/dialog';
+import { DialogService } from '../../../shared/service/dialog';
 import { AddEditDropshipperComponent } from '../add-edit-dropshipper/add-edit-dropshipper.component';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 @Component({
   selector: 'dropshipping-service',
   templateUrl: './dropshipping-service.component.html',

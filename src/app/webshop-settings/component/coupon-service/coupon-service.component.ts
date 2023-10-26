@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from 'src/app/shared/service/dialog';
+import { DialogService } from '../../../shared/service/dialog';
 import { AddEditCouponComponent } from '../add-edit-coupon/add-edit-coupon.component';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 @Component({
   selector: 'coupon-service',
   templateUrl: './coupon-service.component.html',

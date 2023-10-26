@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
-import { ImportRepairOrderService } from 'src/app/shared/service/import-repair-order.service';
+import { ImportRepairOrderService } from '../../shared/service/import-repair-order.service';
 
 @Component({
   selector: 'import-repair-order-detail',

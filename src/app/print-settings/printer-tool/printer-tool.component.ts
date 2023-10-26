@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { DialogComponent } from 'src/app/shared/service/dialog';
-import { PrintService } from 'src/app/shared/service/print.service';
+import { ToastService } from '../../shared/components/toast';
+import { ApiService } from '../../shared/service/api.service';
+import { DialogComponent } from '../../shared/service/dialog';
+import { PrintService } from '../../shared/service/print.service';
 
 @Component({
   selector: 'app-printer-tool',

@@ -44,7 +44,7 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    import('src/app/shared/shared.module').then(({ SharedModule }) => {
+    import('../../shared.module').then(({ SharedModule }) => {
       this.compiler.compileModuleAsync(SharedModule).then(moduleFactory => {
         const moduleRef: any = moduleFactory.create(this.injector);
         const componentFactory = moduleRef.instance.resolveComponent(this.template);

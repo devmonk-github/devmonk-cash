@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { TransactionItem } from 'src/app/till/models/transaction-item.model';
-import { Transaction } from 'src/app/till/models/transaction.model';
+import { TransactionItem } from '../../till/models/transaction-item.model';
+import { Transaction } from '../../till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';

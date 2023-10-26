@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { FileUploadControl, FileUploadValidators } from '@iplab/ngx-file-upload';
 import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { ToastService } from 'src/app/shared/components/toast';
+import { ToastService } from '../../shared/components/toast';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 

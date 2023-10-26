@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ImportGiftCardService } from 'src/app/shared/service/import-gift-card.service';
+import { ImportGiftCardService } from '../../shared/service/import-gift-card.service';
 
 @Component({
   selector: 'import-gift-card-detail',

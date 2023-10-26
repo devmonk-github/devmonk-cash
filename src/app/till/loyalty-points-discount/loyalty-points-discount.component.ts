@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
-import { ToastService } from 'src/app/shared/components/toast';
-import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
-import { PriceService } from 'src/app/shared/service/price.service';
+import { ToastService } from '../../shared/components/toast';
+import { CreateArticleGroupService } from '../../shared/service/create-article-groups.service';
+import { PriceService } from '../../shared/service/price.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector

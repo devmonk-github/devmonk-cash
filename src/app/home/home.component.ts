@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import * as data from 'src/assets/json/country-list-lang.json'
+import * as data from '../../assets/json/country-list-lang.json'
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',

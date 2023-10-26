@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { ImportService } from 'src/app/shared/service/import.service';
-import { TranslationsService } from 'src/app/shared/service/translation.service';
-import { StepperComponent } from 'src/app/shared/_layout/components/common';
+import { ToastService } from '../../shared/components/toast';
+import { ApiService } from '../../shared/service/api.service';
+import { ImportService } from '../../shared/service/import.service';
+import { TranslationsService } from '../../shared/service/translation.service';
+import { StepperComponent } from '../../shared/_layout/components/common';
 @Component({
   selector: 'app-customer-import',
   templateUrl: './customer-import.component.html',

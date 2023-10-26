@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
-import { PriceService } from 'src/app/shared/service/price.service';
+import { PriceService } from '../../shared/service/price.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector

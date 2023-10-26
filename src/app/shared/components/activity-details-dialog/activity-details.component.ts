@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../../../shared/service/api.service';
 import { faTimes, faShare, faMessage, faEnvelope, faEnvelopeSquare, faUser, faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint,faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
-import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
+import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
 import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';

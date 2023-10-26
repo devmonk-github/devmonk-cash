@@ -4,8 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule as primengSharedModule } from 'primeng/api';
-import { JsonEditorModule } from 'src/app/json-editor/json-editor.module';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { JsonEditorModule } from '../json-editor/json-editor.module';
+import { SharedModule } from '../shared/shared.module';
 import { PaymentIntegrationRoutingModule } from './payment-integration-routing.module';
 import { PaymentIntegrationComponent } from './payment-integration.component';
 

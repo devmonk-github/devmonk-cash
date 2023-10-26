@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload, faPhone, faAt } from '@fortawesome/free-solid-svg-icons';
 
-import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
-import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
-import { DialogService } from 'src/app/shared/service/dialog';
-import { PriceService } from 'src/app/shared/service/price.service';
-import { TillService } from 'src/app/shared/service/till.service';
+import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
+import { SelectArticleDialogComponent } from '../../shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
+import { ToastService } from '../../shared/components/toast';
+import { ApiService } from '../../shared/service/api.service';
+import { CreateArticleGroupService } from '../../shared/service/create-article-groups.service';
+import { DialogService } from '../../shared/service/dialog';
+import { PriceService } from '../../shared/service/price.service';
+import { TillService } from '../../shared/service/till.service';
 import { DiscountDialogComponent } from '../dialogs/discount-dialog/discount-dialog.component';
 
 @Component({

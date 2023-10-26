@@ -1,17 +1,17 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faPencilAlt, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
-import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
-import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
+import { LabelTemplateModelComponent } from '../print-settings/lable-template-model/label-template-model.component';
+import { PrinterToolComponent } from '../print-settings/printer-tool/printer-tool.component';
+import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ToastService } from '../shared/components/toast';
+import { ApiService } from '../shared/service/api.service';
 import { ActionSettingsComponent } from '../shared/components/actions-settings/action-settings.component';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
-import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
-import { TSCLabelService } from 'src/app/shared/service/js2tspl.service';
+import { Js2zplService } from '../shared/service/js2zpl.service';
+import { TSCLabelService } from '../shared/service/js2tspl.service';
 import { PrintService } from '../shared/service/print.service';
 @Component({
   selector: 'app-print-settings',

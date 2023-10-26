@@ -3,9 +3,9 @@ import { faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-ico
 import { DialogService } from '../../shared/service/dialog';
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
 import { PriceService } from '../../shared/service/price.service';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { ToastService } from 'src/app/shared/components/toast';
-import { TillService } from 'src/app/shared/service/till.service';
+import { ApiService } from '../../shared/service/api.service';
+import { ToastService } from '../../shared/components/toast';
+import { TillService } from '../../shared/service/till.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector

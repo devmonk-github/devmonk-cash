@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as _moment from 'moment';
-import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { PdfService } from '../service/pdf2.service';
 import { ApiService } from './api.service';
 import { TillService } from './till.service';
 import { CommonPrintSettingsService } from './common-print-settings.service';

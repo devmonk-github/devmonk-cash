@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { ToastService } from 'src/app/shared/components/toast';
+import { ApiService } from '../../../shared/service/api.service';
+import { ToastService } from '../../../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'extra-service',
