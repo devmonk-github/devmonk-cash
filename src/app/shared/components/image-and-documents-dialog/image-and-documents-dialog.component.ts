@@ -50,29 +50,29 @@ export class ImageAndDocumentsDialogComponent implements OnInit {
   }
 
   openCustomersDocsImagesUploadDialog() {
-   // this.container.clear();
-    try {
-      import('customersDocsImagesUpload/CustomersDocsImagesUploadModule').then(({ CustomersDocsImagesUploadModule }) => {
-        this.compiler.compileModuleAsync(CustomersDocsImagesUploadModule).then(moduleFactory => {
-          const moduleRef: NgModuleRef<typeof CustomersDocsImagesUploadModule> = moduleFactory.create(this.injector);
-          const componentFactory = moduleRef.instance.resolveComponent();
-          this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
-          //this.componentRef.instance.$data = this.imageData;
-          this.componentRef.instance.isFrom = this.isFrom;
-          this.componentRef.instance.oDocsDetail = this.imageData;
-          this.componentRef.instance.iCustomerId = this.customer;
-          this.componentRef.instance.triggerEvent.subscribe((event: any) => {
-            if(event){
-              this.close({ event });
-            }
-          })
-        });
-      }).catch(e => {
-        console.warn('error in importing customer docs image upload module');
-      });
-    } catch (error) {
-      console.log('error while initializing customer docs image upload  module', error);
-    }
+    //  // this.container.clear();
+    //   try {
+    //     import('customersDocsImagesUpload/CustomersDocsImagesUploadModule').then(({ CustomersDocsImagesUploadModule }) => {
+    //       this.compiler.compileModuleAsync(CustomersDocsImagesUploadModule).then(moduleFactory => {
+    //         const moduleRef: NgModuleRef<typeof CustomersDocsImagesUploadModule> = moduleFactory.create(this.injector);
+    //         const componentFactory = moduleRef.instance.resolveComponent();
+    //         this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
+    //         //this.componentRef.instance.$data = this.imageData;
+    //         this.componentRef.instance.isFrom = this.isFrom;
+    //         this.componentRef.instance.oDocsDetail = this.imageData;
+    //         this.componentRef.instance.iCustomerId = this.customer;
+    //         this.componentRef.instance.triggerEvent.subscribe((event: any) => {
+    //           if(event){
+    //             this.close({ event });
+    //           }
+    //         })
+    //       });
+    //     }).catch(e => {
+    //       console.warn('error in importing customer docs image upload module');
+    //     });
+    //   } catch (error) {
+    //     console.log('error while initializing customer docs image upload  module', error);
+    //   }
   }
 
   close(data: any) {

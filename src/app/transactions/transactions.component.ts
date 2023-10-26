@@ -443,21 +443,21 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   initSlider() {
-    try {
-      import('supplierProductSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
-        this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
-          const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
-          const componentFactory = moduleRef.instance.resolveComponent();
-          this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
-          this.componentRef.instance.$data = this.SupplierStockProductSliderData.asObservable();
-          this.componentRef.instance.toastService = this.toastrService;
-        });
-      }).catch(e => {
-        console.warn('error in importing supplier product slider module');
-      });
-    } catch (error) {
-      console.log('error while initializing slider', error);
-    }
+    // try {
+    //   import('supplierProductSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
+    //     this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
+    //       const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
+    //       const componentFactory = moduleRef.instance.resolveComponent();
+    //       this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
+    //       this.componentRef.instance.$data = this.SupplierStockProductSliderData.asObservable();
+    //       this.componentRef.instance.toastService = this.toastrService;
+    //     });
+    //   }).catch(e => {
+    //     console.warn('error in importing supplier product slider module');
+    //   });
+    // } catch (error) {
+    //   console.log('error while initializing slider', error);
+    // }
   }
 
   async openModal(barcode: any, isQparam?: boolean) {

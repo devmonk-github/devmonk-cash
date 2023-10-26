@@ -237,18 +237,18 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
-    new ModuleFederationPlugin({
-      remotes: {
-        "supplierProductSlider": "supplierProductSlider@http://localhost:3001/api/v1/webpack/directive/supplier-product-slider.js",
-      },
-      shared: share(sharedLibrary)
-    }),
-    new ModuleFederationPlugin({
-      remotes: {
-        "customersDocsImagesUpload": "customersDocsImagesUpload@http://localhost:3001/api/v1/webpack/jewels-and-watches/customers-docs-images-upload.js",
-      },
-      shared: share(sharedLibrary)
-    }),
+    // new ModuleFederationPlugin({
+    //   remotes: {
+    //     "supplierProductSlider": "supplierProductSlider@http://localhost:3001/api/v1/webpack/directive/supplier-product-slider.js",
+    //   },
+    //   shared: share(sharedLibrary)
+    // }),
+    // new ModuleFederationPlugin({
+    //   remotes: {
+    //     "customersDocsImagesUpload": "customersDocsImagesUpload@http://localhost:3001/api/v1/webpack/jewels-and-watches/customers-docs-images-upload.js",
+    //   },
+    //   shared: share(sharedLibrary)
+    // }),
     new ModuleFederationPlugin({
       name: "ImportGiftCardModule",
       filename: "import-gift-card.js",
