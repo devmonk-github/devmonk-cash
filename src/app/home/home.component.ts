@@ -20,7 +20,7 @@ export class HomeComponent {
 
   userType: string | null = localStorage.getItem("type");
 
-  constructor(private translateService: TranslateService) {
+  constructor(private translateService: TranslateService, private router: Router) {
     const aEnabledLanguages = JSON.parse(localStorage.org).aLanguage;
     this.languageList = this.languageList.filter((item: any) => aEnabledLanguages.includes(item.lang_code));
     console.log(this.languageList);
@@ -116,5 +116,11 @@ export class HomeComponent {
     this.selectedLanguage = lang_code;
     localStorage.setItem('language', lang_code || 'en');
     this.translateService.use(lang_code);
+  }
+
+  logout() {
+    localStorage.clear();
+    this.router.navigateByUrl('/');
+    setTimeout(() => { window.location.reload() }, 2000)
   }
 }

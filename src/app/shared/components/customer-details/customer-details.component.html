@@ -368,7 +368,7 @@
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            <container-element [ngSwitch]="currentTab">
+                            <ng-container [ngSwitch]="currentTab">
                                 <div *ngSwitchCase="0"
                                     class="tab-pane fade show active overflow-scrol pb-5 border-bottom"
                                     style="height: 60vh; overflow-x: hidden;">
@@ -802,7 +802,7 @@
                                 </div>
 
 
-                            </container-element>
+                            </ng-container>
                         </div>
                     </div>
                 </div>

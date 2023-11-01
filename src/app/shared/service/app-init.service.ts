@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -7,7 +8,15 @@ import { environment } from '../../../environments/environment';
 
 export class AppInitService {
 
+    public aAccessRoleData: BehaviorSubject<any> = new BehaviorSubject<any>({});
+
     constructor() { }
+
+    /* When we are changing the employee then we also needs to change the rights of them */
+    changeRights(aAccessRole: any) {
+        // console.log('change rights called, now aAccessRoleData.next')
+        this.aAccessRoleData.next(aAccessRole);
+    }
 
     showError(dynamicMessage?: string) {
         const initializationError = document.querySelector('#initializationError');
