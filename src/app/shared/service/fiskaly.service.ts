@@ -15,9 +15,9 @@ export class FiskalyService {
   iBusinessId = localStorage.getItem('currentBusiness');
   iLocationId = localStorage.getItem('currentLocation');
   iWorkstationId = localStorage.getItem('currentWorkstation');
-  tssId:any;
-  fiskalyAuth:any;
-  client:any;
+  tssId: any;
+  fiskalyAuth: any;
+  client: any;
 
   constructor(
     private apiService: ApiService,
@@ -25,16 +25,16 @@ export class FiskalyService {
 
 
   async loginToFiskaly() {
-    this.fiskalyAuth = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', {iBusinessId: this.iBusinessId}).toPromise();
+    this.fiskalyAuth = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', { iBusinessId: this.iBusinessId }).toPromise();
   }
 
-  setTss(id:any) {
+  setTss(id: any) {
     this.tssId = id;
   }
 
   async startTransaction() {
     if (!this.fiskalyAuth) await this.loginToFiskaly();
-    
+
     const guid = uuidv4();
     if (!this.tssId) this.fetchTSS();
 
@@ -64,9 +64,9 @@ export class FiskalyService {
     transactionItems.forEach((element: any) => {
       let vat_amount = '0.00';
       let amount = (element.priceInclVat || element.price) - ((element.priceInclVat || element.price) / (1 + (element.tax / 100))) * element.quantity;
-      if(amount){
+      if (amount) {
         vat_amount = String(this.roundToXDigits(amount));
-      } 
+      }
       amounts_per_vat_rate.push({
         vat_rate: 'NORMAL',
         amount: vat_amount,
@@ -111,11 +111,11 @@ export class FiskalyService {
     }
     return schema;
   }
-  
+
   async updateFiskalyTransaction(transactionItems: any, payments: any, state: string) {
     if (!this.fiskalyAuth) await this.loginToFiskaly();
 
-    
+
     if (!this.tssId) this.fetchTSS();
 
     const schema = this.createSchema(transactionItems);
@@ -141,7 +141,7 @@ export class FiskalyService {
   async getClientId() {
     if (this.client?.clientInfo?._id) {
       return this.client?.clientInfo?._id;
-    } 
+    }
     await this.createClient();
     return this.client.clientInfo._id;
   }
@@ -152,7 +152,7 @@ export class FiskalyService {
   }
 
   fetchTSS() {
-    this.apiService.getNew('fiskaly', `/api/v1/tss/get/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any) => {
+    this.apiService.getNew('fiskaly', `/api/v1/tss/get/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?._id) {
         this.setTss(result._id)
       }
@@ -185,13 +185,13 @@ export class FiskalyService {
       bRemoveFromLive,
       sLiveTssId: '',
       fiskalyToken: '',
-      admin_puk : ''
+      admin_puk: ''
     };
     if (bRemoveFromLive) {
       body.fiskalyToken = this.fiskalyAuth.access_token;
       body.sLiveTssId = location.tssInfo._id;
       body.admin_puk = location.tssInfo.admin_puk;
-    } 
+    }
     return await this.apiService.putNew('fiskaly', `/api/v1/tss/change-state/${this.iBusinessId}`, body).toPromise();
   }
 

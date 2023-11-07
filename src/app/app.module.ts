@@ -18,6 +18,8 @@ import { AppInitService } from './shared/service/app-init.service';
 import { SharedServiceModule } from './shared/shared-service.module';
 import { LoginCashRegisterComponent } from './login-cash-register/login-cash-register.component';
 
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,7 +36,9 @@ import { LoginCashRegisterComponent } from './login-cash-register/login-cash-reg
     FormsModule,
     NgJsonEditorModule,
     SharedServiceModule,
-    OverlayModule
+    OverlayModule,
+    RecaptchaFormsModule,
+    RecaptchaModule
   ],
   providers: [
     AppInitService,

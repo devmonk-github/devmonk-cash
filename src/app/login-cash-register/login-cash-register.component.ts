@@ -6,6 +6,7 @@ import { ApiService } from '../shared/service/api.service';
 import { GlobalService } from '../shared/service/global.service';
 import { ToastService } from '../shared/components/toast';
 import { AppInitService } from '../shared/service/app-init.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-login-cashregister',
@@ -18,7 +19,7 @@ export class LoginCashRegisterComponent implements OnInit {
     iLocationId: any = localStorage.getItem("currentLocation");
 
     businessWorkStations: Array<any> = [];
-    selectedBusiness: any;
+    selectedBusiness: any = {};
     selectedWorkStation: any;
 
     private sCurrentLocationId = localStorage.getItem('currentLocation') ?? ''
@@ -28,6 +29,8 @@ export class LoginCashRegisterComponent implements OnInit {
     user = {
         email: '',
         password: '',
+        iOrganizationid: '',
+        recaptchaToken: '',
         rememberMe: false
     };
     showMessages = {
@@ -54,12 +57,16 @@ export class LoginCashRegisterComponent implements OnInit {
     userDetail: any;
     aEmployees: Array<any> = [];
 
+    aOrganizationList: any = [];
+    sSitekey: any = environment?.RECAPTCHA_SITE_KEY;
+
     constructor(private apiService: ApiService, private routes: Router,
         private toastService: ToastService, private globalService: GlobalService,
         private translationService: TranslateService, private appInitService: AppInitService) { }
 
     ngOnInit() {
-        this.getOrganizationDetailsByOrgin();
+        this.listOrganization();
+        // this.getOrganizationDetailsByOrgin();
 
         this.getUserDetails()
         const translate = ['SUCCESSFULLY_LOGIN', 'EMAIL_OR_PASSWORD_INCORRECT']
@@ -70,9 +77,13 @@ export class LoginCashRegisterComponent implements OnInit {
         this.organizationDetails = JSON.parse(orgDetails);
         if (localStorage.getItem('authorization')) {
             // this.routes.navigate([localStorage.getItem('recentUrl')]);
-            this.routes.navigate(['/business/home']);
+            this.routes.navigate(['/']);
         }
 
+    }
+
+    resolved(captchaToken: any) {
+        this.user.recaptchaToken = captchaToken;
     }
 
     login(formData: any) {
@@ -80,8 +91,10 @@ export class LoginCashRegisterComponent implements OnInit {
             let data = {
                 "sEmail": formData.form.value.email.toLowerCase(),
                 "sPassword": formData.form.value.password,
-                "iOrganizationId": this.organizationDetails._id
+                "iOrganizationId": formData.form.value.iOrganizationid,
+                "sRecaptchaToken": "03AFcWeA4XLl2pkTB7pWGmvSkYXF3hYB4y-flVEotraDFIKH37uaVfHgMI5EJJiu2w5AHD_PHoPFJSUj4RQOaSY6vJ8pXX2VJPbesQuS5AHrUfMeh6SPssYmf-PPLdhrqYoOcWT1L5Zc6-hSN9gxo9tpfKcsRArGrsDegNNQOfdZBVty-spJ9UVFSP7nhS4VfumyDnlcBAN54G_cC2TJckhJBosmfkIk-aiXQw-dp9hStt2Mv2Vh4CmrR8Jt0wr_nNU5K2vN2vj15HOEXYpzGGiD7qhOK2kwxxNr2S4d5TaqPrcshVORvw2h8GiYJtTSRR0gMQiwh98NaLYq0Ye-bHN_9yYFpFHzhjKjKnhW9Fb4A9OmGzBk3o1i2b2oZs2-GLn1RE3J0H0j0l3DW39NZNgUEyfNr0-siZAzsZCRGs6OGY3segZT7vk7Tm9SoZiGpGOs3PTuCXgkNjOnTzn72hxKklQJuRqC6SOPVIZA3hJomhJn1BYcVrvHnKMeP-tsYha6PmBP2RMc94",
             }
+            this.getOrganizationDetailsByID(formData.form.value.iOrganizationid)
             this.apiService.postNew('auth', '/api/v1/login/simple', data)
                 .subscribe((result: any) => {
                     if (result && result.data && result.data.authorization) {
@@ -95,14 +108,14 @@ export class LoginCashRegisterComponent implements OnInit {
                         const iBusinessId = result?.data?.aBusiness?.length && result?.data?.aBusiness[0]._id ? result?.data?.aBusiness[0]._id : '';
                         if (iBusinessId) {
                             localStorage.setItem('currentBusiness', iBusinessId);
+                            this.iBusinessId = iBusinessId;
                             this.getBusiness(iBusinessId).subscribe((oBiz) => {
                                 localStorage.setItem('dudaEmail', oBiz.data.sDudaEmail);
                             });
                             this.apiService.setBusinessDetails({ _id: iBusinessId });
+                            this.fetchUserAccessRole(iBusinessId) // To do check of accessibility at front-end side
+                            this.fetchBusinessSetting(iBusinessId); // Fetching business setting to check weather opening modal or not
                         }
-
-                        this.fetchUserAccessRole(iBusinessId) // To do check of accessibility at front-end side
-                        this.fetchBusinessSetting(iBusinessId); // Fetching business setting to check weather opening modal or not
 
                         let userName = `${result?.data?.sFirstName || ''} ${result?.data?.sLastName || ''}`;
                         userName = userName === '' ? result?.data?.sEmail : userName;
@@ -111,7 +124,6 @@ export class LoginCashRegisterComponent implements OnInit {
                         localStorage.setItem('type', result.data.eUserType);
                         this.apiService.setUserDetails(result.data);
                         this.setLocation();
-                        // this.fetchWorkstations()
                         this.routes.navigate(['/home']);
 
                         // this.chatService.setUserInChat({
@@ -128,6 +140,19 @@ export class LoginCashRegisterComponent implements OnInit {
         }
     }
 
+    getOrganizationDetailsByID(iOrganizationId: String) {
+        this.apiService.getNew('organization', `/api/v1/organizations/${iOrganizationId}`,).subscribe((result: any) => {
+            if (result && result.data) {
+                this.organizationDetails = result.data;
+                localStorage.setItem('org', JSON.stringify(result.data));
+                this.apiService.setAPIHeaders();
+            }
+        },
+            (error: any) => {
+                console.log(error);
+            })
+    }
+
     getOrganizationDetailsByOrgin() {
         this.apiService.getNew('organization', '/api/v1/public/get-organization').subscribe((result: any) => {
             if (result && result.data) {
@@ -142,7 +167,7 @@ export class LoginCashRegisterComponent implements OnInit {
     }
 
     getBusiness(iBusinessId: string): Observable<any> {
-        return this.apiService.getNew('core', `/api/v1/business/${iBusinessId}`)
+        return this.apiService.getNew('core', `/api/v1/business/${iBusinessId}`);
     }
 
     /* fetching user access-role list */
@@ -239,8 +264,11 @@ export class LoginCashRegisterComponent implements OnInit {
                 if (!bIsCurrentBIsWebshop) {
                     localStorage.setItem('currentLocation', oNewLocation._id.toString())
                     this.$currentLocation.next({ selectedLocation: oNewLocation, sName: location?.data?.sName })
+                    this.fetchWorkstations();
                 }
+                this.iLocationId = this.sCurrentLocationId;
                 resolve()
+
             } catch (error) {
                 reject()
             }
@@ -251,18 +279,21 @@ export class LoginCashRegisterComponent implements OnInit {
     // function for fetch workstations list
     fetchWorkstations() {
         this.businessWorkStations = [];
-        if (!this.selectedBusiness["selectedLocation"]) {
-            this.selectedBusiness["selectedLocation"] = this.userDetail.aBusiness[0]?.aLocation[0];
-            localStorage.setItem("currentLocation", this.selectedBusiness["selectedLocation"]._id);
-            this.iLocationId = this.selectedBusiness["selectedLocation"]._id
-        }
+        // if (!this.selectedBusiness["selectedLocation"]) {
+        //     this.selectedBusiness["selectedLocation"] = this.userDetail.aBusiness[0]?.aLocation[0];
+        //     localStorage.setItem("currentLocation", this.selectedBusiness["selectedLocation"]._id);
+        //     this.iLocationId = this.selectedBusiness["selectedLocation"]._id
+        // }
+
+        const iBusinessId = localStorage.getItem('currentBusiness');
+        const iLocationId = localStorage.getItem('currentLocation');
 
         const headers = {
             'Authorization': localStorage.getItem('alternateToken') ? localStorage.getItem('alternateToken') : localStorage.getItem('authorization'),
             'organization-id': this.organizationDetails.sName,
             'Content-Type': 'application/json', observe: 'response'
         };
-        this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`, headers).subscribe(
+        this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${iBusinessId}/${iLocationId}`, headers).subscribe(
             (result: any) => {
                 if (result?.data?.length) {
                     this.businessWorkStations = result.data;
@@ -303,6 +334,13 @@ export class LoginCashRegisterComponent implements OnInit {
     selectWorkstation(workstation: any) {
         localStorage.setItem("currentWorkstation", workstation._id);
         this.selectedWorkStation = workstation;
+    }
+
+    // organizations/list
+    async listOrganization() {
+        this.apiService.postNew('organization', `/api/v1/organizations/list`, {}).subscribe((aOrgList: any) => {
+            if (aOrgList?.data?.result?.length) this.aOrganizationList = aOrgList?.data?.result;
+        });
     }
 
 }

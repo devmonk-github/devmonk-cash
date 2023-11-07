@@ -8,47 +8,67 @@
                             <div class="form-left h-100 py-5 px-5">
                                 <form (ngSubmit)="login(form)" #form="ngForm" class="row g-4">
 
-                                    <div class="col-12">
+                                    <!-- <div class="col-12">
                                         <label>{{'ORGANIZATION' | translate}}</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
                                             <input type="text" class="form-control" disabled [value]="organizationDetails.sName"
                                                 placeholder="{{'ORGANIZATION' | translate}}">
                                         </div>
+                                    </div> -->
+
+                                    <div class="fv-row mb-7 fv-plugins-icon-container">
+                                        <label class="form-label fw-bolder text-dark fs-6">
+                                            Choose existing organization:
+                                        </label>
+                                        <select id="org-list" class="form-select" [(ngModel)]="user.iOrganizationid"
+                                            name="iOrganizationid">
+                                            <option value="" selected disabled>Select Organization</option>
+                                            <option *ngFor="let oOrg of aOrganizationList" [value]="oOrg._id">
+                                                {{oOrg.sName}}
+                                            </option>
+                                        </select>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label fs-6 fw-bolder text-dark">{{"INPUT_EMAILADRESS" |
                                             translate}}</label>
-                                        <input [(ngModel)]="user.email" #email="ngModel" name="email" id="input-email" pattern=".+@.+\..+"
-                                            placeholder="{{'INPUT_EMAILADRESS' | translate}}" autofocus [required]="loginForm.validation.email.required"
+                                        <input [(ngModel)]="user.email" #email="ngModel" name="email" id="input-email"
+                                            pattern=".+@.+\..+" placeholder="{{'INPUT_EMAILADRESS' | translate}}"
+                                            autofocus [required]="loginForm.validation.email.required"
                                             [attr.aria-invalid]="email.invalid && email.touched ? true : null"
                                             class="form-control form-control-lg form-control-solid w-100">
-                                        
+
                                         <ng-container *ngIf="email.invalid && email.touched">
                                             <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="email" data-validator="emailAddress" *ngIf="email.errors?.required">
+                                                <div data-field="email" data-validator="emailAddress"
+                                                    *ngIf="email.errors?.required">
                                                     Email is required!</div>
-                                                <div data-field="email" data-validator="emailAddress" *ngIf="email.errors?.pattern">
+                                                <div data-field="email" data-validator="emailAddress"
+                                                    *ngIf="email.errors?.pattern">
                                                     Email should be the real one!</div>
                                             </div>
                                         </ng-container>
-                                        </div>
+                                    </div>
                                     <div class="col-12">
                                         <div class="d-flex flex-stack mb-2">
                                             <label class="form-label fw-bolder text-dark fs-6 mb-0">{{"PASSWORD" |
                                                 translate}}</label>
-                                            <a routerLink="../forgot-password" class="link-primary fs-6 fw-bolder mx-2">{{"FORGOT_YOUR_PASSWORD" |
+                                            <a routerLink="../forgot-password"
+                                                class="link-primary fs-6 fw-bolder mx-2">{{"FORGOT_YOUR_PASSWORD" |
                                                 translate}}</a>
                                         </div>
-                                        <input [(ngModel)]="user.password" #password="ngModel" name="password" type="password" id="input-password"
-                                            placeholder="{{'PASSWORD' | translate}}" [required]="loginForm.validation.password.required"
-                                            [minlength]="loginForm.validation.password.minLength" [maxlength]="loginForm.validation.password.maxLength"
+                                        <input [(ngModel)]="user.password" #password="ngModel" name="password"
+                                            type="password" id="input-password" placeholder="{{'PASSWORD' | translate}}"
+                                            [required]="loginForm.validation.password.required"
+                                            [minlength]="loginForm.validation.password.minLength"
+                                            [maxlength]="loginForm.validation.password.maxLength"
                                             [attr.aria-invalid]="password.invalid && password.touched ? true : null"
                                             class="form-control form-control-lg form-control-solid w-100">
-                                        
+
                                         <ng-container *ngIf="password.invalid && password.touched ">
-                                            <p class="caption status-danger custom-margin-5 invalid-feedback" *ngIf="password.errors?.required">
+                                            <p class="caption status-danger custom-margin-5 invalid-feedback"
+                                                *ngIf="password.errors?.required">
                                                 Password is required!
                                             </p>
                                             <p class="caption status-danger custom-margin-5 invalid-feedback"
@@ -59,22 +79,29 @@
                                                 characters
                                             </p>
                                         </ng-container>
-                                        
+
                                         <div class="fv-plugins-message-container invalid-feedback">
                                         </div>
+                                    </div>
+
+                                    <div class="col-6 mb-10 fv-plugins-icon-container">
+                                        <re-captcha (resolved)="resolved($event)"
+                                            siteKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></re-captcha>
                                     </div>
 
                                     <div class="col-6">
                                         <!-- <button type="submit" class="btn btn-success px-4 float-end">{{
                                                                                                                                                                                                                                                                         'LOGIN_TO_YOUR_ORGANIZATION' | translate }}</button> -->
-                                    
+
                                         <button [disabled]="submitted || !form.valid" [class.btn-pulse]="submitted"
                                             class="btn btn-lg btn-primary w-100 mb-5 custom-margin-5">
                                             <span *ngIf="submitted" class="mx-3">
-                                                <i class="fa fa-spinner fa-spin" [hidden]="!submitted" style="font-size:15px;"></i>
+                                                <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                    style="font-size:15px;"></i>
                                             </span>
                                             <!-- <label class="mx-auto">{{ "PRINT" | translate }}</label> -->
-                                            <span class="indicator-label">{{"LOGIN_TO_YOUR_ORGANIZATION" | translate}}</span>
+                                            <span class="indicator-label">{{"LOGIN_TO_YOUR_ORGANIZATION" |
+                                                translate}}</span>
                                             <!-- <span class="indicator-progress">Please wait... 
                                                                                                                                                                                                                                                                                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span> -->
                                         </button>
@@ -88,16 +115,20 @@
                                     <!--begin::Wrapper-->
                                     <div class="d-flex flex-column">
                                         <!--begin::Title-->
-                                        <h4 class="mb-1 text-dark" *ngIf="(showMessages.success && messages?.length && !submitted)">
+                                        <h4 class="mb-1 text-dark"
+                                            *ngIf="(showMessages.success && messages?.length && !submitted)">
                                             Hooray!</h4>
-                                        <h4 class="mb-1 text-dark" *ngIf="(showMessages.error && errors?.length && !submitted)">
+                                        <h4 class="mb-1 text-dark"
+                                            *ngIf="(showMessages.error && errors?.length && !submitted)">
                                             Oh snap!</h4>
                                         <!--end::Title-->
                                         <!--begin::Content-->
-                                        <ul class="alert-message-list" *ngIf="(showMessages.error && errors?.length && !submitted)">
+                                        <ul class="alert-message-list"
+                                            *ngIf="(showMessages.error && errors?.length && !submitted)">
                                             <li *ngFor="let error of errors" class="alert-message">{{ error }}</li>
                                         </ul>
-                                        <ul class="alert-message-list" *ngIf="(showMessages.error && messages?.length && !submitted)">
+                                        <ul class="alert-message-list"
+                                            *ngIf="(showMessages.error && messages?.length && !submitted)">
                                             <li *ngFor="let message of messages" class="alert-message">{{ message }}
                                             </li>
                                         </ul>
