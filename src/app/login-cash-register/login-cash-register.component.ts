@@ -76,6 +76,7 @@ export class LoginCashRegisterComponent implements OnInit {
     ngOnInit() {
         this.apiService.setToastService(this.toastService);
         localStorage.clear();
+        this.apiService.resetDefaultHeaders();
         this.listOrganization();
         // this.getOrganizationDetailsByOrgin();
 
@@ -97,12 +98,12 @@ export class LoginCashRegisterComponent implements OnInit {
     }
 
     async login(formData: any) {
-        this.bIsLoading = true;
         if (
             formData.submitted &&
             formData.form &&
             formData.form.status == 'VALID'
-        ) {
+            ) {
+            this.bIsLoading = true;
             let data = {
                 sEmail: formData.form.value.email.toLowerCase(),
                 sPassword: formData.form.value.password,
@@ -158,33 +159,16 @@ export class LoginCashRegisterComponent implements OnInit {
                         bHomeWorker: result.data.bHomeWorker,
                     })
                 );
-                console.log('156');
-
                 localStorage.setItem('type', result.data.eUserType);
                 this.apiService.setUserDetails(result.data);
-                console.log('159');
-
                 await this.setLocation();
-                console.log('navigating to home');
                 this.routes.navigate(['/home']);
-
                 if (localStorage?.org) {
                     const org = JSON.parse(localStorage.org);
                     this.customTranslationService.fetchTranslation(org)
                 }
-
                 this.bIsLoading = false;
-
-                // this.chatService.setUserInChat({
-                //   firstName: result.data.sFirstName !== '' ? result.data.sFirstName : '',
-                //   lastName: result.data.sLastName !== '' ? ' ' + result.data.sLastName : '',
-                //   _id: result.data._id,
-                //   email: result.data.sEmail
-                // });
             }
-        } else {
-            this.bIsLoading = false;
-            return;
         }
     }
 
@@ -282,14 +266,12 @@ export class LoginCashRegisterComponent implements OnInit {
     }
 
     async setLocation(sLocationId: string = '') {
+        try {
         return new Promise<void>(async (resolve, reject) => {
             this.sCurrentLocationId =
                 sLocationId ?? localStorage.getItem('currentLocation') ?? '';
-            try {
-                console.log(315);
                 const location: any = await this.getLocations();
-                console.log(317);
-                let oNewLocation: any;
+                let oNewLocation: any = location?.data?.aLocation[0];
                 let bIsCurrentBIsWebshop = false;
                 for (let i = 0; i < location?.data?.aLocation.length; i++) {
                     const l = location?.data?.aLocation[i];
@@ -301,7 +283,6 @@ export class LoginCashRegisterComponent implements OnInit {
                                 selectedLocation: l,
                                 sName: location?.data?.sName,
                             });
-                            console.log(330);
                             localStorage.setItem('currentLocation', l._id.toString());
                             break;
                         }
@@ -316,17 +297,15 @@ export class LoginCashRegisterComponent implements OnInit {
                     await this.fetchWorkstations();
                 }
                 this.iLocationId = this.sCurrentLocationId;
-                console.log(345);
                 resolve();
-            } catch (error) {
-                reject();
-            }
-        });
+            });
+        } catch (error) {
+            console.log('error 310', error);
+        }
     }
 
     // function for fetch workstations list
     fetchWorkstations() {
-        console.log(355);
         return new Promise<void>(async (resolve, reject) => {
             this.businessWorkStations = [];
             // if (!this.selectedBusiness["selectedLocation"]) {
@@ -338,23 +317,21 @@ export class LoginCashRegisterComponent implements OnInit {
             const iBusinessId = localStorage.getItem('currentBusiness');
             const iLocationId = localStorage.getItem('currentLocation');
 
-            const headers = {
-                Authorization: localStorage.getItem('alternateToken')
-                    ? localStorage.getItem('alternateToken')
-                    : localStorage.getItem('authorization'),
-                'organization-id': this.organizationDetails.sName,
-                'Content-Type': 'application/json',
-                observe: 'response',
-            };
+            // const headers = {
+            //     Authorization: localStorage.getItem('alternateToken')
+            //         ? localStorage.getItem('alternateToken')
+            //         : localStorage.getItem('authorization'),
+            //     'organization-id': this.organizationDetails.sName,
+            //     'Content-Type': 'application/json',
+            //     observe: 'response',
+            // };
             this.apiService
                 .getNew(
                     'cashregistry',
                     `/api/v1/workstations/list/${iBusinessId}/${iLocationId}`,
-                    headers
-                )
+                    )
                 .subscribe(
                     (result: any) => {
-                        console.log(383);
                         if (result?.data?.length) {
                             this.businessWorkStations = result.data;
                             let workstationId = localStorage.getItem('currentWorkstation');

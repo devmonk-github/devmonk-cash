@@ -43,6 +43,10 @@ export class ApiService {
 
   defaultHeaders: any = { 'Content-Type': 'application/json', observe: 'response' };
 
+  resetDefaultHeaders() {
+    this.defaultHeaders = { 'Content-Type': 'application/json', observe: 'response' };
+  }
+  
   httpError(error: { error: { message: string; }; message: string; status: number, url: string }) {
     let msg = ''
     if (error.error instanceof ErrorEvent) {

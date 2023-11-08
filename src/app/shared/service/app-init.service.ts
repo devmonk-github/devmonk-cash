@@ -43,8 +43,8 @@ export class AppInitService {
     }
 
     initCsp() {
-        const headCsp = document.querySelector('head');
-        if (headCsp) headCsp.innerHTML += `<meta http-equiv="Content-Security-Policy" content="${environment.csp}">`;
-        else this.showError(`Something went wrong. Contact to RetailGear Team.`);
+        // const headCsp = document.querySelector('head');
+        // if (headCsp) headCsp.innerHTML += `<meta http-equiv="Content-Security-Policy" content="${environment.csp}">`;
+        // else this.showError(`Something went wrong. Contact to RetailGear Team.`);
     }
 }
