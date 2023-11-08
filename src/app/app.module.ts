@@ -7,24 +7,25 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from "@angular/forms";
-import { PrintComponent } from './print/print.component';
+// import { PrintComponent } from './print/print.component';
 
 // Translate imports
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { TranslationsService } from './shared/service/translation.service';
-import { BarcodeComponent } from './barcode/barcode.component';
+// import { BarcodeComponent } from './barcode/barcode.component';
 import { AppInitService } from './shared/service/app-init.service';
 import { SharedServiceModule } from './shared/shared-service.module';
 import { LoginCashRegisterComponent } from './login-cash-register/login-cash-register.component';
 
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+import { ToastModule } from './shared/components/toast';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PrintComponent,
-    BarcodeComponent,
+    // PrintComponent,
+    // BarcodeComponent,
     LoginCashRegisterComponent
   ],
   imports: [
@@ -38,7 +39,8 @@ import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
     SharedServiceModule,
     OverlayModule,
     RecaptchaFormsModule,
-    RecaptchaModule
+    RecaptchaModule,
+    ToastModule
   ],
   providers: [
     AppInitService,

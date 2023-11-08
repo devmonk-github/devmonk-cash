@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BarcodeComponent } from "../barcode/barcode.component";
-import { PrintComponent } from "../print/print.component";
+// import { BarcodeComponent } from "../barcode/barcode.component";
+// import { PrintComponent } from "../print/print.component";
 import { HomeComponent } from './home.component';
 
 const routes: Routes = [
-  {
-    path: 'print',
-    component: PrintComponent
-  }, {
-    path: 'barcode',
-    component: BarcodeComponent
-  },
+  // {
+  //   path: 'print',
+  //   component: PrintComponent
+  // }, {
+  //   path: 'barcode',
+  //   component: BarcodeComponent
+  // },
   {
     path: '',
     component: HomeComponent,
