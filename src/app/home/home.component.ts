@@ -23,7 +23,6 @@ export class HomeComponent {
   constructor(private translateService: TranslateService, private router: Router) {
     const aEnabledLanguages = JSON.parse(localStorage.org).aLanguage;
     this.languageList = this.languageList.filter((item: any) => aEnabledLanguages.includes(item.lang_code));
-    console.log(this.languageList);
 
     this.aHeaderMenu = [
       {

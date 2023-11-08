@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subject } from 'rxjs';
@@ -70,7 +70,8 @@ export class LoginCashRegisterComponent implements OnInit {
         private globalService: GlobalService,
         private translationService: TranslateService,
         private appInitService: AppInitService,
-        private customTranslationService: TranslationsService
+        private customTranslationService: TranslationsService,
+        private ngZone: NgZone
     ) { }
 
     ngOnInit() {
@@ -85,12 +86,6 @@ export class LoginCashRegisterComponent implements OnInit {
         this.translationService.get(translate).subscribe((res) => {
             this.translate = res;
         });
-        let orgDetails: any = localStorage.getItem('org');
-        this.organizationDetails = JSON.parse(orgDetails);
-        if (localStorage.getItem('authorization')) {
-            // this.routes.navigate([localStorage.getItem('recentUrl')]);
-            this.routes.navigate(['/']);
-        }
     }
 
     resolved(captchaToken: any) {
@@ -162,7 +157,7 @@ export class LoginCashRegisterComponent implements OnInit {
                 localStorage.setItem('type', result.data.eUserType);
                 this.apiService.setUserDetails(result.data);
                 await this.setLocation();
-                this.routes.navigate(['/home']);
+                this.ngZone.run(() => this.routes.navigate(['/home'])).then();
                 if (localStorage?.org) {
                     const org = JSON.parse(localStorage.org);
                     this.customTranslationService.fetchTranslation(org)
