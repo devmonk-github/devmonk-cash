@@ -7,6 +7,7 @@ import { GlobalService } from '../shared/service/global.service';
 import { ToastService } from '../shared/components/toast';
 import { AppInitService } from '../shared/service/app-init.service';
 import { environment } from '../../environments/environment';
+import { TranslationsService } from '../shared/service/translation.service';
 
 @Component({
     selector: 'app-login-cashregister',
@@ -21,10 +22,13 @@ export class LoginCashRegisterComponent implements OnInit {
     selectedBusiness: any = {};
     selectedWorkStation: any;
 
+    bIsLoading: boolean = false;
+
     private sCurrentLocationId = localStorage.getItem('currentLocation') ?? '';
     $currentLocation: Subject<any> = new Subject<any>();
 
     rememberMe = false;
+    bIsShowPassword = false;
     user = {
         email: '',
         password: '',
@@ -65,7 +69,8 @@ export class LoginCashRegisterComponent implements OnInit {
         private toastService: ToastService,
         private globalService: GlobalService,
         private translationService: TranslateService,
-        private appInitService: AppInitService
+        private appInitService: AppInitService,
+        private customTranslationService: TranslationsService
     ) { }
 
     ngOnInit() {
@@ -92,6 +97,7 @@ export class LoginCashRegisterComponent implements OnInit {
     }
 
     async login(formData: any) {
+        this.bIsLoading = true;
         if (
             formData.submitted &&
             formData.form &&
@@ -162,6 +168,13 @@ export class LoginCashRegisterComponent implements OnInit {
                 console.log('navigating to home');
                 this.routes.navigate(['/home']);
 
+                if (localStorage?.org) {
+                    const org = JSON.parse(localStorage.org);
+                    this.customTranslationService.fetchTranslation(org)
+                }
+
+                this.bIsLoading = false;
+
                 // this.chatService.setUserInChat({
                 //   firstName: result.data.sFirstName !== '' ? result.data.sFirstName : '',
                 //   lastName: result.data.sLastName !== '' ? ' ' + result.data.sLastName : '',
@@ -170,57 +183,19 @@ export class LoginCashRegisterComponent implements OnInit {
                 // });
             }
         } else {
+            this.bIsLoading = false;
             return;
         }
     }
 
-    getOrganizationDetailsByID(iOrganizationId: String) {
-        this.organizationDetails = {
-            _id: '617fac70d293c7829eceab0e',
-            sName: 'neworg9',
-            sEmail: 'neworg@neworg.com',
-            dExpireDate: '2022-12-31T06:48:44.516Z',
-            eStatus: 'y',
-            sSecretKey:
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudCI6eyJfaWQiOiI2MTdmYWM3MGQyOTNjNzgyOWVjZWFiMGUiLCJzTmFtZSI6Im5ld29yZzkiLCJzRW1haWwiOiJuZXdvcmdAbmV3b3JnLmNvbSIsImRFeHBpcmVEYXRlIjoiMjAyMS0xMi0zMVQwNjo0ODo0NC41MTZaIiwiZVN0YXR1cyI6InkifSwiaWF0IjoxNjM1NzU3MTY4fQ.f-nIIkNZEPAWXKPe3S5lPRIxNJtKerpIK28HaI3K-nQ',
-            sDomain: ['localhost:4202', 'localhost:4210'],
-            sLogo: 'https://prismanote.com/public/prismanote.png',
-            bCashRegisterService: false,
-            bCrmService: false,
-            bEnableFrontendCodeAccess: false,
-            bWebsiteBuilderService: false,
-            sDudaEmail: 'neworgduda@neworg.com',
-            oApiQuotaThreshold: {
-                organization: 0,
-                business: 0,
-                admin: 0,
-                customer: 0,
-                retailer: 0,
-                supplier: 0,
-                accessKey: 0,
-            },
-            bBookKeepingService: false,
-            aLanguage: ['nl', 'fr', 'en', 'es', 'de', 'sv', 'da', 'ar', 'is', 'ms'],
-            sSupportEmail: 'info@prismanote.com',
-        };
-        // console.log('getOrganizationDetailsByID', iOrganizationId);
-        // return new Promise<any>(async (resolve, reject) => {
-        //   this.apiService
-        //     .getNew('organization', `/api/v1/organizations/${iOrganizationId}`)
-        //     .subscribe(
-        //       (result: any) => {
-        //         if (result?.data) {
-        //           this.organizationDetails = result.data;
-        localStorage.setItem('org', JSON.stringify(this.organizationDetails));
-        //           this.apiService.setAPIHeaders();
-        //           resolve();
-        //         }
-        //       },
-        //       (error: any) => {
-        //         console.log(error);
-        //       }
-        //     );
-        // });
+    async getOrganizationDetailsByID(iOrganizationId: String) {
+        const result: any = await this.apiService
+            .getNew('organization', `/api/v1/organizations/${iOrganizationId}`).toPromise();
+        if (result?.data) {
+            this.organizationDetails = result.data;
+            localStorage.setItem('org', JSON.stringify(this.organizationDetails));
+            this.apiService.setAPIHeaders();
+        }
     }
 
     getOrganizationDetailsByOrgin() {

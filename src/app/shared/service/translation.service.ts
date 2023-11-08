@@ -21,17 +21,20 @@ export enum Languages {
 })
 export class TranslationsService {
   languages = Object.keys(Languages);
-  translationsObject: any = {}
+  translationsObject: any = {};
+  translation: any[] = [];
+
   constructor(
     private translateService: TranslateService,
     private apiService: ApiService,
     private toastService: ToastService,
+    private customTranslationService: TranslationsService,
 
   ) {
-    console.log('cash register translation service constructor')
-   }
+    // console.log('cash register translation service constructor')
+  }
 
-  setTranslationsObject(translationsObject: any){
+  setTranslationsObject(translationsObject: any) {
     this.translateService.setDefaultLang('nl');
     const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
     this.translateService.use(currentLang);
@@ -44,10 +47,10 @@ export class TranslationsService {
       });
     })
   }
-  getTranslationsObject(){
+  getTranslationsObject() {
     return this.translationsObject;
   }
-  
+
   getTranslations(oBody?: any) {
     const aLanguage = oBody?.aLanguage;
     this.languages = this.languages.filter((l: any) => aLanguage.includes(l))
@@ -123,6 +126,51 @@ export class TranslationsService {
       });
 
     }))
+  }
+
+
+  fetchTranslation(oOrganization: any) {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        let defaultLanguage = navigator.language.substring(0, 2);
+        let currentLang: any;
+        if (localStorage.getItem('language')) {
+          currentLang = localStorage.getItem('language');
+        } else {
+          localStorage.setItem('language', defaultLanguage);
+          currentLang = defaultLanguage;
+        }
+        this.translateService.use(currentLang);
+        this.getTranslations({ sOrganizationName: oOrganization?.sName, aLanguage: oOrganization?.aLanguage }).then((translations: any) => {
+          const langs = Object.keys(translations);
+          this.translateService.addLangs(langs);
+          langs.map((language: any) => {
+            this.translateService.setTranslation(language, {
+              ...translations[language]
+            });
+          })
+          this.translateService.setDefaultLang('none');
+
+          const translate = ['PLATFORM_UPDATE']
+          this.translateService.get(translate).subscribe((res: any) => {
+            this.translation = res;
+          })
+          // if (this.swUpdate.isEnabled) {
+          //   this.swUpdate.available.subscribe(() => {
+          //     this.globalService.updateAvailable();
+          //   });
+          // }
+
+          resolve();
+        }).catch(((error: any) => {
+          console.log(error)
+          this.toastService.show({ type: 'warning', text: 'Translation not loaded properly' });
+        }))
+      } catch (error) {
+        console.log('error here: ', error);
+        this.toastService.show({ type: 'warning', text: 'Translation not loaded properly' });
+      }
+    })
   }
 
   // initOld() {

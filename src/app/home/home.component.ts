@@ -9,8 +9,8 @@ import * as data from '../../assets/json/country-list-lang.json'
 })
 export class HomeComponent {
   title = 'Cash register home page';
-  localData : any;
-  @Output() checkUpdate : EventEmitter<any> = new EventEmitter();
+  localData: any;
+  @Output() checkUpdate: EventEmitter<any> = new EventEmitter();
 
   selectedLanguage: string = 'en';
   languageList: Array<any> = (data as any).default;;
@@ -121,6 +121,6 @@ export class HomeComponent {
   logout() {
     localStorage.clear();
     this.router.navigateByUrl('/');
-    setTimeout(() => { window.location.reload() }, 2000)
+    // setTimeout(() => { window.location.reload() }, 2000)
   }
 }

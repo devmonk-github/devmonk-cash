@@ -13,3 +13,13 @@ a {
 .form-right i {
   font-size: 100px;
 }
+
+.overlay-full {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #56acacc4;
+  z-index: 9999;
+}
