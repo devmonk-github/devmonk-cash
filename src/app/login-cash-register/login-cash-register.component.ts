@@ -1,13 +1,15 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription, fromEvent } from 'rxjs';
 import { ApiService } from '../shared/service/api.service';
 import { GlobalService } from '../shared/service/global.service';
 import { ToastService } from '../shared/components/toast';
 import { AppInitService } from '../shared/service/app-init.service';
 import { environment } from '../../environments/environment';
 import { TranslationsService } from '../shared/service/translation.service';
+import { NgSelectComponent } from '@ng-select/ng-select';
+import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-login-cashregister',
@@ -29,10 +31,10 @@ export class LoginCashRegisterComponent implements OnInit {
 
     rememberMe = false;
     bIsShowPassword = false;
-    user = {
+    user:any = {
         email: '',
         password: '',
-        iOrganizationid: '',
+        iOrganizationid: [],
         recaptchaToken: '',
         rememberMe: false,
     };
@@ -63,6 +65,10 @@ export class LoginCashRegisterComponent implements OnInit {
     aOrganizationList: any = [];
     sSitekey: any = environment?.RECAPTCHA_SITE_KEY;
 
+    @ViewChild('organizationRef') organizationRef!: NgSelectComponent
+    subscription!: Subscription;
+    bIsSupplierSelectActive = true
+
     constructor(
         private apiService: ApiService,
         private routes: Router,
@@ -78,7 +84,6 @@ export class LoginCashRegisterComponent implements OnInit {
         this.apiService.setToastService(this.toastService);
         localStorage.clear();
         this.apiService.resetDefaultHeaders();
-        this.listOrganization();
         // this.getOrganizationDetailsByOrgin();
 
         this.getUserDetails();
@@ -88,29 +93,49 @@ export class LoginCashRegisterComponent implements OnInit {
         });
     }
 
+    ngAfterViewInit() {
+        // Search organization by org-name
+        this.subscription = fromEvent(this.organizationRef.searchInput.nativeElement, "keyup").pipe(
+            map(event => this.organizationRef.searchInput.nativeElement.value),
+            debounceTime(1000)
+        ).subscribe((val: any) => {
+            if (!val)  return;
+            // Fetch organization
+            this.listOrganization(val)
+        });
+    }
+
     resolved(captchaToken: any) {
         this.user.recaptchaToken = captchaToken;
     }
 
     async login(formData: any) {
+
+        if (!formData.form.value.iOrganizationid) {
+            this.getOrganizationByName(formData.form.value.iOrganizationid);
+            alert("You must select valid organization!");
+            this.submitted = false;
+            this.bIsLoading = false;
+            return
+          }
+
         if (
             formData.submitted &&
             formData.form &&
             formData.form.status == 'VALID'
-            ) {
+        ) {
             this.bIsLoading = true;
             let data = {
                 sEmail: formData.form.value.email.toLowerCase(),
                 sPassword: formData.form.value.password,
                 iOrganizationId: formData.form.value.iOrganizationid,
-                sRecaptchaToken:this.user?.recaptchaToken
+                sRecaptchaToken: this.user?.recaptchaToken
             };
-            await this.getOrganizationDetailsByID(
-                formData.form.value.iOrganizationid
-            );
+           
+
             const result: any = await this.apiService
-                .postNew('auth', '/api/v1/login/simple', data)
-                .toPromise();
+            .postNew('auth', '/api/v1/login/simple', data)
+            .toPromise();
             if (result?.data?.authorization) {
                 this.toastService.show({
                     type: 'success',
@@ -120,6 +145,7 @@ export class LoginCashRegisterComponent implements OnInit {
                 localStorage.setItem('alternateToken', result.data.authorization);
                 localStorage.setItem('failedAttempts', '0');
                 localStorage.setItem('locked', 'false');
+                if (!this.organizationDetails) await this.getOrganizationDetailsByID(formData.form.value.iOrganizationid);
                 this.apiService.setAPIHeaders();
                 delete result.data.authorization;
                 const iBusinessId =
@@ -165,6 +191,23 @@ export class LoginCashRegisterComponent implements OnInit {
             }
         }
     }
+
+    onChangeOrg(event: any) {
+        if (event._id) {
+            this.user.iOrganizationid = event._id;
+        } else {
+            this.getOrganizationByName(event.label);
+            this.user.iOrganizationid = event.label;
+        }
+    }
+
+    orgSelectOnFocus(e: any) {
+        this.bIsSupplierSelectActive = true
+      }
+    
+      orgSelectOnBlur(e: any) {
+        this.bIsSupplierSelectActive = false
+      }
 
     async getOrganizationDetailsByID(iOrganizationId: String) {
         const result: any = await this.apiService
@@ -261,9 +304,9 @@ export class LoginCashRegisterComponent implements OnInit {
 
     async setLocation(sLocationId: string = '') {
         try {
-        return new Promise<void>(async (resolve, reject) => {
-            this.sCurrentLocationId =
-                sLocationId ?? localStorage.getItem('currentLocation') ?? '';
+            return new Promise<void>(async (resolve, reject) => {
+                this.sCurrentLocationId =
+                    sLocationId ?? localStorage.getItem('currentLocation') ?? '';
                 const location: any = await this.getLocations();
                 let oNewLocation: any = location?.data?.aLocation[0];
                 let bIsCurrentBIsWebshop = false;
@@ -323,7 +366,7 @@ export class LoginCashRegisterComponent implements OnInit {
                 .getNew(
                     'cashregistry',
                     `/api/v1/workstations/list/${iBusinessId}/${iLocationId}`,
-                    )
+                )
                 .subscribe(
                     (result: any) => {
                         if (result?.data?.length) {
@@ -373,12 +416,28 @@ export class LoginCashRegisterComponent implements OnInit {
     }
 
     // organizations/list
-    async listOrganization() {
-        this.apiService
-            .postNew('organization', `/api/v1/organizations/list`, {})
-            .subscribe((aOrgList: any) => {
-                if (aOrgList?.data?.result?.length)
-                    this.aOrganizationList = aOrgList?.data?.result;
-            });
+    async listOrganization(searchValue?: string) {
+        const aOrgList: any = await this.apiService
+            .postNew('organization', `/api/v1/organizations/list`, {
+                ...(searchValue && { searchValue })
+            })
+            .toPromise();
+
+        if (aOrgList?.data?.result?.length)
+            this.aOrganizationList = aOrgList?.data?.result.slice(0, 5);
+    }
+
+    async getOrganizationByName(orgName: string) {
+        this.apiService.postNew('organization', `/api/v1/organizations/get-by-name`, { sOrgName: orgName }).subscribe((org: any) => {
+            console.log("aOrgList", org);
+            if (org.data && org.data._id) {
+                this.user.iOrganizationid = org.data._id;
+                this.aOrganizationList.push(org.data)
+            }
+        }, err => {
+            alert("Please enter valid organization!");
+            this.user.iOrganizationid = '';
+            this.aOrganizationList = [];
+        })
     }
 }

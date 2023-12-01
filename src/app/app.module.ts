@@ -20,6 +20,7 @@ import { LoginCashRegisterComponent } from './login-cash-register/login-cash-reg
 
 import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 import { ToastModule } from './shared/components/toast';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ToastModule } from './shared/components/toast';
     OverlayModule,
     RecaptchaFormsModule,
     RecaptchaModule,
-    ToastModule
+    ToastModule,
+    NgSelectModule
   ],
   providers: [
     AppInitService,

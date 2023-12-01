@@ -25,7 +25,7 @@
                                         </div>
                                     </div> -->
 
-                                    <div class="fv-row mb-7 fv-plugins-icon-container">
+                                    <!-- <div class="fv-row mb-7 fv-plugins-icon-container">
                                         <label class="form-label fw-bolder text-dark fs-6">
                                             {{ 'CHOOSE_AN_EXISTING_ORGANIZATION' | translate }}
                                         </label>
@@ -36,6 +36,23 @@
                                                 {{oOrg.sName}}
                                             </option>
                                         </select>
+                                    </div> -->
+
+                                    <div class="col-12">
+                                        <label class="form-label fs-6 fw-bolder text-dark">{{ "ORGANIZATION" }} (Press
+                                            enter to add item)</label>
+                                        <ng-select #organizationRef bindLabel="sName" bindValue="_id"
+                                            name="iOrganizationid"
+                                            [ngClass]="{ highlightSearch: bIsSupplierSelectActive }"
+                                            class="form-control form-control-solid p-0 w-100"
+                                            [(ngModel)]="user.iOrganizationid"
+                                            placeholder="{{'Search any public organization or type in a name'}}"
+                                            autofocus [addTag]="true" [selectOnTab]="false" [clearable]="false"
+                                            [clearOnBackspace]="true" (change)="onChangeOrg($event)">
+                                            <ng-option *ngFor="let option of aOrganizationList" [value]="option">
+                                                {{ option.sName || "Unknown" }}
+                                            </ng-option>
+                                        </ng-select>
                                     </div>
 
                                     <div class="col-12">
