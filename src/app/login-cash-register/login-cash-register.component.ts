@@ -145,8 +145,8 @@ export class LoginCashRegisterComponent implements OnInit {
                 localStorage.setItem('alternateToken', result.data.authorization);
                 localStorage.setItem('failedAttempts', '0');
                 localStorage.setItem('locked', 'false');
-                if (!this.organizationDetails) await this.getOrganizationDetailsByID(formData.form.value.iOrganizationid);
                 this.apiService.setAPIHeaders();
+                this.getOrganizationDetailsByID(formData.form.value.iOrganizationid);
                 delete result.data.authorization;
                 const iBusinessId =
                     result?.data?.aBusiness?.length && result?.data?.aBusiness[0]._id
@@ -211,11 +211,12 @@ export class LoginCashRegisterComponent implements OnInit {
 
     async getOrganizationDetailsByID(iOrganizationId: String) {
         const result: any = await this.apiService
-            .getNew('organization', `/api/v1/organizations/${iOrganizationId}`).toPromise();
+            .postNew('organization', `/api/v1/organizations/get-by-id`, {
+                iOrganizationId: iOrganizationId
+            }).toPromise();
         if (result?.data) {
             this.organizationDetails = result.data;
             localStorage.setItem('org', JSON.stringify(this.organizationDetails));
-            this.apiService.setAPIHeaders();
         }
     }
 
