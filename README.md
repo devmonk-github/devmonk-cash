@@ -1,8 +1,8 @@
 # CashRegister
 
-Hi, This is the 'best in the market' 100% free cash register integrated with printnode.com, fiskaly.com, paynl ! Be patient, in a minute it will run. You can use it directly from Stackblitz by creating an account on the retailgear.com website. We want to help you to build your dream retail solutions and help you decrease your Time To Market for cloudbased retail solutions.
+Hi, This is the 'best in the market' 100% free cash register integrated with printers (printnode.com), TSE certified (fiskaly.com), Payment therminals (paynl) ! Be patient, in a minute it will run. You can use it directly from Stackblitz by creating an account on the retailgear.com website. We want to help you to build your dream retail solutions and help you decrease your Time To Market for cloudbased retail solutions.
 
-Use this approach as a reference for how to integrate platforms like printnode.com, fiskaly.com, paynl or deploy this app directly on for example your AWS S3 bucket with a few modifications. This version v1-3-15 contains plain bootstrap 5 and can run stand alone but is also part of our developer eco system (https://www.retailgear.com/developers). Our eco system's version is currently v1-3-30+ to which you can upgrade by login in to our admin portal. To get our latest version you need to purchase our frontend for just 80 euro so you'll get access to a lot more.
+Use this approach as a reference for how to integrate platforms like printnode.com, fiskaly.com, paynl and learn about our eco system for cloudbased retail solutions. This version v1-3-15 contains plain bootstrap 5 and can run stand alone but is part of our developer eco system (https://www.retailgear.com/developers). Our eco system's version is currently v1-3-35+ to which you can upgrade by login in to our admin portal. To get our latest version you need to purchase our frontend for just 80 euro so you'll get access to our whole micro-world. You can even purchase ALL the backend code of this repository which allows you to customise your ideal retail solution.
 
 # Angular CLI
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.4.
