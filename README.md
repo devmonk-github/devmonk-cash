@@ -1,5 +1,10 @@
 # CashRegister
 
+Hi, This is the 'best in the market' 100% free cash register integrated with printnode.com, fiskaly.com, paynl ! Be patient, in a minute it will run. You can use it directly from Stackblitz by creating an account on the retailgear.com website. 
+
+You can study our code approach as a reference for how to integrate platforms like printnode.com, fiskaly.com, paynl or use our code directly. This version v1-3-15 contains plain bootstrap 5 and can run stand alone but is also part of our developer eco system (https://www.retailgear.com/developers). Our eco system's version is currently v1-3-30+ to which you can upgrade by login in to our admin portal. To get our latest version you need to purchase our frontend for just 80 euro so you'll get access to a lot more.
+
+# Angular CLI
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.4.
 
 ## Development server
