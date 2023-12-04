@@ -164,6 +164,7 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     NgxPaginationModule,
     AddEditWorkstationComponent,
     SortPipe,
+    FormsModule,
     CurrencyFormatPipe,
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
