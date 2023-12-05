@@ -353,7 +353,7 @@ export class LoginCashRegisterComponent implements OnInit {
             //     this.iLocationId = this.selectedBusiness["selectedLocation"]._id
             // }
 
-            const iBusinessId = localStorage.getItem('currentBusiness');
+            const iBusinessId = this.iBusinessId || localStorage.getItem('currentBusiness');
             const iLocationId = localStorage.getItem('currentLocation');
 
             // const headers = {
