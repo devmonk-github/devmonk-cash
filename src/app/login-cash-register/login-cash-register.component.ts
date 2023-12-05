@@ -25,6 +25,7 @@ export class LoginCashRegisterComponent implements OnInit {
     selectedWorkStation: any;
 
     bIsLoading: boolean = false;
+    isOrgFetched: boolean = false;
 
     private sCurrentLocationId = localStorage.getItem('currentLocation') ?? '';
     $currentLocation: Subject<any> = new Subject<any>();
@@ -195,9 +196,11 @@ export class LoginCashRegisterComponent implements OnInit {
     onChangeOrg(event: any) {
         if (event._id) {
             this.user.iOrganizationid = event._id;
+            this.isOrgFetched = true;
         } else {
             this.getOrganizationByName(event.label);
             this.user.iOrganizationid = event.label;
+            this.isOrgFetched = true;
         }
     }
 
@@ -438,11 +441,17 @@ export class LoginCashRegisterComponent implements OnInit {
                 this.aOrganizationList.push(org.data)
             }
             this.bIsLoading = false;
+            this.isOrgFetched = true;
         }, err => {
             alert("Please enter valid organization!");
             this.user.iOrganizationid = [];
             this.aOrganizationList = [];
             this.bIsLoading = false;
+            this.isOrgFetched = false;
         })
+    }
+
+    onClearOrg(event:any){
+        this.isOrgFetched = false;
     }
 }
