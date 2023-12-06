@@ -9,7 +9,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 
 import { NgSelectModule } from "@ng-select/ng-select";
 import { PaginatePipe } from 'ngx-pagination';
-import { DialogService } from "./service/dialog";
+import { DialogComponent, DialogService } from "./service/dialog";
 import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
@@ -122,7 +122,8 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     ClosingDaystateDialogComponent,
     SetPaymentMethodSequenceComponent,
     ClosingDaystateHelperDialogComponent,
-    CalendarGanttViewDialogComponent
+    CalendarGanttViewDialogComponent,
+    DialogComponent
   ],
   imports: [
     CommonModule,
@@ -174,7 +175,14 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     TranslateModule,
     FontAwesomeModule
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe],
+  entryComponents: [
+    DialerComponent,
+    SelectArticleDialogComponent,
+    AddExpensesComponent,
+    TransactionsSearchComponent,
+    CardsComponent
+  ]
 })
 
 export class SharedModule {

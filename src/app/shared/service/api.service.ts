@@ -81,7 +81,6 @@ export class ApiService {
     }else{
       this.defaultHeaders['organization-id'] = 'Prismanote2'
     }
-    console.log(this.defaultHeaders)
   }
 
   // Function for set user details

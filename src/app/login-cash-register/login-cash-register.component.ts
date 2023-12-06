@@ -315,21 +315,21 @@ export class LoginCashRegisterComponent implements OnInit {
                 const location: any = await this.getLocations();
                 let oNewLocation: any = location?.data?.aLocation[0];
                 let bIsCurrentBIsWebshop = false;
-                for (let i = 0; i < location?.data?.aLocation.length; i++) {
-                    const l = location?.data?.aLocation[i];
-                    if (l.bIsWebshop) oNewLocation = l;
-                    if (l._id.toString() === this.sCurrentLocationId) {
-                        if (l.bIsWebshop) {
-                            bIsCurrentBIsWebshop = true;
-                            this.$currentLocation.next({
-                                selectedLocation: l,
-                                sName: location?.data?.sName,
-                            });
-                            localStorage.setItem('currentLocation', l._id.toString());
-                            break;
-                        }
-                    }
-                }
+                // for (let i = 0; i < location?.data?.aLocation.length; i++) {
+                //     const l = location?.data?.aLocation[i];
+                //     if (l.bIsWebshop) oNewLocation = l;
+                //     if (l._id.toString() === this.sCurrentLocationId) {
+                //         if (l.bIsWebshop) {
+                //             bIsCurrentBIsWebshop = true;
+                //             this.$currentLocation.next({
+                //                 selectedLocation: l,
+                //                 sName: location?.data?.sName,
+                //             });
+                //             localStorage.setItem('currentLocation', l._id.toString());
+                //             break;
+                //         }
+                //     }
+                // }
                 if (!bIsCurrentBIsWebshop) {
                     localStorage.setItem('currentLocation', oNewLocation._id.toString());
                     this.$currentLocation.next({
