@@ -184,7 +184,10 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     SelectArticleDialogComponent,
     AddExpensesComponent,
     TransactionsSearchComponent,
-    CardsComponent
+    CardsComponent,
+    MorePaymentsDialogComponent,
+    CustomerDialogComponent,
+    AddExpensesComponent
   ]
 })
 
