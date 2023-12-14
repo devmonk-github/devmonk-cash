@@ -23,7 +23,7 @@ import { TerminalService } from '../shared/service/terminal.service';
   ]
 })
 export class PaymentIntegrationComponent implements OnInit {
-  
+
   businessDetails: any;
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
@@ -36,7 +36,7 @@ export class PaymentIntegrationComponent implements OnInit {
   faTimes = faTimes;
   businessWorkstations: Array<any> = [];
 
-  typeList:any = [
+  typeList: any = [
     { name: 'PAYNL', key: 'paynl', enabled: true },
     { name: 'CCV', key: 'ccv', enabled: true },
   ]
@@ -48,20 +48,24 @@ export class PaymentIntegrationComponent implements OnInit {
   businessPrintSettings !: Array<any>;
   workStationsCount: number = 0;
   bOpen = false;
-  currentOpenSettings:string = "";
-  oPaynl:any = {
-    sServiceId: '',
-    sApiToken: '',
-    sApiCode: '',
-    aPaymentIntegration: [],
-    iPaymentServiceProviderId: ''
-  };
-  oCCV:any = {
-    sApiCode: '',
-    sManagementId: '',
-    aPaymentIntegration: [],
-    iPaymentServiceProviderId: ''
-  };
+  currentOpenSettings: string = "";
+  // old_oPaynl: any = {
+  //   sServiceId: '',
+  //   sApiToken: '',
+  //   sApiCode: '',
+  //   aPaymentIntegration: [],
+  //   iPaymentServiceProviderId: ''
+  // };
+  // old_oCCV: any = {
+  //   sApiCode: '',
+  //   eManagementId: '',
+  //   aPaymentIntegration: [],
+  //   iPaymentServiceProviderId: ''
+  // };
+  // old_oMollie: any = {
+  //   sApiToken: '',
+  //   iPaymentServiceProviderId: ''
+  // }
   oBusinessSetting: any = {
     iBusinessSettingId: '',
     aPaymentIntegration: []
@@ -70,13 +74,64 @@ export class PaymentIntegrationComponent implements OnInit {
   bSavingSettings: boolean = false;
   bPaynlUseForWebshop: boolean = false;
   bCcvUseForWebshop: boolean = false;
+  bMollieUseForWebshop: boolean = false;
+  bStripeUseForWebshop: boolean = false;
+
+  oPaymentServiceProviders: any = {
+    default: {
+      oPaynl: {
+        sServiceId: '',
+        sApiToken: '',
+        sApiCode: '',
+        aPaymentIntegration: [],
+        iPaymentServiceProviderId: ''
+      },
+      oCCV: {
+        sApiCode: '',
+        eManagementId: '',
+        aPaymentIntegration: [],
+        iPaymentServiceProviderId: ''
+      },
+      oMollie: {
+        sApiToken: '',
+        iPaymentServiceProviderId: ''
+      },
+      oStripe: {
+        sSecret: '',
+        sSignature: ''
+      }
+    },
+    oWebshop: {
+      oPaynl: {
+        sServiceId: '',
+        sApiToken: '',
+        sApiCode: '',
+        aPaymentIntegration: [],
+        iPaymentServiceProviderId: ''
+      },
+      oCCV: {
+        sApiCode: '',
+        eManagementId: '',
+        aPaymentIntegration: [],
+        iPaymentServiceProviderId: ''
+      },
+      oMollie: {
+        sApiToken: '',
+        iPaymentServiceProviderId: ''
+      },
+      oStripe: {
+        sSecret: '',
+        sSignature: ''
+      }
+    }
+  };
 
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
     private terminalService: TerminalService
   ) { }
-  
+
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
 
@@ -95,7 +150,7 @@ export class PaymentIntegrationComponent implements OnInit {
       }
     });
   }
-  
+
   async fetchTerminals() {
     this.aTerminalList = []
     this.bTerminalsLoading = true;
@@ -115,14 +170,14 @@ export class PaymentIntegrationComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       oFilterBy: {
-        eName: ['paynl', 'ccv'],
+        eName: ['paynl', 'ccv', 'mollie', 'stripe'],
       }
     }
     this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).subscribe((result: any) => {
       if (result?.data?.length) {
         const oPaynlData: any = result?.data.find((item: any) => item.eName === 'paynl');
         if (oPaynlData) {
-          this.oPaynl = {
+          this.oPaymentServiceProviders.default.oPaynl = {
             iPaymentServiceProviderId: oPaynlData?._id || '',
             sServiceId: oPaynlData?.oPayNL.sServiceId || '',
             sApiToken: oPaynlData?.oPayNL.sApiToken || '',
@@ -130,16 +185,37 @@ export class PaymentIntegrationComponent implements OnInit {
             aPaymentIntegration: oPaynlData?.aPaymentIntegration || []
           }
           this.bPaynlUseForWebshop = oPaynlData?.oWebshop?.bUseForWebshop || false;
+          if (this.bPaynlUseForWebshop) this.oPaymentServiceProviders['oWebshop']['oPaynl'] = oPaynlData;
         }
         const oCcvData = result?.data.find((item: any) => item.eName === 'ccv');
         if (oCcvData) {
-          this.oCCV = {
+          this.oPaymentServiceProviders.default.oCCV = {
             iPaymentServiceProviderId: oCcvData?._id || '',
             sApiCode: oCcvData?.oCCV.sApiCode || '',
-            sManagementId: oCcvData?.oCCV.sManagementId || '',
+            eManagementId: oCcvData?.oCCV.eManagementId || '',
             aPaymentIntegration: oCcvData?.aPaymentIntegration || []
           };
           this.bCcvUseForWebshop = oCcvData?.oWebshop?.bUseForWebshop || false;
+          if (this.bCcvUseForWebshop) this.oPaymentServiceProviders['oWebshop']['oCCV'] = oCcvData.oCredentials['ccv'].oWebShop;
+        }
+        const oMollieData = result?.data.find((item: any) => item.eName === 'mollie');
+        if (oMollieData) {
+          this.oPaymentServiceProviders.default.oMollie = {
+            iPaymentServiceProviderId: oMollieData?._id || '',
+            sApiToken: oMollieData?.oMollie.sApiToken || '',
+          };
+          this.bMollieUseForWebshop = oMollieData?.oWebshop?.bUseForWebshop || false;
+          if (this.bMollieUseForWebshop) this.oPaymentServiceProviders['oWebshop']['oMollie'] = oMollieData.oCredentials['mollie'].oWebShop;
+        }
+        const oStripeData = result?.data.find((item: any) => item.eName === 'stripe');
+        if (oStripeData) {
+          this.oPaymentServiceProviders.default.oStripe = {
+            iPaymentServiceProviderId: oStripeData?._id || '',
+            sSecret: oStripeData?.oStripe.sSecret || '',
+            sSignature: oStripeData?.oStripe.sSignature || '',
+          };
+          this.bStripeUseForWebshop = oStripeData?.oWebshop?.bUseForWebshop || false;
+          if (this.bStripeUseForWebshop) this.oPaymentServiceProviders['oWebshop']['oStripe'] = oStripeData.oCredentials['stripe'].oWebShop;
         }
       }
       this.mapWorkstations();
@@ -150,16 +226,16 @@ export class PaymentIntegrationComponent implements OnInit {
     this.workstations.forEach((ws: any) => {
       ws.paynl = { sTerminalId: '', edit: false }
       ws.ccv = { sTerminalId: '', edit: false }
-      if (this.oPaynl.aPaymentIntegration?.length) {
-        const oAssigned = this.oPaynl.aPaymentIntegration.find((item: any) => item.iWorkstationId == ws._id)
+      if (this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration?.length) {
+        const oAssigned = this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration.find((item: any) => item.iWorkstationId == ws._id)
         if (oAssigned) {
           ws.paynl.sTerminalName = this.aTerminalList.find((oTerminal: any) => oTerminal.id == oAssigned.sTerminalId)?.name || '';
           ws.paynl.sTerminalId = oAssigned.sTerminalId || '';
         }
       }
 
-      if (this.oCCV.aPaymentIntegration?.length) {
-        const oAssigned = this.oCCV.aPaymentIntegration.find((item: any) => item.iWorkstationId === ws._id)
+      if (this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration?.length) {
+        const oAssigned = this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration.find((item: any) => item.iWorkstationId === ws._id)
         if (oAssigned) {
           ws.ccv.sTerminalId = oAssigned.sTerminalId;
         }
@@ -174,15 +250,15 @@ export class PaymentIntegrationComponent implements OnInit {
     }
     let iPaymentServiceProviderId = '';
     if (provider === 'paynl') {
-      iPaymentServiceProviderId = this.oPaynl.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      this.oPaynl.aPaymentIntegration.splice(oSavedDataIndex, 1);
-      oBody.aPaymentIntegration = [...this.oPaynl.aPaymentIntegration];
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oPaynl.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration];
     } else {
-      iPaymentServiceProviderId = this.oCCV.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      this.oCCV.aPaymentIntegration.splice(oSavedDataIndex, 1);
-      oBody.aPaymentIntegration = [...this.oCCV.aPaymentIntegration];
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oCCV.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration];
     }
     this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).subscribe((result: any) => {
       workstation[provider].sTerminalId = '';
@@ -198,7 +274,7 @@ export class PaymentIntegrationComponent implements OnInit {
       this.currentOpenSettings = "";
     } else {
       this.currentOpenSettings = provider;
-    }    
+    }
   }
 
   async savePaymentIntegration(event: any, provider: any, workstation: any) {
@@ -206,25 +282,42 @@ export class PaymentIntegrationComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       aPaymentIntegration: []
     }
-    
+
     let iPaymentServiceProviderId = '';
     const oTerminalData = { iWorkstationId: workstation._id, sTerminalId: event };
-    
+
     if (provider === 'paynl') {
 
-      iPaymentServiceProviderId = this.oPaynl.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      if (oSavedDataIndex > -1) this.oPaynl.aPaymentIntegration.splice(oSavedDataIndex, 1);
-      oBody.aPaymentIntegration = [...this.oPaynl.aPaymentIntegration, oTerminalData];
-    
-    } else {
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oPaynl.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oPaynl.aPaymentIntegration, oTerminalData];
 
-      iPaymentServiceProviderId = this.oCCV.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      if (oSavedDataIndex > -1) this.oCCV.aPaymentIntegration.splice(oSavedDataIndex, 1);
-      oBody.aPaymentIntegration = [...this.oCCV.aPaymentIntegration, oTerminalData];
-    
+    } else if (provider === 'ccv') {
+
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oCCV.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oCCV.aPaymentIntegration, oTerminalData];
+
+    } else if (provider === 'mollie') {
+
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oMollie.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oMollie.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.default.oMollie.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oMollie.aPaymentIntegration, oTerminalData];
+
+    } else if (provider === 'stripe') {
+
+      iPaymentServiceProviderId = this.oPaymentServiceProviders.default.oStripe.iPaymentServiceProviderId;
+      const oSavedDataIndex = this.oPaymentServiceProviders.default.oStripe.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.default.oStripe.aPaymentIntegration.splice(oSavedDataIndex, 1);
+      oBody.aPaymentIntegration = [...this.oPaymentServiceProviders.default.oStripe.aPaymentIntegration, oTerminalData];
+
     }
+
+
+    
 
     if (!iPaymentServiceProviderId) {
       this.toastService.show({ type: 'warning', text: `Please set your credentials for ${provider}!` })
@@ -233,55 +326,117 @@ export class PaymentIntegrationComponent implements OnInit {
       return;
     }
     workstation[provider].sTerminalName = this.aTerminalList.find((el: any) => el.id === event).name;
-    this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).subscribe((result:any) => {
-      if(result)
+    this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).subscribe((result: any) => {
+      if (result)
         this.toastService.show({ type: 'success', text: 'UPDATED' });
       else
         this.toastService.show({ type: 'danger', text: 'ERROR' });
     });
-    this.fetchPaymentProviderSetting();    
+    this.fetchPaymentProviderSetting();
   }
 
   async saveSettings() {
+    debugger
     this.bSavingSettings = true;
     const sType = this.currentOpenSettings;
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      eName : sType,
+      eName: sType,
       oWebshop: { bUseForWebshop: false }
     };
-    
-    let id = '';
 
-    if(sType === 'paynl') {
-      id = this.oPaynl?.iPaymentServiceProviderId;
+    let id = '';
+    let data = {};
+
+    if (sType === 'paynl') {
+      id = this.oPaymentServiceProviders.default.oPaynl?.iPaymentServiceProviderId;
       oBody.oPayNL = {
-        sServiceId: this.oPaynl.sServiceId,
-        sApiToken: this.oPaynl.sApiToken,
-        sApiCode: this.oPaynl.sApiCode,
+        sServiceId: this.oPaymentServiceProviders.default.oPaynl.sServiceId,
+        sApiToken: this.oPaymentServiceProviders.default.oPaynl.sApiToken,
+        sApiCode: this.oPaymentServiceProviders.default.oPaynl.sApiCode,
       }
       oBody.oWebshop.bUseForWebshop = this.bPaynlUseForWebshop;
-    } else {
-      id = this.oCCV?.iPaymentServiceProviderId;
+
+      data = {
+        oDefault: oBody.oPaynl,
+        oWebShop: oBody.oWebshop.bUseForWebshop ? oBody.oPaynl : {
+          sServiceId: '',
+          sApiToken: '',
+          sApiCode: '',
+          aPaymentIntegration: [],
+          iPaymentServiceProviderId: ''
+        }
+      }
+    } else if (sType === 'ccv') {
+      id = this.oPaymentServiceProviders.default.oCCV?.iPaymentServiceProviderId;
       oBody.oCCV = {
-        sApiCode: this.oCCV.sApiCode,
-        sManagementId: this.oCCV.sManagementId
+        sApiCode: this.oPaymentServiceProviders.default.oCCV.sApiCode,
+        eManagementId: this.oPaymentServiceProviders.default.oCCV.eManagementId
       }
       oBody.oWebshop.bUseForWebshop = this.bCcvUseForWebshop;
+
+      data = {
+        oDefault: oBody.oCCV,
+        oWebShop: oBody.oWebshop.bUseForWebshop ? oBody.oCCV : {
+          sApiCode: '',
+          eManagementId: '',
+          aPaymentIntegration: [],
+          iPaymentServiceProviderId: ''
+        }
+      }
+    } else if (sType === 'mollie') {
+      id = this.oPaymentServiceProviders.default.oMollie?.iPaymentServiceProviderId;
+      oBody.oMollie = {
+        sApiToken: this.oPaymentServiceProviders.default.oMollie.sApiToken,
+      }
+      oBody.oWebshop.bUseForWebshop = this.bMollieUseForWebshop;
+      data = {
+        oDefault: oBody.oMollie,
+        oWebShop: this.bMollieUseForWebshop ? oBody.oMollie : {
+          sApiToken: ""
+        }
+      }
+    } else if (sType === 'stripe') {
+      id = this.oPaymentServiceProviders.default.oStripe?.iPaymentServiceProviderId;
+      oBody.oStripe = {
+        sSecret: this.oPaymentServiceProviders.default.oStripe.sSecret,
+        sSignature: this.oPaymentServiceProviders.default.oStripe.sSignature,
+      }
+      oBody.oWebshop.bUseForWebshop = this.bStripeUseForWebshop;
+      data = {
+        oDefault: oBody.oStripe,
+        oWebShop: this.bStripeUseForWebshop ? oBody.oStripe : {
+          sSecret: "",
+          sSignature: ""
+        }
+      }
     }
 
-    if(id) { ///update
-      await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${id}`, oBody).toPromise();
-      this.bSavingSettings = false;
-      this.toastService.show({ type: 'success', text: 'UPDATED' });
-    } else { // create
-      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).toPromise();
-      if (result?.data?._id) {
-        this.toastService.show({ type: 'success', text: 'SAVED' });
-        if (sType === 'paynl') this.oPaynl.iPaymentServiceProviderId = result.data._id;
-        else this.oCCV.iPaymentServiceProviderId = result.data._id;
+    const payload = {
+      ...oBody,
+      ...(id && { iPaymentServiceProviderId: id }),
+      oCredentials: {
+        [oBody.eName]: data
       }
+    }
+
+    console.log("payload", payload)
+
+    // if(id) { ///update
+    //   await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${id}`, payload).toPromise();
+    //   this.bSavingSettings = false;
+    //   this.toastService.show({ type: 'success', text: 'UPDATED' });
+    // } else { // create
+    // }
+    const result: any = await this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, payload).toPromise();
+    if (result?.data?._id) {
+      this.toastService.show({ type: 'success', text: 'SAVED' });
+      if (sType === 'paynl') this.oPaymentServiceProviders.default.oPaynl.iPaymentServiceProviderId = result.data._id;
+      else if (sType === 'ccv') this.oPaymentServiceProviders.default.oCCV.iPaymentServiceProviderId = result.data._id;
+      else if (sType === 'mollie') this.oPaymentServiceProviders.default.oMollie.iPaymentServiceProviderId = result.data._id;
+      else if (sType === 'stripe') this.oPaymentServiceProviders.default.oStripe.iPaymentServiceProviderId = result.data._id;
+      else this.oPaymentServiceProviders.default.oCCV.iPaymentServiceProviderId = result.data._id;
     }
     this.fetchTerminals();
     this.fetchPaymentProviderSetting();
@@ -301,4 +456,24 @@ export class PaymentIntegrationComponent implements OnInit {
       }
     }
   }
+
+  onUseForWebshop(event: any, type: string) {
+    if (event.target.checked) {
+      this.oPaymentServiceProviders['oWebshop'][type] = this.oPaymentServiceProviders.default[type];
+    } else {
+      // const object:any = this.oPaymentServiceProviders['oWebshop'][type];
+      this.oPaymentServiceProviders['oWebshop'][type] = (object: any) => {
+        for (const name in object) {
+          if (object.hasOwnProperty(name)) {
+            delete object[name];
+          }
+        }
+      };
+    }
+
+  }
+
+
+
+
 }
