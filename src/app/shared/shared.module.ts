@@ -188,7 +188,8 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     MorePaymentsDialogComponent,
     CustomerDialogComponent,
     AddExpensesComponent,
-    TerminalDialogComponent
+    TerminalDialogComponent,
+    TransactionActionDialogComponent
   ]
 })
 
