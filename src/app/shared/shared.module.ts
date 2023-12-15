@@ -74,8 +74,8 @@ import { ClosingDaystateDialogComponent } from "./components/closing-daystate-di
 import { SetPaymentMethodSequenceComponent } from "./components/set-payment-method-sequence-dialog/set-payment-method-sequence.component";
 import { ClosingDaystateHelperDialogComponent } from "./components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component";
 import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
-
-
+import { DiscountDialogComponent } from "../till/dialogs/discount-dialog/discount-dialog.component";
+import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning-dialog/supplier-warning-dialog.component";
 
 
 @NgModule({
@@ -127,6 +127,8 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     SetPaymentMethodSequenceComponent,
     ClosingDaystateHelperDialogComponent,
     CalendarGanttViewDialogComponent,
+    DiscountDialogComponent,
+    SupplierWarningDialogComponent
   ],
   imports: [
     CommonModule,
@@ -176,7 +178,9 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     ClosingDaystateHelperDialogComponent,
     CalendarGanttViewDialogComponent,
     TranslateModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    DiscountDialogComponent,
+    SupplierWarningDialogComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe],
   entryComponents: [
@@ -189,7 +193,10 @@ import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-vi
     CustomerDialogComponent,
     AddExpensesComponent,
     TerminalDialogComponent,
-    TransactionActionDialogComponent
+    TransactionActionDialogComponent,
+    ActivityDetailsComponent,
+    DiscountDialogComponent,
+    SupplierWarningDialogComponent
   ]
 })
 
