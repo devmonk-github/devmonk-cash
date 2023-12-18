@@ -66,57 +66,55 @@
                                     <div class="form-group">
                                         <label>{{ 'SERVICE_ID' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'ENTER_SERVICE_ID' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oPaynl.sServiceId">
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oDefault.sServiceId">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="form-group">
                                         <label>{{ 'API_TOKEN' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'API_TOKEN' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oPaynl.sApiToken">
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oDefault.sApiToken">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="form-group">
                                         <label>{{ 'API_CODE' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'API_CODE' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oPaynl.sApiCode">
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oDefault.sApiCode">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" |
                                         translate}}</label>
                                     <div class="form-check form-check-solid form-switch fv-row lh-xxl">
-                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'oPaynl')"
-                                            class="form-check-input w-45px h-30px" [(ngModel)]="bPaynlUseForWebshop" />
+                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'paynl')"
+                                            class="form-check-input w-45px h-30px" [(ngModel)]="oPaymentServiceProviders.paynl.bIsWebShop" />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <h4 class="fw-bold">{{'WEBSHOP'}}</h4>
                             <div class="row mt-2">
-                                <h4 class="fw-bold">{{'WEBSHOP'}}</h4>
-                                <div class="row mt-2">
-                                    <div class="col-12 mb-3">
-                                        <div class="form-group">
-                                            <label>{{ 'SERVICE_ID' | translate }}</label>
-                                            <input class="form-control" placeholder="{{ 'ENTER_SERVICE_ID' | translate }}"
-                                                [(ngModel)]="oPaymentServiceProviders.oWebshop.oPaynl.sServiceId">
-                                        </div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label>{{ 'SERVICE_ID' | translate }}</label>
+                                        <input class="form-control" placeholder="{{ 'ENTER_SERVICE_ID' | translate }}"
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oWebShop.sServiceId">
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <div class="form-group">
-                                            <label>{{ 'API_TOKEN' | translate }}</label>
-                                            <input class="form-control" placeholder="{{ 'API_TOKEN' | translate }}"
-                                                [(ngModel)]="oPaymentServiceProviders.oWebshop.oPaynl.sApiToken">
-                                        </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label>{{ 'API_TOKEN' | translate }}</label>
+                                        <input class="form-control" placeholder="{{ 'API_TOKEN' | translate }}"
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oWebShop.sApiToken">
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <div class="form-group">
-                                            <label>{{ 'API_CODE' | translate }}</label>
-                                            <input class="form-control" placeholder="{{ 'API_CODE' | translate }}"
-                                                [(ngModel)]="oPaymentServiceProviders.oWebshop.oPaynl.sApiCode">
-                                        </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label>{{ 'API_CODE' | translate }}</label>
+                                        <input class="form-control" placeholder="{{ 'API_CODE' | translate }}"
+                                            [(ngModel)]="oPaymentServiceProviders.paynl.oWebShop.sApiCode">
                                     </div>
                                 </div>
                             </div>
@@ -134,22 +132,22 @@
                                 <div class="form-group">
                                     <label>{{ 'API_CODE' | translate }}</label>
                                     <input class="form-control" placeholder="{{ 'API_CODE' | translate }}"
-                                        [(ngModel)]="oPaymentServiceProviders.default.oCCV.sApiCode">
+                                        [(ngModel)]="oPaymentServiceProviders.ccv.oDefault.sApiCode">
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
                                 <div class="form-group">
                                     <label>{{ 'MANAGEMENT_ID' | translate }}</label>
                                     <input class="form-control" placeholder="{{ 'MANAGEMENT_ID' | translate }}"
-                                        [(ngModel)]="oPaymentServiceProviders.default.oCCV.eManagementId">
+                                        [(ngModel)]="oPaymentServiceProviders.ccv.oDefault.eManagementId">
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" |
                                     translate}}</label>
                                 <div class="form-check form-check-solid form-switch fv-row lh-xxl">
-                                    <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'oCCV')"
-                                        class="form-check-input w-45px h-30px" [(ngModel)]="bCcvUseForWebshop" />
+                                    <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'ccv')"
+                                        class="form-check-input w-45px h-30px" [(ngModel)]="oPaymentServiceProviders.ccv.bIsWebShop" />
                                 </div>
                             </div>
                         </div>
@@ -161,14 +159,14 @@
                                 <div class="form-group">
                                     <label>{{ 'API_CODE' | translate }}</label>
                                     <input class="form-control" placeholder="{{ 'API_CODE' | translate }}"
-                                        [(ngModel)]="oPaymentServiceProviders.oWebshop.oCCV.sApiCode">
+                                        [(ngModel)]="oPaymentServiceProviders.ccv.oWebShop.sApiCode">
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
                                 <div class="form-group">
                                     <label>{{ 'MANAGEMENT_ID' | translate }}</label>
                                     <input class="form-control" placeholder="{{ 'MANAGEMENT_ID' | translate }}"
-                                        [(ngModel)]="oPaymentServiceProviders.oWebshop.oCCV.eManagementId">
+                                        [(ngModel)]="oPaymentServiceProviders.ccv.oWebShop.eManagementId">
                                 </div>
                             </div>
                         </div>
@@ -184,15 +182,15 @@
                                     <div class="form-group">
                                         <label>{{ 'API_TOKEN' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'API_TOKEN' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oMollie.sApiToken">
+                                            [(ngModel)]="oPaymentServiceProviders.mollie.oDefault.sApiToken">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" |
                                         translate}}</label>
                                     <div class="form-check form-check-solid form-switch fv-row lh-xxl">
-                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'oMollie')"
-                                            class="form-check-input w-45px h-30px" [(ngModel)]="bMollieUseForWebshop" />
+                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'mollie')"
+                                            class="form-check-input w-45px h-30px" [(ngModel)]="oPaymentServiceProviders.mollie.bIsWebShop" />
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +202,7 @@
                                     <div class="form-group">
                                         <label>{{ 'API_TOKEN' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'API_TOKEN' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.oWebshop.oMollie.sApiToken">
+                                            [(ngModel)]="oPaymentServiceProviders.mollie.oWebShop.sApiToken">
                                     </div>
                                 </div>
                             </div>
@@ -220,22 +218,22 @@
                                     <div class="form-group">
                                         <label>{{ 'SECRET' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'SECRET' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oStripe.sSecret">
+                                            [(ngModel)]="oPaymentServiceProviders.stripe.oDefault.sSecret">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="form-group">
                                         <label>{{ 'SIGNATURE' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'SIGNATURE' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.default.oStripe.sSignature">
+                                            [(ngModel)]="oPaymentServiceProviders.stripe.oDefault.sSignature">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" |
                                         translate}}</label>
                                     <div class="form-check form-check-solid form-switch fv-row lh-xxl">
-                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'oStripe')"
-                                            class="form-check-input w-45px h-30px" [(ngModel)]="bStripeUseForWebshop" />
+                                        <input name="useForWebshop" id="forWebshop" type="checkbox" (change)="onUseForWebshop($event, 'stripe')"
+                                            class="form-check-input w-45px h-30px" [(ngModel)]="oPaymentServiceProviders.stripe.bIsWebShop" />
                                     </div>
                                 </div>
                             </div>
@@ -247,14 +245,14 @@
                                     <div class="form-group">
                                         <label>{{ 'SECRET' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'SECRET' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.oWebshop.oStripe.sSecret">
+                                            [(ngModel)]="oPaymentServiceProviders.stripe.oWebShop.sSecret">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="form-group">
                                         <label>{{ 'SIGNATURE' | translate }}</label>
                                         <input class="form-control" placeholder="{{ 'SIGNATURE' | translate }}"
-                                            [(ngModel)]="oPaymentServiceProviders.oWebshop.oStripe.sSignature">
+                                            [(ngModel)]="oPaymentServiceProviders.stripe.oWebShop.sSignature">
                                     </div>
                                 </div>
                             </div>
@@ -272,7 +270,7 @@
             </div>
         </div>
         </div>
-    <div class="card py-2 mb-4" data-kt-scroll-section="pos-settings">
+    <div class="card py-2 mb-4" data-kt-scroll-section="pos-settings" *ngIf="['paynl', 'ccv'].includes(currentOpenSettings)">
         <div class="card-header bg-white py-3 px-4">
             <h4 class="card-title">{{"POS_SETTINGS" | translate}}</h4>
         </div>
@@ -282,7 +280,7 @@
                     [style.width.px]="tableMaxWidth">
                     <thead>
                         <tr>
-                            <td class="sticky-col first-col border border-gray-400"></td>
+                            <td class="sticky-col first-col border border-gray-400 bg-light"></td>
                             <td *ngFor="let workstation of workstations; trackBy:trackByFunction;" class="lh-xxl w-260px">
                                 {{ workstation.sName }}
                                 <div style="white-space: normal;" class="badge" *ngIf="workstation?.computer"
@@ -295,36 +293,38 @@
                     </thead>
                     <tbody class="scroll-x" *ngIf="!loading">
                         <tr class="lh-xxl" *ngFor="let type of typeList, let tIndex = index;">
-                            <td class="sticky-col first-col border border-gray-400">
+                            <td class="sticky-col first-col border border-gray-400 bg-light" *ngIf="currentOpenSettings === type.key">
                                 <label class="vertical-label-text mt-per-35"> {{ type.name }} </label>
                             </td>
-                            <td *ngFor="let workstation of workstations" class="w-260px">
-                                <div *ngIf="workstation[type.key]?.sTerminalId != ''; else selectTerminal">
-                                    <div *ngIf="workstation[type.key]?.edit == false">
-                                        <label>{{ workstation[type.key].sTerminalName }}</label>
-                                        <div class="float-end mt-2">
-                                            <button class="btn btn-info px-4 py-2" (click)="workstation[type.key].edit = true">
-                                                <fa-icon [icon]="faPencilAlt"></fa-icon>
-                                            </button>
-                                            <button class="btn btn-danger ms-1 px-4 py-2"
-                                                (click)="remove($event, type.key, workstation)">
-                                                <fa-icon [icon]="faXmark"></fa-icon>
-                                            </button>
+                            <ng-container *ngIf="currentOpenSettings === type.key">
+                                <td *ngFor="let workstation of workstations" class="w-260px">
+                                    <div *ngIf="workstation[type.key]?.sTerminalId != ''; else selectTerminal">
+                                        <div *ngIf="workstation[type.key]?.edit == false">
+                                            <label>{{ workstation[type.key].sTerminalName }}</label>
+                                            <div class="float-end mt-2">
+                                                <button class="btn btn-info px-4 py-2" (click)="workstation[type.key].edit = true">
+                                                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                                                </button>
+                                                <button class="btn btn-danger ms-1 px-4 py-2"
+                                                    (click)="remove($event, type.key, workstation)">
+                                                    <fa-icon [icon]="faXmark"></fa-icon>
+                                                </button>
+                                            </div>
                                         </div>
+                                        <div *ngIf="workstation[type.key]?.edit == true; then selectTerminal"></div>
                                     </div>
-                                    <div *ngIf="workstation[type.key]?.edit == true; then selectTerminal"></div>
-                                </div>
-                                <ng-template #selectTerminal>
-                                    <ng-select [clearable]="false" [(ngModel)]="workstation[type.key].sTerminalId"
-                                        (ngModelChange)="savePaymentIntegration($event, type.key, workstation)">
-                                        <ng-container *ngFor="let oTerminal of aTerminalList">
-                                            <ng-option *ngIf="type.key == oTerminal.sProvider" [value]="oTerminal.id">
-                                                {{ oTerminal.name }}
-                                            </ng-option>
-                                        </ng-container>
-                                    </ng-select>
-                                </ng-template>
-                            </td>
+                                    <ng-template #selectTerminal>
+                                        <ng-select [clearable]="false" [(ngModel)]="workstation[type.key].sTerminalId"
+                                            (ngModelChange)="savePaymentIntegration($event, type.key, workstation)">
+                                            <ng-container *ngFor="let oTerminal of aTerminalList">
+                                                <ng-option *ngIf="type.key == oTerminal.sProvider" [value]="oTerminal.id">
+                                                    {{ oTerminal.name }}
+                                                </ng-option>
+                                            </ng-container>
+                                        </ng-select>
+                                    </ng-template>
+                                </td>
+                            </ng-container>
                         </tr>
                     </tbody>
                 </table>
