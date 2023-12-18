@@ -196,7 +196,8 @@ import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning
     TransactionActionDialogComponent,
     ActivityDetailsComponent,
     DiscountDialogComponent,
-    SupplierWarningDialogComponent
+    SupplierWarningDialogComponent,
+    CustomerDetailsComponent
   ]
 })
 
