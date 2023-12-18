@@ -365,7 +365,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
           }
         }
         this.bDefaultPayMethodsLoading = false;
-        for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
+        // Comment tihs line for temporary solution for stackblitz
+        // for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
      
     }, (error) => {
