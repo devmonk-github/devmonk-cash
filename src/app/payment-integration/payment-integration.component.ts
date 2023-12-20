@@ -45,7 +45,7 @@ export class PaymentIntegrationComponent implements OnInit {
   businessPrintSettings !: Array<any>;
   workStationsCount: number = 0;
   bOpen = false;
-  currentOpenSettings: string = "";
+  currentOpenSettings: string = "paynl";
   oBusinessSetting: any = {
     iBusinessSettingId: '',
     aPaymentIntegrations: []
@@ -117,8 +117,11 @@ export class PaymentIntegrationComponent implements OnInit {
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
-    this.fetchTerminals();
-    this.getWorkstations();
+
+    if(this.iBusinessId && this.iLocationId){
+      this.fetchTerminals();
+      this.getWorkstations();
+    }
   }
 
   getWorkstations() {
@@ -265,12 +268,11 @@ export class PaymentIntegrationComponent implements OnInit {
     this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, payload).subscribe((result: any) => {
       if (result?.data) {
         this.bSavingSettings = false;
+        this.fetchTerminals();
+        this.fetchPaymentProviderSetting();
         this.toastService.show({ type: 'success', text: 'SAVED' });
       }
     }, err => this.bSavingSettings = false);
-    this.fetchTerminals();
-    this.bSavingSettings = false;
-    this.fetchPaymentProviderSetting();
   }
 
   trackByFunction(element: any) {
