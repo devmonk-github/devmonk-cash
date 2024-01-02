@@ -18,13 +18,14 @@ export class TillService {
 
   currency: string = "€";
   separator: string = ",";
-
+  
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
-
+  
   settings:any;
   taxes:any;
+  oBusiness:any;
   aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
   oSavingPointSettings:any;
   iStatisticsId: any;
@@ -49,23 +50,33 @@ export class TillService {
   }
 
   fetchPointsSettings() {
-    // if(this.oSavingPointSettings?._id) return;
+// if(this.oSavingPointSettings?._id) return;
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
       this.oSavingPointSettings = result;
     });
   }
 
   async fetchTaxes() {
-    if(this.taxes?.length) return;
-    let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
-    if (taxDetails) {
-      this.taxes = taxDetails?.aRates || [];
-    } else {
-      setTimeout(async () => {
-        taxDetails = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
-        this.taxes = taxDetails?.aRates || [];
-      }, 1000);
+    if (this.taxes?.length) return;
+    if (!this.oBusiness?.aLocation) {
+      const _oBusiness = await this.getBusinessLocation().toPromise();
+      this.oBusiness = _oBusiness.data;
     }
+
+    let locations: any = [];
+    let countries: any = [];
+    this.oBusiness?.aLocation.forEach((location: any) => {
+      let country = location?.oAddress?.countryCode || 'NL';
+      if (!countries.includes(country)) countries.push(country);
+      locations.push(location);
+    });
+    let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId, iBusinessId: this.iBusinessId, locations });
+    this.taxes = taxDetails.aRates;
+  }
+
+  // get business location
+  getBusinessLocation(): Observable<any> {
+    return this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {})
   }
 
   selectCurrency(oLocation: any) {
@@ -289,11 +300,11 @@ export class TillService {
       if (i.type === 'repair' || i.type === 'order') oItem.nActualCost = oItem.nPurchasePrice;
       /*Commented because need to create stock correction always.*/
       // if (i.bHasStock && (i.oCurrentLocation?.nStock == 0 || !i.oCurrentLocation?.nStock) ) oItem.oType.nStockCorrection = 0; 
-     
+
       /* COMMENTED BELOW LINE BECAUSE IT IS CALCULATING INCORRECT PAYMENT AMOUNT WHEN DOING SPLIT PAYMENT WITH TERMINALS */
       // const nTotal = +(i.price.toFixed(2) * i.quantity);
       // oItem.nPaymentAmount = ((nTotal - i.paymentAmount) > 0.05) ? +(i.paymentAmount.toFixed(2)) : nTotal;
-      
+
       oItem.nPaymentAmount = +(i.paymentAmount.toFixed(2));
       oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity));
       // console.log(nTotal, oItem.nPaymentAmount, oItem.nRevenueAmount, i.quantity, i.price);
@@ -309,7 +320,7 @@ export class TillService {
       return oItem;
     });
     const aToBeAddedItems: any = []
-    
+
     body.transactionItems.forEach((i: any) => {
       let _nDiscount = +((i?.bDiscountOnPercentage ? (i.nPriceIncVat * i.nDiscount / 100) : i.nDiscount)); //.toFixed(2)
       if (bTesting) console.log({ _nDiscount }, JSON.parse(JSON.stringify(i)));
@@ -367,7 +378,7 @@ export class TillService {
       });
     }
     body.transactionItems = [...body.transactionItems, ...aToBeAddedItems];
-    
+
     body.transactionItems.forEach((i: any) => {
       if(this.aDiscountTypes.includes(i.oType.eKind)) i.nSavingsPoints = 0;
       i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
@@ -443,7 +454,7 @@ export class TillService {
       sDayClosureMethod: this.settings?.sDayClosureMethod || 'workstation',
     };
     oItem.iArticleGroupId = oItem.iArticleGroupOriginalId = oArticleGroup?._id,
-    oItem.nPriceIncVat = oItem.nPurchasePrice = oItem.nTotal = oItem.nPaymentAmount = oItem.nRevenueAmount = nAmount;
+      oItem.nPriceIncVat = oItem.nPurchasePrice = oItem.nTotal = oItem.nPaymentAmount = oItem.nRevenueAmount = nAmount;
 
     if (oExpenseType?.type === 'negative') {
       oItem.nTotal = -oItem.nTotal;
@@ -508,7 +519,7 @@ export class TillService {
 
           let paymentAmount = (item.nQuantity * item.nPriceIncVat) - item.nPaymentAmount;
 
-            // - nTotalDiscount;
+          // - nTotalDiscount;
           // console.log(436, {paymentAmount})
           if (tType === 'refund') {
             // paymentAmount = -1 * item.nPaidAmount;
@@ -665,7 +676,7 @@ export class TillService {
 
       if (bTesting) console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      
+
       this.calculateVat(item);
       totalVat += (item.vat * item.nQuantity);
 
@@ -821,7 +832,7 @@ export class TillService {
     return transaction;
   }
 
-  calculateDiscount(item: any){    
+  calculateDiscount(item: any){
     item.nDiscountToShow = +((item?.nDiscount || 0).toFixed(2));
     if (item?.nDiscount && item.bDiscountOnPercentage) {
       item.nDiscountToShow = +(this.getPercentOf(item.nPriceIncVat, item.nDiscount).toFixed(2));
@@ -903,7 +914,7 @@ export class TillService {
 
   async updateSettings() {
     if (this.settings?.aBagNumbers?.length) {
-    this.settings.aBagNumbers = [...this.settings?.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+      this.settings.aBagNumbers = [...this.settings?.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     }
     const body = {
       aBagNumbers: this.settings.aBagNumbers
