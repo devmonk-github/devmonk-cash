@@ -85,8 +85,10 @@
                                             <label class="form-label fw-bolder text-dark fs-6 mb-0">{{"PASSWORD" |
                                                 translate}}</label>
 
-                                            <span (click)="bIsShowPassword=!bIsShowPassword"> <i class="fa"
-                                                    [ngClass]="bIsShowPassword ? 'fa-eye-slash' : 'fa-eye'"></i></span>
+                                            <span (click)="bIsShowPassword=!bIsShowPassword">  <fa-icon
+                                                [icon]="bIsShowPassword ? 'eye-slash' : 'eye'"
+                                              ></fa-icon
+                                            ></span>
                                         </div>
                                         <input [(ngModel)]="user.password" #password="ngModel" name="password"
                                             [type]="bIsShowPassword ? 'text' : 'password'" id="input-password"

@@ -25,6 +25,10 @@ a {
     color: var(--bs-primary);
 }
 
+button.accordion-button{
+    background: #f5f8fa;
+}
+
 .accordion-button:not(.collapsed) {
     color: var(--bs-primary) !important;
 }
