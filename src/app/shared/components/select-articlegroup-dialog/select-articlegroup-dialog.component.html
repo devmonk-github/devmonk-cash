@@ -1,20 +1,23 @@
 <div class="card shadow-sm">
-    <div class="card-header py-3">
+    <div class="card-header" style="margin-top: 20px;">
         <h3>{{"SELECT_SUPPLIER_AND_BRAND" | translate}}</h3>
     </div>
     <div class="card-body row pb-0 pt-3 ">
         <div class="pb-4">
             <label class="fs-5 my-2" for="articlegroup">
              <span class="required">   {{ "ARTICLE_GROUP" | translate}} </span>
-                <div *ngIf="articleGroupLoading" class="spinner-border mx-3 h-15px w-15px"></div>
+<!--                 <div *ngIf="articleGroupLoading" class="spinner-border mx-3 h-15px w-15px"></div>-->    
             </label>
-            <ng-select class="form-control form-control-solid p-0" *ngIf="!articlegroup"  [isOpen]="filteredArticleGroups.length > 0" placeholder="{{'SEARCH_ARTICLE' | translate}}" (search)="searchArticlegroup($event.term)" (change)="changeInArticleGroup(articlegroup)" [clearable]="false" #articleGroupRef  [(ngModel)]="articlegroup">
-                <ng-option *ngFor="let option of filteredArticleGroups" [value]="option">{{option?.sArticleGroupName || 'Unknown'}}</ng-option>
+            <ng-select class="form-control form-control-solid p-0" *ngIf="!articlegroup" [(ngModel)]="articlegroup"
+                (search)="searchArticlegroup($event.term)" (change)="changeInArticleGroup(articlegroup)" [clearable]="false"
+                #articleGroupRef placeholder="{{'SEARCH_ARTICLE' | translate}}" [loading]="showArticleGroupLoader">
+                <ng-option *ngFor="let option of articleGroupsList" [value]="option">{{option?.sArticleGroupName ||
+                    'Unknown'}}</ng-option>
             </ng-select>
              
             <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="articlegroup">
                {{articlegroup.sArticleGroupName}}
-                <div class="d-flex align-items-center justify-content-center" (click)="changeInArticleGroup(null)">
+                <div class="d-flex align-items-center justify-content-center" (click)="this.articlegroup=null">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
             </div>
@@ -23,8 +26,8 @@
             <label class="fs-5 my-2" for="brand">{{ "BRAND" | translate}}</label>
             <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrand($event.term)"
                 (change)="changeInBrand(brand)" class="form-control form-control-solid p-0"
-                placeholder="{{'SEARCH_BRAND' | translate}} ({{'OPTIONAL' | translate}})" [minTermLength]="2" [clearable]="false">
-                <ng-option *ngFor="let option of filteredBrandList" [value]="option">{{option.sName ||
+                placeholder="{{'SEARCH_BRAND' | translate}} ({{'OPTIONAL' | translate}})" [minTermLength]="2" [clearable]="false" [loading]="showBusinessBrandLoader">
+                <ng-option *ngFor="let option of brandsList" [value]="option">{{option.sName ||
                     'Unknown'}}</ng-option>
             </ng-select>
             <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="brand">
@@ -41,13 +44,13 @@
             </label>
             <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSupplier($event.term)"
                 (ngModelChange)="changeInSupplier()" class="form-control form-control-solid p-0"
-                placeholder="{{'SEARCH_SUPPLIER' | translate}}" [minTermLength]="2" [clearable]="false">
-                <ng-option *ngFor="let option of filteredSupplierList" [value]="option">{{option.sName ||
+                placeholder="{{'SEARCH_SUPPLIER' | translate}}" [minTermLength]="2" [clearable]="false" [loading]="showBusinessPartnerLoader">
+                <ng-option *ngFor="let option of partnersList" [value]="option">{{option.sName ||
                     'Unknown'}}</ng-option>
             </ng-select>
             <div class="form-control form-control-solid d-flex align-items-center p-3" *ngIf="supplier">
                 {{supplier.sName}}
-                <div class="d-flex align-items-center justify-content-center" (click)="supplier=null; changeInSupplier();">
+                <div class="d-flex align-items-center justify-content-center" (click)="supplier=null;">
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
             </div>

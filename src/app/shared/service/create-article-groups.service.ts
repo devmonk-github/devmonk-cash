@@ -310,5 +310,16 @@ export class CreateArticleGroupService {
     return this.apiService.postNew('core', '/api/v1/business/article-group', data);
   }
 
+    /* Set ArticleGrop name property */
+    setArticleGroupName(aArticleGroup: any, selectedLanguage: any) {
+      if (aArticleGroup?.length) {
+        aArticleGroup.forEach((oArticleGroup: any) => {
+          oArticleGroup.sArticleGroupName = (oArticleGroup?.oName ? (oArticleGroup?.oName[selectedLanguage] || oArticleGroup?.oName['en']) : 'UNKNOWN') + (oArticleGroup?.oAlias ? " (" + (oArticleGroup?.oAlias[selectedLanguage] || oArticleGroup?.oAlias['en']) + ")" : '');
+          if (oArticleGroup?.sCategory) oArticleGroup.sArticleGroupName += " - " + oArticleGroup.sCategory;
+        })
+      }
+      return aArticleGroup;
+    }
+
 
 }
