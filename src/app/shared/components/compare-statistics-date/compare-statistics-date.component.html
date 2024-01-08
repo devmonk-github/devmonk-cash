@@ -1,0 +1,65 @@
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">{{ 'COMPARE_STATISTICS' | translate}}</h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light" (click)="close()">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row" *ngFor="let oCompareData of oData.aCompareData; let i = index;">
+            <div class="col-md-2 fs-6 form-label fw-bolder text-dark">
+                {{ "RANGE" | translate }} {{ i +1 }}
+            </div>
+            <div class="col-md-4">
+                <label class="fs-6 form-label fw-bolder text-dark">
+                    {{'START_DATE' | translate}}</label>
+                <input type="datetime-local" class="form-control form-control form-control-solid" name="startDate"
+                    [(ngModel)]="oCompareData.dFromState" [max]="oCompareData.dToState"
+                    (change)="oCompareData.dFromState = setDefaultTimePart(oCompareData.dFromState, true)" />
+            </div>
+            <div class="col-md-4">
+                <label class="fs-6 form-label fw-bolder text-dark">
+                    {{'END_DATE' | translate}}
+                </label>
+                <input type="datetime-local" class="form-control form-control-solid" name="endDate"
+                    [(ngModel)]="oCompareData.dToState" [min]="oCompareData.dFromState"
+                    (change)="oCompareData.dToState = setDefaultTimePart(oCompareData.dToState, false)" />
+            </div>
+            <div class="col-md-2">
+                <div class="rmBtn">
+                    <button class="btn" [disabled]="oData.aCompareData?.length <= 2" (click)="removeRecord(i)">
+                        <i class="fa fa-trash" style="color: red;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="d-flex justify-content-between cursor-pointer">
+            <span class="h5">
+                <button class="btn btn-primary btn-sm" [disabled]="oData.aCompareData?.length >= 5"
+                    (click)="addRecord()">
+                    {{"ADD_MORE_COMPARISION" | translate}}
+                    <i class="fa fa-plus"></i>
+                </button>
+            </span>
+        </div>
+
+    </div>
+
+    <div class="card-footer">
+        <div class="text-end">
+            <button class="btn btn-primary me-2 " (click)="close(oData.aCompareData)" [disabled]="!isFormValid()">
+                {{ 'SUBMIT' | translate}}
+            </button>
+            <button class="btn btn-secondary" (click)="close()">
+                {{ 'CANCEL' | translate}}
+            </button>
+        </div>
+    </div>
+</div>

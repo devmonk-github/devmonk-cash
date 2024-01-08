@@ -7,16 +7,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule as primengSharedModule } from 'primeng/api';
 import { JsonEditorModule } from '../json-editor/json-editor.module';
-import { LabelTemplateModelComponent } from "./lable-template-model/label-template-model.component"
 import { SharedModule } from '../shared/shared.module';
-import { PrinterToolComponent } from '../print-settings/printer-tool/printer-tool.component';
 import { PrintWorkstationComponent } from './print-workstation/print-workstation.component';
 
 @NgModule({
   declarations: [
     PrintSettingsComponent,
-    LabelTemplateModelComponent,
-    PrinterToolComponent,
     PrintWorkstationComponent
   ],
   imports: [

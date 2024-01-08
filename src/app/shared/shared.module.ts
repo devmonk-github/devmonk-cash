@@ -76,6 +76,9 @@ import { ClosingDaystateHelperDialogComponent } from "./components/closing-dayst
 import { CalendarGanttViewDialogComponent } from './components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
 import { DiscountDialogComponent } from "../till/dialogs/discount-dialog/discount-dialog.component";
 import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning-dialog/supplier-warning-dialog.component";
+import { PrinterToolComponent } from "../print-settings/printer-tool/printer-tool.component";
+import { LabelTemplateModelComponent } from "../print-settings/lable-template-model/label-template-model.component";
+import { CompareStatisticsDateComponent } from "./components/compare-statistics-date/compare-statistics-date.component";
 
 
 @NgModule({
@@ -128,7 +131,10 @@ import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning
     ClosingDaystateHelperDialogComponent,
     CalendarGanttViewDialogComponent,
     DiscountDialogComponent,
-    SupplierWarningDialogComponent
+    SupplierWarningDialogComponent,
+    PrinterToolComponent,
+    LabelTemplateModelComponent,
+    CompareStatisticsDateComponent
   ],
   imports: [
     CommonModule,
@@ -180,7 +186,10 @@ import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning
     TranslateModule,
     FontAwesomeModule,
     DiscountDialogComponent,
-    SupplierWarningDialogComponent
+    SupplierWarningDialogComponent,
+    PrinterToolComponent,
+    LabelTemplateModelComponent,
+    CompareStatisticsDateComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe],
   entryComponents: [
@@ -197,7 +206,17 @@ import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning
     ActivityDetailsComponent,
     DiscountDialogComponent,
     SupplierWarningDialogComponent,
-    CustomerDetailsComponent
+    CustomerDetailsComponent,
+    PrintSettingsEditorComponent,
+    AddEditWorkstationComponent,
+    CustomPaymentMethodComponent,
+    AddFavouritesComponent,
+    ActionSettingsComponent,
+    PrinterToolComponent,
+    LabelTemplateModelComponent,
+    CompareStatisticsDateComponent,
+    QuickbuttonWizardComponent,
+    DeviceDetailsComponent
   ]
 })
 

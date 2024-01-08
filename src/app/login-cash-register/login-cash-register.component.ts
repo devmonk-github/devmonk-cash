@@ -142,9 +142,11 @@ export class LoginCashRegisterComponent implements OnInit {
                     text: this.translate['SUCCESSFULLY_LOGIN'],
                 });
                 localStorage.setItem('authorization', result.data.authorization);
+                localStorage.setItem('server-token', result.data.authorization);
                 localStorage.setItem('alternateToken', result.data.authorization);
                 localStorage.setItem('failedAttempts', '0');
                 localStorage.setItem('locked', 'false');
+                this.apiService.setAPIHeaders();
                 this.getOrganizationDetailsByID(formData.form.value.iOrganizationid);
                 delete result.data.authorization;
                 this.iBusinessId =

@@ -1,20 +1,16 @@
 <div class="container p-4">
   <div class="card py-2 mb-5">
-    <div class="card-body px-5">
-      <div class="card-title fw-bold row">
-        <div class="col-md-8">
-          <span class="fw-bold">
-            <h3>{{ 'WORKSTATIONS' | translate}}</h3>
-          </span>
-        </div>
-        <div class="col-md-3">
-          <button class="btn btn-light-primary float-end" (click)="setOrder($event)">{{ 'SAVE_SEQUENCE' |
-            translate}}</button>
-        </div>
-        <div class="col-md-1">
-          <button class="btn btn-primary float-end" (click)="editWorkstation()">{{ 'NEW' | translate}}</button>
-        </div>
+    <div class="card-header d-flex justify-content-between align-items-center w-100">
+      <div class="card-title fw-bold">
+        <h3>{{ 'WORKSTATIONS' | translate}}</h3>
       </div>
+      <div class="d-flex align-items-center">
+        <button class="btn btn-light-primary float-end mx-2" (click)="setOrder($event)">{{ 'SAVE_SEQUENCE' |
+          translate}}</button>
+        <button class="btn btn-primary float-end" (click)="editWorkstation()">{{ 'NEW' | translate}}</button>
+      </div>
+    </div>
+    <div class="card-body px-5">
       <div class="">
         <div *ngIf="workstationLoading" class="spinner-border mx-auto"></div>
         <h5 *ngIf='!workstations.length && !workstationLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>

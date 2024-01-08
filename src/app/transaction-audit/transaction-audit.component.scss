@@ -135,3 +135,58 @@ a.disabled {
         }
     }
 }
+
+.calendar_icon{
+    font-size: 2rem !important;
+    color: #fff;
+}
+
+.w-150px{
+    width: 150px;
+}
+
+.bg-gray-100{
+    background-color: #f5f8fa!important;
+}
+
+.bg-gray-200{
+    background-color: #eff2f5!important;
+}
+
+.bg-gray-300{
+    background-color: #e4e6ef!important;
+}
+
+.text-gray-900{
+    color: #181c32!important;
+}
+
+.text-gray-700{
+    color: #5e6278!important;
+}
+
+.table-responsive {
+    table {
+        thead {
+            tr {
+                th {
+                    color: #181c32 !important;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                td {
+                    color: #5e6278 !important;
+                }
+            }
+        }
+    }
+}
+
+.card.overflow-y-auto {
+    .card-body .table-responsive{
+        border-radius: 0.5rem !important;
+    }
+}

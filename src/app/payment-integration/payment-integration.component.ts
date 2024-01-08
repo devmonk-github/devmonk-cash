@@ -1,8 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { faCopy, faPencilAlt, faSave, faTimes, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { ToastService } from '../shared/components/toast';
-import { ApiService } from '../shared/service/api.service';
+import { ToastService } from 'src/app/shared/components/toast';
+import { ApiService } from 'src/app/shared/service/api.service';
+import { DialogService } from 'src/app/shared/service/dialog';
 import { TerminalService } from '../shared/service/terminal.service';
 
 @Component({
@@ -22,7 +23,7 @@ import { TerminalService } from '../shared/service/terminal.service';
   ]
 })
 export class PaymentIntegrationComponent implements OnInit {
-
+  
   businessDetails: any;
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
@@ -34,94 +35,80 @@ export class PaymentIntegrationComponent implements OnInit {
   faXmark = faXmark;
   faTimes = faTimes;
   businessWorkstations: Array<any> = [];
-  typeList: any = [
+
+  typeList:any = [
     { name: 'PAYNL', key: 'paynl', enabled: true },
-    { name: 'CCV', key: 'ccv', enabled: false },
-  ];
+    { name: 'CCV', key: 'ccv', enabled: true },
+  ]
+
   loading: boolean = false;
   tableMaxWidth: number = window.innerWidth - 200;
   workstations: any = [];
   aTerminalList: any = [];
-  businessPrintSettings !: Array<any>;
-  workStationsCount: number = 0;
-  bOpen = false;
   currentOpenSettings: string = "paynl";
   oBusinessSetting: any = {
     iBusinessSettingId: '',
-    aPaymentIntegrations: []
+    aPaymentIntegration: []
   }
+  eType:string = 'default';
   bTerminalsLoading: boolean = false;
   bSavingSettings: boolean = false;
-  bPaynlUseForWebshop: boolean = false;
-  bCcvUseForWebshop: boolean = false;
-  bMollieUseForWebshop: boolean = false;
-  bStripeUseForWebshop: boolean = false;
 
   iPaymentServiceProviderId: string = '';
-  oPaymentServiceProviders: any = {
+  oProviderSchema: any = {
     paynl: {
-      oDefault: {
         sServiceId: '',
         sApiToken: '',
         sApiCode: '',
         aPaymentIntegrations: [],
-      },
-      oWebShop: {
-        sServiceId: '',
-        sApiToken: '',
-        sApiCode: '',
-        aPaymentIntegrations: [],
-      },
-      bIsWebShop: false
     },
     ccv: {
-      oDefault: {
-        sApiCode: '',
-        eManagementId: '',
-        aPaymentIntegrations: [],
-      },
-      oWebShop: {
-        sApiCode: '',
-        eManagementId: '',
-        aPaymentIntegrations: [],
-      },
-      bIsWebShop: false
+      sApiCode: '',
+      eManagementId: '',
+      aPaymentIntegrations: [],
     },
     mollie: {
-      oDefault: {
-        sApiToken: '',
-      },
-      oWebShop: {
-        sApiToken: '',
-      },
-      bIsWebShop: false
+      sApiToken: '',
     },
     stripe: {
-      oDefault: {
-        sSecret: '',
-        sSignature: ''
-      },
-      oWebShop: {
-        sSecret: '',
-        sSignature: ''
-      },
-      bIsWebShop: false
-    },
+      sSecret: '',
+      sSignature: ''
+    }
   };
+  oAllProviders:any = {
+    default: { ... this.oProviderSchema },
+    webshop: { ...this.oProviderSchema }
+  };
+  sManagementIds:any = [
+    {
+      key: 'GrundmasterNL',
+      value: 'GrundmasterNL',
+    },
+    {
+      key: 'GrundmasterBE',
+      value: 'GrundmasterBE',
+    },
+    {
+      key: 'GrundmasterNL-ThirdPartyTest',
+      value: 'GrundmasterNL-ThirdPartyTest',
+    },
+    {
+      key: 'GrundmasterBE-ThirdPartyTest',
+      value: 'GrundmasterBE-ThirdPartyTest',
+    }
+  ];
 
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
     private terminalService: TerminalService
   ) { }
-
+  
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
 
-    if(this.iBusinessId && this.iLocationId){
-      this.fetchTerminals();
-      this.getWorkstations();
-    }
+    this.fetchTerminals();
+    this.getWorkstations();
   }
 
   getWorkstations() {
@@ -135,7 +122,7 @@ export class PaymentIntegrationComponent implements OnInit {
       }
     });
   }
-
+  
   async fetchTerminals() {
     this.aTerminalList = []
     this.bTerminalsLoading = true;
@@ -145,31 +132,25 @@ export class PaymentIntegrationComponent implements OnInit {
       this.fetchPaymentProviderSetting();
     }, (err) => {
       this.bTerminalsLoading = false;
-      this.bSavingSettings = false;
       this.fetchPaymentProviderSetting();
     })
+
   }
 
   fetchPaymentProviderSetting() {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oFilterBy: { eName: ['paynl', 'ccv', 'mollie', 'stripe'] }
     }
     this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).subscribe((result: any) => {
-      if (result?.data && result.data._id) {
-        const paynlDefault = this.oPaymentServiceProviders['paynl'].oDefault;
-        this.iPaymentServiceProviderId = result.data._id;
-        if (!result.data.oCredentials.paynl.oWebShop) this.oPaymentServiceProviders['paynl'].oWebShop = paynlDefault;
-        for (let key of Object.keys(result.data.oCredentials)) {
-          let obj = result.data.oCredentials[key];
-          if (!obj.oWebShop) {
-            obj['oWebShop'] = this.oPaymentServiceProviders[key].oDefault;
-            if (['paynl', 'ccv'].includes(key)) obj['oWebShop']['aPaymentIntegrations'] = [];
-          }
-          if (!obj.bIsWebShop) obj['bIsWebShop'] = false;
-          this.oPaymentServiceProviders[key] = obj;
-        }
+      if (result?.data?.length) {
+        const oDefault = result.data.find((el:any) => el.eType == 'default');
+        if(oDefault) this.oAllProviders.default = oDefault.oCredentials;
+        
+        const oWebshop = result.data.find((el:any) => el.eType == 'webshop');
+        if (oWebshop) this.oAllProviders.webshop = oWebshop.oCredentials;
+        
+        console.log(this.oAllProviders);
         this.mapWorkstations();
       }
     });
@@ -179,120 +160,99 @@ export class PaymentIntegrationComponent implements OnInit {
     this.workstations.forEach((ws: any) => {
       ws.paynl = { sTerminalId: '', edit: false }
       ws.ccv = { sTerminalId: '', edit: false }
-      if (this.oPaymentServiceProviders.paynl.oDefault?.aPaymentIntegrations?.length) {
-        const oAssigned = this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations.find((item: any) => item.iWorkstationId == ws._id)
+      if (this.oAllProviders?.default?.paynl?.aPaymentIntegrations?.length) {
+        const oAssigned = this.oAllProviders.default?.paynl?.aPaymentIntegrations.find((item: any) => item.iWorkstationId == ws._id)
         if (oAssigned) {
           ws.paynl.sTerminalName = this.aTerminalList.find((oTerminal: any) => oTerminal.id == oAssigned.sTerminalId)?.name || '';
           ws.paynl.sTerminalId = oAssigned.sTerminalId || '';
         }
       }
-      if (this.oPaymentServiceProviders.ccv.oDefault?.aPaymentIntegrations?.length) {
-        const oAssigned = this.oPaymentServiceProviders.ccv.oDefault.aPaymentIntegrations.find((item: any) => item.iWorkstationId === ws._id)
+      if (this.oAllProviders?.default?.ccv?.aPaymentIntegrations?.length) {
+        const oAssigned = this.oAllProviders.default.ccv.aPaymentIntegrations.find((item: any) => item.iWorkstationId === ws._id)
         if (oAssigned) ws.ccv.sTerminalId = oAssigned.sTerminalId;
       }
-    });
+    })
   }
 
   async remove(event: any, provider: any, workstation: any) {
-    let iPaymentServiceProviderId = '';
-    if (provider === 'paynl') {
-      iPaymentServiceProviderId = this.oPaymentServiceProviders[provider].oDefault.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-      this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations = [...this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations];
-    } else {
-      iPaymentServiceProviderId = this.oPaymentServiceProviders[provider].oDefault.iPaymentServiceProviderId;
-      const oSavedDataIndex = this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-      this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations = [...this.oPaymentServiceProviders[provider].oDefault.aPaymentIntegrations];
-    }
-    const payload = {
-      iPaymentServiceProviderId: this.iPaymentServiceProviderId,
-      iBusinessId: this.iBusinessId,
-      iLocationId: this.iLocationId,
-      oCredentials: this.oPaymentServiceProviders
-    }
-    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, payload).subscribe((result: any) => {
-      workstation[provider].sTerminalId = '';
-      if (result) {
-        this.toastService.show({ type: 'success', text: 'DELETED' });
-        this.fetchPaymentProviderSetting();
-      } else this.toastService.show({ type: 'danger', text: 'ERROR' });
-    });
+    // let iPaymentServiceProviderId = '';
+    // if (provider === 'paynl') {
+    //   iPaymentServiceProviderId = this.oProviders[provider].oDefault.iPaymentServiceProviderId;
+    //   const oSavedDataIndex = this.oProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
+    //   this.oProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
+    //   this.oProviders[provider].oDefault.aPaymentIntegrations = [...this.oProviders[provider].oDefault.aPaymentIntegrations];
+    // } else {
+    //   iPaymentServiceProviderId = this.oProviders[provider].oDefault.iPaymentServiceProviderId;
+    //   const oSavedDataIndex = this.oProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
+    //   this.oProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
+    //   this.oProviders[provider].oDefault.aPaymentIntegrations = [...this.oProviders[provider].oDefault.aPaymentIntegrations];
+    // }
+    // const payload = {
+    //   iPaymentServiceProviderId: this.iPaymentServiceProviderId,
+    //   iBusinessId: this.iBusinessId,
+    //   iLocationId: this.iLocationId,
+    //   oCredentials: this.oProviders
+    // }
+    // this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, payload).subscribe((result: any) => {
+    //   workstation[provider].sTerminalId = '';
+    //   if (result) {
+    //     this.toastService.show({ type: 'success', text: 'DELETED' });
+    //     this.fetchPaymentProviderSetting();
+    //   } else this.toastService.show({ type: 'danger', text: 'ERROR' });
+    // });
   }
 
   toggleSettings(provider: any) {
-    if (this.currentOpenSettings === provider) this.currentOpenSettings = "";
-    else this.currentOpenSettings = provider;
+    if (this.currentOpenSettings === provider) {
+      this.currentOpenSettings = "";
+    } else {
+      this.currentOpenSettings = provider;
+    }    
   }
 
-  async savePaymentIntegration(event: any, provider: any, workstation: any) {
-    const oTerminalData = { iWorkstationId: workstation._id, sTerminalId: event };
-    if (provider === 'paynl') {
-      const oSavedDataIndex = this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-      this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations = [...this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations, oTerminalData];
-    } else {
-      const oSavedDataIndex = this.oPaymentServiceProviders.ccv.oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-      if (oSavedDataIndex > -1) this.oPaymentServiceProviders.ccv.oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-      this.oPaymentServiceProviders.paynl.oDefault.aPaymentIntegrations = [...this.oPaymentServiceProviders.ccv.oDefault.aPaymentIntegrations, oTerminalData];
-    }
-    if (!this.iPaymentServiceProviderId) {
-      this.toastService.show({ type: 'warning', text: `Please set your credentials for ${provider}!` })
-      workstation[provider].sTerminalId = '';
-      return;
-    }
-    const payload = {
-      iPaymentServiceProviderId: this.iPaymentServiceProviderId,
+  async savePaymentIntegration(sTerminalId: any, provider: any, workstation: any) {
+    const oTerminalData = { iWorkstationId: workstation._id, sTerminalId};
+    let oCredentials = {
+      [provider]: this.oAllProviders.default[provider]
+    };
+    const oSavedDataIndex = oCredentials[provider].aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
+    if (oSavedDataIndex > -1) oCredentials[provider].aPaymentIntegrations.splice(oSavedDataIndex, 1);
+    oCredentials[provider].aPaymentIntegrations = [...oCredentials[provider].aPaymentIntegrations, oTerminalData];
+    
+    const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oCredentials: this.oPaymentServiceProviders
+      eType: 'default',
+      oCredentials
     }
-    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, payload).subscribe((result: any) => {
-      if (result) {
+    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, oBody).subscribe((result: any) => {
+      if (result)
         this.toastService.show({ type: 'success', text: 'UPDATED' });
-        this.fetchPaymentProviderSetting();
-      } else this.toastService.show({ type: 'danger', text: 'ERROR' });
+      else
+        this.toastService.show({ type: 'danger', text: 'ERROR' });
     });
+    this.fetchPaymentProviderSetting();    
   }
 
   async saveSettings() {
     this.bSavingSettings = true;
-    // const sType = this.currentOpenSettings;
-    const payload = {
+    const oBody = {
       iPaymentServiceProviderId: this.iPaymentServiceProviderId,
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      oCredentials: this.oPaymentServiceProviders
+      eType: this.eType,
+      oCredentials: this.oAllProviders[this.eType]
     }
-    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, payload).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).subscribe((result: any) => {
       if (result?.data) {
         this.bSavingSettings = false;
-        this.fetchTerminals();
-        this.fetchPaymentProviderSetting();
         this.toastService.show({ type: 'success', text: 'SAVED' });
       }
-    }, err => this.bSavingSettings = false);
+      this.fetchTerminals();
+    });
   }
 
   trackByFunction(element: any) {
     return element._id;
   }
-
-  onUseForWebshop(event: any, type: string) {
-    this.oPaymentServiceProviders[type].bIsWebShop = event.target.checked;
-    if (this.oPaymentServiceProviders[type].bIsWebShop) {
-      this.oPaymentServiceProviders[type].oWebShop = this.oPaymentServiceProviders[type].oDefault;
-    }
-    // else {
-    //   this.oPaymentServiceProviders[type]['oWebShop'] = (object: any) => {
-    //     for (const name in object) {
-    //       if (object.hasOwnProperty(name)) {
-    //         delete object[name];
-    //       }
-    //     }
-    //   };
-    // }
-  }
-
 }

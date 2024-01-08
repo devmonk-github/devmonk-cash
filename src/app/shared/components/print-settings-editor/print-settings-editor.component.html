@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header" style="margin-top: 20px;">
+    <div class="card-header d-flex justify-content-between align-items-center py-3">
         <h4>{{ 'EDIT_SETTINGS_FOR : ' + format.name | translate}}</h4>
         <div>
             <a class="cancel my-auto" (click)="close(false)">
@@ -8,11 +8,21 @@
         </div>
     </div>
     <div class="card-body p-5">
-        <app-pn-tabs class="tab-content" addClass="" addChildLinkClass="text-gray-600">
-            <div class="tab-gap"></div>
-
-            <app-pn-tab tabTitle="{{ 'PARAMETERS' | translate}}" #params>
-                <div class="row">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="parameters" data-bs-toggle="tab" data-bs-target="#parameters-pane"
+                    type="button" role="tab" aria-controls="parameters-pane" aria-selected="true">{{ 'PARAMETERS' |
+                    translate}}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="content" data-bs-toggle="tab" data-bs-target="#content-pane" type="button"
+                    role="tab" aria-controls="content-pane" aria-selected="false">{{ 'CONTENT' | translate}}</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="parameters-pane" role="tabpanel" aria-labelledby="parameters"
+                tabindex="0">
+                <div class="row py-3">
                     <div class="col-12">
                         <h3>{{oTemplate.sTitle}}</h3>
                     </div>
@@ -60,7 +70,6 @@
                                     </div>
                                 </div>
                             </ng-container>
-
                         </div>
 
                         <div *ngIf="setting.eType==='textArray'" class="row mb-3 align-items-center">
@@ -78,7 +87,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                         <div *ngIf="setting.eType==='text'" class="row mb-3 align-items-center">
@@ -87,18 +95,16 @@
                                 <input type="number" class="form-control" [(ngModel)]="setting.value">
                             </div>
                         </div>
-
                     </div>
 
                 </div>
-            </app-pn-tab>
-            <app-pn-tab tabTitle="{{ 'CONTENT' | translate}}" #content>
+            </div>
+            <div class="tab-pane fade" id="content-pane" role="tabpanel" aria-labelledby="content" tabindex="0">
                 <div class="json-editor">
                     <app-json-editor [initialData]="oTemplate.layout" #jsonEditor></app-json-editor>
                 </div>
-            </app-pn-tab>
-
-        </app-pn-tabs>
+            </div>
+        </div>
     </div>
     <div class="card-footer">
         <button class="btn btn-primary" (click)="saveSettings()">{{ 'SAVE' | translate}}</button>

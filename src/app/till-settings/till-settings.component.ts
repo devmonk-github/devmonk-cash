@@ -1,17 +1,17 @@
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { AddFavouritesComponent } from './../shared/components/add-favourites/favourites.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { CustomPaymentMethodComponent } from '../shared/components/custom-payment-method/custom-payment-method.component';
-import { faTrash, faSearch, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faSync, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { TranslateService } from '@ngx-translate/core';
 import { SetPaymentMethodSequenceComponent } from '../shared/components/set-payment-method-sequence-dialog/set-payment-method-sequence.component';
 import { TillService } from '../shared/service/till.service';
 import { QuickbuttonWizardComponent } from '../shared/components/quickbutton-wizard/quickbutton-wizard.component';
-
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -20,8 +20,6 @@ import { QuickbuttonWizardComponent } from '../shared/components/quickbutton-wiz
 export class TillSettingsComponent implements OnInit, OnDestroy {
 
   faTrash = faTrash;
-  faSearch = faSearch;
-  faSync = faSync;
   payMethodsLoading: boolean = false;
   payMethods: Array<any> = [];
   aCustomerSearch: Array<any> = [];
@@ -34,10 +32,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   updatingSettings: boolean = false;
   updatingCustomerSettings: boolean = false;
   iLocationId: any = localStorage.getItem('currentLocation');
-  
+  sync= faSync
   settings: any = {
     sDayClosurePeriod:  'day',
-    sDayClosureMethod: 'workstation',
+    sDayClosureMethod: 'location',
     bShowOrder: true,
     bShowGoldPurchase:  true,
     bShowOpenDrawer: true,
@@ -52,8 +50,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     nLastInvoiceNumber: 0,
     nLastClientID:0,
     bOpenCashDrawer:true,
-    id: null,
-    eInvoiceGenerationMethod: 'auto-generate'
+    id: null
   };
   overviewColumns = [
     // { key:'', name:'action'}, 
@@ -84,10 +81,12 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   removeQuickButtonSubscription !: Subscription;
   dayClosureCheckSubscription !: Subscription;
   aSelectedFields:any;
-  aPrefillFields:any = [
-    { key: 'bArticleGroup', title: 'ARTICLE_GROUPS' },
-    { key: 'bLabelDescription', title: 'LABEL_DESCRIPTION' },
-    { key: 'bProductNumber', title: 'PRODUCT_NUMBER' },
+  aDescriptionPrefillFields:any = [
+    { key: 'sInternalDescription', title: 'INTERNAL_DESCRIPTION' },
+    { key: 'oShortDescription', title: 'SHORT_DESCRIPTION' },
+    { key: 'sDiamond', title: 'DIAMOND' },
+    { key: 'sVariantDetails', title: 'VARIANT_DETAILS' },
+    { key: 'sSerialNumber', title: 'SERIAL_NO' },
   ]
   aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
@@ -100,11 +99,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
     { key: 'NCLIENTID', value: 'nClientId'}
   ];
-
-  aSalesOrderNoTypes: Array<any> = [
-    { sName: 'AUTO_GENERATE', value: 'auto-generate' },
-    { sName: 'MANUAL', value: 'manual' }
-  ];
   
   bUpdateNclientID: boolean = false;
   oldNlastnClientID: number = 0;
@@ -113,12 +107,18 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   aDefaultPaymentMethods: any = [];
   aAllPaymentMethods: any = [];
 
+  articleGroupChanged = new Subject<any>();
+  showArticleGroupLoader: any = {
+    order: false,
+    repair: false
+  };
+
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastService: ToastService,
     private translateService: TranslateService,
-    public tillService: TillService
+    public tillService: TillService,
   ) { }
   
   ngOnInit(): void {
@@ -126,35 +126,47 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     this.selectedLanguage = localStorage.getItem('language');
     this.getSettings();
     this.fetchQuickButtons();
-    this.getArticleGroups();
+    //this.getArticleGroupList('');
     this.getBookkeepingSetting();
-    
   }
 
-  getArticleGroups() {
+  ngAfterViewInit(): void {
+    this.articleGroupChanged.pipe(
+      filter(Boolean),
+      debounceTime(500),
+      distinctUntilChanged(),
+    ).subscribe((res: any) => {
+      this.getArticleGroupList(res)
+    });
+  }
+
+  searchArticleGroup($event: any, isFor: any) {
     this.articleGroupList = [];
-    this.loading = true;
-    this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
-      (result: any) => {
-        this.loading = false;
-        if (result?.data?.length && result.data[0]?.result?.length) {
-          this.articleGroupList = result.data[0].result.filter((item: any) => {
-            if (!item?.oName?.[this.selectedLanguage]) {
-              for (const sName of Object.values(item.oName)) {
-                if (sName) {
-                  item.oName[this.selectedLanguage] = sName;
-                  break;
-                }
-              }
-            }
-            if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
-            return item.sCategory
-          });
-        }
-      }, (error) => {
-        this.loading = false;
-        this.toastService.show({ type: 'warning', text: 'something went wrong' });
-      })
+    this.showArticleGroupLoader[isFor] = true;
+    this.articleGroupChanged.next($event);
+  }
+
+  getArticleGroupList(articleSearch: any, aArticleGroupId?: any) {
+    const oBody = {
+      "sortBy": "oName",
+      "sortOrder": 1,
+      "iBusinessId": this.requestParams?.iBusinessId,
+      "searchValue": articleSearch,
+      "aArticleGroupId": aArticleGroupId
+    }
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result: any) => {
+      if (result?.data?.length && result?.data[0]?.result.length) {
+        this.articleGroupList = result.data[0].result;
+        this.articleGroupList?.forEach((el: any) => {
+          el.sArticleGroupName = (el?.oName ? (el?.oName[this.selectedLanguage] || el?.oName['en'])  : 'UNKNOWN') + (el?.oAlias ? " ("+(el?.oAlias[this.selectedLanguage] || el?.oAlias['en'])+ ")" : '');
+          if(el.sCategory) el.sArticleGroupName += " - " + el.sCategory;
+        })
+      }
+      this.showArticleGroupLoader = {
+        order: false,
+        repair: false
+      };
+    });
   }
 
   deleteMethod(method: any) {
@@ -192,6 +204,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getSettings() {
+    let aArticleGroupId: any = [];
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       if (result) {
         this.settings = result;
@@ -226,9 +239,13 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         }
 
         this.settings.currentLocation = oMergedSettings;
+
+        aArticleGroupId = [this.settings.iDefaultArticleGroupForOrder, this.settings.iDefaultArticleGroupForRepair];
       }
+
       this.getCustomerSettings();
       this.getPaymentMethods();
+      this.getArticleGroupList('', aArticleGroupId);
     }, (error) => {
       console.log(error);
     })
@@ -364,9 +381,9 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
             oMethod.bAssignSavingPointsLastPayment = setting.bAssignSavingPointsLastPayment;
           }
         }
+        this.aDefaultPaymentMethods.sort((a:any, b:any) => a.sName.localeCompare(b.sName));
         this.bDefaultPayMethodsLoading = false;
-        // Comment tihs line for temporary solution for stackblitz
-        // for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
+        for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
      
     }, (error) => {
@@ -454,8 +471,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       bLockCashRegisterAfterTransaction: this.settings?.bLockCashRegisterAfterTransaction || false,
       bEnableCashRegisterForGeneral: this.settings?.bEnableCashRegisterForGeneral || true,
       bShowForm: this.settings?.bShowForm,
-      aDescriptionFieldToPrefill: this.settings?.aDescriptionFieldToPrefill,
-      eInvoiceGenerationMethod: this.settings?.eInvoiceGenerationMethod
+      aDescriptionFieldToPrefill: this.settings?.aDescriptionFieldToPrefill  
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

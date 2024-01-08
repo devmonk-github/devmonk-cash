@@ -1,17 +1,17 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faPencilAlt, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { LabelTemplateModelComponent } from '../print-settings/lable-template-model/label-template-model.component';
-import { PrinterToolComponent } from '../print-settings/printer-tool/printer-tool.component';
-import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ToastService } from '../shared/components/toast';
-import { ApiService } from '../shared/service/api.service';
+import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
+import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ToastService } from 'src/app/shared/components/toast';
+import { ApiService } from 'src/app/shared/service/api.service';
 import { ActionSettingsComponent } from '../shared/components/actions-settings/action-settings.component';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
-import { Js2zplService } from '../shared/service/js2zpl.service';
-import { TSCLabelService } from '../shared/service/js2tspl.service';
+import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
+import { TSCLabelService } from 'src/app/shared/service/js2tspl.service';
 import { PrintService } from '../shared/service/print.service';
 @Component({
   selector: 'app-print-settings',
@@ -25,6 +25,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   faXmark = faXmark;
   loading: boolean = false;
   businessDetails: any;
+  bAcceptPrintnodeTerms: boolean = false;
   device: any = {
     name: 'Shubham`s device'
   };
@@ -51,15 +52,15 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   aActionSettings: any = [];
 
 
-  iBusinessId: string = '';
-  iLocationId: string = '';
-  isLoadingDefaultLabel: boolean = false;
-  isLoadingTemplatesLabel: boolean = false;
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
+  iWorkstationId: any = localStorage.getItem('currentWorkstation');
+  isLoadingDefaultLabel: boolean = true;
+  isLoadingTemplatesLabel: boolean = true;
   // defaultLabelsData: Array<TemplateJSON> = []
   // LabelTemplatesData: Array<TemplateJSON> = []
   bShowActionSettingsLoader: boolean = false;
   labelPrintSettings: any;
-  iWorkstationId: any;
   aWorkstations: any = [];
 
   aTsplTemplates: any;
@@ -137,6 +138,9 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       }
     ]
   };
+  bLoading: boolean = false;
+  bCreating: boolean = false;
+  oOrganizationSettings: any;
 
   constructor(
     private dialogService: DialogService,
@@ -149,35 +153,40 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  ngOnInit(): void {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
-    this.isLoadingDefaultLabel = true
-    this.isLoadingTemplatesLabel = true
+  async ngOnInit() {
+    
     this.fetchWorkstations();
     this.getLabelTemplate();
-    this.fetchBusinessDetails();
     this.fetchActionSettings();
     this.getLabelPrintSetting();
+    
+    this.bLoading = true;
+    const [_organizationData, _businessData]:any = await Promise.all([
+      this.getOrganizationSettings(),
+      this.fetchBusinessDetails(),
+    ])
+
+    this.oOrganizationSettings = _organizationData?.data;
+    this.businessDetails = _businessData.data;
+    this.bLoading = false;
 
     setTimeout(() => {
       MenuComponent.reinitialization();
     }, 200);
+  }
 
+  async getOrganizationSettings() {
+    const iOrganizationId = JSON.parse(localStorage.getItem('org') || '')?._id;
+    return this.apiService.getNew('organization', `/api/v1/organization-settings/${iOrganizationId}`).toPromise();
+  }
 
+  
+  fetchBusinessDetails() {
+    return this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).toPromise();
   }
 
   createPrintSettings() {
     this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => { });
-  }
-
-  // Function for fetch business details
-  fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe((result: any) => {
-        this.businessDetails = result.data;
-      });
   }
 
   fetchWorkstations() {
@@ -640,6 +649,20 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  registerForPrintNode() {
+    this.bCreating = true;
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      sName: this.businessDetails.sName,
+      sEmail: this.businessDetails.sEmail
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/printnode/register', oBody).subscribe((result: any) => {
+      this.bCreating = false;
+      this.bLoading = true;
+      this.fetchBusinessDetails();
+    })
+  }
+
   addDefaultZplTemplate() {
     const oDefaultJson: any = {
       "readOnly": true,
@@ -663,8 +686,8 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       "height": 10,
       "labelleft": 0,
       "labeltop": 0,
-      "layout_name": "LAYOUT_"+(this.aZplTemplates?.length || 0),
-      "name": this.businessDetails?.sName+' Template' || "",
+      "layout_name": "LAYOUT_" + (this.aZplTemplates?.length || 0),
+      "name": this.businessDetails?.sName + ' Template' || "",
       "width": 72,
       "offsetleft": 0,
       "offsettop": 0,

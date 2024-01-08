@@ -57,3 +57,17 @@ h4.fw-bold{
     padding-bottom: 10px;
     border-bottom: 1px solid #dedede;
 }
+
+.settings {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.provider-logo {
+    cursor:pointer;
+    width:100%;
+    padding: 1.25rem;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}

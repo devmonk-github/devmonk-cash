@@ -3,7 +3,7 @@ import { faPencilAlt, faTrash, faArrowDown, faArrowUp, } from '@fortawesome/free
 import { ApiService } from '../shared/service/api.service';
 import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
-import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { Router } from '@angular/router';
 import { TillService } from '../shared/service/till.service';
@@ -46,7 +46,7 @@ export class StatisticsSettingsComponent implements OnInit {
   updateSettingsSubscription !: Subscription;
   getSettingsSubscription !: Subscription;
   savingPointsSettings: any = {};
-  selectedLanguage: any;
+  selectedLanguage: any = localStorage.getItem('language') || 'nl';
   articleGroupList!: Array<any>;
   requestParams: any = {
     iBusinessId: localStorage.getItem('currentBusiness')
@@ -62,7 +62,6 @@ export class StatisticsSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
-    this.selectedLanguage = localStorage.getItem('language');
     this.getSettings();
     this.getArticleGroups();
   }

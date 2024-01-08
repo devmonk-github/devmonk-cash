@@ -73,6 +73,7 @@ export class ApiService {
   setAPIHeaders() {
     if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
       this.defaultHeaders['Authorization'] = localStorage.getItem('authorization');
+      this.defaultHeaders['server-token'] = localStorage.getItem('authorization');
     }
     if (localStorage.getItem('org') && localStorage.getItem('org')?.trim() != '') {
       let details: any = localStorage.getItem('org');

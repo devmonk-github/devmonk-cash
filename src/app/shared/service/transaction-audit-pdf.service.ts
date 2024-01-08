@@ -1496,4 +1496,44 @@ export class TransactionAuditUiPdfService {
         };
         this.content.push(data);
     }
+
+    updateVariables() {
+        this.iBusinessId = localStorage.getItem('currentBusiness');
+        this.iLocationId = localStorage.getItem('currentLocation');
+        this.iWorkstationId = localStorage.getItem('currentWorkstation');
+    }
+
+    prepareDataForThermalReceipt(oBody:any) {
+        this.updateVariables();
+        // console.log(oBody);
+        const { aStatistic, oStatisticsDocument, aStatisticsDocuments, aPaymentMethods, businessDetails } = oBody;
+        let nTotalVatRevenue = 0, nTotalVatAmount = 0;
+        oStatisticsDocument.aVatRates.forEach((oItem: any) => {
+            this.aFieldsToInclude.forEach((field: any) => {
+                nTotalVatRevenue += oItem[field].nTotalRevenue;
+                nTotalVatAmount += oItem[field].nVatAmount;
+            });
+        });
+        oStatisticsDocument.aRevenuePerTurnoverGroup.forEach((oItem:any) => {
+            if (!oItem.sCategory) oItem.sCategory = this.translateService.instant('UNDEFINED');
+        })
+        let nTotalPayment = 0;
+        oStatisticsDocument.aPaymentMethods.forEach((oItem: any) => {
+            nTotalPayment += +oItem.nAmount;
+            oItem.sMethod = this.translateService.instant(oItem.sMethod.toUpperCase());
+        })
+
+
+        const oDataSource = {
+            dPrintDate: new Date(),
+            ...oStatisticsDocument,
+            businessDetails: {
+                currentLocation: businessDetails.aLocation.find((el: any) => el._id == this.iLocationId)
+            },
+            nTotalVatRevenue,
+            nTotalVatAmount,
+            nTotalPayment
+        }
+        return oDataSource;
+    }
 }

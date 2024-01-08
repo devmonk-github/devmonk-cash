@@ -18,19 +18,22 @@ import { TransactionDetailsComponent } from '../transactions/components/transact
 import { ReceiptService } from '../shared/service/receipt.service';
 import { ClosingDaystateHelperDialogComponent } from '../shared/components/closing-daystate-helper-dialog/closing-daystate-helper-dialog.component';
 import { CalendarGanttViewDialogComponent } from '../shared/components/calendar-gantt-view-dialog/calendar-gantt-view-dialog.component';
+import { FiskalyService } from '../shared/service/fiskaly.service';
+import { CompareStatisticsDateComponent } from '../shared/components/compare-statistics-date/compare-statistics-date.component';
+import { TransactionAuditService } from '../shared/service/transaction-audit.service';
 
 @Component({
   selector: 'app-transaction-audit',
   templateUrl: './transaction-audit.component.html',
   styleUrls: ['./transaction-audit.component.scss'],
-  providers: [TransactionAuditUiPdfService]
+  providers: [TransactionAuditUiPdfService, TransactionAuditService]
 })
 
 export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
-  iWorkstationId:any = localStorage.getItem('currentWorkstation');
+  iWorkstationId: any = localStorage.getItem('currentWorkstation');
   iEmployeeId: any = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
   sUserType: any = localStorage.getItem('type');
   iStatisticId: any;
@@ -52,7 +55,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oStockPerLocation: any = [];
   isShowStockLocation: boolean = false;
   object = Object
-  
+
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
 
@@ -67,7 +70,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     dToState: '',
     eChosenStateCreationType: '' /* To disable the TO_STATE if Migration date chosen from FROM_STATE */
   };
-  filterDates:any = {
+  filterDates: any = {
     startDate: "",//new Date(new Date().setHours(0, 0, 0)),
     endDate: "",//new Date(new Date().setHours(23, 59, 59)),
   };
@@ -109,14 +112,14 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   aGoldPurchases: any;
   aGiftItems: any;
   previousPage = 0
-  sDayClosureMethod:any;
+  sDayClosureMethod: any;
 
   bOpeningDayClosure = false;
   bOpeningHistoricalDayState = false;
 
   nTotalRevenue = 0;
   nTotalQuantity = 0;
-  aStatisticsIds:any = [];
+  aStatisticsIds: any = [];
   sFrom: any;
   aBusinessPartners: any;
   aSelectedBusinessPartnerId: any;
@@ -141,9 +144,29 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     nAmountToAdd: 0,
     nAmountToDeduct: 0,
   };
-  bSavingHelperDetails:boolean = false;
+  bSavingHelperDetails: boolean = false;
   bDayClosureLoading: boolean = false;
   bBusinessLocationLoading: boolean = false;
+  printSettings: any;
+  sTssId: string;
+  bIsCompareStatistics = false; /* checkbox to see the comparison */
+  bShowCompareStatistic = false; /* if we should checkbox and view */
+  aCompareData: any = [
+    {
+      dFromState: '', //  "2022-01-01T18:52",
+      dToState: '', //  "2022-12-31T18:53",
+      nTotalQuantity: 0,
+      nTotalRevenue: 0
+    },
+    {
+      dFromState: '', //  "2023-01-01T18:52",
+      dToState: '', //  "2023-12-31T18:53",
+      nTotalQuantity: 0,
+      nTotalRevenue: 0
+    },
+  ]
+  aProcessCompareData: any = []; // this.audtiserice.fetchTestingDataOfComprate(); /* testing purpose */
+  bCompareStatisticLoading: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -152,11 +175,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastService: ToastService,
     private location: Location,
-    public auditService: TransactionAuditUiPdfService,
+    public auditPdfService: TransactionAuditUiPdfService,
+    public auditsService: TransactionAuditService,
     private taxService: TaxService,
     private dialogService: DialogService,
-    private tillService: TillService,
+    public tillService: TillService,
     private receiptService: ReceiptService,
+    private fiskalyService: FiskalyService
   ) {
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
@@ -164,12 +189,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.selectViewModeAndData();
   }
 
-  selectViewModeAndData(){
+  selectViewModeAndData() {
     const oState = this.router.getCurrentNavigation()?.extras?.state;
     this.sFrom = oState?.from;
     const sDateFormat = "YYYY-MM-DDThh:mm";
-    
-    if(this.sFrom == 'sales-list') {
+
+    if (this.sFrom == 'sales-list') {
       this.aSelectedBusinessPartnerId = oState?.aBusinessPartnerId;
       this.IsDynamicState = true;
       this.sDisplayMethod = eDisplayMethodKeysEnum.revenuePerBusinessPartner;
@@ -181,7 +206,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       } else {
         this.filterDates = {
-          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format(sDateFormat),
+          startDate: moment(new Date().setHours(0, 0, 0)).subtract({ days: 1 }).format(sDateFormat),
           endDate: moment(new Date().setHours(23, 59, 59)).format(sDateFormat)
         };
       }
@@ -193,15 +218,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
         this.oStatisticsData.iLocationId = oState?.iLocationId;
         this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
-  
-        if (this.oStatisticsData.bIsDayStateOpened){
+
+        if (this.oStatisticsData.bIsDayStateOpened) {
           this.bOpeningDayClosure = true;
         } else {
           this.bOpeningHistoricalDayState = true;
           this.statisticFilter.dFromState = this.oStatisticsData.dStartDate;
           this.statisticFilter.dToState = this.oStatisticsData.dEndDate;
-        } 
-  
+        }
+
         if (this.oStatisticsData.dStartDate) {
           this.filterDates.startDate = this.oStatisticsData.dStartDate;
           const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
@@ -218,19 +243,20 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastService);
     await this.tillService.fetchSettings();
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
-    if(this.bOpeningDayClosure) {
-      if(this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
+    if (this.bOpeningDayClosure) {
+      if (this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup;
+      // try {
+      //   this.sTssId = await this.fiskalyService.fetchTSS(this.iBusinessId);
+      // } catch (e) {
+      //   console.log('error while fetching tss')
+      // }
     }
     this.setOptionMenu()
 
     this.fetchBusinessDetails();
     this.getEmployees();
     this.getWorkstations();
-
-    // if (this.iLocationId != this.tillService?.settings?.currentLocation?.iLocationId) {
-    //   this.tillService.settings = null;
-    //   await this.tillService.fetchSettings();
-    // }
+    this.getPrintSettings();
 
     this.fetchBusinessPartners();
     this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
@@ -241,24 +267,24 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (transactionAudits) {
       transactionAuditArray = JSON.parse(transactionAudits);
     }
-   if(transactionAuditArray?.length) this.auditService.aAmount = transactionAuditArray;
+    if (transactionAuditArray?.length) this.auditPdfService.aAmount = transactionAuditArray;
 
     setTimeout(() => {
       MenuComponent.bootstrap();
     }, 200);
-   
+
   }
 
   fetchBusinessPartners() {
-    const oBody =  {
+    const oBody = {
       iBusinessId: this.iBusinessId,
     };
     this.aBusinessPartners = []
-      this.apiService.postNew('core', '/api/v1/business/partners/list', oBody).subscribe((result: any) => {
-        if (result?.data?.length && result?.data[0]?.result?.length) {
-          this.aBusinessPartners = result.data[0].result;
-        }
+    this.apiService.postNew('core', '/api/v1/business/partners/list', oBody).subscribe((result: any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.aBusinessPartners = result.data[0].result;
       }
+    }
     )
   }
 
@@ -640,7 +666,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
 
-    if(this.sFrom == 'sales-list') {
+    if (this.sFrom == 'sales-list') {
       this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[2], this.aOptionMenu[0].children[2].children[1])
     } else {
       if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
@@ -676,15 +702,20 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
 
-    if (eDisplayMethod) {
-      this.sDisplayMethod = eDisplayMethod
+    if (eDisplayMethod) this.sDisplayMethod = eDisplayMethod;
+    if (sModeFilter) this.bIsSupplierMode = sModeFilter === "supplier";
+    if (sLevelFilter) this.bIsArticleGroupLevel = sLevelFilter === "articleGroup";
+
+    /* checking flag of bShowCompareStatistic */
+    if (parent.sKey == 'SALES' &&
+      (child1.sKey == "ArticleGroup" || child1.sKey == "Supplier") &&
+      (child2.sKey == 'Compact' || child2.sKey == 'Turnover Group')) { // child2.sKey == 'Specific' || 
+      this.bShowCompareStatistic = true;
+    } else {
+      this.bIsCompareStatistics = false;
+      this.bShowCompareStatistic = false;
     }
-    if (sModeFilter) {
-      this.bIsSupplierMode = sModeFilter === "supplier"
-    }
-    if (sLevelFilter) {
-      this.bIsArticleGroupLevel = sLevelFilter === "articleGroup"
-    }
+
   }
 
   displayMethodChange() {
@@ -694,23 +725,16 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* Countings Code (KK) */
   processCounting() {
     this.oCountings = this.oStatisticsDocument?.oCountings;
-    console.log('processCounting', JSON.parse(JSON.stringify(this.oCountings)))
-    // this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
-    // this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
-    // this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
-    // this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
-    // this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
     this.bDayStateClosed = !this.oStatisticsDocument?.bIsDayState;
-    
     const oCountings = localStorage.getItem('oCountings');
-    if(oCountings) {
+    if (oCountings) {
       this.oCountings = JSON.parse(oCountings);
       localStorage.removeItem('oCountings');
     }
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
     if (aKeys?.length) {
-      this.auditService.aAmount.map((item: any) => {
+      this.auditPdfService.aAmount.map((item: any) => {
         if (aKeys.includes(item.key)) {
           item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
         }
@@ -738,8 +762,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
   }
 
-  /* Static Data for statistic (from statistic document) */
-  getStaticData(sDisplayMethod?: string) {
+  /* In option, dStartData and dToDate are for fetch the comparison data */
+  async fetchStatisticList(sDisplayMethod?: string, dStartDate?: string, dToState?: string) {
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -750,7 +774,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
       iWorkstationId = [this.iWorkstationId]
-    } else if(this.bOpeningHistoricalDayState) {
+    } else if (this.bOpeningHistoricalDayState) {
       aLocation = [this.oStatisticsData.iLocationId];
       iWorkstationId = [this.oStatisticsData.iWorkstationId]
     }
@@ -764,8 +788,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
-        dStartDate: this.statisticFilter.dFromState,
-        dEndDate: this.statisticFilter.dToState,
+        dStartDate: dStartDate || this.statisticFilter.dFromState,
+        dEndDate: dToState || this.statisticFilter.dToState,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: this.bIsSupplierMode,
@@ -778,73 +802,59 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
-    this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
-      subscribe((result: any) => {
-        this.bStatisticLoading = false;
-        if (result?.data) {
-          const oData = result?.data;
-          if (oData.aStatistic?.length) {
-            this.aStatistic = oData.aStatistic;
-            
-            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+    const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/statistics/list', oBody).toPromise();
+    this.bStatisticLoading = false;
+    return _result;
+  }
 
-              if (this.bOpeningHistoricalDayState) {
-                const aUniqueArticleGroupId: any = this.getUniqueArticleGroupIds();
-                this.getArticleGroups(aUniqueArticleGroupId);
-              }
-              this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
-              this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
-            }
+  /* Static Data for statistic (from statistic document) */
+  async getStaticData(sDisplayMethod?: string) {
+    const result = await this.fetchStatisticList(sDisplayMethod);
+    if (!result?.data) return;
+    const oData = result?.data;
+    if (!oData.aStatistic?.length) return;
+    this.aStatistic = oData.aStatistic;
 
-            this.aStatisticsDocuments = oData.aStaticDocument;
-            // console.log(this.aStatisticsDocuments)
-            if (this.iStatisticId && this.aStatisticsDocuments?.length) {
-              this.oStatisticsDocument = this.aStatisticsDocuments[0];
-              this.processCounting();
-            } else {
-              this.oStatisticsDocument = this.auditService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
-            }
-            if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
-            if (this.bOpeningHistoricalDayState) this.handleCashMutations();
-            this.checkShowDownload();
-          }
-          // console.log(JSON.parse(JSON.stringify(this.oCountings)));
-        }
-      }, (error) => {
-        this.bStatisticLoading = false;
-        console.log('error: ', error);
-      });
+    if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+      if (this.bOpeningHistoricalDayState) {
+        const aUniqueArticleGroupId: any = this.getUniqueArticleGroupIds();
+        this.getArticleGroups(aUniqueArticleGroupId);
+      }
+      this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
+      this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
+    }
+
+    this.aStatisticsDocuments = oData.aStaticDocument;
+    if (this.iStatisticId && this.aStatisticsDocuments?.length) {
+      this.oStatisticsDocument = this.aStatisticsDocuments[0];
+      this.processCounting();
+    } else {
+      this.oStatisticsDocument = this.auditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
+    }
+    if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
+    if (this.bOpeningHistoricalDayState) this.handleCashMutations();
+    this.checkShowDownload();
   }
 
   handleCashMutations() {
     this.oHelperDetails.nAmountToAdd = 0;
     this.oHelperDetails.nAmountToDeduct = 0;
-    // console.log('handleCashMutations', this.aStatistic, JSON.parse(JSON.stringify(this.oHelperDetails)))
     for (const el of this.aStatistic[0].individual) {
       const aModifiedRecord = el?.aArticleGroups?.filter((el: any) => ['MODIFIED_START_AMOUNT', 'ADD_CASH_WITHOUT_REVENUE'].includes(el.sName));
       if (aModifiedRecord?.length) {
-        // console.log({ aModifiedRecord })
         aModifiedRecord.forEach((oModifiedRecord: any) => {
           if (oModifiedRecord.sName == 'MODIFIED_START_AMOUNT') {
             // nRevenue = oModifiedRecord.nTotalRevenue;
             this.oHelperDetails.oStartAmountIncorrect.nAmount = oModifiedRecord.nTotalRevenue;
             this.oHelperDetails.oStartAmountIncorrect.bChecked = true;
-            // console.log('MODIFIED_START_AMOUNT, adding revenue before',this.oHelperDetails.nAmountToAdd )
             this.oHelperDetails.nAmountToAdd += oModifiedRecord.nTotalRevenue;
-            // console.log('MODIFIED_START_AMOUNT, adding revenue after', this.oHelperDetails.nAmountToAdd)
 
             // if (this.bOpeningDayClosure || this.IsDynamicState) {
-            //   console.log('handleCashMutations modifying 848', 'before cash in till', this.oCountings.nCashInTill)
             //   this.oCountings.nCashInTill += nRevenue;
             //   this.oCountings.nCashInTill = +(this.oCountings.nCashInTill.toFixed(2))
-            //   console.log('after', this.oCountings.nCashInTill)
-            //   console.log('after', { nRevenue })
             // }        
           } else if (oModifiedRecord.sName == 'ADD_CASH_WITHOUT_REVENUE') {
-            // console.log({oModifiedRecord})
-            // console.log('ADD_CASH_WITHOUT_REVENUE, adding revenue before', this.oHelperDetails.nAmountToAdd)
             this.oHelperDetails.nAmountToAdd += oModifiedRecord.nTotalRevenue;
-            // console.log('ADD_CASH_WITHOUT_REVENUE, adding revenue after', this.oHelperDetails.nAmountToAdd)
             const oReason = this.oHelperDetails.aReasons[0];
             oReason.nAmount = oModifiedRecord.nTotalRevenue;
             oReason.oExpense = {
@@ -854,27 +864,27 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         });
       }
     }
-    if(this.bOpeningDayClosure) this.oCountings.nCashInTill -= this.oHelperDetails.nAmountToAdd
+    if (this.bOpeningDayClosure) this.oCountings.nCashInTill -= this.oHelperDetails.nAmountToAdd
   }
 
   getUniqueArticleGroupIds() {
-    const aUniqueArticleGroupId:any = [];
-    switch(this.sDisplayMethod) {
+    const aUniqueArticleGroupId: any = [];
+    switch (this.sDisplayMethod) {
       case eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup:
         this.aStatistic[0].individual.forEach((el: any) => {
           aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
         });
-        break; 
+        break;
       case eDisplayMethodKeysEnum.revenuePerArticleGroup:
         aUniqueArticleGroupId.push(...this.aStatistic[0].individual.map((el: any) => el._id));
-        break; 
+        break;
     }
 
     return [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
   }
 
   setArticleGroupNames() {
-    switch(this.sDisplayMethod) {
+    switch (this.sDisplayMethod) {
       case eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup:
         this.aStatistic[0].individual.forEach((el: any) => {
           el.aArticleGroups.forEach((oGroup: any) => {
@@ -884,13 +894,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             }
           });
         })
-        break; 
+        break;
       case eDisplayMethodKeysEnum.revenuePerArticleGroup:
         this.aStatistic[0].individual.forEach((el: any) => {
           const oData = this.aArticleGroupDetails.find((oItem: any) => oItem._id === el._id)
           if (oData) el.oName = oData.oName;
         })
-        break; 
+        break;
     }
   }
 
@@ -948,7 +958,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
 
-      if(this.sFrom != 'sales-list' && this.filterDates.startDate == '') {
+      if (this.sFrom != 'sales-list' && this.filterDates.startDate == '') {
         this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
         this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
       }
@@ -963,57 +973,49 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.bStatisticLoading = true;
     this.aStatistic = [];
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
-        if (result?.data) {
+      if (result?.data) {
+        if (result.data?.oTransactionAudit?.length)
+          this.aStatistic = result.data.oTransactionAudit;
 
-          if (result.data?.oTransactionAudit?.length)
-            this.aStatistic = result.data.oTransactionAudit;
+        if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+          let aUniqueArticleGroupId: any = [];
+          this.aStatistic[0].individual.forEach((el: any) => {
+            aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
+          })
+          aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
+          this.getArticleGroups(aUniqueArticleGroupId);
 
-          if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {            
-            let aUniqueArticleGroupId:any = [];
-            this.aStatistic[0].individual.forEach((el:any) => {
-              // const oModifiedRecord = el.aArticleGroups.find((el: any) => el.sName == 'MODIFIED_START_AMOUNT');
-              // if (oModifiedRecord) {
-              //   this.oHelperDetails.oStartAmountIncorrect.nAmount = oModifiedRecord.nTotalRevenue;
-              //   nModifiedAmount = oModifiedRecord.nTotalRevenue;
-              // }
-              aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup:any) => oGroup._id));
-            })
-            aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el:any) => el))];
-            this.getArticleGroups(aUniqueArticleGroupId);
-
-            this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2));
-            this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
-          }
-          this.aPaymentMethods = result?.data?.aPaymentMethods;
-          if (this.bOpeningDayClosure || this.IsDynamicState) {
-            this.aPaymentMethods.forEach((item: any) => {
-              item.nNewAmount = item.nAmount;
-              this.nPaymentMethodTotal += parseFloat(item.nAmount);
-              if (item?.sMethod === 'cash') {
-                // console.log('before adjusting cash payment method', this.oCountings.nCashInTill, item)
-                this.oCountings.nCashInTill = +((item?.nAmount || 0).toFixed(2));
-                // console.log('after adjusting cash payment method', this.oCountings.nCashInTill)
-              }
-            });
-            if (this.IsDynamicState) this.nPaymentMethodTotal = this.tillService.getSum(this.aPaymentMethods, 'nAmount')
-            this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+          this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2));
+          this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
+        }
+        this.aPaymentMethods = result?.data?.aPaymentMethods;
+        if (this.bOpeningDayClosure || this.IsDynamicState) {
+          this.aPaymentMethods.forEach((item: any) => {
+            item.nNewAmount = item.nAmount;
+            this.nPaymentMethodTotal += parseFloat(item.nAmount);
+            if (item?.sMethod === 'cash') {
+              this.oCountings.nCashInTill = +((item?.nAmount || 0).toFixed(2));
+            }
+          });
+          if (this.IsDynamicState) this.nPaymentMethodTotal = this.tillService.getSum(this.aPaymentMethods, 'nAmount')
+          this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
           this.filterDuplicatePaymentMethods();
           this.handleCashMutations();
-          }
-          this.checkShowDownload();
         }
+        this.checkShowDownload();
+      }
+      this.bStatisticLoading = false;
+    },
+      (error) => {
         this.bStatisticLoading = false;
-      },
-        (error) => {
-          this.bStatisticLoading = false;
-          this.aStatistic = [];
-          this.aPaymentMethods = [];
-        }
-      );
+        this.aStatistic = [];
+        this.aPaymentMethods = [];
+      }
+    );
     this.getGreenRecords();
   }
 
-  getArticleGroups(aUniqueArticleGroupId:any) {
+  getArticleGroups(aUniqueArticleGroupId: any) {
     const oBody = {
       iBusinessId: this.iBusinessId,
       aArticleGroupId: aUniqueArticleGroupId
@@ -1145,7 +1147,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any) => {
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.length) {
         this.aWorkStation = result.data;
         this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
@@ -1154,11 +1156,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   getEmployees() {
-    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any) => {
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.aEmployee = result.data[0].result;
-        this.oCurrentEmployee = this.aEmployee.find((oEmployee:any) => oEmployee._id == this.iEmployeeId);
-        if(this.oCurrentEmployee) {
+        this.oCurrentEmployee = this.aEmployee.find((oEmployee: any) => oEmployee._id == this.iEmployeeId);
+        if (this.oCurrentEmployee) {
           this.bAllowOpenManualCashDrawer = this.oCurrentEmployee.aRights.includes('DEVELOPER') || this.oCurrentEmployee.aRights.includes('OWNER');
         }
       }
@@ -1171,7 +1173,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.aLocation = this.businessDetails.aLocation;
       this.fetchStockValuePerLocation();
       let oLocation;
- 
+
       if (this.bOpeningHistoricalDayState) {
         oLocation = this.aLocation.find((el: any) => el._id === this.oStatisticsData.iLocationId);
       } else {
@@ -1179,6 +1181,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
 
       if (oLocation) {
+        this.businessDetails.currentLocation = oLocation;
         this.tillService.selectCurrency(oLocation);
         this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
         this.aSelectedLocation.push(oLocation._id);
@@ -1186,9 +1189,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     });
   }
 
-  async exportToPDF(mode:string = 'compact') {
+  async exportToPDF(mode: string = 'compact') {
     this.pdfGenerationInProgress = true;
-    await this.auditService.exportToPDF({
+    await this.auditPdfService.exportToPDF({
       aSelectedLocation: this.aSelectedLocation,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
@@ -1206,7 +1209,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aEmployee: this.aEmployee,
       aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds,
       oFilterData: {
-        oFilterDates: (this.IsDynamicState) ? this.filterDates : {startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState},
+        oFilterDates: (this.IsDynamicState) ? this.filterDates : { startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState },
         mode,
         sType: this.sOptionMenu.parent.sValue,
         sTransactionType: this.sOptionMenu.parent.sKey,
@@ -1219,11 +1222,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   calculateTotalCounting() {
     this.oCountings.nCashCounted = 0;
-    this.auditService.aAmount.forEach((amount: any) => {
+    this.auditPdfService.aAmount.forEach((amount: any) => {
       this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
-    localStorage.setItem('transactionAuditPdfService.aAmount', JSON.stringify(this.auditService.aAmount));
+    localStorage.setItem('transactionAuditPdfService.aAmount', JSON.stringify(this.auditPdfService.aAmount));
   }
 
   async expandItem(item: any, iBusinessPartnerId: any = undefined, from: string = 'articlegroup') {
@@ -1304,7 +1307,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
         }
       }
-      if(!data.oFilterBy.aStatisticsIds?.length) {
+      if (!data.oFilterBy.aStatisticsIds?.length) {
         data.oFilterBy.dStartDate = (this.IsDynamicState) ? new Date(this.filterDates.startDate) : this.statisticFilter.dFromState
         data.oFilterBy.dEndDate = (this.IsDynamicState) ? new Date(this.filterDates.endDate) : this.statisticFilter.dToState
       }
@@ -1419,29 +1422,29 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   async onCloseDayState() {
-    
+
     /* fetching Audit detail for checking if day-state is changed or not */
     this.closingDayState = true;
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
     this.closingDayState = false; /* while fetching the data, loader should show off */
-    
+
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
     if (!oStatisticDetail?.data?.isAnyTransactionDone) {
       const confirmBtnDetails = [
         { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
       ];
-      this.dialogService.openModal(ConfirmationDialogComponent, 
-        { 
-          context: { 
-            header: 'NO_TRANSACTION_CREATED', 
-            bodyText: 'IN_THIS_PERIOD_NOT_TRANSACTION_HAS_BEE_CREATED', 
-            buttonDetails: confirmBtnDetails 
+      this.dialogService.openModal(ConfirmationDialogComponent,
+        {
+          context: {
+            header: 'NO_TRANSACTION_CREATED',
+            bodyText: 'IN_THIS_PERIOD_NOT_TRANSACTION_HAS_BEEN_CREATED',
+            buttonDetails: confirmBtnDetails
           },
           hasBackdrop: true,
           closeOnBackdropClick: false,
-          closeOnEsc: false 
-          })
+          closeOnEsc: false
+        })
         .instance.close.subscribe((status: any) => {
           if (status === 'proceed') this.closeDayState(oStatisticDetail);
         }, (error) => {
@@ -1476,13 +1479,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    if(!this.oCountings?.oCountingsCashDetails) this.oCountings.oCountingsCashDetails = {};
-    this.auditService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    
+    if (!this.oCountings?.oCountingsCashDetails) this.oCountings.oCountingsCashDetails = {};
+    this.auditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
+
     this.oCountings.nCashDifference = +(this.oCountings.nCashCounted - (
       this.oCountings.nCashAtStart + this.oCountings.nCashInTill + this.oHelperDetails.nAmountToAdd + this.oHelperDetails.nAmountToDeduct
     )).toFixed(2);
-    
+
     const oCashPaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash');
     let oCashInSafePaymentMethod = this.allPaymentMethod.find((el: any) => el.sName.toLowerCase() === 'cash_in_safe');
     if (!oCashInSafePaymentMethod) {
@@ -1502,7 +1505,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    const oBody:any = {
+    const oBody: any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
@@ -1518,13 +1521,31 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       },
     }
     const org = localStorage.getItem('org');
-    if(org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
+    if (org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
     // return;
-    this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-      this.toastService.show({ type: 'success', text: this.translateService.instant('DAY_STATE_IS_CLOSED_NOW')});
+    this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe(async (result: any) => {
+      this.toastService.show({ type: 'success', text: this.translateService.instant('DAY_STATE_IS_CLOSED_NOW') });
+      const oFiskalyBody = {
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId,
+        iWorkstationId: this.iWorkstationId,
+        sTssId: this.sTssId,
+        // oStatisticDetail: result?.data,
+        iStatisticsId: this.iStatisticId,
+        sDayClosureMethod: result?.data?.sDayClosureMethod,
+        sCurrency: this.businessDetails.currentLocation.eCurrency,
+        businessDetails: {
+          _id: this.businessDetails._id,
+          currentLocation: this.businessDetails.currentLocation
+        }
+      }
+      if (this.sTssId) {
+        const result: any = await this.apiService.postNew('fiskaly', `/api/v1/cash-point-closings`, oFiskalyBody).toPromise()
+        if (result?.data) this.toastService.show({ type: 'success', text: this.translateService.instant('CASH_POINT_HAS_BEEN_CLOSED_ON_FISKALY') });
+      }
       this.closingDayState = false;
       this.bDayStateClosed = true;
-      if(result?.data?._id) {
+      if (result?.data?._id) {
         this.statisticFilter.dFromState = result?.data.dOpenDate;
         this.statisticFilter.dToState = result?.data.dCloseDate;
       }
@@ -1633,6 +1654,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     try {
       this.bDayClosureLoading = true;
       this.aDayClosure = [];
+      this.aCalendarEvent = [];
       const oBody = {
         iBusinessId: this.iBusinessId,
         sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
@@ -1644,6 +1666,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
+          this.aCalendarEvent = [];
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
             this.aCalendarEvent.push({
               title: oDayClosure?.sWorkStationName,
@@ -1695,15 +1718,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }).instance.close.subscribe((result: any) => {
       this.bIsCalendarOpen = false;
       if (result?.isChosen) {
-        
+
         this.selectedWorkStation = result?.oData?.selectedWorkStation;
         this.aSelectedLocation = result?.oData?.aSelectedLocation;
 
         const _oDayClosure = result?.oData?.extendedProps?.customProperty?.oDayClosure;
-
-        // if (isOpenDate) this.statisticFilter.dFromState = _oDayClosure.dOpenDate
-        // else this.statisticFilter.dToState = _oDayClosure.dCloseDate
-
+        // console.log('openCalendar _oDayClosure: ', _oDayClosure);
 
         /* for enabling and disabling the date in calendar-view */
         if (eType === 'FROM_STATE') {
@@ -1713,11 +1733,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           this.statisticFilter.dToState = this.oCalendarSelectedData.dCloseDate = result?.oData?.end;
           if (!this.oCalendarSelectedData.dOpenDate) this.statisticFilter.dFromState = this.oCalendarSelectedData.dOpenDate = result?.oData?.start;
         }
-        console.log('eType:', eType);
-        console.log('oData clicked:', result?.oData?.title);
-        console.log('Start:', result?.oData?.start);
-        console.log('End:', result?.oData?.end);
-        console.log('_oDayClosure:', _oDayClosure);
 
         this.onStateChange(_oDayClosure, true);
         this.onStateChange(_oDayClosure, false);
@@ -1727,6 +1742,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   /* we are only enabling the [sales->article-group->compcat] mode when migration date chosen */
   toggleDropdownOfState() {
+    // console.log('toggleDropdownOfState: ', this.statisticFilter.eChosenStateCreationType)
     const isMigrationChosen = this.statisticFilter.eChosenStateCreationType == 'migration' ? true : false;
 
     const oData = {
@@ -1761,8 +1777,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   onStateChange(_oDayClosure: any, isOpenDate: boolean) {
+    // console.log('onStateChange: ', _oDayClosure);
     if (_oDayClosure?.eCreationType) this.statisticFilter.eChosenStateCreationType = _oDayClosure.eCreationType;
-    console.log('_oDayClosure.dOpenDate: ', _oDayClosure.dOpenDate, _oDayClosure.dCloseDate);
 
     this.aStatistic = [];
     this.aStatisticsIds = [];
@@ -1787,29 +1803,23 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   checkShowDownload() {
     if (this.bOpeningHistoricalDayState) {
-      // console.log({bOpeningHistoricalDayState: this.bOpeningHistoricalDayState})
-      this.bShowDownload = true;  
+      this.bShowDownload = true;
     } else if (this.bOpeningDayClosure) {
-      // console.log({bOpeningDayClosure: this.bOpeningDayClosure})
       this.bShowDownload = this.bDayStateClosed;
     } else if (this.IsDynamicState) {
-      // console.log({ IsDynamicState: this.IsDynamicState, aStatistic: this.aStatistic }, this.filterDates.startDate, this.filterDates.endDate)
       this.bShowDownload = this.filterDates.startDate && this.filterDates.endDate &&
-        this.aStatistic?.length && 
+        this.aStatistic?.length &&
         this.aStatistic[0]?.individual?.length
     } else {
-      // console.log('in else')
       const bCondition1 = !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1);
-      
+
       this.bShowDownload = (bCondition1 &&
-        this.statisticFilter.dFromState != '' && 
-        this.statisticFilter.dToState != '' && 
-        this.aStatistic?.length && 
+        this.statisticFilter.dFromState != '' &&
+        this.statisticFilter.dToState != '' &&
+        this.aStatistic?.length &&
         this.aStatistic[0]?.individual?.length
       );
-      // console.log({ bCondition1, from: this.statisticFilter.dFromState, to: this.statisticFilter.dToState, aStatistic:this.aStatistic });
     }
-    // console.log({oStatisticsDocument: this.oStatisticsDocument})
     if (this.bShowDownload) {
       setTimeout(() => {
         MenuComponent.reinitialization();
@@ -1835,41 +1845,36 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     });
   }
 
-  async openTransactionDetailsModal(oItem:any){
-    // console.log(oItem);
+  async openTransactionDetailsModal(oItem: any) {
     const oBody = {
       iBusinessId: this.iBusinessId,
       type: 'transaction',
       eType: 'cash-register-revenue',
-      bIsDetailRequire:true,
+      bIsDetailRequire: true,
       oFilterBy: {
         _id: oItem.iTransactionId
       }
     }
-    const oTransaction:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/list', oBody).toPromise();
-    // console.log(oTransaction);
-      this.dialogService.openModal(TransactionDetailsComponent,
-        {
-          cssClass: "w-fullscreen mt--5",
-          context: {
-            transaction: oTransaction?.data?.result[0],
-            businessDetails: this.businessDetails,
-            from: 'audit',
-            employeesList: this.aEmployee
-          },
-          hasBackdrop: true,
-          closeOnBackdropClick: false,
-          closeOnEsc: false
-        }).instance;
+    const oTransaction: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/list', oBody).toPromise();
+    this.dialogService.openModal(TransactionDetailsComponent,
+      {
+        cssClass: "w-fullscreen mt--5",
+        context: {
+          transaction: oTransaction?.data?.result[0],
+          businessDetails: this.businessDetails,
+          from: 'audit',
+          employeesList: this.aEmployee
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance;
   }
 
   reCalculateDayClosure() {
-    console.log('reCalculateDayClosure called');
     this.bReCalculateLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
-      // iLocationId: this.iLocationId,
-      // iWorkstationId: this.iWorkstationId,
       iStatisticId: this.iStatisticId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/re-calculate`, oBody).subscribe((result: any) => {
@@ -1894,7 +1899,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (this.transactionItemListSubscription) this.transactionItemListSubscription.unsubscribe();
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
-  
+
   async openDrawer() {
     this.bOpeningDrawer = true;
     if (!this.aPrintSettings?.length) {
@@ -1902,7 +1907,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         iLocationId: this.iLocationId,
         iWorkstationId: this.iWorkstationId
       }
-      const result:any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.aPrintSettings = result.data[0].result;
       }
@@ -1915,7 +1920,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       settings.nPrinterId);
 
     if (oSettings) {
-      const response:any = await this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId).toPromise();
+      const response: any = await this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId).toPromise();
       this.bOpeningDrawer = false;
       if (response.status == "PRINTJOB_NOT_CREATED") {
         let message = '';
@@ -1934,22 +1939,22 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   openDayClosureHelpModal() {
-    this.dialogService.openModal(ClosingDaystateHelperDialogComponent, { 
-      cssClass: 'modal-lg', 
+    this.dialogService.openModal(ClosingDaystateHelperDialogComponent, {
+      cssClass: 'modal-lg',
       hasBackdrop: true,
       context: {
         oHelperDetails: JSON.parse(JSON.stringify(this.oHelperDetails)),
         oCountings: this.oCountings,
         oCashPaymentMethod: this.allPaymentMethod.find((o: any) => o.sName.toLowerCase() === 'cash')
-      } 
-    }).instance.close.subscribe((result:any) => {
-      if(result?.type) {
+      }
+    }).instance.close.subscribe((result: any) => {
+      if (result?.type) {
         this.oHelperDetails = JSON.parse(JSON.stringify(result.oHelperDetails));
         this.oHelperDetails.bSaved = false;
         let nAmountToDeduct = 0, nAmountToAdd = 0;
-        this.oHelperDetails.aReasons.forEach((oReason:any) => {
-          switch(oReason.sKey) {
-            case 'expense-lost-money': 
+        this.oHelperDetails.aReasons.forEach((oReason: any) => {
+          switch (oReason.sKey) {
+            case 'expense-lost-money':
             case 'add-expenses':
               nAmountToDeduct += oReason.nAmount;
               oReason.nAmount = -oReason.nAmount;
@@ -1963,26 +1968,25 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         if (nAmountToDeduct > 0) this.oHelperDetails.nAmountToDeduct = -nAmountToDeduct;
         this.oHelperDetails.nAmountToAdd = nAmountToAdd;
         this.oHelperDetails.nAmountToDeduct = nAmountToDeduct;
-        console.log(this.oHelperDetails);
       }
     });
   }
 
   async saveHelperDetails() {
     localStorage.setItem('oCountings', JSON.stringify(this.oCountings));
-    const aTransactionItem:any = [];
+    const aTransactionItem: any = [];
 
     if (this.oHelperDetails.oStartAmountIncorrect.bChecked) {
       aTransactionItem.push(this.oHelperDetails.oStartAmountIncorrect.oExpense.oTransactionItem);
     }
-    this.oHelperDetails.aReasons.forEach((oReason:any) => {
+    this.oHelperDetails.aReasons.forEach((oReason: any) => {
       if (oReason?.oExpense?.oTransactionItem) aTransactionItem.push(oReason?.oExpense?.oTransactionItem);
     });
-    
-    if(aTransactionItem.length) {
-      const aPromise:any = [];
+
+    if (aTransactionItem.length) {
+      const aPromise: any = [];
       this.bSavingHelperDetails = true;
-      aTransactionItem.forEach((oTransactionItem:any) => {
+      aTransactionItem.forEach((oTransactionItem: any) => {
         aPromise.push(this.apiService.postNew('cashregistry', '/api/v1/till/add-expenses', oTransactionItem).toPromise())
       })
       await Promise.all(aPromise);
@@ -1991,6 +1995,41 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.oHelperDetails.bSaved = true;
     this.oHelperDetails.nAmountToDeduct = 0;
     this.fetchStatistics();
+  }
+
+  getPrintSettings() {
+    const oBody = {
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
+      oFilterBy: {
+        sMethod: 'thermal',
+        sType: 'dayclosure'
+      }
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = result?.data[0]?.result;
+      }
+    });
+  }
+
+  async printThermalReceipt() {
+
+    const oDataSource: any = this.auditPdfService.prepareDataForThermalReceipt({
+      aStatistic: this.aStatistic,
+      oStatisticsDocument: this.oStatisticsDocument,
+      aStatisticsDocuments: this.aStatisticsDocuments,
+      aPaymentMethods: this.aPaymentMethods,
+      businessDetails: this.businessDetails
+    });
+    await this.receiptService.printThermalReceipt({
+      currency: this.tillService.currency,
+      oDataSource,
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: 'DAY_CLOSURE_REPORT',
+      sType: 'dayclosure',
+    }).toPromise();
   }
 
   listBusinessSubscription!: Subscription;
@@ -2033,7 +2072,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       sValue: 'Supplier And Article-Group And Dynamic Property',
     },
     {
-      // sKey: 'revenuePerArticleGroupAndProperty',
       sKey: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
       sValue: 'Article Group and Dynamic Property',
     },
@@ -2065,4 +2103,48 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     nCashAtStart: 0,
     oCountingsCashDetails: {},
   };
+
+  /* resetting the comparison data */
+  resetTheComparisonData() {
+    /* resetting chosen date */
+    this.aCompareData = [
+      { dFromState: '', dToState: '', nTotalQuantity: 0, nTotalRevenue: 0 },
+      { dFromState: '', dToState: '', nTotalQuantity: 0, nTotalRevenue: 0 }
+    ]
+    this.aProcessCompareData = [];
+  }
+
+  onCompareCheckBox() {
+    this.resetTheComparisonData();
+    if (this.bIsCompareStatistics) {
+      this.bIsCompareStatistics = false;
+      return;
+    }
+
+    this.dialogService.openModal(CompareStatisticsDateComponent, {
+      cssClass: 'modal-lg',
+      context: {
+        oData: {
+          aCompareData: this.aCompareData
+        }
+      },
+      hasBackdrop: true,
+      closeOnBackdropClick: false
+    }).instance.close.subscribe(async (result: any) => {
+      if (result) {
+        this.bCompareStatisticLoading = true;
+        this.bIsCompareStatistics = true;
+        const aStatisticResponse = [];
+        this.aCompareData = result;
+        for (const oCompareData of result) {
+          const oStatistic = await this.fetchStatisticList('', oCompareData.dFromState, oCompareData.dToState);
+          aStatisticResponse.push({ individual: oStatistic.data?.aStatistic[0]?.individual });
+        }
+        this.aProcessCompareData = this.auditsService.processCompareData({ aStatisticResponse, aCompareData: this.aCompareData });
+        this.bCompareStatisticLoading = false;
+      } else {
+        this.bIsCompareStatistics = false
+      }
+    });
+  }
 }

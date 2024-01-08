@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header align-items-center py-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <div class="col-10">
             <h4 class="m-0" *ngIf="mode === 'create'">{{ 'CREATE_PAYMENT_METHOD' | translate}}</h4>
             <h4 class="m-0" *ngIf="mode === 'details' && customMethod.bIsDefaultPaymentMethod">{{ 'CREATE_COPY_OF_DEFAULT_PAYMENT_METHOD' | translate}}</h4>
