@@ -7,7 +7,7 @@ import * as moment from 'moment';
 @Component({
   selector: 'app-compare-statistics-date',
   templateUrl: './compare-statistics-date.component.html',
-  styleUrls: ['./compare-statistics-date.component.sass']
+  styleUrls: ['./compare-statistics-date.component.scss']
 })
 export class CompareStatisticsDateComponent implements OnInit {
   dialogRef: DialogComponent
