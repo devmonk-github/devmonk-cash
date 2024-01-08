@@ -1,9 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { faCopy, faPencilAlt, faSave, faTimes, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { ToastService } from 'src/app/shared/components/toast';
-import { ApiService } from 'src/app/shared/service/api.service';
-import { DialogService } from 'src/app/shared/service/dialog';
+import { ToastService } from '../shared/components/toast';
+import { ApiService } from '../shared/service/api.service';
+import { DialogService } from '../shared/service/dialog';
 import { TerminalService } from '../shared/service/terminal.service';
 
 @Component({
