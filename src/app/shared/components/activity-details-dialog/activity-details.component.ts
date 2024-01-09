@@ -243,7 +243,6 @@ export class ActivityDetailsComponent implements OnInit {
         this.fetchActivity(this.activityItems[0].iActivityId);
       }
       this.fetchTransactionItems(this.activityItems[0]._id);
-      debugger
       if(this.activityItems[0]?.iCustomerId) this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
 

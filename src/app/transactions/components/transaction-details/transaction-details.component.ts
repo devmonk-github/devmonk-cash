@@ -157,7 +157,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
    
     this.getPaymentMethods();
     this.mapEmployee();
-    this.getSystemCustomer(this.transaction?.iCustomerId);
+    if(this.transaction?.iCustomerId) this.getSystemCustomer(this.transaction?.iCustomerId);
     this.fetchLocationName();
 
     if (this.businessDetails.currentLocation) {
