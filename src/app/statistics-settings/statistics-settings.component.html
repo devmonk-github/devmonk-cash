@@ -44,7 +44,7 @@
                         <div *ngIf="settings?.bSumUpArticleGroupStatistics">
                             <div class="list-group list-group-flush d-flex flex-row flex-wrap">
                                 <a (click)="goToArticleGroup(article._id)" class="list-group-item list-group-item-action cursor-pointer p-5 w-50" *ngFor="let article of articleGroupList">
-                                    {{article?.oName[selectedLanguage]}}
+                                   {{ article?.oName && article?.oName[selectedLanguage] ? article?.oName[selectedLanguage] : '-' }}
                                 </a>
                             </div>
                         </div>

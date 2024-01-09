@@ -175,31 +175,25 @@ export class PaymentIntegrationComponent implements OnInit {
   }
 
   async remove(event: any, provider: any, workstation: any) {
-    // let iPaymentServiceProviderId = '';
-    // if (provider === 'paynl') {
-    //   iPaymentServiceProviderId = this.oProviders[provider].oDefault.iPaymentServiceProviderId;
-    //   const oSavedDataIndex = this.oProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-    //   this.oProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-    //   this.oProviders[provider].oDefault.aPaymentIntegrations = [...this.oProviders[provider].oDefault.aPaymentIntegrations];
-    // } else {
-    //   iPaymentServiceProviderId = this.oProviders[provider].oDefault.iPaymentServiceProviderId;
-    //   const oSavedDataIndex = this.oProviders[provider].oDefault.aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
-    //   this.oProviders[provider].oDefault.aPaymentIntegrations.splice(oSavedDataIndex, 1);
-    //   this.oProviders[provider].oDefault.aPaymentIntegrations = [...this.oProviders[provider].oDefault.aPaymentIntegrations];
-    // }
-    // const payload = {
-    //   iPaymentServiceProviderId: this.iPaymentServiceProviderId,
-    //   iBusinessId: this.iBusinessId,
-    //   iLocationId: this.iLocationId,
-    //   oCredentials: this.oProviders
-    // }
-    // this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, payload).subscribe((result: any) => {
-    //   workstation[provider].sTerminalId = '';
-    //   if (result) {
-    //     this.toastService.show({ type: 'success', text: 'DELETED' });
-    //     this.fetchPaymentProviderSetting();
-    //   } else this.toastService.show({ type: 'danger', text: 'ERROR' });
-    // });
+    if(!confirm("Are you sure to remove it?")) return;
+    let oCredentials = {
+      [provider]: this.oAllProviders.default[provider]
+    };
+    oCredentials[provider].aPaymentIntegrations = oCredentials[provider].aPaymentIntegrations.filter((workStation:any) => workStation.iWorkstationId !== workstation._id);
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      eType: 'default',
+      oCredentials
+    };
+    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, oBody).subscribe((result: any) => {
+      if (result) {
+        this.toastService.show({ type: 'success', text: 'UPDATED' });
+        this.fetchPaymentProviderSetting();
+      } else {
+        this.toastService.show({ type: 'danger', text: 'ERROR' });
+      }
+    });
   }
 
   toggleSettings(provider: any) {
@@ -211,14 +205,14 @@ export class PaymentIntegrationComponent implements OnInit {
   }
 
   async savePaymentIntegration(sTerminalId: any, provider: any, workstation: any) {
-    const oTerminalData = { iWorkstationId: workstation._id, sTerminalId};
+    const oTerminalData = { iWorkstationId: workstation._id, sTerminalId };
     let oCredentials = {
       [provider]: this.oAllProviders.default[provider]
     };
     const oSavedDataIndex = oCredentials[provider].aPaymentIntegrations.findIndex((i: any) => i.iWorkstationId === workstation._id);
     if (oSavedDataIndex > -1) oCredentials[provider].aPaymentIntegrations.splice(oSavedDataIndex, 1);
     oCredentials[provider].aPaymentIntegrations = [...oCredentials[provider].aPaymentIntegrations, oTerminalData];
-    
+
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
@@ -226,12 +220,13 @@ export class PaymentIntegrationComponent implements OnInit {
       oCredentials
     }
     this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider`, oBody).subscribe((result: any) => {
-      if (result)
+      if (result) {
         this.toastService.show({ type: 'success', text: 'UPDATED' });
-      else
+        this.fetchPaymentProviderSetting();
+      } else {
         this.toastService.show({ type: 'danger', text: 'ERROR' });
+      }
     });
-    this.fetchPaymentProviderSetting();    
   }
 
   async saveSettings() {

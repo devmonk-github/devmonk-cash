@@ -110,15 +110,15 @@ export class StatisticsSettingsComponent implements OnInit {
         this.loading = false;
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.articleGroupList = result.data[0].result.filter((item: any) => {
-              if (item?.oName && !item?.oName?.[this.selectedLanguage]) {
+              if (item?.oName && !item?.oName?.[this.selectedLanguage || 'nl']) {
                 for (const sName of Object.values(item?.oName)) {
                   if (sName) {
-                    item.oName[this.selectedLanguage] = sName;
+                    item.oName[this.selectedLanguage || 'nl'] = sName;
                     break;
                   }
                 }
               }
-              if (item?.oName && !item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
+              if (item?.oName && !item?.oName?.[this.selectedLanguage || 'nl']) item.oName[this.selectedLanguage || 'nl'] = 'NO_NAME';
             return !item.sCategory
           });
         }else{

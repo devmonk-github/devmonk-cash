@@ -107,272 +107,194 @@
         </div>
       </div>
     </div>
-      <div class="card-body" *ngIf="oSettings">
-        <div class="row">
-          <div class="col-2 d-flex">
-            <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2"
-              [(ngModel)]="oSettings.bUseZpl" (ngModelChange)="updateSettings()">
-            <span>{{'USE_ZPL' | translate}}</span>
+    <div class="card-body" *ngIf="oSettings">
+      <div class="row mb-4">
+        <div class="col-2 d-flex">
+          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2"
+            [(ngModel)]="oSettings.bUseZpl" (ngModelChange)="updateSettings()">
+          <span>{{'USE_ZPL' | translate}}</span>
+        </div>
+        <div class="col-2 d-flex">
+          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2"
+            [(ngModel)]="oSettings.bUseTspl" (ngModelChange)="updateSettings()">
+          <span>{{'USE_TSPL' | translate}}</span>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation" *ngIf="oSettings.bUseZpl">
+          <button class="nav-link active" id="zpl-tab" data-bs-toggle="tab" data-bs-target="#zpl-tab-pane" type="button"
+            role="tab" aria-controls="zpl-tab-pane" aria-selected="true">{{'ZPL' | translate}}</button>
+        </li>
+        <li class="nav-item" role="presentation" *ngIf="oSettings.bUseTspl">
+          <button class="nav-link" id="tspl-tab" data-bs-toggle="tab" data-bs-target="#tspl-tab-pane" type="button"
+            role="tab" aria-controls="tspl-tab-pane" aria-selected="false">{{'TSPL' | translate}}</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="zpl-tab-pane" role="tabpanel" aria-labelledby="zpl-tab" tabindex="0">
+          <div class="row">
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-primary mx-2" (click)="updateLabelSequence($event)">{{'SAVE_SEQUENCE' |
+                translate}}</button>
+              <button class="btn btn-primary" (click)="openToolsModal()"> {{ "TOOLS" | translate}}</button>
+            </div>
           </div>
-          <div class="col-2 d-flex">
-            <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2"
-              [(ngModel)]="oSettings.bUseTspl" (ngModelChange)="updateSettings()">
-            <span>{{'USE_TSPL' | translate}}</span>
+          <div class="row my-3">
+            <div class="col-12">
+              <div class="d-flex flex-column">
+                <div class="h5">{{'SHOP' | translate}} {{"LABEL_TEMPLATE" | translate}}</div>
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                  <div class="table-responsive">
+                    <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
+                      <thead>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                          <th class="w-30px sorting" tabindex="0">#</th>
+                          <th class="w-240px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                          <th class="sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
+                        </tr>
+                      </thead>
+                      <tbody class="fw-bold text-gray-600">
+                        <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
+                          <tr *ngFor='let label of aZplTemplates; let i = index'>
+                            <td class="text-truncate align-middle">
+                              {{i+1}}
+                            </td>
+                            <td class="w-240px text-truncate align-middle" [title]="label.name || ''">
+                              {{label.name || ''}}
+                            </td>
+
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <button (click)="openLabelTemplateModal(label,'edit')"
+                                  class="btn btn-icon btn-info btn-sm">
+                                  <i class="fa fa-edit"></i>
+                                  <!-- {{'EDIT'| translate}} -->
+                                </button>
+
+                                <button class="btn btn-icon btn-danger btn-sm mx-2"
+                                  (click)="deleteLabelTemplate(label._id)">
+                                  <i class="fa fa-trash"></i>
+                                </button>
+
+                                <button (click)="printSample(label)" class="btn btn-icon btn-primary btn-sm ">
+                                  <i class="fa fa-print"></i>
+                                  <!-- {{'PRINT_SAMPLE'| translate}} -->
+                                </button>
+
+                                <button (click)="sentToLayout(label)" class="btn btn-light-primary btn-sm mx-2">
+                                  {{'SENT_TO_LAYOUT'| translate}}
+                                </button>
+
+                                <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm me-auto">
+                                  {{'DEFAULT' | translate}}
+                                </button>
+
+                                <button *ngIf="!label?.bDefault" (click)="markDefault(label)"
+                                  class="btn btn-primary btn-sm me-auto">
+                                  {{'MARK_AS_DEFAULT' | translate}}
+                                </button>
+
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i)">
+                                  <i class="fa fa-arrow-up"></i>
+                                </button>
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('down', i)">
+                                  <i class="fa fa-arrow-down"></i>
+                                </button>
+
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center align-items-center h-100px">
+                      <h5 *ngIf='!aZplTemplates?.length && !isLoadingTemplatesLabel'> {{
+                        "NO_DATA_FOUND" | translate}}!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <span class="h5">{{"DEFAULT_LABEL"|translate}}</span>
+                  <button class="btn btn-primary btn-sm" (click)="addDefaultZplTemplate()"><i
+                      class="fa fa-plus"></i></button>
+                </div>
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                  <div class="table-responsive">
+                    <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
+                      <thead>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                          <th class="mw-100px sorting" tabindex="0">#</th>
+                          <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                          <th class="mw-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
+                        </tr>
+                      </thead>
+                      <tbody class="fw-bold text-gray-600">
+                        <tr *ngFor='let label of aDefaultZplTemplates; let i = index'>
+                          <td class="mw-100px text-truncate">
+                            {{i+1}}
+                          </td>
+                          <td class="mw-200px text-truncate" [title]="label.name || ''">
+                            {{label.name || ''}}
+                          </td>
+                          <td>
+                            <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary btn-sm">
+                              {{'CREATE'| translate}}
+                            </button>
+
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center align-items-center h-100px">
+                      <h5 *ngIf='!aDefaultZplTemplates?.length && !isLoadingDefaultLabel'> {{
+                        "NO_DATA_FOUND" | translate}}!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="tab-pane fade" id="tspl-tab-pane" role="tabpanel" aria-labelledby="tspl-tab" tabindex="0">
+          <div class="row my-3">
+            <div class="col-12">
+              <div class="d-flex flex-column">
+                <div class="h5"> {{ 'SHOP' | translate }} {{ "LABEL_TEMPLATE" | translate }}</div>
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
 
-        <app-pn-tabs class="tab-content" addChildLinkClass="text-gray-600">
-          <div class="tab-gap"></div>
-
-          <app-pn-tab tabTitle="ZPL" #zpl *ngIf="oSettings.bUseZpl">
-            <div class="row">
-              <div class="d-flex justify-content-end">
-                <button class="btn btn-primary mx-2" (click)="updateLabelSequence($event)">{{'SAVE_SEQUENCE' |
-                  translate}}</button>
-                <button class="btn btn-primary" (click)="openToolsModal()"> {{ "TOOLS" | translate}}</button>
-              </div>
-            </div>
-            <div class="row my-3">
-              <div class="col-12">
-                <div class="d-flex flex-column">
-                  <div class="h5">{{'SHOP' | translate}} {{"LABEL_TEMPLATE" | translate}}</div>
-                  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-
-                    <div class="table-responsive">
-                      <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
-                        <thead>
-                          <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="w-30px sorting" tabindex="0">#</th>
-                            <th class="w-240px sorting" tabindex="0">{{ "NAME" | translate}}</th>
-                            <th class="sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
-                          </tr>
-                        </thead>
-                        <tbody class="fw-bold text-gray-600">
-                          <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
-                            <tr *ngFor='let label of aZplTemplates; let i = index'>
-                              <td class="text-truncate align-middle">
-                                {{i+1}}
-                              </td>
-                              <td class="w-240px text-truncate align-middle" [title]="label.name || ''">
-                                {{label.name || ''}}
-                              </td>
-
-                              <td>
-                                <div class="d-flex align-items-center">
-                                  <button (click)="openLabelTemplateModal(label,'edit')"
-                                    class="btn btn-icon btn-info btn-sm">
-                                    <i class="fa fa-edit"></i>
-                                    <!-- {{'EDIT'| translate}} -->
-                                  </button>
-
-                                  <button class="btn btn-icon btn-danger btn-sm mx-2"
-                                    (click)="deleteLabelTemplate(label._id)">
-                                    <i class="fa fa-trash"></i>
-                                  </button>
-
-                                  <button (click)="printSample(label)" class="btn btn-icon btn-primary btn-sm ">
-                                    <i class="fa fa-print"></i>
-                                    <!-- {{'PRINT_SAMPLE'| translate}} -->
-                                  </button>
-
-                                  <button (click)="sentToLayout(label)" class="btn btn-light-primary btn-sm mx-2">
-                                    {{'SENT_TO_LAYOUT'| translate}}
-                                  </button>
-
-                                  <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm me-auto">
-                                    {{'DEFAULT' | translate}}
-                                  </button>
-
-                                  <button *ngIf="!label?.bDefault" (click)="markDefault(label)"
-                                    class="btn btn-primary btn-sm me-auto">
-                                    {{'MARK_AS_DEFAULT' | translate}}
-                                  </button>
-
-                                  <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i)">
-                                    <i class="fa fa-arrow-up"></i>
-                                  </button>
-                                  <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('down', i)">
-                                    <i class="fa fa-arrow-down"></i>
-                                  </button>
-
-                                </div>
-                              </td>
-                            </tr>
-                          </ng-container>
-                          <div class="d-flex">
-                            <h5 *ngIf='!aZplTemplates?.length && !isLoadingTemplatesLabel'
-                              style="text-align: center;"> {{
-                              "NO_DATA_FOUND" | translate}}!</h5>
-                            <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
-                              <div class="spinner-box h-200px">
-                                <div class="three-quarter-spinner">
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </tbody>
-                      </table>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="d-flex flex-column">
-                  <div class="d-flex justify-content-between">
-                    <span class="h5">{{"DEFAULT_LABEL"|translate}}</span>
-                    <button class="btn btn-primary btn-sm" (click)="addDefaultZplTemplate()"><i
-                        class="fa fa-plus"></i></button>
-                  </div>
-                  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-
-                    <div class="table-responsive">
-                      <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
-                        <thead>
-                          <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="mw-100px sorting" tabindex="0">#</th>
-                            <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
-                            <th class="mw-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
-                          </tr>
-                        </thead>
-                        <tbody class="fw-bold text-gray-600">
-                          <tr *ngFor='let label of aDefaultZplTemplates; let i = index'>
-                            <td class="mw-100px text-truncate">
-                              {{i+1}}
-                            </td>
-                            <td class="mw-200px text-truncate" [title]="label.name || ''">
-                              {{label.name || ''}}
-                            </td>
-                            <td>
-                              <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary btn-sm">
-                                {{'CREATE'| translate}}
-                              </button>
-
-                            </td>
-                          </tr>
-                          <div class="d-flex">
-                            <h5 *ngIf='!aDefaultZplTemplates?.length && !isLoadingDefaultLabel'> {{
-                              "NO_DATA_FOUND" | translate}}!</h5>
-                            <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
-                              <div class="spinner-box h-200px">
-                                <div class="three-quarter-spinner">
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </tbody>
-                      </table>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </app-pn-tab>
-
-          <app-pn-tab tabTitle="TSPL" #tspl *ngIf="oSettings.bUseTspl">
-            <div class="row my-3">
-              <div class="col-12">
-                <div class="d-flex flex-column">
-                  <div class="h5"> {{ 'SHOP' | translate }} {{ "LABEL_TEMPLATE" | translate }}</div>
-                  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-
-                    <div class="table-responsive">
-                      <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
-                        <thead>
-                          <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="mw-100px sorting" tabindex="0">#</th>
-                            <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
-                            <th class="mw-100px sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
-                          </tr>
-                        </thead>
-                        <tbody class="fw-bold text-gray-600">
-                          <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
-                            <tr *ngFor='let label of aTsplTemplates; let i = index'>
-                              <td class="mw-100px text-truncate">
-                                {{i+1}}
-                              </td>
-                              <td class="mw-200px text-truncate" [title]="label.name || ''">
-                                {{label.name || ''}}
-                              </td>
-
-                              <td>
-                                <div class="d-flex">
-                                  <button (click)="openLabelTemplateModal(label,'edit', 'tspl')"
-                                    class="btn btn-primary btn-sm">
-                                    <i class="fa fa-edit"> </i>
-                                    <!-- {{'EDIT'| translate}} -->
-                                  </button>
-
-                                  <button class="btn btn-icon btn-secondary btn-sm mx-2"
-                                    (click)="deleteLabelTemplate(label._id)">
-                                    <i class="fa fa-trash"></i>
-                                  </button>
-
-                                  <button (click)="printSample(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
-                                    <i class="fa fa-print"> </i>
-                                    <!-- {{'PRINT_SAMPLE'| translate}} -->
-                                  </button>
-
-                                  <button (click)="sentToLayout(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
-                                    {{'SENT_TO_LAYOUT'| translate}}
-                                  </button>
-
-                                  <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm mx-2 w-25">
-                                    {{'DEFAULT' | translate}}
-                                  </button>
-
-                                  <button *ngIf="!label?.bDefault" (click)="markDefault(label, 'tspl')"
-                                    class="btn btn-primary btn-sm mx-2 w-25">
-                                    {{'MARK_AS_DEFAULT' | translate}}
-                                  </button>
-
-                                  <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i, 'tspl')">
-                                    <i class="fa fa-arrow-up"></i>
-                                  </button>
-                                  <button class="btn p-3 hover btn-sm mx-2"
-                                    (click)="shiftLabelButton('down', i, 'tspl')">
-                                    <i class="fa fa-arrow-down"></i>
-                                  </button>
-
-                                </div>
-                              </td>
-                            </tr>
-                          </ng-container>
-                          <div class="d-flex">
-                            <h5 *ngIf='!aTsplTemplates?.length && !isLoadingTemplatesLabel' style="text-align: center;">
-                              {{
-                              "NO_DATA_FOUND" | translate}}!</h5>
-                            <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
-                              <div class="spinner-box h-200px">
-                                <div class="three-quarter-spinner">
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </tbody>
-                      </table>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="d-flex flex-column">
-                  <div class="h5">{{"DEFAULT_LABEL"|translate}}</div>
-                  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-
-                    <div class="table-responsive">
-                      <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
-                        <thead>
-                          <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="mw-100px sorting" tabindex="0">#</th>
-                            <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
-                            <th class="mw-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
-                          </tr>
-                        </thead>
-                        <tbody class="fw-bold text-gray-600">
-                          <tr *ngFor='let label of aDefaultTsplTemplates; let i = index'>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
+                      <thead>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                          <th class="mw-100px sorting" tabindex="0">#</th>
+                          <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                          <th class="mw-100px sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
+                        </tr>
+                      </thead>
+                      <tbody class="fw-bold text-gray-600">
+                        <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
+                          <tr *ngFor='let label of aTsplTemplates; let i = index'>
                             <td class="mw-100px text-truncate">
                               {{i+1}}
                             </td>
@@ -381,38 +303,119 @@
                             </td>
 
                             <td>
+                              <div class="d-flex">
+                                <button (click)="openLabelTemplateModal(label,'edit', 'tspl')"
+                                  class="btn btn-primary btn-sm">
+                                  <i class="fa fa-edit"> </i>
+                                  <!-- {{'EDIT'| translate}} -->
+                                </button>
 
-                              <button (click)="openLabelTemplateModal(label,'create', 'tspl')"
-                                class="btn btn-primary btn-sm">
-                                {{'CREATE'| translate}}
+                                <button class="btn btn-icon btn-secondary btn-sm mx-2"
+                                  (click)="deleteLabelTemplate(label._id)">
+                                  <i class="fa fa-trash"></i>
+                                </button>
 
-                              </button>
+                                <button (click)="printSample(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
+                                  <i class="fa fa-print"> </i>
+                                  <!-- {{'PRINT_SAMPLE'| translate}} -->
+                                </button>
 
+                                <button (click)="sentToLayout(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
+                                  {{'SENT_TO_LAYOUT'| translate}}
+                                </button>
+
+                                <button *ngIf="label?.bDefault" class="btn btn-secondary btn-sm mx-2 w-25">
+                                  {{'DEFAULT' | translate}}
+                                </button>
+
+                                <button *ngIf="!label?.bDefault" (click)="markDefault(label, 'tspl')"
+                                  class="btn btn-primary btn-sm mx-2 w-25">
+                                  {{'MARK_AS_DEFAULT' | translate}}
+                                </button>
+
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i, 'tspl')">
+                                  <i class="fa fa-arrow-up"></i>
+                                </button>
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('down', i, 'tspl')">
+                                  <i class="fa fa-arrow-down"></i>
+                                </button>
+
+                              </div>
                             </td>
                           </tr>
-                          <div class="d-flex">
-                            <h5 *ngIf='!aDefaultTsplTemplates?.length && !isLoadingDefaultLabel'
-                              style="text-align: center;"> {{
-                              "NO_DATA_FOUND" | translate}}!</h5>
-                            <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
-                              <div class="spinner-box h-200px">
-                                <div class="three-quarter-spinner">
-                                </div>
-                              </div>
-                            </div>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center align-items-center h-100px">
+                      <h5 *ngIf='!aTsplTemplates?.length && !isLoadingTemplatesLabel'>
+                        {{
+                        "NO_DATA_FOUND" | translate}}!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
                           </div>
-                        </tbody>
-                      </table>
+                        </div>
+                      </div>
                     </div>
-
                   </div>
+
                 </div>
               </div>
             </div>
-          </app-pn-tab>
-        </app-pn-tabs>
+            <div class="col-12">
+              <div class="d-flex flex-column">
+                <div class="h5">{{"DEFAULT_LABEL"|translate}}</div>
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                  <div class="table-responsive">
+                    <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
+                      <thead>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                          <th class="mw-100px sorting" tabindex="0">#</th>
+                          <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                          <th class="mw-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
+                        </tr>
+                      </thead>
+                      <tbody class="fw-bold text-gray-600">
+                        <tr *ngFor='let label of aDefaultTsplTemplates; let i = index'>
+                          <td class="mw-100px text-truncate">
+                            {{i+1}}
+                          </td>
+                          <td class="mw-200px text-truncate" [title]="label.name || ''">
+                            {{label.name || ''}}
+                          </td>
+
+                          <td>
+
+                            <button (click)="openLabelTemplateModal(label,'create', 'tspl')"
+                              class="btn btn-primary btn-sm">
+                              {{'CREATE'| translate}}
+
+                            </button>
+
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center align-items-center h-100px">
+                      <h5 *ngIf='!aDefaultTsplTemplates?.length && !isLoadingDefaultLabel'> {{ "NO_DATA_FOUND" |
+                        translate}}!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-  
+    </div>
   </div>
 
   <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="print-action">
