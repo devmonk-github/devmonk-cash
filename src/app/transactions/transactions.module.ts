@@ -9,14 +9,12 @@ import { DialogService,DialogComponent } from '../shared/service/dialog';
 
 import { TransactionsComponent } from './transactions.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
     TransactionsComponent,
-    TransactionDetailsComponent
   ],
   imports: [
     TransactionsRoutingModule,
@@ -29,7 +27,6 @@ import { SharedModule } from '../shared/shared.module';
     NgSelectModule,
     TranslateModule,
   ],
-  entryComponents: [TransactionDetailsComponent],
   providers: [ 
     DialogService,
     DialogComponent,

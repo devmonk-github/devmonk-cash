@@ -13,15 +13,16 @@ export class PrintSettingsEditorComponent implements OnInit {
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
-  format:any;
-  jsonData:any = {};
+  format: any;
+  jsonData: any = {};
   oTemplate: any = {
-    layout:{}
+    layout: {}
   };
-  
-  iBusinessId: any = '';
-  iLocationId: any = '';
+
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
   layout: any;
+  oSettings: any = {};
   aDefaultSettings: any = [
     {
       sTitle: 'Business logo',
@@ -62,7 +63,7 @@ export class PrintSettingsEditorComponent implements OnInit {
     {
       sTitle: 'Font',
       sParameter: 'font',
-      value: 'Default',
+      value: 'Roboto',
       eOptions: ['Roboto', 'Times New Roman'],
       eType: 'dropdown'
     },
@@ -75,54 +76,61 @@ export class PrintSettingsEditorComponent implements OnInit {
   ];
   mode !: string;
   @ViewChild('jsonEditor') jsonEditor!: any
-  
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private toastService: ToastService,
-  ) { 
+  ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
-    this.iBusinessId = localStorage.getItem('currentBusiness')
-    this.iLocationId = localStorage.getItem('currentLocation')
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    const aParameters = ['logo', 'orientation', 'pdfMethod', 'pageSize', 'pageMargins', 'font', 'fontSize'];
+    aParameters.forEach((el: any) => this.oSettings[el] = {});
     this.fetchSettings();
   }
-  fetchSettings(){
-    // this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getTemplate/${this.oTemplate._id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-    this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}&iLocationId=${this.iLocationId}`).subscribe((result: any) => {
-      if(result?.data){
-        this.mode = 'update';
-        this.oTemplate = result.data;
-        this.jsonEditor.jsonData = result.data.layout;
-        if (!result.data?.aSettings?.length){
-          this.oTemplate.aSettings = this.getDefaultSettings();
-        } else this.mapWithDefaultSettings();
-      } else {
-        this.mode = 'create';
-        this.oTemplate.aSettings = this.getDefaultSettings();
-      }
-    });
+
+  async fetchSettings() {
+    const result: any = await this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}&iLocationId=${this.iLocationId}`).toPromise();
+    if (result?.data) {
+      this.mode = 'update';
+      this.oTemplate = result.data;
+      this.jsonEditor.jsonData = result.data.layout;
+      // if (!result.data?.aSettings?.length) this.oTemplate.aSettings = this.getDefaultSettings();
+      // else this.mapWithDefaultSettings();
+    } else {
+      this.mode = 'create';
+      // this.oTemplate.aSettings = this.getDefaultSettings();
+    }
+
+    if (result?.data?.aSettings?.length) this.mapWithDefaultSettings();
+    else this.oTemplate.aSettings = this.getDefaultSettings();
+
+    this.oTemplate.aSettings.forEach((oSettings: any) => {
+      this.oSettings[oSettings.sParameter] = oSettings;
+    })
+    this.oSettings.bLoaded = true;
   }
-  mapWithDefaultSettings(){
-    this.aDefaultSettings.forEach((defaultSetting:any) => {
-      const oMatch = this.oTemplate.aSettings.find((setting: any) => setting.sParameter === defaultSetting.sParameter );
-      if (oMatch){
+
+  mapWithDefaultSettings() {
+    this.aDefaultSettings.forEach((defaultSetting: any) => {
+      const oMatch = this.oTemplate.aSettings.find((setting: any) => setting.sParameter === defaultSetting.sParameter);
+      if (oMatch) {
         oMatch.eOptions = defaultSetting?.eOptions;
         oMatch.eType = defaultSetting?.eType;
       } else {
         this.oTemplate.aSettings.push(defaultSetting);
-      }      
+      }
     });
-    
   }
-  getDefaultSettings(){
+  
+  getDefaultSettings() {
     return [...this.aDefaultSettings];
   }
 
-  saveSettings(){
+  saveSettings() {
     if (this.mode === 'update') {
       const oBody = {
         layout: this.jsonEditor.jsonData,
@@ -133,7 +141,6 @@ export class PrintSettingsEditorComponent implements OnInit {
 
       this.apiService.putNew('cashregistry', `/api/v1/pdf/templates/${this.oTemplate._id}`, oBody).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: 'Your settings are successfully saved!' });
-        // this.close(true);
       }, (err: any) => {
         this.toastService.show({ type: 'danger', text: 'Error occured!' });
       });
@@ -149,24 +156,11 @@ export class PrintSettingsEditorComponent implements OnInit {
       }
       this.apiService.postNew('cashregistry', `/api/v1/pdf/templates/create`, oBody).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: 'Your settings are successfully saved!' });
-        // this.close(true);
       }, (err: any) => {
         this.toastService.show({ type: 'danger', text: 'Error occured!' });
       });
     }
   }
-
-  // activeTabsChanged(tab: any) {
-  //   switch (tab) {
-  //     case 'CONTENT':
-  //       if (!this.layout) this.loadTemplate();
-  //       break;
-  //   }
-  // }
-
-  // loadTemplate(){
-
-  // }
 
   close(data: any) {
     this.dialogRef.close.emit(data);

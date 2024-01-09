@@ -21,14 +21,14 @@
                     </label>
                 </div>
             </div>
-            <div class="row mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <!-- <div class="row mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
                 <div class="col-12">
                     <label class="link">A. <a routerLink="/business/article-groups">{{"CHECK_TURNOVER_GROUP" | translate}}</a></label>
                 </div>
-            </div>
+            </div> -->
             <div class="row align-items-center mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
                 <div class="col-6">
-                    <label class="link">B. {{"ARTICLE_GROUP_WITHOUT_CATEGORY_OR_TURNOVER_GROUP" | translate}}</label>
+                    <label class="link">A. {{"ARTICLE_GROUP_WITHOUT_CATEGORY_OR_TURNOVER_GROUP" | translate}}</label>
                 </div>
                 <div class="col-3">
                     <button class="btn btn-secondary my-2" type="button" data-bs-toggle="collapse" (click)="collapsedBtn = !collapsedBtn"

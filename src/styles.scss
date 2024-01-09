@@ -83,7 +83,7 @@ a.cancel {
 }
 
 ::ng-deep ng-select {
-    .ng-select-container.ng-has-value{
+    .ng-select-container{
         border: none !important;
     }
 }

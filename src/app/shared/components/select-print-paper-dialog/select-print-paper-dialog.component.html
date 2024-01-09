@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header" style="margin-top: 20px;">
+    <div class="card-header d-flex justify-content-between align-items-center px-4 py-2">
         <h4>{{ 'SELECT PRINTER' | translate}}</h4>
         <div>
             <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
@@ -7,7 +7,7 @@
             </button>
         </div>
     </div>
-    <div class="card-body p-5">
+    <div class="card-body px-4 py-2">
         <div class="row align-items-center">
             <div class="col-4"><label>{{ 'SELECT_PRINTER' | translate }}</label></div>
             <div class="col-6">
@@ -39,7 +39,7 @@
         </div>
         
     </div>
-    <div class="card-footer justify-content-end d-flex p-5">
+    <div class="card-footer justify-content-end d-flex px-4 py-2">
         <button class="btn btn-primary me-2" (click)="close(true)">{{ 'SAVE' | translate}}</button>
         <button class="btn btn-secondary" (click)="close(false)">{{ 'CANCEL' | translate}}</button>
     </div>

@@ -79,6 +79,7 @@ import { SupplierWarningDialogComponent } from "../till/dialogs/supplier-warning
 import { PrinterToolComponent } from "../print-settings/printer-tool/printer-tool.component";
 import { LabelTemplateModelComponent } from "../print-settings/lable-template-model/label-template-model.component";
 import { CompareStatisticsDateComponent } from "./components/compare-statistics-date/compare-statistics-date.component";
+import { TransactionDetailsComponent } from "../transactions/components/transaction-details/transaction-details.component";
 
 
 @NgModule({
@@ -134,7 +135,8 @@ import { CompareStatisticsDateComponent } from "./components/compare-statistics-
     SupplierWarningDialogComponent,
     PrinterToolComponent,
     LabelTemplateModelComponent,
-    CompareStatisticsDateComponent
+    CompareStatisticsDateComponent,
+    TransactionDetailsComponent
   ],
   imports: [
     CommonModule,
@@ -189,7 +191,8 @@ import { CompareStatisticsDateComponent } from "./components/compare-statistics-
     SupplierWarningDialogComponent,
     PrinterToolComponent,
     LabelTemplateModelComponent,
-    CompareStatisticsDateComponent
+    CompareStatisticsDateComponent,
+    TransactionDetailsComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe],
   entryComponents: [
@@ -216,7 +219,11 @@ import { CompareStatisticsDateComponent } from "./components/compare-statistics-
     LabelTemplateModelComponent,
     CompareStatisticsDateComponent,
     QuickbuttonWizardComponent,
-    DeviceDetailsComponent
+    DeviceDetailsComponent,
+    TransactionDetailsComponent,
+    ImageUploadComponent,
+    TransactionItemsDetailsComponent,
+    SelectPrintPaperDialogComponent,
   ]
 })
 
